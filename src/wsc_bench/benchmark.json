@@ -1,0 +1,162 @@
+[
+  {
+    "task": "add-10digit",
+    "tier": "easy",
+    "target": "add-10digit",
+    "params": {
+      "layers": 8,
+      "width": 512,
+      "samples": 2000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "sort10",
+    "tier": "easy",
+    "target": "sort-numbers",
+    "params": {
+      "n": 10,
+      "layers": 12,
+      "width": 64,
+      "lists": 10000,
+      "tolerance": 0.01
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 10
+  },
+  {
+    "task": "gcd10",
+    "tier": "easy",
+    "target": "gcd-10bit",
+    "params": {
+      "layers": 8,
+      "width": 2048,
+      "samples": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "subleq-step",
+    "tier": "easy",
+    "target": "subleq-step",
+    "params": {
+      "layers": 12,
+      "width": 1536,
+      "samples": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "bowling",
+    "tier": "easy",
+    "target": "bowling",
+    "params": {
+      "layers": 32,
+      "width": 1536,
+      "games": 10000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 10
+  },
+  {
+    "task": "multiply32",
+    "tier": "easy",
+    "target": "multiply-32",
+    "params": {
+      "layers": 6,
+      "width": 1536,
+      "samples": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 10
+  },
+  {
+    "task": "arith-expr",
+    "tier": "easy",
+    "target": "arith-expr",
+    "params": {
+      "layers": 64,
+      "width": 1536,
+      "cases": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "chess-mate1",
+    "tier": "easy",
+    "target": "chess-mate-in-one",
+    "params": {
+      "layers": 8,
+      "width": 4096,
+      "positions": 500
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "regex-match",
+    "tier": "hard",
+    "target": "regex-match",
+    "params": {
+      "cases": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "decimal-period",
+    "tier": "hard",
+    "target": "decimal-period",
+    "params": {
+      "samples": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "sudoku-any",
+    "tier": "hard",
+    "target": "sudoku-any",
+    "params": {
+      "layers": 64,
+      "width": 1536,
+      "puzzles": 200
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 5
+  },
+  {
+    "task": "inverse-bwt",
+    "tier": "hard",
+    "target": "inverse-bwt",
+    "params": {
+      "strings": 1000
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "empty-circumcircle",
+    "tier": "hard",
+    "target": "empty-circumcircle",
+    "params": {
+      "cases": 200
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  },
+  {
+    "task": "reed-solomon-decode",
+    "tier": "hard",
+    "target": "reed-solomon-decode",
+    "params": {
+      "cases": 500
+    },
+    "max_nonzero": 500000,
+    "eval_seeds": 3
+  }
+]
