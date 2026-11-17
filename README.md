@@ -86,6 +86,11 @@ public seeds starting at 0. Rewards agree up to sampling noise.
 
 ## Results
 
+![Hard tier: mean score per model and task, 3 runs each](results/figures/hard-tier-heatmap.png)
+
+Hard tier, per model and task: mean score over 3 runs (out of output budget counts as 0). ✓ = solved exactly on every
+run; blank = under 0.05.
+
 The headline results and analysis are in the blog post (link to come). Every run behind them is in [results/](results):
 `runs.csv` lists each run id, model, label and dataset, and `task_results.csv` holds the verifier reward and the
 out-of-budget, provider-failure and cut flags for every (run, task). See [results/README.md](results/README.md).
