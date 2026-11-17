@@ -122,7 +122,7 @@ tests/
   the cap and ask for a smaller one, so for regex-match, decimal-period and inverse-bwt the scored attempt is the first
   one whose code fails or whose real count is within 500,000, the one the harness would have accepted. It is rebuilt
   from the reply and scored by the v1 verifier on the same hidden seeds. The blog post uses `reward_fixed_count`. It
-  differs from `reward` for 59 of 1,927 Valkyrie replies and 11 of 43 local replies, and raises 15 models' hard tier
+  differs from `reward` for 78 of 1,927 Valkyrie replies and 11 of 43 local replies, and raises 15 models' hard tier
   scores. A few replies score lower, where the smaller resubmitted network had scored better than the first.
 * **No rule against training inside the builder program.** The prompt does not forbid a builder program from
   simulating the task and fitting the weights to it. We scanned all 1,010 builder programs from v1 tasks for training
