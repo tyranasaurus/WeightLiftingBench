@@ -23,11 +23,12 @@ IMAGE = "wsc-bench-agent:v1"
 KEY_NAMES = ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "GEMINI_API_KEY", "OPENROUTER_API_KEY")
 INFRA_EXIT = 3  # api_wsp: keys out, model missing or provider errors after retries; retry, never score
 AGENT_TIMEOUT_S = 12 * 3600
+PLATFORM = "linux/amd64"  # the architecture of the official runs, so float32 results match
 
 
 def ensure_image() -> None:
     if subprocess.run(["docker", "image", "inspect", IMAGE], capture_output=True).returncode != 0:
-        subprocess.run(["docker", "build", "-t", IMAGE, str(REPO / "harness" / "image")], check=True)
+        subprocess.run(["docker", "build", "--platform", PLATFORM, "-t", IMAGE, str(REPO / "harness" / "image")], check=True)
 
 
 def run_model(*, task: Task, model: str, effort: str, route: str, out_root: Path) -> dict:
@@ -49,7 +50,7 @@ def run_model(*, task: Task, model: str, effort: str, route: str, out_root: Path
         env_file.write("\n".join(keys + ["AGENT_OUTPUT_ROOT=/logs"]) + "\n")
     os.chmod(env_file.name, 0o600)
     command = [
-        "docker", "run", "--rm", "--env-file", env_file.name, "--cpus", "2", "--memory", "5g",
+        "docker", "run", "--rm", "--platform", PLATFORM, "--env-file", env_file.name, "--cpus", "2", "--memory", "5g",
         "-v", f"{HARNESS}:/bundle/api_wsp:ro", "-v", f"{run_dir / 'l0'}:/app/l0:ro",
         "-v", f"{run_dir / 'out'}:/app/out", "-v", f"{run_dir / 'logs'}:/logs",
         "-v", f"{run_dir / 'instruction.md'}:/instr/instruction.md:ro", IMAGE, "bash", "-lc",

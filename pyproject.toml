@@ -3,10 +3,10 @@ name = "wsc-bench"
 version = "1.0.0"
 description = "Weight Space Compilation Bench: models write the weights of a ReLU network by hand, in one reply."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = "MIT"
 dependencies = [
-    "numpy>=2.0",
+    "numpy==2.5.4",  # the version every v1 reply ran and was scored with
     "scipy>=1.11",
     "chess>=1.10",
 ]

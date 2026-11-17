@@ -5,8 +5,8 @@ Can a language model write the weights of a neural network by hand?
 Each task gives a model a problem (add two numbers, sort a list, check a regex, decode a Reed-Solomon codeword) and
 the exact shape of a ReLU network. The model replies **once** with a short Python program that sets the weights.
 There are no tools, no code execution feedback, no training data and no examples. We run the program, then score the
-network it built on freshly generated inputs. Every task has a known deterministic algorithm, so a perfect network
-exists; the question is whether a model can compile that algorithm into weights.
+network it built on freshly generated inputs. Every task has a known deterministic algorithm; the question is whether a
+model can compile it into a network within the size limits.
 
 This repository holds v1: the 14 tasks, the exact prompts, the harness that queried every model, the scorer, and the
 per-run results with run ids.
@@ -56,7 +56,7 @@ entry lists; the prompt gives the format. `wsc-bench list` shows each task's see
 
 ```bash
 git clone https://github.com/tyranasaurus/WSC-Bench && cd WSC-Bench
-uv sync            # or: pip install -e .
+uv sync            # or: pip install -e .  (numpy is pinned to 2.5.4, the version v1 used)
 uv run wsc-bench list
 uv run wsc-bench prompt gcd10 > prompt.md         # send this to any model, save its full reply as reply.md
 uv run wsc-bench eval gcd10 reply.md              # run the reply's program and score the network
