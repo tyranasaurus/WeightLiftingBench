@@ -16,8 +16,9 @@ per-run results with run ids.
 * **One request, one reply.** The model receives the task prompt (system prompt: `Answer the user's request.`) and
   answers once. Its reply must hold exactly one fenced ```` ```python ```` block.
 * **The reply is a builder program.** It runs once in a fresh Python process with `np` (numpy), `math` and `weights`
-  (every tensor preloaded with zeros) defined. Other imports are blocked, and there is no file or network access.
-  The weights it leaves are the submission.
+  (every tensor preloaded with zeros) defined. An import hook blocks every import except numpy and math. That is a
+  guard, not a hardened sandbox, so we also read every program that scored 0.9 or more (483 of them): none touched
+  files, the environment or the network. The weights it leaves are the submission.
 * **At most 500,000 nonzero weights and biases.** A network over the cap scores 0. When a reply's weights are over the
   cap, the harness answers in the same conversation with only the nonzero count and the cap, up to 2 follow-ups.
 * **Scored only on the network.** The verifier runs the network on fresh random inputs (fresh seeds, not shown to the
@@ -117,6 +118,21 @@ tests/
   of a sparse submission as well as its values, about 3 times the real count, so a reply with roughly 170k to 500k
   real nonzeros was scored 0 and told it was over the cap. This repository counts nonzero values plus biases. The
   rewards in `results/` are the v1 verifier's.
+* **The output budget penalizes long reasoners.** A reply still reasoning at 128,000 tokens scores 0. Some models hit
+  this a lot: Qwen4 Max on 16 of 24 hard-tier replies, Opus 5.5 on about a third of its replies at effort high (it
+  scores higher at medium for that reason). v2 drops the shared cap, so each model gets its provider's full output
+  limit, and states the budget in the prompt.
+* **Nothing stops the builder program from training.** The program could simulate the task and fit or train the
+  network on its own data. Our audit found this only on two physics tasks (three-body, double pendulum), which is why
+  neither is in v1. A scan of all 926 builder programs on the 14 v1 tasks, at every score, for fitting and training
+  code (least squares, solves, optimizers, gradients, epochs, loss loops, annealing) found none. v2 adds a CPU time
+  limit on the builder and an LLM judge that classifies each program.
+* **Size-cap follow-ups are a second chance.** They give only the nonzero count, but 37 of the 401 exact scores came
+  after one.
+* **Small samples.** 3 runs per cell. 19% of easy-tier cells change result across runs, mostly for models that are
+  just starting to pass a task, so treat a few points between neighbouring models as noise.
+* **Thin Google and Meta coverage.** Gemini 4 Argon had no working API route and the other Gemini 4 models are only
+  partly run, so Google is footnoted rather than charted. Meta's Muse Wonder ran only the easy tier.
 
 ## License
 
