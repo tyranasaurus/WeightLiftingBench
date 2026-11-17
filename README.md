@@ -41,7 +41,7 @@ per-run results with run ids.
 | [bowling](src/wsc_bench/prompts/bowling.md) | easy | ten-pin bowling score from a game's rolls | 32 x 1536 |
 | [multiply32](src/wsc_bench/prompts/multiply32.md) | easy | product of two 32-bit integers, 64 bits out | 6 x 1536 |
 | [arith-expr](src/wsc_bench/prompts/arith-expr.md) | easy | value of an infix expression with + - * and parentheses | 64 x 1536 |
-| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | easy | the mating move in Lichess mate-in-one puzzles | 8 x 4096 |
+| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | hard | a mating move in mate-in-one positions from random self-play games | 8 x 4096 |
 | [regex-match](src/wsc_bench/prompts/regex-match.md) | hard | which prefixes of a string match a regex given as input | sparse |
 | [decimal-period](src/wsc_bench/prompts/decimal-period.md) | hard | period of the decimal expansion of 1/n | sparse |
 | [sudoku-any](src/wsc_bench/prompts/sudoku-any.md) | hard | the solution of any unique-solution sudoku | 64 x 1536 |

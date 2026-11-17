@@ -2,8 +2,8 @@
 
 Positions come from seeded random self-play: the first position (after ply 10) where the side to move has a mating
 move. Black-to-move positions are mirrored so White is always to move. The answer counts when the argmax (from, to)
-is a legal move that checkmates (any promotion piece). There is no known reference construction for this envelope:
-this target is an open stress test, not a validated task.
+is a legal move that checkmates (any promotion piece). A known deterministic program (try every legal move, keep the
+ones that checkmate) scores 100%; no reference network has been built for this shape.
 """
 
 import csv
