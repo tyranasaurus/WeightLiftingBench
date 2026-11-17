@@ -8,6 +8,9 @@ A run counts when it used the `api_wsp` harness (or the `oracle` reference agent
                  after a request was cut at the cap: the program never finished
   provider_fail  the reply scored 0 because the provider blocked it or failed (SAFETY, finish error, finish blocked)
   cut            some request of the reply was cut at the output cap
+and reward_fixed_count: the reward with the sparse nonzero count fixed (see Known issues in the README). The v1
+verifier counted a sparse submission's index arrays too; a reply it zeroed for the cap gets its uncapped reward back
+when its real count (mean_nonzero_entries: nonzero values plus biases) is within the cap. Otherwise equal to reward.
 Rows whose status is not FINISHED are infrastructure errors and are retried, never scored.
 
 Usage: python scripts/collect_valkyrie_results.py --cache /tmp/wsc-cache [--workers 8]
@@ -53,9 +56,14 @@ def fetch(*, run: dict, cache: Path) -> dict:
     out = {"key": key, "tasks": {}}
     for task in tasks:
         tid = task["task_id"]
-        reward = ((results.get(tid) or {}).get("rewards") or {}).get("reward")
+        rewards = (results.get(tid) or {}).get("rewards") or {}
+        reward = rewards.get("reward")
         zero = not reward
-        out["tasks"][tid] = {"status": task["status"], "reward": reward,
+        fixed = reward
+        real_count = rewards.get("mean_nonzero_entries", float("inf"))
+        if rewards.get("mean_within_budget", 1.0) < 1.0 and real_count <= rewards["mean_max_nonzero"]:
+            fixed = next(v for k, v in rewards.items() if k.endswith("_ignoring_budget"))
+        out["tasks"][tid] = {"status": task["status"], "reward": reward, "reward_fixed_count": fixed,
                              "out_of_budget": f"[{tid}]" in budget_log or (zero and f"[{tid}]" in cut_log),
                              "provider_fail": zero and f"[{tid}]" in provider_log, "cut": f"[{tid}]" in cut_log}
     path.write_text(json.dumps(out))
@@ -83,12 +91,14 @@ def main() -> None:
                              run["started_at"], run.get("finished_at") or "", len(tasks)])
     with open(out / "task_results.csv", "w", newline="") as fh:
         writer = csv.writer(fh)
-        writer.writerow(["run_id", "label", "model", "agent", "task", "status", "reward", "out_of_budget",
+        writer.writerow(["run_id", "label", "model", "agent", "task", "status", "reward",
+                         "reward_fixed_count", "out_of_budget",
                          "provider_fail", "cut"])
         for run, tasks in kept:
             for tid, t in sorted(tasks.items()):
                 writer.writerow([run["id"], run["label"], run["model"], run["agent_name"],
-                                 tid.removesuffix("-write-nnz500000"), t["status"], t["reward"], t["out_of_budget"],
+                                 tid.removesuffix("-write-nnz500000"), t["status"], t["reward"],
+                                 t["reward_fixed_count"], t["out_of_budget"],
                                  t["provider_fail"], t["cut"]])
     print(f"{len(kept)} runs, {sum(len(t) for _, t in kept)} task results")
 

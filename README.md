@@ -88,7 +88,8 @@ public seeds starting at 0. Rewards agree up to sampling noise.
 
 The headline results and analysis are in the blog post (link to come). Every run behind them is in [results/](results):
 `runs.csv` lists each run id, model, label and dataset, and `task_results.csv` holds the verifier reward and the
-out-of-budget, provider-failure and cut flags for every (run, task). See [results/README.md](results/README.md).
+out-of-budget, provider-failure and cut flags for every (run, task). `blog_v1_runs.csv` lists every reply behind the
+blog's numbers, and `python scripts/blog_v1_scores.py` recomputes them. See [results/README.md](results/README.md).
 
 ## Repository layout
 
@@ -115,8 +116,14 @@ tests/
   that applies. We keep the prompts as served.
 * **Sparse nonzero count.** For regex-match and decimal-period, the v1 verifier and harness counted the index arrays
   of a sparse submission as well as its values, about 3 times the real count, so a reply with roughly 170k to 500k
-  real nonzeros was scored 0 and told it was over the cap. This repository counts nonzero values plus biases. The
-  rewards in `results/` are the v1 verifier's.
+  real nonzeros was scored 0 and told it was over the cap. This repository counts nonzero values plus biases.
+  `results/` keeps the v1 verifier's `reward` and adds `reward_fixed_count`, which rescores the same replies with the
+  fixed count (no reruns). The blog post uses `reward_fixed_count`. It changes 19 of 1,927 Valkyrie replies and 1 local
+  reply, almost all of them GPT-6.2 and effort-sweep replies.
+* **No rule against training inside the builder program.** The prompt does not forbid a builder program from
+  simulating the task and fitting the weights to it. We scanned all 1,010 builder programs from v1 tasks for training
+  or fitting (least squares, gradient descent, optimizers, loss loops): none do. A no-training rule, a CPU limit and
+  a build-program judge are planned for v2.
 
 ## License
 
