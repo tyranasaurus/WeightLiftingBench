@@ -87,7 +87,7 @@
   },
   {
     "task": "chess-mate1",
-    "tier": "easy",
+    "tier": "hard",
     "target": "chess-mate-in-one",
     "params": {
       "layers": 8,

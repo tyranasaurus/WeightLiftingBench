@@ -28,7 +28,7 @@ per-run results with run ids.
 * **Infrastructure errors never score.** Keys out of credit, a missing model, or provider errors after retries end
   the task as an error to retry, not a 0.
 * **3 runs per model and task, effort high.** The hard tier is run only for models that clear the easy tier; the
-  others show as "not run".
+  others show as "not run". chess-mate1 counts in the hard tier but was run for every model.
 
 ## Tasks
 
@@ -41,7 +41,7 @@ per-run results with run ids.
 | [bowling](src/wsc_bench/prompts/bowling.md) | easy | ten-pin bowling score from a game's rolls | 32 x 1536 |
 | [multiply32](src/wsc_bench/prompts/multiply32.md) | easy | product of two 32-bit integers, 64 bits out | 6 x 1536 |
 | [arith-expr](src/wsc_bench/prompts/arith-expr.md) | easy | value of an infix expression with + - * and parentheses | 64 x 1536 |
-| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | easy | the mating move in Lichess mate-in-one puzzles | 8 x 4096 |
+| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | hard | the mating move in Lichess mate-in-one puzzles | 8 x 4096 |
 | [regex-match](src/wsc_bench/prompts/regex-match.md) | hard | which prefixes of a string match a regex given as input | sparse |
 | [decimal-period](src/wsc_bench/prompts/decimal-period.md) | hard | period of the decimal expansion of 1/n | sparse |
 | [sudoku-any](src/wsc_bench/prompts/sudoku-any.md) | hard | the solution of any unique-solution sudoku | 64 x 1536 |
@@ -117,13 +117,19 @@ tests/
 * **Sparse nonzero count.** For regex-match and decimal-period, the v1 verifier and harness counted the index arrays
   of a sparse submission as well as its values, about 3 times the real count, so a reply with roughly 170k to 500k
   real nonzeros was scored 0 and told it was over the cap. This repository counts nonzero values plus biases.
-  `results/` keeps the v1 verifier's `reward` and adds `reward_fixed_count`, which rescores the same replies with the
-  fixed count (no reruns). The blog post uses `reward_fixed_count`. It changes 19 of 1,927 Valkyrie replies and 1 local
-  reply, almost all of them GPT-6.2 and effort-sweep replies.
+  `results/` keeps the v1 verifier's `reward` and adds `reward_fixed_count`, what the reply scores with the fixed
+  count throughout (no model is rerun). The old count also made the harness tell some replies their network was over
+  the cap and ask for a smaller one, so for regex-match, decimal-period and inverse-bwt the scored attempt is the first
+  one whose code fails or whose real count is within 500,000, the one the harness would have accepted. It is rebuilt
+  from the reply and scored by the v1 verifier on the same hidden seeds. The blog post uses `reward_fixed_count`. It
+  differs from `reward` for 59 of 1,927 Valkyrie replies and 11 of 43 local replies, and raises 15 models' hard tier
+  scores. A few replies score lower, where the smaller resubmitted network had scored better than the first.
 * **No rule against training inside the builder program.** The prompt does not forbid a builder program from
   simulating the task and fitting the weights to it. We scanned all 1,010 builder programs from v1 tasks for training
-  or fitting (least squares, gradient descent, optimizers, loss loops): none do. A no-training rule, a CPU limit and
-  a build-program judge are planned for v2.
+  or fitting (least squares, gradient descent, optimizers, loss loops). Two fit their weights: a GPT-5.1 sort10 reply
+  that trains with Adam (reward 0.0) and a GPT-5.5 empty-circumcircle reply that solves a ridge regression (reward
+  0.0002). None of the 1,010 got a good score by training. A no-training rule, a CPU limit and a build-program judge
+  are planned for v2.
 
 ## License
 
