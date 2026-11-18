@@ -93,7 +93,7 @@ Hard tier, per model and task: mean `reward_fixed_count` over up to 3 replies (o
 Anthropic and open-weight lab models with replies on all 7 hard tasks. ✓ = solved exactly on every reply; blank = under
 0.05. `scripts/hard_tier_heatmap.py` draws it from `results/blog_v1_runs.csv`.
 
-The headline results and analysis are in the blog post (link to come). Every run behind them is in [results/](results):
+The headline results and analysis are in the blog post (link to come). Every reply behind them is in [results/](results):
 `runs.csv` lists each run id, model, label and dataset, and `task_results.csv` holds the verifier reward and the
 out-of-budget, provider-failure and cut flags for every (run, task). `blog_v1_runs.csv` lists every reply behind the
 blog's numbers, and `python scripts/blog_v1_scores.py` recomputes them. See [results/README.md](results/README.md).
@@ -129,7 +129,7 @@ tests/
   the cap and ask for a smaller one, so for regex-match, decimal-period and inverse-bwt the scored attempt is the first
   one whose code fails or whose real count is within 500,000, the one the harness would have accepted. It is rebuilt
   from the reply and scored by the v1 verifier on the same hidden seeds. The blog post uses `reward_fixed_count`. It
-  differs from `reward` for 78 of 1,927 Valkyrie replies and 11 of 43 local replies, and raises 15 models' hard tier
+  differs from `reward` for 54 of 1,392 Valkyrie replies and 11 of 42 local replies, and raises 15 models' hard tier
   scores. A few replies score lower, where the smaller resubmitted network had scored better than the first.
 * **No rule against training inside the builder program.** The prompt does not forbid a builder program from
   simulating the task and fitting the weights to it. We scanned all 1,010 builder programs from v1 tasks for training
