@@ -869,7 +869,6 @@ f00b5493-8c9f-46bc-9da1-7ee7fc36269c,hard-qwen-qwen3-8-max-0902-s2,qwen/qwen3.8-
 27b996c7-2fa6-4ad6-83bc-969e4fe276de,frontier-500k-google-gemini-4-carbon-r3-s1,google/gemini-4-carbon,api_wsp,regex-match,FINISHED,1.0,1.0,False,False,False
 f95833f7-36d9-4d10-b0cf-6cbd5088b88a,frontier-500k-google-gemini-4-carbon-r3-s2,google/gemini-4-carbon,api_wsp,decimal-period,FINISHED,1.0,1.0,False,False,False
 f0924bea-69f8-49b5-b163-65c738ff074c,frontier-500k-google-gemini-4-carbon-r3-s3,google/gemini-4-carbon,api_wsp,sudoku-any,FINISHED,0.6890941321238225,0.6890941321238225,False,False,False
-5da09614-33e4-43a3-ae0e-18beed23a49c,frontier-500k-google-gemini-4-argon-r3-s2,google/gemini-4-argon,api_wsp,sudoku-any,FINISHED,0.6765412409009369,0.6765412409009369,False,False,False
 b6348d92-325c-4165-950b-97e9c95127ff,newtask-arith-openai-gpt-5-s1,openai/gpt-5,api_wsp,arith-expr,FINISHED,0.05933333333333333,0.05933333333333333,False,False,False
 a637fcd2-d80c-4abc-bac0-4e45d3254c1b,newtask-arith-openai-gpt-5-s2,openai/gpt-5,api_wsp,arith-expr,FINISHED,0.4116666666666666,0.4116666666666666,False,False,False
 d561a227-06b5-4893-9619-1f45100f6c28,newtask-arith-openai-gpt-5-s3,openai/gpt-5,api_wsp,arith-expr,FINISHED,0.0,0.0,False,False,False

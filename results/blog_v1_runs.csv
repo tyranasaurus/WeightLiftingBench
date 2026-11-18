@@ -496,7 +496,6 @@ google/gemini-3.1-pro-preview,subleq-step,easy,valkyrie,d7ecc9e9-0073-4653-b054-
 google/gemini-3.1-pro-preview,sudoku-any,hard,valkyrie,da26e33c-d108-44b6-8137-500c85e0263c,frontier-500k-google-gemini-3-1-pro-preview-r2-s1,2026-11-16T04:36:01.695557+00:00,0.015376752574672425,0.015376752574672425,False
 google/gemini-3.1-pro-preview,sudoku-any,hard,valkyrie,84fdc1ac-89d9-4e60-a163-5e824ed97154,frontier-500k-google-gemini-3-1-pro-preview-r2-s2,2026-11-16T04:36:03.244839+00:00,0.41413130390913644,0.41413130390913644,False
 google/gemini-3.1-pro-preview,sudoku-any,hard,valkyrie,201fb80d-cfcc-4082-a372-7b5c526409d9,frontier-500k-google-gemini-3-1-pro-preview-r2-s3,2026-11-16T04:36:04.260985+00:00,0.41413130390913644,0.41413130390913644,False
-google/gemini-4-argon,sudoku-any,hard,valkyrie,5da09614-33e4-43a3-ae0e-18beed23a49c,frontier-500k-google-gemini-4-argon-r3-s2,2026-11-16T12:45:13.880686+00:00,0.6765412409009369,0.6765412409009369,False
 google/gemini-4-carbon,add-10digit,easy,valkyrie,2a353f12-5707-4174-af90-8186296829e7,fill-easy-gemini4-carbon-ce-s1,2026-11-17T04:57:06.215904+00:00,1.0,1.0,False
 google/gemini-4-carbon,add-10digit,easy,valkyrie,6c570baa-ae2e-449a-b6b1-58d693dd85ed,fill-easy-gemini4-carbon-ce-s2,2026-11-17T04:57:08.610961+00:00,1.0,1.0,False
 google/gemini-4-carbon,add-10digit,easy,valkyrie,c83834bb-83d7-4959-a52d-605b690775c2,fill-easy-gemini4-carbon-ce-s3,2026-11-17T04:57:11.257745+00:00,1.0,1.0,False

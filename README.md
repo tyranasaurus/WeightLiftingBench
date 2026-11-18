@@ -17,7 +17,7 @@ per-run results with run ids.
   answers once. Its reply must hold exactly one fenced ```` ```python ```` block.
 * **The reply is a builder program.** It runs once in a fresh Python process with `np` (numpy), `math` and `weights`
   (every tensor preloaded with zeros) defined. An import hook blocks every import except numpy and math. That is a
-  guard, not a hardened sandbox, so we also read every program that scored 0.9 or more (483 of them): none touched
+  guard, not a hardened sandbox, so we also scanned the program of every reply that scored 0.9 or more (557 of them): none touched
   files, the environment or the network. The weights it leaves are the submission.
 * **At most 500,000 nonzero weights and biases.** A network over the cap scores 0. When a reply's weights are over the
   cap, the harness answers in the same conversation with only the nonzero count and the cap, up to 2 follow-ups.
@@ -122,14 +122,14 @@ tests/
   entry limit (4,000,000 and 10,000,000 array slots) and also the 500,000 nonzero cap. The 500,000 cap is the one
   that applies. We keep the prompts as served.
 * **Sparse nonzero count.** For regex-match and decimal-period, the v1 verifier and harness counted the index arrays
-  of a sparse submission as well as its values, about 3 times the real count, so a reply with roughly 170k to 500k
-  real nonzeros was scored 0 and told it was over the cap. This repository counts nonzero values plus biases.
+  of a sparse submission as well as its values, so some replies within the cap were scored 0 and told they were over
+  it. This repository counts nonzero values plus biases.
   `results/` keeps the v1 verifier's `reward` and adds `reward_fixed_count`, what the reply scores with the fixed
   count throughout (no model is rerun). The old count also made the harness tell some replies their network was over
   the cap and ask for a smaller one, so for regex-match, decimal-period and inverse-bwt the scored attempt is the first
   one whose code fails or whose real count is within 500,000, the one the harness would have accepted. It is rebuilt
   from the reply and scored by the v1 verifier on the same hidden seeds. The blog post uses `reward_fixed_count`. It
-  differs from `reward` for 54 of 1,392 Valkyrie replies and 11 of 42 local replies, and raises 15 models' hard tier
+  differs from `reward` for 54 of 1,391 Valkyrie replies and 11 of 42 local replies, and raises 19 models' hard tier
   scores. A few replies score lower, where the smaller resubmitted network had scored better than the first.
 * **No rule against training inside the builder program.** The prompt does not forbid a builder program from
   simulating the task and fitting the weights to it. We scanned all 1,010 builder programs from v1 tasks for training
@@ -140,12 +140,10 @@ tests/
 * **The output budget penalizes long reasoners.** A reply still reasoning at 128,000 tokens scores 0. Some models hit
   this a lot: Qwen4 Max on 13 of its 21 hard-tier replies, Opus 5.5 on 5 of 21 at effort high. v2 drops the shared
   cap, so each model gets its provider's full output limit, and states the budget in the prompt.
-* **Size-cap follow-ups are a second chance.** They give only the nonzero count, but 37 of the 401 exact scores came
-  after one.
 * **Small samples.** 3 runs per cell. 19% of easy-tier cells change result across runs, mostly for models that are
   just starting to pass a task, so treat a few points between neighbouring models as noise.
-* **Thin Google and Meta coverage.** Gemini 4 Argon had no working API route and the other Gemini 4 models are only
-  partly run, so Google is footnoted rather than charted. Meta's Muse Wonder ran only the easy tier.
+* **Thin Google and Meta coverage.** Of the Gemini 4 models, only Carbon has replies on every task. Gemini 4
+  Hydrogen and Meta's Muse Wonder have the easy tier and chess-mate1 only. Neither lab is charted in the blog.
 
 ## License
 
