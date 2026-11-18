@@ -12,7 +12,8 @@ from wsc_bench.score import score_weights
 
 def test_v1_has_14_tasks_in_two_tiers():
     assert len(TASKS) == 14
-    assert sum(t.tier == "easy" for t in TASKS.values()) == 8
+    assert sum(t.tier == "easy" for t in TASKS.values()) == 7
+    assert sum(t.tier == "hard" for t in TASKS.values()) == 7
     assert all(t.max_nonzero == 500_000 for t in TASKS.values())
 
 
