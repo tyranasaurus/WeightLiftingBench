@@ -16,8 +16,9 @@ per-run results with run ids.
 * **One request, one reply.** The model receives the task prompt (system prompt: `Answer the user's request.`) and
   answers once. Its reply must hold exactly one fenced ```` ```python ```` block.
 * **The reply is a builder program.** It runs once in a fresh Python process with `np` (numpy), `math` and `weights`
-  (every tensor preloaded with zeros) defined. Other imports are blocked, and there is no file or network access.
-  The weights it leaves are the submission.
+  (every tensor preloaded with zeros) defined. An import hook blocks every import except numpy and math. That is a
+  guard, not a hardened sandbox, so we also read every program that scored 0.9 or more (483 of them): none touched
+  files, the environment or the network. The weights it leaves are the submission.
 * **At most 500,000 nonzero weights and biases.** A network over the cap scores 0. When a reply's weights are over the
   cap, the harness answers in the same conversation with only the nonzero count and the cap, up to 2 follow-ups.
 * **Scored only on the network.** The verifier runs the network on fresh random inputs (fresh seeds, not shown to the
@@ -41,7 +42,7 @@ per-run results with run ids.
 | [bowling](src/wsc_bench/prompts/bowling.md) | easy | ten-pin bowling score from a game's rolls | 32 x 1536 |
 | [multiply32](src/wsc_bench/prompts/multiply32.md) | easy | product of two 32-bit integers, 64 bits out | 6 x 1536 |
 | [arith-expr](src/wsc_bench/prompts/arith-expr.md) | easy | value of an infix expression with + - * and parentheses | 64 x 1536 |
-| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | hard | the mating move in Lichess mate-in-one puzzles | 8 x 4096 |
+| [chess-mate1](src/wsc_bench/prompts/chess-mate1.md) | hard | a mating move in mate-in-one positions from random self-play games | 8 x 4096 |
 | [regex-match](src/wsc_bench/prompts/regex-match.md) | hard | which prefixes of a string match a regex given as input | sparse |
 | [decimal-period](src/wsc_bench/prompts/decimal-period.md) | hard | period of the decimal expansion of 1/n | sparse |
 | [sudoku-any](src/wsc_bench/prompts/sudoku-any.md) | hard | the solution of any unique-solution sudoku | 64 x 1536 |
@@ -85,6 +86,12 @@ Our official runs used private evaluation seeds, so nobody can tune a reply to t
 public seeds starting at 0. Rewards agree up to sampling noise.
 
 ## Results
+
+![Hard tier: mean score per model and task](results/figures/hard-tier-heatmap.png)
+
+Hard tier, per model and task: mean `reward_fixed_count` over up to 3 replies (out of output budget counts as 0), for OpenAI,
+Anthropic and open-weight lab models with replies on all 7 hard tasks. ✓ = solved exactly on every reply; blank = under
+0.05. `scripts/hard_tier_heatmap.py` draws it from `results/blog_v1_runs.csv`.
 
 The headline results and analysis are in the blog post (link to come). Every run behind them is in [results/](results):
 `runs.csv` lists each run id, model, label and dataset, and `task_results.csv` holds the verifier reward and the
@@ -130,6 +137,15 @@ tests/
   that trains with Adam (reward 0.0) and a GPT-5.5 empty-circumcircle reply that solves a ridge regression (reward
   0.0002). None of the 1,010 got a good score by training. A no-training rule, a CPU limit and a build-program judge
   are planned for v2.
+* **The output budget penalizes long reasoners.** A reply still reasoning at 128,000 tokens scores 0. Some models hit
+  this a lot: Qwen4 Max on 13 of its 21 hard-tier replies, Opus 5.5 on 5 of 21 at effort high. v2 drops the shared
+  cap, so each model gets its provider's full output limit, and states the budget in the prompt.
+* **Size-cap follow-ups are a second chance.** They give only the nonzero count, but 37 of the 401 exact scores came
+  after one.
+* **Small samples.** 3 runs per cell. 19% of easy-tier cells change result across runs, mostly for models that are
+  just starting to pass a task, so treat a few points between neighbouring models as noise.
+* **Thin Google and Meta coverage.** Gemini 4 Argon had no working API route and the other Gemini 4 models are only
+  partly run, so Google is footnoted rather than charted. Meta's Muse Wonder ran only the easy tier.
 
 ## License
 
