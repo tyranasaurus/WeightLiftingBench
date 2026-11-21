@@ -1,0 +1,1 @@
+{"layers":[{"name":"p0","op":"avgpool","inputs":["image"],"size":[2,2],"stride":[2,2]},{"name":"c1","op":"conv","inputs":["p0"],"out":52,"kernel":[3,3],"stride":1,"padding":1},{"name":"r1","op":"relu","inputs":["c1"]},{"name":"p1","op":"avgpool","inputs":["r1"],"size":[2,2],"stride":[2,2]},{"name":"score","op":"dense","inputs":["p1"],"out":10}]}

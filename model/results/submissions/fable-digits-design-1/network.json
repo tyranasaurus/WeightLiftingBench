@@ -1,0 +1,1039 @@
+{
+ "layers": [
+  {
+   "name": "centre_x_test",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 18
+  },
+  {
+   "name": "centre_x_out",
+   "op": "relu",
+   "inputs": [
+    "centre_x_test"
+   ]
+  },
+  {
+   "name": "centre_x_veto",
+   "op": "dense",
+   "inputs": [
+    "centre_x_out"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "centre_x_copies",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "centre_x_sum",
+   "op": "add",
+   "inputs": [
+    "centre_x_copies",
+    "centre_x_veto"
+   ]
+  },
+  {
+   "name": "centre_x_kept",
+   "op": "relu",
+   "inputs": [
+    "centre_x_sum"
+   ]
+  },
+  {
+   "name": "centre_x_stack",
+   "op": "reshape",
+   "inputs": [
+    "centre_x_kept"
+   ],
+   "shape": [
+    9,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "centre_x_done",
+   "op": "conv",
+   "inputs": [
+    "centre_x_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "centre_y_test",
+   "op": "dense",
+   "inputs": [
+    "centre_x_done"
+   ],
+   "out": 18
+  },
+  {
+   "name": "centre_y_out",
+   "op": "relu",
+   "inputs": [
+    "centre_y_test"
+   ]
+  },
+  {
+   "name": "centre_y_veto",
+   "op": "dense",
+   "inputs": [
+    "centre_y_out"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "centre_y_copies",
+   "op": "dense",
+   "inputs": [
+    "centre_x_done"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "centre_y_sum",
+   "op": "add",
+   "inputs": [
+    "centre_y_copies",
+    "centre_y_veto"
+   ]
+  },
+  {
+   "name": "centre_y_kept",
+   "op": "relu",
+   "inputs": [
+    "centre_y_sum"
+   ]
+  },
+  {
+   "name": "centre_y_stack",
+   "op": "reshape",
+   "inputs": [
+    "centre_y_kept"
+   ],
+   "shape": [
+    9,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "centre_y_done",
+   "op": "conv",
+   "inputs": [
+    "centre_y_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "slant1_test",
+   "op": "dense",
+   "inputs": [
+    "centre_y_done"
+   ],
+   "out": 12
+  },
+  {
+   "name": "slant1_out",
+   "op": "relu",
+   "inputs": [
+    "slant1_test"
+   ]
+  },
+  {
+   "name": "slant1_veto",
+   "op": "dense",
+   "inputs": [
+    "slant1_out"
+   ],
+   "out": 4704
+  },
+  {
+   "name": "slant1_copies",
+   "op": "dense",
+   "inputs": [
+    "centre_y_done"
+   ],
+   "out": 4704
+  },
+  {
+   "name": "slant1_sum",
+   "op": "add",
+   "inputs": [
+    "slant1_copies",
+    "slant1_veto"
+   ]
+  },
+  {
+   "name": "slant1_kept",
+   "op": "relu",
+   "inputs": [
+    "slant1_sum"
+   ]
+  },
+  {
+   "name": "slant1_stack",
+   "op": "reshape",
+   "inputs": [
+    "slant1_kept"
+   ],
+   "shape": [
+    6,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "slant1_done",
+   "op": "conv",
+   "inputs": [
+    "slant1_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "slant2_test",
+   "op": "dense",
+   "inputs": [
+    "slant1_done"
+   ],
+   "out": 14
+  },
+  {
+   "name": "slant2_out",
+   "op": "relu",
+   "inputs": [
+    "slant2_test"
+   ]
+  },
+  {
+   "name": "slant2_veto",
+   "op": "dense",
+   "inputs": [
+    "slant2_out"
+   ],
+   "out": 5488
+  },
+  {
+   "name": "slant2_copies",
+   "op": "dense",
+   "inputs": [
+    "slant1_done"
+   ],
+   "out": 5488
+  },
+  {
+   "name": "slant2_sum",
+   "op": "add",
+   "inputs": [
+    "slant2_copies",
+    "slant2_veto"
+   ]
+  },
+  {
+   "name": "slant2_kept",
+   "op": "relu",
+   "inputs": [
+    "slant2_sum"
+   ]
+  },
+  {
+   "name": "slant2_stack",
+   "op": "reshape",
+   "inputs": [
+    "slant2_kept"
+   ],
+   "shape": [
+    7,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "slant2_done",
+   "op": "conv",
+   "inputs": [
+    "slant2_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "width_test",
+   "op": "dense",
+   "inputs": [
+    "slant2_done"
+   ],
+   "out": 24
+  },
+  {
+   "name": "width_out",
+   "op": "relu",
+   "inputs": [
+    "width_test"
+   ]
+  },
+  {
+   "name": "width_veto",
+   "op": "dense",
+   "inputs": [
+    "width_out"
+   ],
+   "out": 9408
+  },
+  {
+   "name": "width_copies",
+   "op": "dense",
+   "inputs": [
+    "slant2_done"
+   ],
+   "out": 9408
+  },
+  {
+   "name": "width_sum",
+   "op": "add",
+   "inputs": [
+    "width_copies",
+    "width_veto"
+   ]
+  },
+  {
+   "name": "width_kept",
+   "op": "relu",
+   "inputs": [
+    "width_sum"
+   ]
+  },
+  {
+   "name": "width_stack",
+   "op": "reshape",
+   "inputs": [
+    "width_kept"
+   ],
+   "shape": [
+    12,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "width_done",
+   "op": "conv",
+   "inputs": [
+    "width_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "height_test",
+   "op": "dense",
+   "inputs": [
+    "width_done"
+   ],
+   "out": 16
+  },
+  {
+   "name": "height_out",
+   "op": "relu",
+   "inputs": [
+    "height_test"
+   ]
+  },
+  {
+   "name": "height_veto",
+   "op": "dense",
+   "inputs": [
+    "height_out"
+   ],
+   "out": 6272
+  },
+  {
+   "name": "height_copies",
+   "op": "dense",
+   "inputs": [
+    "width_done"
+   ],
+   "out": 6272
+  },
+  {
+   "name": "height_sum",
+   "op": "add",
+   "inputs": [
+    "height_copies",
+    "height_veto"
+   ]
+  },
+  {
+   "name": "height_kept",
+   "op": "relu",
+   "inputs": [
+    "height_sum"
+   ]
+  },
+  {
+   "name": "height_stack",
+   "op": "reshape",
+   "inputs": [
+    "height_kept"
+   ],
+   "shape": [
+    8,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "height_done",
+   "op": "conv",
+   "inputs": [
+    "height_stack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edges",
+   "op": "conv",
+   "inputs": [
+    "height_done"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "edges_pos",
+   "op": "relu",
+   "inputs": [
+    "edges"
+   ]
+  },
+  {
+   "name": "tuned",
+   "op": "conv",
+   "inputs": [
+    "edges_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tuned_pos",
+   "op": "relu",
+   "inputs": [
+    "tuned"
+   ]
+  },
+  {
+   "name": "pooled",
+   "op": "conv",
+   "inputs": [
+    "tuned_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    14,
+    14
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "pooled"
+   ],
+   "shape": [
+    1,
+    112,
+    14
+   ]
+  },
+  {
+   "name": "normed",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "p00_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p00_img",
+   "op": "reshape",
+   "inputs": [
+    "p00_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p00_match",
+   "op": "conv",
+   "inputs": [
+    "p00_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p00_best",
+   "op": "maxpool",
+   "inputs": [
+    "p00_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p01_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p01_img",
+   "op": "reshape",
+   "inputs": [
+    "p01_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p01_match",
+   "op": "conv",
+   "inputs": [
+    "p01_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p01_best",
+   "op": "maxpool",
+   "inputs": [
+    "p01_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p02_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p02_img",
+   "op": "reshape",
+   "inputs": [
+    "p02_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p02_match",
+   "op": "conv",
+   "inputs": [
+    "p02_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p02_best",
+   "op": "maxpool",
+   "inputs": [
+    "p02_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p10_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p10_img",
+   "op": "reshape",
+   "inputs": [
+    "p10_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p10_match",
+   "op": "conv",
+   "inputs": [
+    "p10_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p10_best",
+   "op": "maxpool",
+   "inputs": [
+    "p10_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p11_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p11_img",
+   "op": "reshape",
+   "inputs": [
+    "p11_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p11_match",
+   "op": "conv",
+   "inputs": [
+    "p11_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p11_best",
+   "op": "maxpool",
+   "inputs": [
+    "p11_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p12_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p12_img",
+   "op": "reshape",
+   "inputs": [
+    "p12_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p12_match",
+   "op": "conv",
+   "inputs": [
+    "p12_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p12_best",
+   "op": "maxpool",
+   "inputs": [
+    "p12_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p20_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p20_img",
+   "op": "reshape",
+   "inputs": [
+    "p20_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p20_match",
+   "op": "conv",
+   "inputs": [
+    "p20_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p20_best",
+   "op": "maxpool",
+   "inputs": [
+    "p20_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p21_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p21_img",
+   "op": "reshape",
+   "inputs": [
+    "p21_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p21_match",
+   "op": "conv",
+   "inputs": [
+    "p21_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p21_best",
+   "op": "maxpool",
+   "inputs": [
+    "p21_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "p22_win",
+   "op": "dense",
+   "inputs": [
+    "normed"
+   ],
+   "out": 640
+  },
+  {
+   "name": "p22_img",
+   "op": "reshape",
+   "inputs": [
+    "p22_win"
+   ],
+   "shape": [
+    8,
+    4,
+    20
+   ]
+  },
+  {
+   "name": "p22_match",
+   "op": "conv",
+   "inputs": [
+    "p22_img"
+   ],
+   "out": 26400,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 4,
+   "padding": 0
+  },
+  {
+   "name": "p22_best",
+   "op": "maxpool",
+   "inputs": [
+    "p22_match"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "match",
+   "op": "add",
+   "inputs": [
+    "p00_best",
+    "p01_best",
+    "p02_best",
+    "p10_best",
+    "p11_best",
+    "p12_best",
+    "p20_best",
+    "p21_best",
+    "p22_best"
+   ]
+  },
+  {
+   "name": "groups",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    264,
+    100
+   ]
+  },
+  {
+   "name": "group_best",
+   "op": "maxpool",
+   "inputs": [
+    "groups"
+   ],
+   "size": [
+    1,
+    100
+   ],
+   "stride": [
+    1,
+    100
+   ]
+  },
+  {
+   "name": "sorted",
+   "op": "dense",
+   "inputs": [
+    "group_best"
+   ],
+   "out": 480
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "sorted"
+   ],
+   "shape": [
+    1,
+    10,
+    48
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    48
+   ],
+   "stride": [
+    1,
+    48
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

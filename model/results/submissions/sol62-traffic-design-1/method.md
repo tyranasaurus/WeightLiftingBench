@@ -1,0 +1,3 @@
+The network approximates log RGB with ReLU splines, then separates chromaticity, signed center–surround contrast, and dark ink relative to a local luminance envelope. Analytic masks score the outlines and colors of eight sign families, including whether all sides of a red border are present. The network then matches hand-drawn digits, lettering, arrows and pictograms at the same candidate poses; max pooling selects the best-supported pose and symbol variant for each class.
+
+`build.py` draws the masks from geometric primitives and stroke paths and compiles them into fixed float32 weights. It does not read any input files. Training photos were used only for visual reference and the scorer's logged checks, not to fit the weights.

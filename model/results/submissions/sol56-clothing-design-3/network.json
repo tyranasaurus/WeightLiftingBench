@@ -1,0 +1,78 @@
+{
+  "layers": [
+    {
+      "name": "small",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "shape_features",
+      "op": "conv",
+      "inputs": [
+        "small"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "matches",
+      "op": "dense",
+      "inputs": [
+        "shape_features"
+      ],
+      "out": 2560
+    },
+    {
+      "name": "match_grid",
+      "op": "reshape",
+      "inputs": [
+        "matches"
+      ],
+      "shape": [
+        10,
+        256,
+        1
+      ]
+    },
+    {
+      "name": "best_match",
+      "op": "maxpool",
+      "inputs": [
+        "match_grid"
+      ],
+      "size": [
+        256,
+        1
+      ],
+      "stride": [
+        256,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_match"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

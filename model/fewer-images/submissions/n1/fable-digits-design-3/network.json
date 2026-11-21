@@ -1,0 +1,234 @@
+{
+ "layers": [
+  {
+   "name": "g",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 16,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "g_r",
+   "op": "relu",
+   "inputs": [
+    "g"
+   ]
+  },
+  {
+   "name": "mix",
+   "op": "conv",
+   "inputs": [
+    "g_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mix_r",
+   "op": "relu",
+   "inputs": [
+    "mix"
+   ]
+  },
+  {
+   "name": "pool_o",
+   "op": "conv",
+   "inputs": [
+    "mix_r"
+   ],
+   "out": 8,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 3,
+   "padding": 3
+  },
+  {
+   "name": "t_or",
+   "op": "dense",
+   "inputs": [
+    "pool_o"
+   ],
+   "out": 137000
+  },
+  {
+   "name": "rays",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 6272
+  },
+  {
+   "name": "rays_m",
+   "op": "reshape",
+   "inputs": [
+    "rays"
+   ],
+   "shape": [
+    8,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "rc",
+   "op": "conv",
+   "inputs": [
+    "rays_m"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rc_r",
+   "op": "relu",
+   "inputs": [
+    "rc"
+   ]
+  },
+  {
+   "name": "cc_pre",
+   "op": "conv",
+   "inputs": [
+    "rc_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cc_sum",
+   "op": "add",
+   "inputs": [
+    "cc_pre",
+    "ink"
+   ]
+  },
+  {
+   "name": "cc",
+   "op": "relu",
+   "inputs": [
+    "cc_sum"
+   ]
+  },
+  {
+   "name": "pool_c",
+   "op": "conv",
+   "inputs": [
+    "cc"
+   ],
+   "out": 5,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 3,
+   "padding": 3
+  },
+  {
+   "name": "t_cc",
+   "op": "dense",
+   "inputs": [
+    "pool_c"
+   ],
+   "out": 137000
+  },
+  {
+   "name": "sim",
+   "op": "add",
+   "inputs": [
+    "t_or",
+    "t_cc"
+   ]
+  },
+  {
+   "name": "sim_m",
+   "op": "reshape",
+   "inputs": [
+    "sim"
+   ],
+   "shape": [
+    10,
+    1,
+    13700
+   ]
+  },
+  {
+   "name": "mp1",
+   "op": "maxpool",
+   "inputs": [
+    "sim_m"
+   ],
+   "size": [
+    1,
+    137
+   ],
+   "stride": [
+    1,
+    137
+   ]
+  },
+  {
+   "name": "mp2",
+   "op": "maxpool",
+   "inputs": [
+    "mp1"
+   ],
+   "size": [
+    1,
+    100
+   ],
+   "stride": [
+    1,
+    100
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "mp2"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "layers": [
+    {
+      "name": "match",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 480,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "r1",
+      "op": "reshape",
+      "inputs": [
+        "match"
+      ],
+      "shape": [
+        1,
+        10,
+        48
+      ]
+    },
+    {
+      "name": "pick",
+      "op": "maxpool",
+      "inputs": [
+        "r1"
+      ],
+      "size": [
+        1,
+        48
+      ],
+      "stride": [
+        1,
+        48
+      ]
+    },
+    {
+      "name": "out",
+      "op": "reshape",
+      "inputs": [
+        "pick"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

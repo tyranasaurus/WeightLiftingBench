@@ -1,0 +1,3206 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 8,
+   "kernel": [
+    10,
+    10
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "c3"
+   ],
+   "shape": [
+    1,
+    232,
+    29
+   ]
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "reshape",
+   "inputs": [
+    "nrm"
+   ],
+   "shape": [
+    8,
+    29,
+    29
+   ]
+  },
+  {
+   "name": "cc",
+   "op": "conv",
+   "inputs": [
+    "c3"
+   ],
+   "out": 8,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 4,
+   "padding": 4
+  },
+  {
+   "name": "cflat",
+   "op": "reshape",
+   "inputs": [
+    "cc"
+   ],
+   "shape": [
+    1,
+    56,
+    7
+   ]
+  },
+  {
+   "name": "cfeat",
+   "op": "norm",
+   "inputs": [
+    "cflat"
+   ]
+  },
+  {
+   "name": "gather0",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 392,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gather1",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 392,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gather2",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 392,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gather3",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 392,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "part0_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best0_0",
+   "op": "maxpool",
+   "inputs": [
+    "part0_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow0_0",
+   "op": "reshape",
+   "inputs": [
+    "best0_0"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop0_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow0_0"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part0_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best0_1",
+   "op": "maxpool",
+   "inputs": [
+    "part0_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow0_1",
+   "op": "reshape",
+   "inputs": [
+    "best0_1"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop0_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow0_1"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part0_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best0_2",
+   "op": "maxpool",
+   "inputs": [
+    "part0_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow0_2",
+   "op": "reshape",
+   "inputs": [
+    "best0_2"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop0_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow0_2"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part0_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best0_3",
+   "op": "maxpool",
+   "inputs": [
+    "part0_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow0_3",
+   "op": "reshape",
+   "inputs": [
+    "best0_3"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop0_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow0_3"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "coarse0",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 1000
+  },
+  {
+   "name": "coarse0r",
+   "op": "reshape",
+   "inputs": [
+    "coarse0"
+   ],
+   "shape": [
+    1000,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match0",
+   "op": "add",
+   "inputs": [
+    "best0_0",
+    "best0_1",
+    "best0_2",
+    "best0_3",
+    "coarse0r"
+   ]
+  },
+  {
+   "name": "row0",
+   "op": "reshape",
+   "inputs": [
+    "match0"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "top0",
+   "op": "maxpool",
+   "inputs": [
+    "row0"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "both0",
+   "op": "add",
+   "inputs": [
+    "top0",
+    "qtop0_0",
+    "qtop0_1",
+    "qtop0_2",
+    "qtop0_3"
+   ]
+  },
+  {
+   "name": "put0",
+   "op": "dense",
+   "inputs": [
+    "both0"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part1_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best1_0",
+   "op": "maxpool",
+   "inputs": [
+    "part1_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow1_0",
+   "op": "reshape",
+   "inputs": [
+    "best1_0"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop1_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow1_0"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part1_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best1_1",
+   "op": "maxpool",
+   "inputs": [
+    "part1_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow1_1",
+   "op": "reshape",
+   "inputs": [
+    "best1_1"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop1_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow1_1"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part1_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best1_2",
+   "op": "maxpool",
+   "inputs": [
+    "part1_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow1_2",
+   "op": "reshape",
+   "inputs": [
+    "best1_2"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop1_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow1_2"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "part1_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 1000,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best1_3",
+   "op": "maxpool",
+   "inputs": [
+    "part1_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow1_3",
+   "op": "reshape",
+   "inputs": [
+    "best1_3"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "qtop1_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow1_3"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "coarse1",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 1000
+  },
+  {
+   "name": "coarse1r",
+   "op": "reshape",
+   "inputs": [
+    "coarse1"
+   ],
+   "shape": [
+    1000,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match1",
+   "op": "add",
+   "inputs": [
+    "best1_0",
+    "best1_1",
+    "best1_2",
+    "best1_3",
+    "coarse1r"
+   ]
+  },
+  {
+   "name": "row1",
+   "op": "reshape",
+   "inputs": [
+    "match1"
+   ],
+   "shape": [
+    1,
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "top1",
+   "op": "maxpool",
+   "inputs": [
+    "row1"
+   ],
+   "size": [
+    1,
+    1000
+   ],
+   "stride": [
+    1,
+    1000
+   ]
+  },
+  {
+   "name": "both1",
+   "op": "add",
+   "inputs": [
+    "top1",
+    "qtop1_0",
+    "qtop1_1",
+    "qtop1_2",
+    "qtop1_3"
+   ]
+  },
+  {
+   "name": "put1",
+   "op": "dense",
+   "inputs": [
+    "both1"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part2_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 3400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best2_0",
+   "op": "maxpool",
+   "inputs": [
+    "part2_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow2_0",
+   "op": "reshape",
+   "inputs": [
+    "best2_0"
+   ],
+   "shape": [
+    1,
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "qtop2_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow2_0"
+   ],
+   "size": [
+    1,
+    3400
+   ],
+   "stride": [
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "part2_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 3400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best2_1",
+   "op": "maxpool",
+   "inputs": [
+    "part2_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow2_1",
+   "op": "reshape",
+   "inputs": [
+    "best2_1"
+   ],
+   "shape": [
+    1,
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "qtop2_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow2_1"
+   ],
+   "size": [
+    1,
+    3400
+   ],
+   "stride": [
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "part2_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 3400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best2_2",
+   "op": "maxpool",
+   "inputs": [
+    "part2_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow2_2",
+   "op": "reshape",
+   "inputs": [
+    "best2_2"
+   ],
+   "shape": [
+    1,
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "qtop2_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow2_2"
+   ],
+   "size": [
+    1,
+    3400
+   ],
+   "stride": [
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "part2_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 3400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best2_3",
+   "op": "maxpool",
+   "inputs": [
+    "part2_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow2_3",
+   "op": "reshape",
+   "inputs": [
+    "best2_3"
+   ],
+   "shape": [
+    1,
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "qtop2_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow2_3"
+   ],
+   "size": [
+    1,
+    3400
+   ],
+   "stride": [
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "coarse2",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 3400
+  },
+  {
+   "name": "coarse2r",
+   "op": "reshape",
+   "inputs": [
+    "coarse2"
+   ],
+   "shape": [
+    3400,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match2",
+   "op": "add",
+   "inputs": [
+    "best2_0",
+    "best2_1",
+    "best2_2",
+    "best2_3",
+    "coarse2r"
+   ]
+  },
+  {
+   "name": "row2",
+   "op": "reshape",
+   "inputs": [
+    "match2"
+   ],
+   "shape": [
+    1,
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "top2",
+   "op": "maxpool",
+   "inputs": [
+    "row2"
+   ],
+   "size": [
+    1,
+    3400
+   ],
+   "stride": [
+    1,
+    3400
+   ]
+  },
+  {
+   "name": "both2",
+   "op": "add",
+   "inputs": [
+    "top2",
+    "qtop2_0",
+    "qtop2_1",
+    "qtop2_2",
+    "qtop2_3"
+   ]
+  },
+  {
+   "name": "put2",
+   "op": "dense",
+   "inputs": [
+    "both2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part3_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 2600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best3_0",
+   "op": "maxpool",
+   "inputs": [
+    "part3_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow3_0",
+   "op": "reshape",
+   "inputs": [
+    "best3_0"
+   ],
+   "shape": [
+    1,
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "qtop3_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow3_0"
+   ],
+   "size": [
+    1,
+    2600
+   ],
+   "stride": [
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "part3_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 2600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best3_1",
+   "op": "maxpool",
+   "inputs": [
+    "part3_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow3_1",
+   "op": "reshape",
+   "inputs": [
+    "best3_1"
+   ],
+   "shape": [
+    1,
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "qtop3_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow3_1"
+   ],
+   "size": [
+    1,
+    2600
+   ],
+   "stride": [
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "part3_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 2600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best3_2",
+   "op": "maxpool",
+   "inputs": [
+    "part3_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow3_2",
+   "op": "reshape",
+   "inputs": [
+    "best3_2"
+   ],
+   "shape": [
+    1,
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "qtop3_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow3_2"
+   ],
+   "size": [
+    1,
+    2600
+   ],
+   "stride": [
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "part3_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 2600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best3_3",
+   "op": "maxpool",
+   "inputs": [
+    "part3_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow3_3",
+   "op": "reshape",
+   "inputs": [
+    "best3_3"
+   ],
+   "shape": [
+    1,
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "qtop3_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow3_3"
+   ],
+   "size": [
+    1,
+    2600
+   ],
+   "stride": [
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "coarse3",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 2600
+  },
+  {
+   "name": "coarse3r",
+   "op": "reshape",
+   "inputs": [
+    "coarse3"
+   ],
+   "shape": [
+    2600,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match3",
+   "op": "add",
+   "inputs": [
+    "best3_0",
+    "best3_1",
+    "best3_2",
+    "best3_3",
+    "coarse3r"
+   ]
+  },
+  {
+   "name": "row3",
+   "op": "reshape",
+   "inputs": [
+    "match3"
+   ],
+   "shape": [
+    1,
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "top3",
+   "op": "maxpool",
+   "inputs": [
+    "row3"
+   ],
+   "size": [
+    1,
+    2600
+   ],
+   "stride": [
+    1,
+    2600
+   ]
+  },
+  {
+   "name": "both3",
+   "op": "add",
+   "inputs": [
+    "top3",
+    "qtop3_0",
+    "qtop3_1",
+    "qtop3_2",
+    "qtop3_3"
+   ]
+  },
+  {
+   "name": "put3",
+   "op": "dense",
+   "inputs": [
+    "both3"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part4_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best4_0",
+   "op": "maxpool",
+   "inputs": [
+    "part4_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow4_0",
+   "op": "reshape",
+   "inputs": [
+    "best4_0"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop4_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow4_0"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part4_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best4_1",
+   "op": "maxpool",
+   "inputs": [
+    "part4_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow4_1",
+   "op": "reshape",
+   "inputs": [
+    "best4_1"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop4_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow4_1"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part4_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best4_2",
+   "op": "maxpool",
+   "inputs": [
+    "part4_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow4_2",
+   "op": "reshape",
+   "inputs": [
+    "best4_2"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop4_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow4_2"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part4_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best4_3",
+   "op": "maxpool",
+   "inputs": [
+    "part4_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow4_3",
+   "op": "reshape",
+   "inputs": [
+    "best4_3"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop4_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow4_3"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "coarse4",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 2200
+  },
+  {
+   "name": "coarse4r",
+   "op": "reshape",
+   "inputs": [
+    "coarse4"
+   ],
+   "shape": [
+    2200,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match4",
+   "op": "add",
+   "inputs": [
+    "best4_0",
+    "best4_1",
+    "best4_2",
+    "best4_3",
+    "coarse4r"
+   ]
+  },
+  {
+   "name": "row4",
+   "op": "reshape",
+   "inputs": [
+    "match4"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "top4",
+   "op": "maxpool",
+   "inputs": [
+    "row4"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "both4",
+   "op": "add",
+   "inputs": [
+    "top4",
+    "qtop4_0",
+    "qtop4_1",
+    "qtop4_2",
+    "qtop4_3"
+   ]
+  },
+  {
+   "name": "put4",
+   "op": "dense",
+   "inputs": [
+    "both4"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part5_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best5_0",
+   "op": "maxpool",
+   "inputs": [
+    "part5_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow5_0",
+   "op": "reshape",
+   "inputs": [
+    "best5_0"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop5_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow5_0"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part5_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best5_1",
+   "op": "maxpool",
+   "inputs": [
+    "part5_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow5_1",
+   "op": "reshape",
+   "inputs": [
+    "best5_1"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop5_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow5_1"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part5_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best5_2",
+   "op": "maxpool",
+   "inputs": [
+    "part5_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow5_2",
+   "op": "reshape",
+   "inputs": [
+    "best5_2"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop5_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow5_2"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part5_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best5_3",
+   "op": "maxpool",
+   "inputs": [
+    "part5_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow5_3",
+   "op": "reshape",
+   "inputs": [
+    "best5_3"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop5_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow5_3"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "coarse5",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 2400
+  },
+  {
+   "name": "coarse5r",
+   "op": "reshape",
+   "inputs": [
+    "coarse5"
+   ],
+   "shape": [
+    2400,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match5",
+   "op": "add",
+   "inputs": [
+    "best5_0",
+    "best5_1",
+    "best5_2",
+    "best5_3",
+    "coarse5r"
+   ]
+  },
+  {
+   "name": "row5",
+   "op": "reshape",
+   "inputs": [
+    "match5"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "top5",
+   "op": "maxpool",
+   "inputs": [
+    "row5"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "both5",
+   "op": "add",
+   "inputs": [
+    "top5",
+    "qtop5_0",
+    "qtop5_1",
+    "qtop5_2",
+    "qtop5_3"
+   ]
+  },
+  {
+   "name": "put5",
+   "op": "dense",
+   "inputs": [
+    "both5"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part6_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best6_0",
+   "op": "maxpool",
+   "inputs": [
+    "part6_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow6_0",
+   "op": "reshape",
+   "inputs": [
+    "best6_0"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop6_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow6_0"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part6_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best6_1",
+   "op": "maxpool",
+   "inputs": [
+    "part6_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow6_1",
+   "op": "reshape",
+   "inputs": [
+    "best6_1"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop6_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow6_1"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part6_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best6_2",
+   "op": "maxpool",
+   "inputs": [
+    "part6_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow6_2",
+   "op": "reshape",
+   "inputs": [
+    "best6_2"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop6_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow6_2"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "part6_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 2400,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best6_3",
+   "op": "maxpool",
+   "inputs": [
+    "part6_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow6_3",
+   "op": "reshape",
+   "inputs": [
+    "best6_3"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "qtop6_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow6_3"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "coarse6",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 2400
+  },
+  {
+   "name": "coarse6r",
+   "op": "reshape",
+   "inputs": [
+    "coarse6"
+   ],
+   "shape": [
+    2400,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match6",
+   "op": "add",
+   "inputs": [
+    "best6_0",
+    "best6_1",
+    "best6_2",
+    "best6_3",
+    "coarse6r"
+   ]
+  },
+  {
+   "name": "row6",
+   "op": "reshape",
+   "inputs": [
+    "match6"
+   ],
+   "shape": [
+    1,
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "top6",
+   "op": "maxpool",
+   "inputs": [
+    "row6"
+   ],
+   "size": [
+    1,
+    2400
+   ],
+   "stride": [
+    1,
+    2400
+   ]
+  },
+  {
+   "name": "both6",
+   "op": "add",
+   "inputs": [
+    "top6",
+    "qtop6_0",
+    "qtop6_1",
+    "qtop6_2",
+    "qtop6_3"
+   ]
+  },
+  {
+   "name": "put6",
+   "op": "dense",
+   "inputs": [
+    "both6"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part7_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best7_0",
+   "op": "maxpool",
+   "inputs": [
+    "part7_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow7_0",
+   "op": "reshape",
+   "inputs": [
+    "best7_0"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop7_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow7_0"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part7_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best7_1",
+   "op": "maxpool",
+   "inputs": [
+    "part7_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow7_1",
+   "op": "reshape",
+   "inputs": [
+    "best7_1"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop7_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow7_1"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part7_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best7_2",
+   "op": "maxpool",
+   "inputs": [
+    "part7_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow7_2",
+   "op": "reshape",
+   "inputs": [
+    "best7_2"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop7_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow7_2"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "part7_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 2200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best7_3",
+   "op": "maxpool",
+   "inputs": [
+    "part7_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow7_3",
+   "op": "reshape",
+   "inputs": [
+    "best7_3"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "qtop7_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow7_3"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "coarse7",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 2200
+  },
+  {
+   "name": "coarse7r",
+   "op": "reshape",
+   "inputs": [
+    "coarse7"
+   ],
+   "shape": [
+    2200,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match7",
+   "op": "add",
+   "inputs": [
+    "best7_0",
+    "best7_1",
+    "best7_2",
+    "best7_3",
+    "coarse7r"
+   ]
+  },
+  {
+   "name": "row7",
+   "op": "reshape",
+   "inputs": [
+    "match7"
+   ],
+   "shape": [
+    1,
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "top7",
+   "op": "maxpool",
+   "inputs": [
+    "row7"
+   ],
+   "size": [
+    1,
+    2200
+   ],
+   "stride": [
+    1,
+    2200
+   ]
+  },
+  {
+   "name": "both7",
+   "op": "add",
+   "inputs": [
+    "top7",
+    "qtop7_0",
+    "qtop7_1",
+    "qtop7_2",
+    "qtop7_3"
+   ]
+  },
+  {
+   "name": "put7",
+   "op": "dense",
+   "inputs": [
+    "both7"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part8_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 3600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best8_0",
+   "op": "maxpool",
+   "inputs": [
+    "part8_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow8_0",
+   "op": "reshape",
+   "inputs": [
+    "best8_0"
+   ],
+   "shape": [
+    1,
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "qtop8_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow8_0"
+   ],
+   "size": [
+    1,
+    3600
+   ],
+   "stride": [
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "part8_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 3600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best8_1",
+   "op": "maxpool",
+   "inputs": [
+    "part8_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow8_1",
+   "op": "reshape",
+   "inputs": [
+    "best8_1"
+   ],
+   "shape": [
+    1,
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "qtop8_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow8_1"
+   ],
+   "size": [
+    1,
+    3600
+   ],
+   "stride": [
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "part8_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 3600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best8_2",
+   "op": "maxpool",
+   "inputs": [
+    "part8_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow8_2",
+   "op": "reshape",
+   "inputs": [
+    "best8_2"
+   ],
+   "shape": [
+    1,
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "qtop8_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow8_2"
+   ],
+   "size": [
+    1,
+    3600
+   ],
+   "stride": [
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "part8_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 3600,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best8_3",
+   "op": "maxpool",
+   "inputs": [
+    "part8_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow8_3",
+   "op": "reshape",
+   "inputs": [
+    "best8_3"
+   ],
+   "shape": [
+    1,
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "qtop8_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow8_3"
+   ],
+   "size": [
+    1,
+    3600
+   ],
+   "stride": [
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "coarse8",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 3600
+  },
+  {
+   "name": "coarse8r",
+   "op": "reshape",
+   "inputs": [
+    "coarse8"
+   ],
+   "shape": [
+    3600,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match8",
+   "op": "add",
+   "inputs": [
+    "best8_0",
+    "best8_1",
+    "best8_2",
+    "best8_3",
+    "coarse8r"
+   ]
+  },
+  {
+   "name": "row8",
+   "op": "reshape",
+   "inputs": [
+    "match8"
+   ],
+   "shape": [
+    1,
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "top8",
+   "op": "maxpool",
+   "inputs": [
+    "row8"
+   ],
+   "size": [
+    1,
+    3600
+   ],
+   "stride": [
+    1,
+    3600
+   ]
+  },
+  {
+   "name": "both8",
+   "op": "add",
+   "inputs": [
+    "top8",
+    "qtop8_0",
+    "qtop8_1",
+    "qtop8_2",
+    "qtop8_3"
+   ]
+  },
+  {
+   "name": "put8",
+   "op": "dense",
+   "inputs": [
+    "both8"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part9_0",
+   "op": "conv",
+   "inputs": [
+    "gather0"
+   ],
+   "out": 3200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best9_0",
+   "op": "maxpool",
+   "inputs": [
+    "part9_0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow9_0",
+   "op": "reshape",
+   "inputs": [
+    "best9_0"
+   ],
+   "shape": [
+    1,
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "qtop9_0",
+   "op": "maxpool",
+   "inputs": [
+    "qrow9_0"
+   ],
+   "size": [
+    1,
+    3200
+   ],
+   "stride": [
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "part9_1",
+   "op": "conv",
+   "inputs": [
+    "gather1"
+   ],
+   "out": 3200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best9_1",
+   "op": "maxpool",
+   "inputs": [
+    "part9_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow9_1",
+   "op": "reshape",
+   "inputs": [
+    "best9_1"
+   ],
+   "shape": [
+    1,
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "qtop9_1",
+   "op": "maxpool",
+   "inputs": [
+    "qrow9_1"
+   ],
+   "size": [
+    1,
+    3200
+   ],
+   "stride": [
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "part9_2",
+   "op": "conv",
+   "inputs": [
+    "gather2"
+   ],
+   "out": 3200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best9_2",
+   "op": "maxpool",
+   "inputs": [
+    "part9_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow9_2",
+   "op": "reshape",
+   "inputs": [
+    "best9_2"
+   ],
+   "shape": [
+    1,
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "qtop9_2",
+   "op": "maxpool",
+   "inputs": [
+    "qrow9_2"
+   ],
+   "size": [
+    1,
+    3200
+   ],
+   "stride": [
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "part9_3",
+   "op": "conv",
+   "inputs": [
+    "gather3"
+   ],
+   "out": 3200,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "best9_3",
+   "op": "maxpool",
+   "inputs": [
+    "part9_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "qrow9_3",
+   "op": "reshape",
+   "inputs": [
+    "best9_3"
+   ],
+   "shape": [
+    1,
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "qtop9_3",
+   "op": "maxpool",
+   "inputs": [
+    "qrow9_3"
+   ],
+   "size": [
+    1,
+    3200
+   ],
+   "stride": [
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "coarse9",
+   "op": "dense",
+   "inputs": [
+    "cfeat"
+   ],
+   "out": 3200
+  },
+  {
+   "name": "coarse9r",
+   "op": "reshape",
+   "inputs": [
+    "coarse9"
+   ],
+   "shape": [
+    3200,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "match9",
+   "op": "add",
+   "inputs": [
+    "best9_0",
+    "best9_1",
+    "best9_2",
+    "best9_3",
+    "coarse9r"
+   ]
+  },
+  {
+   "name": "row9",
+   "op": "reshape",
+   "inputs": [
+    "match9"
+   ],
+   "shape": [
+    1,
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "top9",
+   "op": "maxpool",
+   "inputs": [
+    "row9"
+   ],
+   "size": [
+    1,
+    3200
+   ],
+   "stride": [
+    1,
+    3200
+   ]
+  },
+  {
+   "name": "both9",
+   "op": "add",
+   "inputs": [
+    "top9",
+    "qtop9_0",
+    "qtop9_1",
+    "qtop9_2",
+    "qtop9_3"
+   ]
+  },
+  {
+   "name": "put9",
+   "op": "dense",
+   "inputs": [
+    "both9"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "put0",
+    "put1",
+    "put2",
+    "put3",
+    "put4",
+    "put5",
+    "put6",
+    "put7",
+    "put8",
+    "put9"
+   ]
+  }
+ ]
+}

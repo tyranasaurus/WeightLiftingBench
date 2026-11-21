@@ -1,0 +1,70 @@
+{
+ "layers": [
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "unit",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "unit"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

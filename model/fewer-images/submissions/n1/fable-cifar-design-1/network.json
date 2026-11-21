@@ -1,0 +1,577 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c1r",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "c1r"
+   ],
+   "out": 17,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c2r",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "hue",
+   "op": "conv",
+   "inputs": [
+    "c2r"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "huer",
+   "op": "relu",
+   "inputs": [
+    "hue"
+   ]
+  },
+  {
+   "name": "hp",
+   "op": "avgpool",
+   "inputs": [
+    "huer"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "lig",
+   "op": "conv",
+   "inputs": [
+    "c2r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ligr",
+   "op": "relu",
+   "inputs": [
+    "lig"
+   ]
+  },
+  {
+   "name": "lp",
+   "op": "avgpool",
+   "inputs": [
+    "ligr"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "lum",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lumn",
+   "op": "norm",
+   "inputs": [
+    "lum"
+   ]
+  },
+  {
+   "name": "lumh",
+   "op": "avgpool",
+   "inputs": [
+    "lumn"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "e1",
+   "op": "conv",
+   "inputs": [
+    "lumn"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e1r",
+   "op": "relu",
+   "inputs": [
+    "e1"
+   ]
+  },
+  {
+   "name": "e2",
+   "op": "conv",
+   "inputs": [
+    "e1r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e2r",
+   "op": "relu",
+   "inputs": [
+    "e2"
+   ]
+  },
+  {
+   "name": "e3",
+   "op": "conv",
+   "inputs": [
+    "e2r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e3r",
+   "op": "relu",
+   "inputs": [
+    "e3"
+   ]
+  },
+  {
+   "name": "ep",
+   "op": "avgpool",
+   "inputs": [
+    "e3r"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "f1",
+   "op": "conv",
+   "inputs": [
+    "lumh"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f1r",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "f2",
+   "op": "conv",
+   "inputs": [
+    "f1r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f2r",
+   "op": "relu",
+   "inputs": [
+    "f2"
+   ]
+  },
+  {
+   "name": "f3",
+   "op": "conv",
+   "inputs": [
+    "f2r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f3r",
+   "op": "relu",
+   "inputs": [
+    "f3"
+   ]
+  },
+  {
+   "name": "fp",
+   "op": "avgpool",
+   "inputs": [
+    "f3r"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "ea",
+   "op": "conv",
+   "inputs": [
+    "ep"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "eb",
+   "op": "conv",
+   "inputs": [
+    "fp"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ec",
+   "op": "add",
+   "inputs": [
+    "ea",
+    "eb"
+   ]
+  },
+  {
+   "name": "ed",
+   "op": "reshape",
+   "inputs": [
+    "ec"
+   ],
+   "shape": [
+    2,
+    64,
+    1
+   ]
+  },
+  {
+   "name": "en",
+   "op": "norm",
+   "inputs": [
+    "ed"
+   ]
+  },
+  {
+   "name": "sh",
+   "op": "dense",
+   "inputs": [
+    "hp"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "sl",
+   "op": "dense",
+   "inputs": [
+    "lp"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "se",
+   "op": "dense",
+   "inputs": [
+    "en"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "rh",
+   "op": "reshape",
+   "inputs": [
+    "sh"
+   ],
+   "shape": [
+    1,
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "zh",
+   "op": "norm",
+   "inputs": [
+    "rh"
+   ]
+  },
+  {
+   "name": "rl",
+   "op": "reshape",
+   "inputs": [
+    "sl"
+   ],
+   "shape": [
+    1,
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "zl",
+   "op": "norm",
+   "inputs": [
+    "rl"
+   ]
+  },
+  {
+   "name": "re",
+   "op": "reshape",
+   "inputs": [
+    "se"
+   ],
+   "shape": [
+    1,
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "ze",
+   "op": "norm",
+   "inputs": [
+    "re"
+   ]
+  },
+  {
+   "name": "zs",
+   "op": "add",
+   "inputs": [
+    "zh",
+    "zh",
+    "zh",
+    "zh",
+    "zh",
+    "zl",
+    "zl",
+    "ze",
+    "ze"
+   ]
+  },
+  {
+   "name": "z",
+   "op": "norm",
+   "inputs": [
+    "zs"
+   ]
+  },
+  {
+   "name": "zmax",
+   "op": "maxpool",
+   "inputs": [
+    "z"
+   ],
+   "size": [
+    30000,
+    1
+   ],
+   "stride": [
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "k0",
+   "op": "dense",
+   "inputs": [
+    "zmax"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "kr0",
+   "op": "reshape",
+   "inputs": [
+    "k0"
+   ],
+   "shape": [
+    1,
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "a0",
+   "op": "add",
+   "inputs": [
+    "z",
+    "kr0"
+   ]
+  },
+  {
+   "name": "v0",
+   "op": "relu",
+   "inputs": [
+    "a0"
+   ]
+  },
+  {
+   "name": "o0",
+   "op": "dense",
+   "inputs": [
+    "v0"
+   ],
+   "out": 10
+  },
+  {
+   "name": "k1",
+   "op": "dense",
+   "inputs": [
+    "zmax"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "kr1",
+   "op": "reshape",
+   "inputs": [
+    "k1"
+   ],
+   "shape": [
+    1,
+    30000,
+    1
+   ]
+  },
+  {
+   "name": "a1",
+   "op": "add",
+   "inputs": [
+    "z",
+    "kr1"
+   ]
+  },
+  {
+   "name": "v1",
+   "op": "relu",
+   "inputs": [
+    "a1"
+   ]
+  },
+  {
+   "name": "o1",
+   "op": "dense",
+   "inputs": [
+    "v1"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "o0",
+    "o1"
+   ]
+  }
+ ]
+}

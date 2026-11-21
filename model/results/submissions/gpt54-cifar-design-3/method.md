@@ -1,0 +1,5 @@
+I used a fully hand-written network with no training or fitting. The first layer is a 1x1 convolution that turns RGB into a small set of semantic channels such as sky-blue, water-blue, green vegetation, brown/tan fur or earth, darkness, brightness, red, yellow, cool gray, and a coarse fur-like color detector.
+
+From those channels, one branch does coarse 8x8 average-pooled context scoring with hand-set dense weights for class-dependent color and layout cues. Two other branches apply hand-written template convolutions at different scales: a smaller bank for compact silhouettes and horizon patterns (airplanes, ships, vehicles, birds, frogs), and a larger bank for close-up animal faces and quadruped body layouts. Each template branch uses norm, ReLU, global max pooling, and a final dense readout with hand-set class links and a few negative links for likely confusions.
+
+All constants and weights were typed from general object knowledge and simple geometric formulas (boxes, blobs, and line segments), then saved directly by build.py so the answer can be rebuilt without any data files.

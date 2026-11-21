@@ -1,0 +1,540 @@
+{
+ "layers": [
+  {
+   "name": "threshold",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "positive_part",
+   "op": "relu",
+   "inputs": [
+    "threshold"
+   ]
+  },
+  {
+   "name": "presence",
+   "op": "conv",
+   "inputs": [
+    "positive_part"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "presence14",
+   "op": "avgpool",
+   "inputs": [
+    "presence"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "light14",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "outline_emphasis",
+   "op": "conv",
+   "inputs": [
+    "presence14"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "outline_normal",
+   "op": "norm",
+   "inputs": [
+    "outline_emphasis"
+   ]
+  },
+  {
+   "name": "light_emphasis",
+   "op": "conv",
+   "inputs": [
+    "light14"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "light_normal",
+   "op": "norm",
+   "inputs": [
+    "light_emphasis"
+   ]
+  },
+  {
+   "name": "outline_agreement",
+   "op": "dense",
+   "inputs": [
+    "outline_normal"
+   ],
+   "out": 15360
+  },
+  {
+   "name": "light_agreement",
+   "op": "dense",
+   "inputs": [
+    "light_normal"
+   ],
+   "out": 15360
+  },
+  {
+   "name": "joint_agreement",
+   "op": "add",
+   "inputs": [
+    "outline_agreement",
+    "light_agreement"
+   ]
+  },
+  {
+   "name": "pattern_groups",
+   "op": "reshape",
+   "inputs": [
+    "joint_agreement"
+   ],
+   "shape": [
+    10,
+    4,
+    384
+   ]
+  },
+  {
+   "name": "closest_in_group",
+   "op": "maxpool",
+   "inputs": [
+    "pattern_groups"
+   ],
+   "size": [
+    1,
+    384
+   ],
+   "stride": [
+    1,
+    384
+   ]
+  },
+  {
+   "name": "several_witnesses",
+   "op": "avgpool",
+   "inputs": [
+    "closest_in_group"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "best_witness",
+   "op": "maxpool",
+   "inputs": [
+    "closest_in_group"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "agreement_a",
+   "op": "dense",
+   "inputs": [
+    "several_witnesses"
+   ],
+   "out": 10
+  },
+  {
+   "name": "agreement_b",
+   "op": "dense",
+   "inputs": [
+    "best_witness"
+   ],
+   "out": 10
+  },
+  {
+   "name": "exposure_normal",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "front_contrast",
+   "op": "dense",
+   "inputs": [
+    "exposure_normal"
+   ],
+   "out": 360
+  },
+  {
+   "name": "same_front",
+   "op": "reshape",
+   "inputs": [
+    "front_contrast"
+   ],
+   "shape": [
+    1,
+    180,
+    2
+   ]
+  },
+  {
+   "name": "weaker_front_half_negative",
+   "op": "maxpool",
+   "inputs": [
+    "same_front"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "weaker_front_half",
+   "op": "conv",
+   "inputs": [
+    "weaker_front_half_negative"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "aligned_front_contrast",
+   "op": "maxpool",
+   "inputs": [
+    "weaker_front_half"
+   ],
+   "size": [
+    180,
+    1
+   ],
+   "stride": [
+    180,
+    1
+   ]
+  },
+  {
+   "name": "front_hinges",
+   "op": "dense",
+   "inputs": [
+    "aligned_front_contrast"
+   ],
+   "out": 2
+  },
+  {
+   "name": "front_hinges_pos",
+   "op": "relu",
+   "inputs": [
+    "front_hinges"
+   ]
+  },
+  {
+   "name": "opening_evidence",
+   "op": "dense",
+   "inputs": [
+    "front_hinges_pos"
+   ],
+   "out": 10
+  },
+  {
+   "name": "fabric_edges",
+   "op": "conv",
+   "inputs": [
+    "exposure_normal"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fabric_edges_abs",
+   "op": "relu",
+   "inputs": [
+    "fabric_edges"
+   ]
+  },
+  {
+   "name": "fabric_detail",
+   "op": "dense",
+   "inputs": [
+    "fabric_edges_abs"
+   ],
+   "out": 1
+  },
+  {
+   "name": "detail_limits",
+   "op": "dense",
+   "inputs": [
+    "fabric_detail"
+   ],
+   "out": 2
+  },
+  {
+   "name": "detail_excess",
+   "op": "relu",
+   "inputs": [
+    "detail_limits"
+   ]
+  },
+  {
+   "name": "texture_evidence",
+   "op": "dense",
+   "inputs": [
+    "detail_excess"
+   ],
+   "out": 10
+  },
+  {
+   "name": "broad_regions",
+   "op": "avgpool",
+   "inputs": [
+    "presence14"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "reflected_difference",
+   "op": "dense",
+   "inputs": [
+    "broad_regions"
+   ],
+   "out": 42
+  },
+  {
+   "name": "unshared_presence",
+   "op": "relu",
+   "inputs": [
+    "reflected_difference"
+   ]
+  },
+  {
+   "name": "lopsided",
+   "op": "dense",
+   "inputs": [
+    "unshared_presence"
+   ],
+   "out": 1
+  },
+  {
+   "name": "asymmetry_hinges",
+   "op": "dense",
+   "inputs": [
+    "lopsided"
+   ],
+   "out": 2
+  },
+  {
+   "name": "large_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "asymmetry_hinges"
+   ]
+  },
+  {
+   "name": "view_evidence",
+   "op": "dense",
+   "inputs": [
+    "large_asymmetry"
+   ],
+   "out": 10
+  },
+  {
+   "name": "surround_rays",
+   "op": "dense",
+   "inputs": [
+    "presence14"
+   ],
+   "out": 1584
+  },
+  {
+   "name": "ray_lengths",
+   "op": "reshape",
+   "inputs": [
+    "surround_rays"
+   ],
+   "shape": [
+    132,
+    4,
+    3
+   ]
+  },
+  {
+   "name": "ray_support",
+   "op": "maxpool",
+   "inputs": [
+    "ray_lengths"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "ray_strip",
+   "op": "reshape",
+   "inputs": [
+    "ray_support"
+   ],
+   "shape": [
+    1,
+    132,
+    4
+   ]
+  },
+  {
+   "name": "negative_support",
+   "op": "conv",
+   "inputs": [
+    "ray_strip"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "all_directions",
+   "op": "maxpool",
+   "inputs": [
+    "negative_support"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "opening_depth",
+   "op": "conv",
+   "inputs": [
+    "all_directions"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "true_open_space",
+   "op": "relu",
+   "inputs": [
+    "opening_depth"
+   ]
+  },
+  {
+   "name": "open_areas",
+   "op": "dense",
+   "inputs": [
+    "true_open_space"
+   ],
+   "out": 2
+  },
+  {
+   "name": "opening_layout",
+   "op": "dense",
+   "inputs": [
+    "open_areas"
+   ],
+   "out": 10
+  },
+  {
+   "name": "class_scores",
+   "op": "add",
+   "inputs": [
+    "agreement_a",
+    "agreement_b",
+    "opening_evidence",
+    "texture_evidence",
+    "view_evidence",
+    "opening_layout"
+   ]
+  }
+ ]
+}

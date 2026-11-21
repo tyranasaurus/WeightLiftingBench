@@ -1,0 +1,5 @@
+This answer uses a hand-built template-matching network. It first converts RGB to grayscale, normalizes it, applies fixed 5x5 derivative and Laplacian filters, rectifies them, averages over 2x2 blocks, and normalizes again.
+
+The classifier then applies several banks of larger convolution templates at different spatial scales. Each template was generated directly in `build.py` from simple geometric person models made from circles, ellipses, and capsules (head, torso, arms, legs) in several generic poses such as frontal standing, stride, side view, arms out, upper body, seated, and close-up. The branch outputs are ReLUed, maxpooled over position, mapped to 2 logits with fixed dense layers, and added.
+
+All weights come from formulas and hand-written shape rules in `build.py`; they were not fit from the training data.

@@ -1,0 +1,51 @@
+name: api_wsp
+
+install_cmd: "bash setup.sh"
+
+final_output: /logs
+
+secrets:
+  ANTHROPIC_API_KEY: anthropic-api-key
+  OPENAI_API_KEY: openai-api-key
+  OPENROUTER_API_KEY: openrouter-api-key
+  GEMINI_API_KEY: gemini-api-key
+
+defaults:
+  model:
+    type: str
+    required: false
+    default: openai/gpt-6.1-sol
+    description: >-
+      anthropic/<model> (Anthropic API), openai/<model> (OpenAI API), google/<model> (Gemini API), or any other id
+      (open weights, OpenRouter)
+
+kwargs:
+  effort:
+    type: str
+    required: false
+    default: high
+    description: >-
+      One reasoning effort for every route: Anthropic output_config.effort with adaptive thinking (a thinking budget
+      for Claude models before 4.6), OpenAI reasoning.effort, Gemini thinkingLevel (a thinking budget before Gemini
+      3), OpenRouter reasoning.effort
+    choices:
+      - low
+      - medium
+      - high
+      - xhigh
+
+  route:
+    type: str
+    required: false
+    default: auto
+    description: >-
+      auto = native API for anthropic/, openai/ and google/ ids, OpenRouter for the rest. openrouter = OpenRouter for
+      any id, no native route (for models retired from their provider's own API)
+    choices:
+      - auto
+      - openrouter
+
+run_cmd: >-
+  bash -lc 'set -o pipefail && mkdir -p /logs &&
+  AGENT_OUTPUT_ROOT=/logs python3 /bundle/api_wsp/collect_outputs.py
+  "{problem_statement_path}" --task-id "{task_id}" --model "{model}" --effort "{effort}" --route "{route}"'

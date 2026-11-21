@@ -1,0 +1,3 @@
+I built a small hand-designed shape-matching network. It first max-pools the 28x28 image to 14x14, then compares the pooled silhouette against a fixed bank of manually typed clothing, footwear and bag templates such as T-shirts, trousers, pullovers, dresses, sandals, sneakers, bags and ankle boots. Each hidden unit is a positive match to one template, with penalties outside a small dilation of that template so that the score prefers roughly the right occupied shape and location.
+
+The output layer groups related templates into the 10 required classes. All template geometry and weights were written directly from general knowledge about these product-photo silhouettes, without training or fitting from the dataset.

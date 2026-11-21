@@ -1,0 +1,4713 @@
+{
+ "layers": [
+  {
+   "name": "color_cells",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "color_halfplanes",
+   "op": "conv",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "color_violations",
+   "op": "relu",
+   "inputs": [
+    "color_halfplanes"
+   ]
+  },
+  {
+   "name": "warm_intersections",
+   "op": "conv",
+   "inputs": [
+    "color_violations"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "warm_memberships",
+   "op": "relu",
+   "inputs": [
+    "warm_intersections"
+   ]
+  },
+  {
+   "name": "complexion",
+   "op": "conv",
+   "inputs": [
+    "warm_memberships"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "global_complexion",
+   "op": "avgpool",
+   "inputs": [
+    "complexion"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "global_hinges",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 3
+  },
+  {
+   "name": "widespread_warmth",
+   "op": "relu",
+   "inputs": [
+    "global_hinges"
+   ]
+  },
+  {
+   "name": "color_context_vote",
+   "op": "dense",
+   "inputs": [
+    "widespread_warmth"
+   ],
+   "out": 1
+  },
+  {
+   "name": "color_medium",
+   "op": "avgpool",
+   "inputs": [
+    "color_cells"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "color_large",
+   "op": "avgpool",
+   "inputs": [
+    "color_cells"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "skin_medium",
+   "op": "avgpool",
+   "inputs": [
+    "complexion"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "skin_large",
+   "op": "avgpool",
+   "inputs": [
+    "complexion"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "mid_derivatives",
+   "op": "conv",
+   "inputs": [
+    "color_medium"
+   ],
+   "out": 24,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mid_unsigned",
+   "op": "relu",
+   "inputs": [
+    "mid_derivatives"
+   ]
+  },
+  {
+   "name": "mid_magnitudes",
+   "op": "conv",
+   "inputs": [
+    "mid_unsigned"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mid_selectivity",
+   "op": "conv",
+   "inputs": [
+    "mid_magnitudes"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mid_edge_ramps",
+   "op": "relu",
+   "inputs": [
+    "mid_selectivity"
+   ]
+  },
+  {
+   "name": "mid_edges",
+   "op": "conv",
+   "inputs": [
+    "mid_edge_ramps"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "coarse_derivatives",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 24,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_unsigned",
+   "op": "relu",
+   "inputs": [
+    "coarse_derivatives"
+   ]
+  },
+  {
+   "name": "coarse_magnitudes",
+   "op": "conv",
+   "inputs": [
+    "coarse_unsigned"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_selectivity",
+   "op": "conv",
+   "inputs": [
+    "coarse_magnitudes"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_edge_ramps",
+   "op": "relu",
+   "inputs": [
+    "coarse_selectivity"
+   ]
+  },
+  {
+   "name": "coarse_edges",
+   "op": "conv",
+   "inputs": [
+    "coarse_edge_ramps"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "face0_gray",
+   "op": "conv",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face0_center_light",
+   "op": "conv",
+   "inputs": [
+    "face0_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face0_skin_oval",
+   "op": "conv",
+   "inputs": [
+    "complexion"
+   ],
+   "out": 3,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 2,
+   "padding": 4
+  },
+  {
+   "name": "face0_luminance_model",
+   "op": "conv",
+   "inputs": [
+    "face0_center_light"
+   ],
+   "out": 15,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 2,
+   "padding": 4
+  },
+  {
+   "name": "face0_contrast_ramps",
+   "op": "conv",
+   "inputs": [
+    "face0_luminance_model"
+   ],
+   "out": 30,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face0_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face0_contrast_ramps"
+   ]
+  },
+  {
+   "name": "face0_features",
+   "op": "conv",
+   "inputs": [
+    "face0_bounded_ramps"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face0_color_and_detail",
+   "op": "add",
+   "inputs": [
+    "face0_skin_oval",
+    "face0_features"
+   ]
+  },
+  {
+   "name": "face0_border_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 1728
+  },
+  {
+   "name": "face0_border",
+   "op": "reshape",
+   "inputs": [
+    "face0_border_bias"
+   ],
+   "shape": [
+    3,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "face0_corrected",
+   "op": "add",
+   "inputs": [
+    "face0_color_and_detail",
+    "face0_border"
+   ]
+  },
+  {
+   "name": "face0_any_aspect_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "face0_corrected"
+   ],
+   "shape": [
+    1,
+    3,
+    576
+   ]
+  },
+  {
+   "name": "face0_any_aspect_best",
+   "op": "maxpool",
+   "inputs": [
+    "face0_any_aspect_alternatives"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "face0_any_aspect",
+   "op": "reshape",
+   "inputs": [
+    "face0_any_aspect_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "face1_gray",
+   "op": "conv",
+   "inputs": [
+    "color_medium"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face1_center_light",
+   "op": "conv",
+   "inputs": [
+    "face1_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face1_skin_oval",
+   "op": "conv",
+   "inputs": [
+    "skin_medium"
+   ],
+   "out": 5,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face1_luminance_model",
+   "op": "conv",
+   "inputs": [
+    "face1_center_light"
+   ],
+   "out": 25,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face1_contrast_ramps",
+   "op": "conv",
+   "inputs": [
+    "face1_luminance_model"
+   ],
+   "out": 50,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face1_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face1_contrast_ramps"
+   ]
+  },
+  {
+   "name": "face1_features",
+   "op": "conv",
+   "inputs": [
+    "face1_bounded_ramps"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face1_color_and_detail",
+   "op": "add",
+   "inputs": [
+    "face1_skin_oval",
+    "face1_features"
+   ]
+  },
+  {
+   "name": "face1_border_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 2880
+  },
+  {
+   "name": "face1_border",
+   "op": "reshape",
+   "inputs": [
+    "face1_border_bias"
+   ],
+   "shape": [
+    5,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "face1_corrected",
+   "op": "add",
+   "inputs": [
+    "face1_color_and_detail",
+    "face1_border"
+   ]
+  },
+  {
+   "name": "face1_any_aspect_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "face1_corrected"
+   ],
+   "shape": [
+    1,
+    5,
+    576
+   ]
+  },
+  {
+   "name": "face1_any_aspect_best",
+   "op": "maxpool",
+   "inputs": [
+    "face1_any_aspect_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "face1_any_aspect",
+   "op": "reshape",
+   "inputs": [
+    "face1_any_aspect_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "face2_gray",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face2_center_light",
+   "op": "conv",
+   "inputs": [
+    "face2_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face2_skin_oval",
+   "op": "conv",
+   "inputs": [
+    "skin_large"
+   ],
+   "out": 5,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face2_luminance_model",
+   "op": "conv",
+   "inputs": [
+    "face2_center_light"
+   ],
+   "out": 25,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face2_contrast_ramps",
+   "op": "conv",
+   "inputs": [
+    "face2_luminance_model"
+   ],
+   "out": 50,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face2_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face2_contrast_ramps"
+   ]
+  },
+  {
+   "name": "face2_features",
+   "op": "conv",
+   "inputs": [
+    "face2_bounded_ramps"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face2_color_and_detail",
+   "op": "add",
+   "inputs": [
+    "face2_skin_oval",
+    "face2_features"
+   ]
+  },
+  {
+   "name": "face2_border_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 720
+  },
+  {
+   "name": "face2_border",
+   "op": "reshape",
+   "inputs": [
+    "face2_border_bias"
+   ],
+   "shape": [
+    5,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "face2_corrected",
+   "op": "add",
+   "inputs": [
+    "face2_color_and_detail",
+    "face2_border"
+   ]
+  },
+  {
+   "name": "face2_any_aspect_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "face2_corrected"
+   ],
+   "shape": [
+    1,
+    5,
+    144
+   ]
+  },
+  {
+   "name": "face2_any_aspect_best",
+   "op": "maxpool",
+   "inputs": [
+    "face2_any_aspect_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "face2_any_aspect",
+   "op": "reshape",
+   "inputs": [
+    "face2_any_aspect_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "landmark0_gray",
+   "op": "conv",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_patches",
+   "op": "conv",
+   "inputs": [
+    "landmark0_gray"
+   ],
+   "out": 24,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "landmark0_compare",
+   "op": "conv",
+   "inputs": [
+    "landmark0_patches"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "landmark0_compare"
+   ]
+  },
+  {
+   "name": "landmark0_features",
+   "op": "conv",
+   "inputs": [
+    "landmark0_patches"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_balance",
+   "op": "conv",
+   "inputs": [
+    "landmark0_asymmetry"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_landmarks",
+   "op": "add",
+   "inputs": [
+    "landmark0_features",
+    "landmark0_balance"
+   ]
+  },
+  {
+   "name": "landmark0_thresholds",
+   "op": "conv",
+   "inputs": [
+    "landmark0_landmarks"
+   ],
+   "out": 40,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_contrast_caps",
+   "op": "relu",
+   "inputs": [
+    "landmark0_thresholds"
+   ]
+  },
+  {
+   "name": "landmark0_match",
+   "op": "conv",
+   "inputs": [
+    "landmark0_contrast_caps"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark0_optional_color",
+   "op": "conv",
+   "inputs": [
+    "complexion"
+   ],
+   "out": 4,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "landmark0_eye_pair_and_mouth",
+   "op": "add",
+   "inputs": [
+    "landmark0_match",
+    "landmark0_optional_color"
+   ]
+  },
+  {
+   "name": "landmark0_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "landmark0_eye_pair_and_mouth"
+   ],
+   "shape": [
+    1,
+    4,
+    576
+   ]
+  },
+  {
+   "name": "landmark0_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "landmark0_any_alternatives"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "landmark0_any",
+   "op": "reshape",
+   "inputs": [
+    "landmark0_any_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmark1_gray",
+   "op": "conv",
+   "inputs": [
+    "color_medium"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_patches",
+   "op": "conv",
+   "inputs": [
+    "landmark1_gray"
+   ],
+   "out": 24,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "landmark1_compare",
+   "op": "conv",
+   "inputs": [
+    "landmark1_patches"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "landmark1_compare"
+   ]
+  },
+  {
+   "name": "landmark1_features",
+   "op": "conv",
+   "inputs": [
+    "landmark1_patches"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_balance",
+   "op": "conv",
+   "inputs": [
+    "landmark1_asymmetry"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_landmarks",
+   "op": "add",
+   "inputs": [
+    "landmark1_features",
+    "landmark1_balance"
+   ]
+  },
+  {
+   "name": "landmark1_thresholds",
+   "op": "conv",
+   "inputs": [
+    "landmark1_landmarks"
+   ],
+   "out": 40,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_contrast_caps",
+   "op": "relu",
+   "inputs": [
+    "landmark1_thresholds"
+   ]
+  },
+  {
+   "name": "landmark1_match",
+   "op": "conv",
+   "inputs": [
+    "landmark1_contrast_caps"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark1_optional_color",
+   "op": "conv",
+   "inputs": [
+    "skin_medium"
+   ],
+   "out": 4,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "landmark1_eye_pair_and_mouth",
+   "op": "add",
+   "inputs": [
+    "landmark1_match",
+    "landmark1_optional_color"
+   ]
+  },
+  {
+   "name": "landmark1_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "landmark1_eye_pair_and_mouth"
+   ],
+   "shape": [
+    1,
+    4,
+    576
+   ]
+  },
+  {
+   "name": "landmark1_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "landmark1_any_alternatives"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "landmark1_any",
+   "op": "reshape",
+   "inputs": [
+    "landmark1_any_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmark2_gray",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_patches",
+   "op": "conv",
+   "inputs": [
+    "landmark2_gray"
+   ],
+   "out": 24,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "landmark2_compare",
+   "op": "conv",
+   "inputs": [
+    "landmark2_patches"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "landmark2_compare"
+   ]
+  },
+  {
+   "name": "landmark2_features",
+   "op": "conv",
+   "inputs": [
+    "landmark2_patches"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_balance",
+   "op": "conv",
+   "inputs": [
+    "landmark2_asymmetry"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_landmarks",
+   "op": "add",
+   "inputs": [
+    "landmark2_features",
+    "landmark2_balance"
+   ]
+  },
+  {
+   "name": "landmark2_thresholds",
+   "op": "conv",
+   "inputs": [
+    "landmark2_landmarks"
+   ],
+   "out": 40,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_contrast_caps",
+   "op": "relu",
+   "inputs": [
+    "landmark2_thresholds"
+   ]
+  },
+  {
+   "name": "landmark2_match",
+   "op": "conv",
+   "inputs": [
+    "landmark2_contrast_caps"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark2_optional_color",
+   "op": "conv",
+   "inputs": [
+    "skin_large"
+   ],
+   "out": 4,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "landmark2_eye_pair_and_mouth",
+   "op": "add",
+   "inputs": [
+    "landmark2_match",
+    "landmark2_optional_color"
+   ]
+  },
+  {
+   "name": "landmark2_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "landmark2_eye_pair_and_mouth"
+   ],
+   "shape": [
+    1,
+    4,
+    144
+   ]
+  },
+  {
+   "name": "landmark2_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "landmark2_any_alternatives"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "landmark2_any",
+   "op": "reshape",
+   "inputs": [
+    "landmark2_any_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "small_head_color",
+   "op": "conv",
+   "inputs": [
+    "complexion"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "small_head_light",
+   "op": "conv",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "small_head_relief_ramps",
+   "op": "conv",
+   "inputs": [
+    "small_head_light"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "small_head_relief",
+   "op": "relu",
+   "inputs": [
+    "small_head_relief_ramps"
+   ]
+  },
+  {
+   "name": "small_head_limited_relief",
+   "op": "conv",
+   "inputs": [
+    "small_head_relief"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "small_head",
+   "op": "add",
+   "inputs": [
+    "small_head_color",
+    "small_head_limited_relief"
+   ]
+  },
+  {
+   "name": "limbs0_head_and_wrists",
+   "op": "conv",
+   "inputs": [
+    "complexion"
+   ],
+   "out": 9,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "limbs0_wrists",
+   "op": "conv",
+   "inputs": [
+    "limbs0_head_and_wrists"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_best_wrist_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "limbs0_wrists"
+   ],
+   "shape": [
+    1,
+    8,
+    576
+   ]
+  },
+  {
+   "name": "limbs0_best_wrist_best",
+   "op": "maxpool",
+   "inputs": [
+    "limbs0_best_wrist_alternatives"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "limbs0_best_wrist",
+   "op": "reshape",
+   "inputs": [
+    "limbs0_best_wrist_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "limbs0_head",
+   "op": "conv",
+   "inputs": [
+    "limbs0_head_and_wrists"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_gray",
+   "op": "conv",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs0_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "limbs0_dark_hair",
+   "op": "conv",
+   "inputs": [
+    "limbs0_relief"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_relief_ramps",
+   "op": "relu",
+   "inputs": [
+    "limbs0_dark_hair"
+   ]
+  },
+  {
+   "name": "limbs0_bounded_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs0_relief_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_head_match",
+   "op": "add",
+   "inputs": [
+    "limbs0_head",
+    "limbs0_bounded_relief"
+   ]
+  },
+  {
+   "name": "limbs0_negative",
+   "op": "conv",
+   "inputs": [
+    "limbs0_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_excess",
+   "op": "add",
+   "inputs": [
+    "limbs0_head_match",
+    "limbs0_negative"
+   ]
+  },
+  {
+   "name": "limbs0_head_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs0_head_match"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_arm_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs0_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_missing_arm",
+   "op": "relu",
+   "inputs": [
+    "limbs0_excess"
+   ]
+  },
+  {
+   "name": "limbs0_agreement",
+   "op": "conv",
+   "inputs": [
+    "limbs0_missing_arm"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs0_association",
+   "op": "add",
+   "inputs": [
+    "limbs0_head_weight",
+    "limbs0_arm_weight",
+    "limbs0_agreement"
+   ]
+  },
+  {
+   "name": "limbs1_head_and_wrists",
+   "op": "conv",
+   "inputs": [
+    "skin_medium"
+   ],
+   "out": 9,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "limbs1_wrists",
+   "op": "conv",
+   "inputs": [
+    "limbs1_head_and_wrists"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_best_wrist_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "limbs1_wrists"
+   ],
+   "shape": [
+    1,
+    8,
+    576
+   ]
+  },
+  {
+   "name": "limbs1_best_wrist_best",
+   "op": "maxpool",
+   "inputs": [
+    "limbs1_best_wrist_alternatives"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "limbs1_best_wrist",
+   "op": "reshape",
+   "inputs": [
+    "limbs1_best_wrist_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "limbs1_head",
+   "op": "conv",
+   "inputs": [
+    "limbs1_head_and_wrists"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_gray",
+   "op": "conv",
+   "inputs": [
+    "color_medium"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs1_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "limbs1_dark_hair",
+   "op": "conv",
+   "inputs": [
+    "limbs1_relief"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_relief_ramps",
+   "op": "relu",
+   "inputs": [
+    "limbs1_dark_hair"
+   ]
+  },
+  {
+   "name": "limbs1_bounded_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs1_relief_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_head_match",
+   "op": "add",
+   "inputs": [
+    "limbs1_head",
+    "limbs1_bounded_relief"
+   ]
+  },
+  {
+   "name": "limbs1_negative",
+   "op": "conv",
+   "inputs": [
+    "limbs1_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_excess",
+   "op": "add",
+   "inputs": [
+    "limbs1_head_match",
+    "limbs1_negative"
+   ]
+  },
+  {
+   "name": "limbs1_head_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs1_head_match"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_arm_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs1_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_missing_arm",
+   "op": "relu",
+   "inputs": [
+    "limbs1_excess"
+   ]
+  },
+  {
+   "name": "limbs1_agreement",
+   "op": "conv",
+   "inputs": [
+    "limbs1_missing_arm"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs1_association",
+   "op": "add",
+   "inputs": [
+    "limbs1_head_weight",
+    "limbs1_arm_weight",
+    "limbs1_agreement"
+   ]
+  },
+  {
+   "name": "limbs2_head_and_wrists",
+   "op": "conv",
+   "inputs": [
+    "skin_large"
+   ],
+   "out": 9,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "limbs2_wrists",
+   "op": "conv",
+   "inputs": [
+    "limbs2_head_and_wrists"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_best_wrist_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "limbs2_wrists"
+   ],
+   "shape": [
+    1,
+    8,
+    144
+   ]
+  },
+  {
+   "name": "limbs2_best_wrist_best",
+   "op": "maxpool",
+   "inputs": [
+    "limbs2_best_wrist_alternatives"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "limbs2_best_wrist",
+   "op": "reshape",
+   "inputs": [
+    "limbs2_best_wrist_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "limbs2_head",
+   "op": "conv",
+   "inputs": [
+    "limbs2_head_and_wrists"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_gray",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs2_gray"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "limbs2_dark_hair",
+   "op": "conv",
+   "inputs": [
+    "limbs2_relief"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_relief_ramps",
+   "op": "relu",
+   "inputs": [
+    "limbs2_dark_hair"
+   ]
+  },
+  {
+   "name": "limbs2_bounded_relief",
+   "op": "conv",
+   "inputs": [
+    "limbs2_relief_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_head_match",
+   "op": "add",
+   "inputs": [
+    "limbs2_head",
+    "limbs2_bounded_relief"
+   ]
+  },
+  {
+   "name": "limbs2_negative",
+   "op": "conv",
+   "inputs": [
+    "limbs2_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_excess",
+   "op": "add",
+   "inputs": [
+    "limbs2_head_match",
+    "limbs2_negative"
+   ]
+  },
+  {
+   "name": "limbs2_head_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs2_head_match"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_arm_weight",
+   "op": "conv",
+   "inputs": [
+    "limbs2_best_wrist"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_missing_arm",
+   "op": "relu",
+   "inputs": [
+    "limbs2_excess"
+   ]
+  },
+  {
+   "name": "limbs2_agreement",
+   "op": "conv",
+   "inputs": [
+    "limbs2_missing_arm"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limbs2_association",
+   "op": "add",
+   "inputs": [
+    "limbs2_head_weight",
+    "limbs2_arm_weight",
+    "limbs2_agreement"
+   ]
+  },
+  {
+   "name": "figure0_pair_boundaries",
+   "op": "conv",
+   "inputs": [
+    "mid_edges"
+   ],
+   "out": 12,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure0_part_difference",
+   "op": "conv",
+   "inputs": [
+    "figure0_pair_boundaries"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_part_mismatch",
+   "op": "relu",
+   "inputs": [
+    "figure0_part_difference"
+   ]
+  },
+  {
+   "name": "figure0_outline_mean",
+   "op": "conv",
+   "inputs": [
+    "figure0_pair_boundaries"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_unpaired_penalty",
+   "op": "conv",
+   "inputs": [
+    "figure0_part_mismatch"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_upper_outline",
+   "op": "add",
+   "inputs": [
+    "figure0_outline_mean",
+    "figure0_unpaired_penalty"
+   ]
+  },
+  {
+   "name": "figure0_face_patch",
+   "op": "conv",
+   "inputs": [
+    "skin_medium"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure0_head_intensity",
+   "op": "conv",
+   "inputs": [
+    "color_medium"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_head_relief",
+   "op": "conv",
+   "inputs": [
+    "figure0_head_intensity"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure0_head_response",
+   "op": "conv",
+   "inputs": [
+    "figure0_head_relief"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_head_ramps",
+   "op": "relu",
+   "inputs": [
+    "figure0_head_response"
+   ]
+  },
+  {
+   "name": "figure0_head_shading",
+   "op": "conv",
+   "inputs": [
+    "figure0_head_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_shape_contribution",
+   "op": "conv",
+   "inputs": [
+    "figure0_upper_outline"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure0_matched_skin_and_body",
+   "op": "add",
+   "inputs": [
+    "figure0_face_patch",
+    "figure0_head_shading",
+    "figure0_shape_contribution"
+   ]
+  },
+  {
+   "name": "figure0_joint_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "figure0_matched_skin_and_body"
+   ],
+   "shape": [
+    1,
+    6,
+    576
+   ]
+  },
+  {
+   "name": "figure0_joint_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure0_joint_any_alternatives"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure0_joint_any",
+   "op": "reshape",
+   "inputs": [
+    "figure0_joint_any_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "figure0_silhouette_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "figure0_upper_outline"
+   ],
+   "shape": [
+    1,
+    6,
+    576
+   ]
+  },
+  {
+   "name": "figure0_silhouette_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure0_silhouette_any_alternatives"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure0_silhouette_any",
+   "op": "reshape",
+   "inputs": [
+    "figure0_silhouette_any_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "figure1_pair_boundaries",
+   "op": "conv",
+   "inputs": [
+    "coarse_edges"
+   ],
+   "out": 12,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure1_part_difference",
+   "op": "conv",
+   "inputs": [
+    "figure1_pair_boundaries"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_part_mismatch",
+   "op": "relu",
+   "inputs": [
+    "figure1_part_difference"
+   ]
+  },
+  {
+   "name": "figure1_outline_mean",
+   "op": "conv",
+   "inputs": [
+    "figure1_pair_boundaries"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_unpaired_penalty",
+   "op": "conv",
+   "inputs": [
+    "figure1_part_mismatch"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_upper_outline",
+   "op": "add",
+   "inputs": [
+    "figure1_outline_mean",
+    "figure1_unpaired_penalty"
+   ]
+  },
+  {
+   "name": "figure1_face_patch",
+   "op": "conv",
+   "inputs": [
+    "skin_large"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure1_head_intensity",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_head_relief",
+   "op": "conv",
+   "inputs": [
+    "figure1_head_intensity"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "figure1_head_response",
+   "op": "conv",
+   "inputs": [
+    "figure1_head_relief"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_head_ramps",
+   "op": "relu",
+   "inputs": [
+    "figure1_head_response"
+   ]
+  },
+  {
+   "name": "figure1_head_shading",
+   "op": "conv",
+   "inputs": [
+    "figure1_head_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_shape_contribution",
+   "op": "conv",
+   "inputs": [
+    "figure1_upper_outline"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure1_matched_skin_and_body",
+   "op": "add",
+   "inputs": [
+    "figure1_face_patch",
+    "figure1_head_shading",
+    "figure1_shape_contribution"
+   ]
+  },
+  {
+   "name": "figure1_joint_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "figure1_matched_skin_and_body"
+   ],
+   "shape": [
+    1,
+    6,
+    144
+   ]
+  },
+  {
+   "name": "figure1_joint_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure1_joint_any_alternatives"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure1_joint_any",
+   "op": "reshape",
+   "inputs": [
+    "figure1_joint_any_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "figure1_silhouette_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "figure1_upper_outline"
+   ],
+   "shape": [
+    1,
+    6,
+    144
+   ]
+  },
+  {
+   "name": "figure1_silhouette_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure1_silhouette_any_alternatives"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure1_silhouette_any",
+   "op": "reshape",
+   "inputs": [
+    "figure1_silhouette_any_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "standing0_body_and_legs",
+   "op": "conv",
+   "inputs": [
+    "mid_edges"
+   ],
+   "out": 10,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "standing0_differences",
+   "op": "conv",
+   "inputs": [
+    "standing0_body_and_legs"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing0_mismatch",
+   "op": "relu",
+   "inputs": [
+    "standing0_differences"
+   ]
+  },
+  {
+   "name": "standing0_parts",
+   "op": "conv",
+   "inputs": [
+    "standing0_body_and_legs"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing0_cost",
+   "op": "conv",
+   "inputs": [
+    "standing0_mismatch"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing0_whole",
+   "op": "add",
+   "inputs": [
+    "standing0_parts",
+    "standing0_cost"
+   ]
+  },
+  {
+   "name": "standing0_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "standing0_whole"
+   ],
+   "shape": [
+    1,
+    5,
+    576
+   ]
+  },
+  {
+   "name": "standing0_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "standing0_any_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "standing0_any",
+   "op": "reshape",
+   "inputs": [
+    "standing0_any_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "standing0_skin",
+   "op": "conv",
+   "inputs": [
+    "skin_medium"
+   ],
+   "out": 5,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "standing0_body",
+   "op": "conv",
+   "inputs": [
+    "standing0_whole"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing0_head_and_clothing",
+   "op": "add",
+   "inputs": [
+    "standing0_skin",
+    "standing0_body"
+   ]
+  },
+  {
+   "name": "standing0_any_with_head_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "standing0_head_and_clothing"
+   ],
+   "shape": [
+    1,
+    5,
+    576
+   ]
+  },
+  {
+   "name": "standing0_any_with_head_best",
+   "op": "maxpool",
+   "inputs": [
+    "standing0_any_with_head_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "standing0_any_with_head",
+   "op": "reshape",
+   "inputs": [
+    "standing0_any_with_head_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "standing1_body_and_legs",
+   "op": "conv",
+   "inputs": [
+    "coarse_edges"
+   ],
+   "out": 10,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "standing1_differences",
+   "op": "conv",
+   "inputs": [
+    "standing1_body_and_legs"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing1_mismatch",
+   "op": "relu",
+   "inputs": [
+    "standing1_differences"
+   ]
+  },
+  {
+   "name": "standing1_parts",
+   "op": "conv",
+   "inputs": [
+    "standing1_body_and_legs"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing1_cost",
+   "op": "conv",
+   "inputs": [
+    "standing1_mismatch"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing1_whole",
+   "op": "add",
+   "inputs": [
+    "standing1_parts",
+    "standing1_cost"
+   ]
+  },
+  {
+   "name": "standing1_any_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "standing1_whole"
+   ],
+   "shape": [
+    1,
+    5,
+    144
+   ]
+  },
+  {
+   "name": "standing1_any_best",
+   "op": "maxpool",
+   "inputs": [
+    "standing1_any_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "standing1_any",
+   "op": "reshape",
+   "inputs": [
+    "standing1_any_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "standing1_skin",
+   "op": "conv",
+   "inputs": [
+    "skin_large"
+   ],
+   "out": 5,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "standing1_body",
+   "op": "conv",
+   "inputs": [
+    "standing1_whole"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "standing1_head_and_clothing",
+   "op": "add",
+   "inputs": [
+    "standing1_skin",
+    "standing1_body"
+   ]
+  },
+  {
+   "name": "standing1_any_with_head_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "standing1_head_and_clothing"
+   ],
+   "shape": [
+    1,
+    5,
+    144
+   ]
+  },
+  {
+   "name": "standing1_any_with_head_best",
+   "op": "maxpool",
+   "inputs": [
+    "standing1_any_with_head_alternatives"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "standing1_any_with_head",
+   "op": "reshape",
+   "inputs": [
+    "standing1_any_with_head_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "face_search_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "face0_any_aspect"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "face_search_resolution1",
+   "op": "maxpool",
+   "inputs": [
+    "face1_any_aspect"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "face_search_negative0",
+   "op": "conv",
+   "inputs": [
+    "face_search_resolution1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_search_diff0",
+   "op": "add",
+   "inputs": [
+    "face_search_resolution0",
+    "face_search_negative0"
+   ]
+  },
+  {
+   "name": "face_search_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "face_search_diff0"
+   ]
+  },
+  {
+   "name": "face_search_max0",
+   "op": "add",
+   "inputs": [
+    "face_search_positive_diff0",
+    "face_search_resolution1"
+   ]
+  },
+  {
+   "name": "face_search_negative1",
+   "op": "conv",
+   "inputs": [
+    "face2_any_aspect"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_search_diff1",
+   "op": "add",
+   "inputs": [
+    "face_search_max0",
+    "face_search_negative1"
+   ]
+  },
+  {
+   "name": "face_search_positive_diff1",
+   "op": "relu",
+   "inputs": [
+    "face_search_diff1"
+   ]
+  },
+  {
+   "name": "face_search_max1",
+   "op": "add",
+   "inputs": [
+    "face_search_positive_diff1",
+    "face2_any_aspect"
+   ]
+  },
+  {
+   "name": "facial_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "face_search_max1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "facial_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "facial_composition",
+   "op": "reshape",
+   "inputs": [
+    "facial_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "facial_locations",
+   "op": "add",
+   "inputs": [
+    "facial_tile_max",
+    "facial_composition"
+   ]
+  },
+  {
+   "name": "facial_peak",
+   "op": "maxpool",
+   "inputs": [
+    "facial_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "facial_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "facial_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "facial_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "facial_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "facial_confident",
+   "op": "relu",
+   "inputs": [
+    "facial_tile_margin"
+   ]
+  },
+  {
+   "name": "facial_area_vote",
+   "op": "dense",
+   "inputs": [
+    "facial_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "facial_vote",
+   "op": "add",
+   "inputs": [
+    "facial_peak_vote",
+    "facial_area_vote"
+   ]
+  },
+  {
+   "name": "bust_search_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "figure0_joint_any"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bust_search_negative0",
+   "op": "conv",
+   "inputs": [
+    "figure1_joint_any"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bust_search_diff0",
+   "op": "add",
+   "inputs": [
+    "bust_search_resolution0",
+    "bust_search_negative0"
+   ]
+  },
+  {
+   "name": "bust_search_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "bust_search_diff0"
+   ]
+  },
+  {
+   "name": "bust_search_max0",
+   "op": "add",
+   "inputs": [
+    "bust_search_positive_diff0",
+    "figure1_joint_any"
+   ]
+  },
+  {
+   "name": "bust_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "bust_search_max0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "bust_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "bust_composition",
+   "op": "reshape",
+   "inputs": [
+    "bust_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "bust_locations",
+   "op": "add",
+   "inputs": [
+    "bust_tile_max",
+    "bust_composition"
+   ]
+  },
+  {
+   "name": "bust_peak",
+   "op": "maxpool",
+   "inputs": [
+    "bust_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "bust_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "bust_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "bust_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "bust_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bust_confident",
+   "op": "relu",
+   "inputs": [
+    "bust_tile_margin"
+   ]
+  },
+  {
+   "name": "bust_area_vote",
+   "op": "dense",
+   "inputs": [
+    "bust_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "bust_vote",
+   "op": "add",
+   "inputs": [
+    "bust_peak_vote",
+    "bust_area_vote"
+   ]
+  },
+  {
+   "name": "small_figure_search_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "standing0_any_with_head"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "small_figure_search_negative0",
+   "op": "conv",
+   "inputs": [
+    "standing1_any_with_head"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "small_figure_search_diff0",
+   "op": "add",
+   "inputs": [
+    "small_figure_search_resolution0",
+    "small_figure_search_negative0"
+   ]
+  },
+  {
+   "name": "small_figure_search_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "small_figure_search_diff0"
+   ]
+  },
+  {
+   "name": "small_figure_search_max0",
+   "op": "add",
+   "inputs": [
+    "small_figure_search_positive_diff0",
+    "standing1_any_with_head"
+   ]
+  },
+  {
+   "name": "small_figure_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "small_figure_search_max0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "small_figure_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "small_figure_composition",
+   "op": "reshape",
+   "inputs": [
+    "small_figure_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "small_figure_locations",
+   "op": "add",
+   "inputs": [
+    "small_figure_tile_max",
+    "small_figure_composition"
+   ]
+  },
+  {
+   "name": "small_figure_peak",
+   "op": "maxpool",
+   "inputs": [
+    "small_figure_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "small_figure_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "small_figure_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "small_figure_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "small_figure_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "small_figure_confident",
+   "op": "relu",
+   "inputs": [
+    "small_figure_tile_margin"
+   ]
+  },
+  {
+   "name": "small_figure_area_vote",
+   "op": "dense",
+   "inputs": [
+    "small_figure_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "small_figure_vote",
+   "op": "add",
+   "inputs": [
+    "small_figure_peak_vote",
+    "small_figure_area_vote"
+   ]
+  },
+  {
+   "name": "bust_edges_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "figure0_silhouette_any"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bust_edges_negative0",
+   "op": "conv",
+   "inputs": [
+    "figure1_silhouette_any"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bust_edges_diff0",
+   "op": "add",
+   "inputs": [
+    "bust_edges_resolution0",
+    "bust_edges_negative0"
+   ]
+  },
+  {
+   "name": "bust_edges_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "bust_edges_diff0"
+   ]
+  },
+  {
+   "name": "bust_edges_max0",
+   "op": "add",
+   "inputs": [
+    "bust_edges_positive_diff0",
+    "figure1_silhouette_any"
+   ]
+  },
+  {
+   "name": "upper_outline_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "bust_edges_max0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "upper_outline_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "upper_outline_composition",
+   "op": "reshape",
+   "inputs": [
+    "upper_outline_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "upper_outline_locations",
+   "op": "add",
+   "inputs": [
+    "upper_outline_tile_max",
+    "upper_outline_composition"
+   ]
+  },
+  {
+   "name": "upper_outline_peak",
+   "op": "maxpool",
+   "inputs": [
+    "upper_outline_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "upper_outline_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "upper_outline_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "upper_outline_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "upper_outline_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "upper_outline_confident",
+   "op": "relu",
+   "inputs": [
+    "upper_outline_tile_margin"
+   ]
+  },
+  {
+   "name": "upper_outline_area_vote",
+   "op": "dense",
+   "inputs": [
+    "upper_outline_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "upper_outline_vote",
+   "op": "add",
+   "inputs": [
+    "upper_outline_peak_vote",
+    "upper_outline_area_vote"
+   ]
+  },
+  {
+   "name": "entire_outline_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "standing0_any"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "entire_outline_negative0",
+   "op": "conv",
+   "inputs": [
+    "standing1_any"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "entire_outline_diff0",
+   "op": "add",
+   "inputs": [
+    "entire_outline_resolution0",
+    "entire_outline_negative0"
+   ]
+  },
+  {
+   "name": "entire_outline_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "entire_outline_diff0"
+   ]
+  },
+  {
+   "name": "entire_outline_max0",
+   "op": "add",
+   "inputs": [
+    "entire_outline_positive_diff0",
+    "standing1_any"
+   ]
+  },
+  {
+   "name": "lower_outline_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "entire_outline_max0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "lower_outline_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "lower_outline_composition",
+   "op": "reshape",
+   "inputs": [
+    "lower_outline_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "lower_outline_locations",
+   "op": "add",
+   "inputs": [
+    "lower_outline_tile_max",
+    "lower_outline_composition"
+   ]
+  },
+  {
+   "name": "lower_outline_peak",
+   "op": "maxpool",
+   "inputs": [
+    "lower_outline_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "lower_outline_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "lower_outline_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "lower_outline_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "lower_outline_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lower_outline_confident",
+   "op": "relu",
+   "inputs": [
+    "lower_outline_tile_margin"
+   ]
+  },
+  {
+   "name": "lower_outline_area_vote",
+   "op": "dense",
+   "inputs": [
+    "lower_outline_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "lower_outline_vote",
+   "op": "add",
+   "inputs": [
+    "lower_outline_peak_vote",
+    "lower_outline_area_vote"
+   ]
+  },
+  {
+   "name": "unresolved_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "small_head"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "unresolved_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "unresolved_composition",
+   "op": "reshape",
+   "inputs": [
+    "unresolved_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "unresolved_locations",
+   "op": "add",
+   "inputs": [
+    "unresolved_tile_max",
+    "unresolved_composition"
+   ]
+  },
+  {
+   "name": "unresolved_peak",
+   "op": "maxpool",
+   "inputs": [
+    "unresolved_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "unresolved_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "unresolved_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "unresolved_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "unresolved_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "unresolved_confident",
+   "op": "relu",
+   "inputs": [
+    "unresolved_tile_margin"
+   ]
+  },
+  {
+   "name": "unresolved_area_vote",
+   "op": "dense",
+   "inputs": [
+    "unresolved_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "unresolved_vote",
+   "op": "add",
+   "inputs": [
+    "unresolved_peak_vote",
+    "unresolved_area_vote"
+   ]
+  },
+  {
+   "name": "limb_search_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "limbs0_association"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "limb_search_resolution1",
+   "op": "maxpool",
+   "inputs": [
+    "limbs1_association"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "limb_search_negative0",
+   "op": "conv",
+   "inputs": [
+    "limb_search_resolution1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limb_search_diff0",
+   "op": "add",
+   "inputs": [
+    "limb_search_resolution0",
+    "limb_search_negative0"
+   ]
+  },
+  {
+   "name": "limb_search_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "limb_search_diff0"
+   ]
+  },
+  {
+   "name": "limb_search_max0",
+   "op": "add",
+   "inputs": [
+    "limb_search_positive_diff0",
+    "limb_search_resolution1"
+   ]
+  },
+  {
+   "name": "limb_search_negative1",
+   "op": "conv",
+   "inputs": [
+    "limbs2_association"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "limb_search_diff1",
+   "op": "add",
+   "inputs": [
+    "limb_search_max0",
+    "limb_search_negative1"
+   ]
+  },
+  {
+   "name": "limb_search_positive_diff1",
+   "op": "relu",
+   "inputs": [
+    "limb_search_diff1"
+   ]
+  },
+  {
+   "name": "limb_search_max1",
+   "op": "add",
+   "inputs": [
+    "limb_search_positive_diff1",
+    "limbs2_association"
+   ]
+  },
+  {
+   "name": "exposed_parts_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "limb_search_max1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "exposed_parts_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "exposed_parts_composition",
+   "op": "reshape",
+   "inputs": [
+    "exposed_parts_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "exposed_parts_locations",
+   "op": "add",
+   "inputs": [
+    "exposed_parts_tile_max",
+    "exposed_parts_composition"
+   ]
+  },
+  {
+   "name": "exposed_parts_peak",
+   "op": "maxpool",
+   "inputs": [
+    "exposed_parts_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "exposed_parts_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "exposed_parts_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "exposed_parts_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "exposed_parts_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "exposed_parts_confident",
+   "op": "relu",
+   "inputs": [
+    "exposed_parts_tile_margin"
+   ]
+  },
+  {
+   "name": "exposed_parts_area_vote",
+   "op": "dense",
+   "inputs": [
+    "exposed_parts_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "exposed_parts_vote",
+   "op": "add",
+   "inputs": [
+    "exposed_parts_peak_vote",
+    "exposed_parts_area_vote"
+   ]
+  },
+  {
+   "name": "landmark_search_resolution0",
+   "op": "maxpool",
+   "inputs": [
+    "landmark0_any"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "landmark_search_resolution1",
+   "op": "maxpool",
+   "inputs": [
+    "landmark1_any"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "landmark_search_negative0",
+   "op": "conv",
+   "inputs": [
+    "landmark_search_resolution1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_search_diff0",
+   "op": "add",
+   "inputs": [
+    "landmark_search_resolution0",
+    "landmark_search_negative0"
+   ]
+  },
+  {
+   "name": "landmark_search_positive_diff0",
+   "op": "relu",
+   "inputs": [
+    "landmark_search_diff0"
+   ]
+  },
+  {
+   "name": "landmark_search_max0",
+   "op": "add",
+   "inputs": [
+    "landmark_search_positive_diff0",
+    "landmark_search_resolution1"
+   ]
+  },
+  {
+   "name": "landmark_search_negative1",
+   "op": "conv",
+   "inputs": [
+    "landmark2_any"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_search_diff1",
+   "op": "add",
+   "inputs": [
+    "landmark_search_max0",
+    "landmark_search_negative1"
+   ]
+  },
+  {
+   "name": "landmark_search_positive_diff1",
+   "op": "relu",
+   "inputs": [
+    "landmark_search_diff1"
+   ]
+  },
+  {
+   "name": "landmark_search_max1",
+   "op": "add",
+   "inputs": [
+    "landmark_search_positive_diff1",
+    "landmark2_any"
+   ]
+  },
+  {
+   "name": "eye_pair_tile_max",
+   "op": "maxpool",
+   "inputs": [
+    "landmark_search_max1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "eye_pair_composition_bias",
+   "op": "dense",
+   "inputs": [
+    "global_complexion"
+   ],
+   "out": 16
+  },
+  {
+   "name": "eye_pair_composition",
+   "op": "reshape",
+   "inputs": [
+    "eye_pair_composition_bias"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "eye_pair_locations",
+   "op": "add",
+   "inputs": [
+    "eye_pair_tile_max",
+    "eye_pair_composition"
+   ]
+  },
+  {
+   "name": "eye_pair_peak",
+   "op": "maxpool",
+   "inputs": [
+    "eye_pair_locations"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "eye_pair_peak_vote",
+   "op": "dense",
+   "inputs": [
+    "eye_pair_peak"
+   ],
+   "out": 1
+  },
+  {
+   "name": "eye_pair_tile_margin",
+   "op": "conv",
+   "inputs": [
+    "eye_pair_locations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "eye_pair_confident",
+   "op": "relu",
+   "inputs": [
+    "eye_pair_tile_margin"
+   ]
+  },
+  {
+   "name": "eye_pair_area_vote",
+   "op": "dense",
+   "inputs": [
+    "eye_pair_confident"
+   ],
+   "out": 1
+  },
+  {
+   "name": "eye_pair_vote",
+   "op": "add",
+   "inputs": [
+    "eye_pair_peak_vote",
+    "eye_pair_area_vote"
+   ]
+  },
+  {
+   "name": "negative_vote0",
+   "op": "dense",
+   "inputs": [
+    "bust_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare0",
+   "op": "add",
+   "inputs": [
+    "facial_vote",
+    "negative_vote0"
+   ]
+  },
+  {
+   "name": "improvement0",
+   "op": "relu",
+   "inputs": [
+    "compare0"
+   ]
+  },
+  {
+   "name": "best_vote0",
+   "op": "add",
+   "inputs": [
+    "bust_vote",
+    "improvement0"
+   ]
+  },
+  {
+   "name": "negative_vote1",
+   "op": "dense",
+   "inputs": [
+    "small_figure_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare1",
+   "op": "add",
+   "inputs": [
+    "best_vote0",
+    "negative_vote1"
+   ]
+  },
+  {
+   "name": "improvement1",
+   "op": "relu",
+   "inputs": [
+    "compare1"
+   ]
+  },
+  {
+   "name": "best_vote1",
+   "op": "add",
+   "inputs": [
+    "small_figure_vote",
+    "improvement1"
+   ]
+  },
+  {
+   "name": "negative_vote2",
+   "op": "dense",
+   "inputs": [
+    "upper_outline_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare2",
+   "op": "add",
+   "inputs": [
+    "best_vote1",
+    "negative_vote2"
+   ]
+  },
+  {
+   "name": "improvement2",
+   "op": "relu",
+   "inputs": [
+    "compare2"
+   ]
+  },
+  {
+   "name": "best_vote2",
+   "op": "add",
+   "inputs": [
+    "upper_outline_vote",
+    "improvement2"
+   ]
+  },
+  {
+   "name": "negative_vote3",
+   "op": "dense",
+   "inputs": [
+    "lower_outline_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare3",
+   "op": "add",
+   "inputs": [
+    "best_vote2",
+    "negative_vote3"
+   ]
+  },
+  {
+   "name": "improvement3",
+   "op": "relu",
+   "inputs": [
+    "compare3"
+   ]
+  },
+  {
+   "name": "best_vote3",
+   "op": "add",
+   "inputs": [
+    "lower_outline_vote",
+    "improvement3"
+   ]
+  },
+  {
+   "name": "negative_vote4",
+   "op": "dense",
+   "inputs": [
+    "unresolved_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare4",
+   "op": "add",
+   "inputs": [
+    "best_vote3",
+    "negative_vote4"
+   ]
+  },
+  {
+   "name": "improvement4",
+   "op": "relu",
+   "inputs": [
+    "compare4"
+   ]
+  },
+  {
+   "name": "best_vote4",
+   "op": "add",
+   "inputs": [
+    "unresolved_vote",
+    "improvement4"
+   ]
+  },
+  {
+   "name": "negative_vote5",
+   "op": "dense",
+   "inputs": [
+    "exposed_parts_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare5",
+   "op": "add",
+   "inputs": [
+    "best_vote4",
+    "negative_vote5"
+   ]
+  },
+  {
+   "name": "improvement5",
+   "op": "relu",
+   "inputs": [
+    "compare5"
+   ]
+  },
+  {
+   "name": "best_vote5",
+   "op": "add",
+   "inputs": [
+    "exposed_parts_vote",
+    "improvement5"
+   ]
+  },
+  {
+   "name": "negative_vote6",
+   "op": "dense",
+   "inputs": [
+    "eye_pair_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "compare6",
+   "op": "add",
+   "inputs": [
+    "best_vote5",
+    "negative_vote6"
+   ]
+  },
+  {
+   "name": "improvement6",
+   "op": "relu",
+   "inputs": [
+    "compare6"
+   ]
+  },
+  {
+   "name": "best_vote6",
+   "op": "add",
+   "inputs": [
+    "eye_pair_vote",
+    "improvement6"
+   ]
+  },
+  {
+   "name": "strongest_cue",
+   "op": "dense",
+   "inputs": [
+    "best_vote6"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate0",
+   "op": "dense",
+   "inputs": [
+    "facial_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate1",
+   "op": "dense",
+   "inputs": [
+    "bust_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate2",
+   "op": "dense",
+   "inputs": [
+    "small_figure_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate3",
+   "op": "dense",
+   "inputs": [
+    "upper_outline_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate4",
+   "op": "dense",
+   "inputs": [
+    "lower_outline_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate5",
+   "op": "dense",
+   "inputs": [
+    "unresolved_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate6",
+   "op": "dense",
+   "inputs": [
+    "exposed_parts_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "corroborate7",
+   "op": "dense",
+   "inputs": [
+    "eye_pair_vote"
+   ],
+   "out": 1
+  },
+  {
+   "name": "outdoor_colors",
+   "op": "conv",
+   "inputs": [
+    "color_large"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outdoor_color_ramps",
+   "op": "relu",
+   "inputs": [
+    "outdoor_colors"
+   ]
+  },
+  {
+   "name": "field_and_sky",
+   "op": "conv",
+   "inputs": [
+    "outdoor_color_ramps"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_layout",
+   "op": "dense",
+   "inputs": [
+    "field_and_sky"
+   ],
+   "out": 2
+  },
+  {
+   "name": "field_test",
+   "op": "dense",
+   "inputs": [
+    "field_layout"
+   ],
+   "out": 2
+  },
+  {
+   "name": "field_and_horizon",
+   "op": "relu",
+   "inputs": [
+    "field_test"
+   ]
+  },
+  {
+   "name": "sports_context_vote",
+   "op": "dense",
+   "inputs": [
+    "field_and_horizon"
+   ],
+   "out": 1
+  },
+  {
+   "name": "person_margin",
+   "op": "add",
+   "inputs": [
+    "color_context_vote",
+    "strongest_cue",
+    "corroborate0",
+    "corroborate1",
+    "corroborate2",
+    "corroborate3",
+    "corroborate4",
+    "corroborate5",
+    "corroborate6",
+    "corroborate7",
+    "sports_context_vote"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "person_margin"
+   ],
+   "out": 2
+  }
+ ]
+}

@@ -1,0 +1,56 @@
+{
+  "layers": [
+    {
+      "name": "n1",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "n1"
+      ],
+      "out": 20
+    },
+    {
+      "name": "grid",
+      "op": "reshape",
+      "inputs": [
+        "scores"
+      ],
+      "shape": [
+        10,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "pooled",
+      "op": "maxpool",
+      "inputs": [
+        "grid"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "out",
+      "op": "reshape",
+      "inputs": [
+        "pooled"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "layers": [
+    {
+      "name": "n0",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "conv",
+      "op": "conv",
+      "inputs": [
+        "n0"
+      ],
+      "out": 60,
+      "kernel": [
+        26,
+        26
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "spool",
+      "op": "maxpool",
+      "inputs": [
+        "conv"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "grouped",
+      "op": "reshape",
+      "inputs": [
+        "spool"
+      ],
+      "shape": [
+        10,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "pool",
+      "op": "maxpool",
+      "inputs": [
+        "grouped"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "pool"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

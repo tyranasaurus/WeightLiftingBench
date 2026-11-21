@@ -1,0 +1,167 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 9,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "feat_relu",
+   "op": "relu",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "fine",
+   "op": "conv",
+   "inputs": [
+    "feat_relu"
+   ],
+   "out": 9,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "fine_vec",
+   "op": "reshape",
+   "inputs": [
+    "fine"
+   ],
+   "shape": [
+    1,
+    9,
+    196
+   ]
+  },
+  {
+   "name": "fine_norm",
+   "op": "norm",
+   "inputs": [
+    "fine_vec"
+   ]
+  },
+  {
+   "name": "fine_match",
+   "op": "dense",
+   "inputs": [
+    "fine_norm"
+   ],
+   "out": 35000
+  },
+  {
+   "name": "dilate",
+   "op": "maxpool",
+   "inputs": [
+    "feat_relu"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "coarse",
+   "op": "conv",
+   "inputs": [
+    "dilate"
+   ],
+   "out": 9,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "coarse_vec",
+   "op": "reshape",
+   "inputs": [
+    "coarse"
+   ],
+   "shape": [
+    1,
+    9,
+    169
+   ]
+  },
+  {
+   "name": "coarse_norm",
+   "op": "norm",
+   "inputs": [
+    "coarse_vec"
+   ]
+  },
+  {
+   "name": "coarse_match",
+   "op": "dense",
+   "inputs": [
+    "coarse_norm"
+   ],
+   "out": 35000
+  },
+  {
+   "name": "match",
+   "op": "add",
+   "inputs": [
+    "fine_match",
+    "coarse_match"
+   ]
+  },
+  {
+   "name": "bank",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    3500
+   ]
+  },
+  {
+   "name": "classmax",
+   "op": "maxpool",
+   "inputs": [
+    "bank"
+   ],
+   "size": [
+    1,
+    3500
+   ],
+   "stride": [
+    1,
+    3500
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "classmax"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

@@ -1,0 +1,717 @@
+{
+  "layers": [
+    {
+      "name": "standardized",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "negative_standardized",
+      "op": "conv",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "background_offset",
+      "op": "maxpool",
+      "inputs": [
+        "negative_standardized"
+      ],
+      "size": [
+        28,
+        28
+      ],
+      "stride": [
+        28,
+        28
+      ]
+    },
+    {
+      "name": "background_broadcast_flat",
+      "op": "dense",
+      "inputs": [
+        "background_offset"
+      ],
+      "out": 784
+    },
+    {
+      "name": "background_broadcast",
+      "op": "reshape",
+      "inputs": [
+        "background_broadcast_flat"
+      ],
+      "shape": [
+        1,
+        28,
+        28
+      ]
+    },
+    {
+      "name": "contrast_scaled",
+      "op": "add",
+      "inputs": [
+        "standardized",
+        "background_broadcast"
+      ]
+    },
+    {
+      "name": "foreground_ramps",
+      "op": "conv",
+      "inputs": [
+        "contrast_scaled"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_ramp_relu",
+      "op": "relu",
+      "inputs": [
+        "foreground_ramps"
+      ]
+    },
+    {
+      "name": "foreground",
+      "op": "conv",
+      "inputs": [
+        "foreground_ramp_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_cells",
+      "op": "avgpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "padded_foreground",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "thickened_foreground",
+      "op": "maxpool",
+      "inputs": [
+        "padded_foreground"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "thickened_cells",
+      "op": "avgpool",
+      "inputs": [
+        "thickened_foreground"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "drawing_scores_fine",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "drawing_scores_tolerant",
+      "op": "dense",
+      "inputs": [
+        "thickened_cells"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "drawing_scores",
+      "op": "add",
+      "inputs": [
+        "drawing_scores_fine",
+        "drawing_scores_tolerant"
+      ]
+    },
+    {
+      "name": "drawings_by_class",
+      "op": "reshape",
+      "inputs": [
+        "drawing_scores"
+      ],
+      "shape": [
+        10,
+        1,
+        2048
+      ]
+    },
+    {
+      "name": "best_drawing_per_class",
+      "op": "maxpool",
+      "inputs": [
+        "drawings_by_class"
+      ],
+      "size": [
+        1,
+        2048
+      ],
+      "stride": [
+        1,
+        2048
+      ]
+    },
+    {
+      "name": "shape_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_drawing_per_class"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "fabric_differences",
+      "op": "conv",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "fabric_rectified",
+      "op": "relu",
+      "inputs": [
+        "fabric_differences"
+      ]
+    },
+    {
+      "name": "fabric_local",
+      "op": "avgpool",
+      "inputs": [
+        "fabric_rectified"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "appearance_from_edges",
+      "op": "dense",
+      "inputs": [
+        "fabric_local"
+      ],
+      "out": 12
+    },
+    {
+      "name": "appearance_from_shape",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 12
+    },
+    {
+      "name": "appearance_measurements",
+      "op": "add",
+      "inputs": [
+        "appearance_from_edges",
+        "appearance_from_shape"
+      ]
+    },
+    {
+      "name": "bounded_evidence_pre",
+      "op": "dense",
+      "inputs": [
+        "appearance_measurements"
+      ],
+      "out": 24
+    },
+    {
+      "name": "bounded_evidence_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_evidence_pre"
+      ]
+    },
+    {
+      "name": "bounded_evidence",
+      "op": "dense",
+      "inputs": [
+        "bounded_evidence_relu"
+      ],
+      "out": 12
+    },
+    {
+      "name": "evidence_bands",
+      "op": "reshape",
+      "inputs": [
+        "bounded_evidence"
+      ],
+      "shape": [
+        4,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "negated_evidence",
+      "op": "conv",
+      "inputs": [
+        "evidence_bands"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "persistent_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "negated_evidence"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "apparel_evidence",
+      "op": "dense",
+      "inputs": [
+        "persistent_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "leg_split_pre",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 4
+    },
+    {
+      "name": "leg_split_positive",
+      "op": "relu",
+      "inputs": [
+        "leg_split_pre"
+      ]
+    },
+    {
+      "name": "leg_split_negative",
+      "op": "dense",
+      "inputs": [
+        "leg_split_positive"
+      ],
+      "out": 4
+    },
+    {
+      "name": "leg_split_groups",
+      "op": "reshape",
+      "inputs": [
+        "leg_split_negative"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "leg_split_min",
+      "op": "maxpool",
+      "inputs": [
+        "leg_split_groups"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "leg_split_scores",
+      "op": "dense",
+      "inputs": [
+        "leg_split_min"
+      ],
+      "out": 10
+    },
+    {
+      "name": "unsplit_pre",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 1
+    },
+    {
+      "name": "unsplit_body",
+      "op": "relu",
+      "inputs": [
+        "unsplit_pre"
+      ]
+    },
+    {
+      "name": "unsplit_scores",
+      "op": "dense",
+      "inputs": [
+        "unsplit_body"
+      ],
+      "out": 10
+    },
+    {
+      "name": "occupied_rows",
+      "op": "maxpool",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "size": [
+        1,
+        14
+      ],
+      "stride": [
+        1,
+        14
+      ]
+    },
+    {
+      "name": "footwear_height",
+      "op": "dense",
+      "inputs": [
+        "occupied_rows"
+      ],
+      "out": 1
+    },
+    {
+      "name": "negative_foreground_area",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 1
+    },
+    {
+      "name": "footwear_air_pre",
+      "op": "add",
+      "inputs": [
+        "footwear_height",
+        "negative_foreground_area"
+      ]
+    },
+    {
+      "name": "footwear_air",
+      "op": "relu",
+      "inputs": [
+        "footwear_air_pre"
+      ]
+    },
+    {
+      "name": "footwear_air_scores",
+      "op": "dense",
+      "inputs": [
+        "footwear_air"
+      ],
+      "out": 10
+    },
+    {
+      "name": "strap_dilation_area",
+      "op": "dense",
+      "inputs": [
+        "thickened_cells"
+      ],
+      "out": 1
+    },
+    {
+      "name": "strap_original_area",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 1
+    },
+    {
+      "name": "strap_height_correction",
+      "op": "dense",
+      "inputs": [
+        "occupied_rows"
+      ],
+      "out": 1
+    },
+    {
+      "name": "strap_pre",
+      "op": "add",
+      "inputs": [
+        "strap_dilation_area",
+        "strap_original_area",
+        "strap_height_correction"
+      ]
+    },
+    {
+      "name": "strap_evidence",
+      "op": "relu",
+      "inputs": [
+        "strap_pre"
+      ]
+    },
+    {
+      "name": "strap_scores",
+      "op": "dense",
+      "inputs": [
+        "strap_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "lower_sleeve_pre",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 2
+    },
+    {
+      "name": "lower_sleeve_positive",
+      "op": "relu",
+      "inputs": [
+        "lower_sleeve_pre"
+      ]
+    },
+    {
+      "name": "sleeve_length_scores",
+      "op": "dense",
+      "inputs": [
+        "lower_sleeve_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "vertical_front_pre",
+      "op": "dense",
+      "inputs": [
+        "fabric_local"
+      ],
+      "out": 2
+    },
+    {
+      "name": "vertical_front_positive",
+      "op": "relu",
+      "inputs": [
+        "vertical_front_pre"
+      ]
+    },
+    {
+      "name": "front_opening_scores",
+      "op": "dense",
+      "inputs": [
+        "vertical_front_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "short_sleeve_pre",
+      "op": "dense",
+      "inputs": [
+        "foreground_cells"
+      ],
+      "out": 4
+    },
+    {
+      "name": "short_sleeve_pos",
+      "op": "relu",
+      "inputs": [
+        "short_sleeve_pre"
+      ]
+    },
+    {
+      "name": "short_sleeve_negative",
+      "op": "dense",
+      "inputs": [
+        "short_sleeve_pos"
+      ],
+      "out": 4
+    },
+    {
+      "name": "short_sleeve_pairs",
+      "op": "reshape",
+      "inputs": [
+        "short_sleeve_negative"
+      ],
+      "shape": [
+        2,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "short_sleeve_min",
+      "op": "maxpool",
+      "inputs": [
+        "short_sleeve_pairs"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "short_sleeve_scores",
+      "op": "dense",
+      "inputs": [
+        "short_sleeve_min"
+      ],
+      "out": 10
+    },
+    {
+      "name": "collar_diagonals",
+      "op": "conv",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "collar_diagonals_abs",
+      "op": "relu",
+      "inputs": [
+        "collar_diagonals"
+      ]
+    },
+    {
+      "name": "collar_diagonals_local",
+      "op": "avgpool",
+      "inputs": [
+        "collar_diagonals_abs"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "collar_pre",
+      "op": "dense",
+      "inputs": [
+        "collar_diagonals_local"
+      ],
+      "out": 2
+    },
+    {
+      "name": "collar_positive",
+      "op": "relu",
+      "inputs": [
+        "collar_pre"
+      ]
+    },
+    {
+      "name": "collar_scores",
+      "op": "dense",
+      "inputs": [
+        "collar_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "shape_scores",
+        "apparel_evidence",
+        "leg_split_scores",
+        "unsplit_scores",
+        "footwear_air_scores",
+        "strap_scores",
+        "sleeve_length_scores",
+        "front_opening_scores",
+        "short_sleeve_scores",
+        "collar_scores"
+      ]
+    }
+  ]
+}

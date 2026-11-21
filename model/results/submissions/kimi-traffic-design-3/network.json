@@ -1,0 +1,466 @@
+{
+  "layers": [
+    {
+      "name": "nrgb",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "gray",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ngray",
+      "op": "norm",
+      "inputs": [
+        "gray"
+      ]
+    },
+    {
+      "name": "gpool",
+      "op": "avgpool",
+      "inputs": [
+        "ngray"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "gn",
+      "op": "norm",
+      "inputs": [
+        "gpool"
+      ]
+    },
+    {
+      "name": "rpool",
+      "op": "avgpool",
+      "inputs": [
+        "nrgb"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "rn",
+      "op": "norm",
+      "inputs": [
+        "rpool"
+      ]
+    },
+    {
+      "name": "color",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_norm",
+      "op": "norm",
+      "inputs": [
+        "color"
+      ]
+    },
+    {
+      "name": "color_relu",
+      "op": "relu",
+      "inputs": [
+        "color_norm"
+      ]
+    },
+    {
+      "name": "cpool",
+      "op": "avgpool",
+      "inputs": [
+        "color_relu"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "cn",
+      "op": "norm",
+      "inputs": [
+        "cpool"
+      ]
+    },
+    {
+      "name": "directions",
+      "op": "conv",
+      "inputs": [
+        "ngray"
+      ],
+      "out": 16,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dir_relu",
+      "op": "relu",
+      "inputs": [
+        "directions"
+      ]
+    },
+    {
+      "name": "absolute",
+      "op": "conv",
+      "inputs": [
+        "dir_relu"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "hpool",
+      "op": "avgpool",
+      "inputs": [
+        "absolute"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "hn",
+      "op": "norm",
+      "inputs": [
+        "hpool"
+      ]
+    },
+    {
+      "name": "rgb_match",
+      "op": "dense",
+      "inputs": [
+        "rn"
+      ],
+      "out": 301
+    },
+    {
+      "name": "rgb_grid",
+      "op": "reshape",
+      "inputs": [
+        "rgb_match"
+      ],
+      "shape": [
+        43,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "rgb_max",
+      "op": "maxpool",
+      "inputs": [
+        "rgb_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "rgb_flat",
+      "op": "reshape",
+      "inputs": [
+        "rgb_max"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "rgb_score",
+      "op": "dense",
+      "inputs": [
+        "rgb_flat"
+      ],
+      "out": 43
+    },
+    {
+      "name": "gray_match",
+      "op": "dense",
+      "inputs": [
+        "gn"
+      ],
+      "out": 301
+    },
+    {
+      "name": "gray_grid",
+      "op": "reshape",
+      "inputs": [
+        "gray_match"
+      ],
+      "shape": [
+        43,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "gray_max",
+      "op": "maxpool",
+      "inputs": [
+        "gray_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "gray_flat",
+      "op": "reshape",
+      "inputs": [
+        "gray_max"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "gray_score",
+      "op": "dense",
+      "inputs": [
+        "gray_flat"
+      ],
+      "out": 43
+    },
+    {
+      "name": "color_match",
+      "op": "dense",
+      "inputs": [
+        "cn"
+      ],
+      "out": 301
+    },
+    {
+      "name": "color_grid",
+      "op": "reshape",
+      "inputs": [
+        "color_match"
+      ],
+      "shape": [
+        43,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "color_max",
+      "op": "maxpool",
+      "inputs": [
+        "color_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "color_flat",
+      "op": "reshape",
+      "inputs": [
+        "color_max"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "color_score",
+      "op": "dense",
+      "inputs": [
+        "color_flat"
+      ],
+      "out": 43
+    },
+    {
+      "name": "hog_match",
+      "op": "dense",
+      "inputs": [
+        "hn"
+      ],
+      "out": 301
+    },
+    {
+      "name": "hog_grid",
+      "op": "reshape",
+      "inputs": [
+        "hog_match"
+      ],
+      "shape": [
+        43,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "hog_max",
+      "op": "maxpool",
+      "inputs": [
+        "hog_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "hog_flat",
+      "op": "reshape",
+      "inputs": [
+        "hog_max"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "hog_score",
+      "op": "dense",
+      "inputs": [
+        "hog_flat"
+      ],
+      "out": 43
+    },
+    {
+      "name": "inner_match",
+      "op": "dense",
+      "inputs": [
+        "hn"
+      ],
+      "out": 301
+    },
+    {
+      "name": "inner_grid",
+      "op": "reshape",
+      "inputs": [
+        "inner_match"
+      ],
+      "shape": [
+        43,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "inner_max",
+      "op": "maxpool",
+      "inputs": [
+        "inner_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "inner_flat",
+      "op": "reshape",
+      "inputs": [
+        "inner_max"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "inner_positive",
+      "op": "relu",
+      "inputs": [
+        "inner_flat"
+      ]
+    },
+    {
+      "name": "inner_score",
+      "op": "dense",
+      "inputs": [
+        "inner_positive"
+      ],
+      "out": 43
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "rgb_score",
+        "gray_score",
+        "color_score",
+        "hog_score",
+        "inner_score"
+      ]
+    }
+  ]
+}

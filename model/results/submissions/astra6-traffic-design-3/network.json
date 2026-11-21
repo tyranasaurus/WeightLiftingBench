@@ -1,0 +1,318 @@
+{
+  "layers": [
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sample_gray",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 54000
+    },
+    {
+      "name": "gray_patches",
+      "op": "reshape",
+      "inputs": [
+        "sample_gray"
+      ],
+      "shape": [
+        135,
+        20,
+        20
+      ]
+    },
+    {
+      "name": "local_gray_normalized",
+      "op": "norm",
+      "inputs": [
+        "gray_patches"
+      ]
+    },
+    {
+      "name": "gray_strip",
+      "op": "reshape",
+      "inputs": [
+        "local_gray_normalized"
+      ],
+      "shape": [
+        1,
+        2700,
+        20
+      ]
+    },
+    {
+      "name": "color_downsample",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sample_color",
+      "op": "dense",
+      "inputs": [
+        "color_downsample"
+      ],
+      "out": 54000
+    },
+    {
+      "name": "color_patches",
+      "op": "reshape",
+      "inputs": [
+        "sample_color"
+      ],
+      "shape": [
+        135,
+        20,
+        20
+      ]
+    },
+    {
+      "name": "local_color_normalized",
+      "op": "norm",
+      "inputs": [
+        "color_patches"
+      ]
+    },
+    {
+      "name": "color_strip",
+      "op": "reshape",
+      "inputs": [
+        "local_color_normalized"
+      ],
+      "shape": [
+        1,
+        2700,
+        20
+      ]
+    },
+    {
+      "name": "gray_downsample",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sample_detail",
+      "op": "dense",
+      "inputs": [
+        "gray_downsample"
+      ],
+      "out": 54000
+    },
+    {
+      "name": "detail_patches",
+      "op": "reshape",
+      "inputs": [
+        "sample_detail"
+      ],
+      "shape": [
+        135,
+        20,
+        20
+      ]
+    },
+    {
+      "name": "local_detail_normalized",
+      "op": "norm",
+      "inputs": [
+        "detail_patches"
+      ]
+    },
+    {
+      "name": "detail_strip",
+      "op": "reshape",
+      "inputs": [
+        "local_detail_normalized"
+      ],
+      "shape": [
+        1,
+        2700,
+        20
+      ]
+    },
+    {
+      "name": "interior_extract",
+      "op": "conv",
+      "inputs": [
+        "gray_strip"
+      ],
+      "out": 100,
+      "kernel": [
+        20,
+        20
+      ],
+      "stride": 20,
+      "padding": 0
+    },
+    {
+      "name": "interior_positive",
+      "op": "relu",
+      "inputs": [
+        "interior_extract"
+      ]
+    },
+    {
+      "name": "interior_negative",
+      "op": "conv",
+      "inputs": [
+        "interior_extract"
+      ],
+      "out": 100,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "interior_negative_relu",
+      "op": "relu",
+      "inputs": [
+        "interior_negative"
+      ]
+    },
+    {
+      "name": "interior_absolute",
+      "op": "add",
+      "inputs": [
+        "interior_positive",
+        "interior_negative_relu"
+      ]
+    },
+    {
+      "name": "gray_matches",
+      "op": "conv",
+      "inputs": [
+        "gray_strip"
+      ],
+      "out": 774,
+      "kernel": [
+        20,
+        20
+      ],
+      "stride": 20,
+      "padding": 0
+    },
+    {
+      "name": "color_matches",
+      "op": "conv",
+      "inputs": [
+        "color_strip"
+      ],
+      "out": 774,
+      "kernel": [
+        20,
+        20
+      ],
+      "stride": 20,
+      "padding": 0
+    },
+    {
+      "name": "detail_matches",
+      "op": "conv",
+      "inputs": [
+        "detail_strip"
+      ],
+      "out": 774,
+      "kernel": [
+        20,
+        20
+      ],
+      "stride": 20,
+      "padding": 0
+    },
+    {
+      "name": "blank_field_evidence",
+      "op": "conv",
+      "inputs": [
+        "interior_absolute"
+      ],
+      "out": 774,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "joint_matches",
+      "op": "add",
+      "inputs": [
+        "gray_matches",
+        "color_matches",
+        "detail_matches",
+        "blank_field_evidence"
+      ]
+    },
+    {
+      "name": "hypothesis_grid",
+      "op": "reshape",
+      "inputs": [
+        "joint_matches"
+      ],
+      "shape": [
+        43,
+        2430,
+        1
+      ]
+    },
+    {
+      "name": "best_hypothesis",
+      "op": "maxpool",
+      "inputs": [
+        "hypothesis_grid"
+      ],
+      "size": [
+        2430,
+        1
+      ],
+      "stride": [
+        2430,
+        1
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_hypothesis"
+      ],
+      "shape": [
+        43
+      ]
+    }
+  ]
+}

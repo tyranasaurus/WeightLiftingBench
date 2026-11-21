@@ -1,0 +1,759 @@
+{
+ "layers": [
+  {
+   "name": "exposure",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "reflect_at_frame",
+   "op": "dense",
+   "inputs": [
+    "exposure"
+   ],
+   "out": 1444
+  },
+  {
+   "name": "expanded_frame",
+   "op": "reshape",
+   "inputs": [
+    "reflect_at_frame"
+   ],
+   "shape": [
+    1,
+    38,
+    38
+   ]
+  },
+  {
+   "name": "compass_spot_and_shade",
+   "op": "conv",
+   "inputs": [
+    "expanded_frame"
+   ],
+   "out": 12,
+   "kernel": [
+    9,
+    9
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "edge",
+   "op": "relu",
+   "inputs": [
+    "compass_spot_and_shade"
+   ]
+  },
+  {
+   "name": "strong",
+   "op": "conv",
+   "inputs": [
+    "edge"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "excess",
+   "op": "relu",
+   "inputs": [
+    "strong"
+   ]
+  },
+  {
+   "name": "attenuate",
+   "op": "conv",
+   "inputs": [
+    "excess"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bounded",
+   "op": "add",
+   "inputs": [
+    "edge",
+    "attenuate"
+   ]
+  },
+  {
+   "name": "nearby",
+   "op": "maxpool",
+   "inputs": [
+    "bounded"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "at_anchor",
+   "op": "conv",
+   "inputs": [
+    "bounded"
+   ],
+   "out": 12,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "local_evidence",
+   "op": "add",
+   "inputs": [
+    "at_anchor",
+    "nearby"
+   ]
+  },
+  {
+   "name": "cells",
+   "op": "avgpool",
+   "inputs": [
+    "local_evidence"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "reflect_cells",
+   "op": "dense",
+   "inputs": [
+    "cells"
+   ],
+   "out": 3072
+  },
+  {
+   "name": "larger_cell_field",
+   "op": "reshape",
+   "inputs": [
+    "reflect_cells"
+   ],
+   "shape": [
+    12,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "pose_agreement_1",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_1",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_1",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_1"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_1",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_1"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_1",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_1"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_2",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_2",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_2",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_2"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_2",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_2"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_2",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_2"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_3",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_3",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_3",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_3"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_3",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_3"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_3",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_3"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_4",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_4",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_4"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_4",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_4"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_4",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_4"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_4",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_4"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_5",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_5",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_5"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_5",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_5"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_5",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_5"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_5",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_5"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_6",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_6",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_6"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_6",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_6"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_6",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_6"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_6",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_6"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_7",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_7",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_7"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_7",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_7"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_7",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_7"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_7",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_7"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "pose_agreement_8",
+   "op": "conv",
+   "inputs": [
+    "larger_cell_field"
+   ],
+   "out": 3840,
+   "kernel": [
+    14,
+    14
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_parts_8",
+   "op": "maxpool",
+   "inputs": [
+    "pose_agreement_8"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "letter_and_view_8",
+   "op": "reshape",
+   "inputs": [
+    "align_parts_8"
+   ],
+   "shape": [
+    24,
+    80,
+    2
+   ]
+  },
+  {
+   "name": "part_agreement_8",
+   "op": "avgpool",
+   "inputs": [
+    "letter_and_view_8"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "best_view_8",
+   "op": "maxpool",
+   "inputs": [
+    "part_agreement_8"
+   ],
+   "size": [
+    80,
+    1
+   ],
+   "stride": [
+    80,
+    1
+   ]
+  },
+  {
+   "name": "view_consensus",
+   "op": "add",
+   "inputs": [
+    "best_view_1",
+    "best_view_2",
+    "best_view_3",
+    "best_view_4",
+    "best_view_5",
+    "best_view_6",
+    "best_view_7",
+    "best_view_8"
+   ]
+  },
+  {
+   "name": "letter_scores",
+   "op": "reshape",
+   "inputs": [
+    "view_consensus"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

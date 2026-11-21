@@ -1,0 +1,3 @@
+The builder draws 9,216 templates for each digit from hand-written lines, Bézier curves and loops. A fixed seed varies the stroke geometry, slant and pen pressure. Each drawing is deskewed and normalized independently; the builder reads no images or fonts and fits no parameters.
+
+For an input digit, the classifier shortlists individual templates using their edge directions, ink coverage, aspect ratio and the shapes of the spaces between strokes. It then compares local patches in both directions, allowing a small displacement, and uses the number and height of enclosed holes as additional evidence. For example, a lower hole favors 6 over 9, but an unclosed loop does not rule out either digit.

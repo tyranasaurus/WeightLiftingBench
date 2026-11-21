@@ -1,0 +1,1232 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "p1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "h1",
+   "op": "avgpool",
+   "inputs": [
+    "p1"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "shp",
+   "op": "conv",
+   "inputs": [
+    "h1"
+   ],
+   "out": 16,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "shpR",
+   "op": "relu",
+   "inputs": [
+    "shp"
+   ]
+  },
+  {
+   "name": "shpM",
+   "op": "maxpool",
+   "inputs": [
+    "shpR"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "shpV",
+   "op": "reshape",
+   "inputs": [
+    "shpM"
+   ],
+   "shape": [
+    16
+   ]
+  },
+  {
+   "name": "sg",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vL",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vLB",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vLBb",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vLG",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dig",
+   "op": "conv",
+   "inputs": [
+    "vLB"
+   ],
+   "out": 30,
+   "kernel": [
+    21,
+    21
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digR",
+   "op": "relu",
+   "inputs": [
+    "dig"
+   ]
+  },
+  {
+   "name": "digM",
+   "op": "maxpool",
+   "inputs": [
+    "digR"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "digV",
+   "op": "reshape",
+   "inputs": [
+    "digM"
+   ],
+   "shape": [
+    30
+   ]
+  },
+  {
+   "name": "arr",
+   "op": "conv",
+   "inputs": [
+    "vLBb"
+   ],
+   "out": 24,
+   "kernel": [
+    21,
+    21
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "arrR",
+   "op": "relu",
+   "inputs": [
+    "arr"
+   ]
+  },
+  {
+   "name": "arrM",
+   "op": "maxpool",
+   "inputs": [
+    "arrR"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "arrV",
+   "op": "reshape",
+   "inputs": [
+    "arrM"
+   ],
+   "shape": [
+    24
+   ]
+  },
+  {
+   "name": "tri",
+   "op": "conv",
+   "inputs": [
+    "vL"
+   ],
+   "out": 30,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "triR",
+   "op": "relu",
+   "inputs": [
+    "tri"
+   ]
+  },
+  {
+   "name": "triM",
+   "op": "maxpool",
+   "inputs": [
+    "triR"
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "stride": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "triV",
+   "op": "reshape",
+   "inputs": [
+    "triM"
+   ],
+   "shape": [
+    30
+   ]
+  },
+  {
+   "name": "sg5",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vLGY",
+   "op": "conv",
+   "inputs": [
+    "sg5"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tlc",
+   "op": "conv",
+   "inputs": [
+    "vLGY"
+   ],
+   "out": 6,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "tlcR",
+   "op": "relu",
+   "inputs": [
+    "tlc"
+   ]
+  },
+  {
+   "name": "tlcM",
+   "op": "maxpool",
+   "inputs": [
+    "tlcR"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "tlcV",
+   "op": "reshape",
+   "inputs": [
+    "tlcM"
+   ],
+   "shape": [
+    6
+   ]
+  },
+  {
+   "name": "reg",
+   "op": "conv",
+   "inputs": [
+    "vLB"
+   ],
+   "out": 40,
+   "kernel": [
+    21,
+    21
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "regV",
+   "op": "dense",
+   "inputs": [
+    "reg"
+   ],
+   "out": 40
+  },
+  {
+   "name": "egx",
+   "op": "conv",
+   "inputs": [
+    "vL"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "egr",
+   "op": "relu",
+   "inputs": [
+    "egx"
+   ]
+  },
+  {
+   "name": "ega",
+   "op": "conv",
+   "inputs": [
+    "egr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "egc",
+   "op": "conv",
+   "inputs": [
+    "ega"
+   ],
+   "out": 4,
+   "kernel": [
+    21,
+    21
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "egV",
+   "op": "dense",
+   "inputs": [
+    "egc"
+   ],
+   "out": 4
+  },
+  {
+   "name": "mxSd0",
+   "op": "dense",
+   "inputs": [
+    "shpV"
+   ],
+   "out": 16
+  },
+  {
+   "name": "mxSa0",
+   "op": "relu",
+   "inputs": [
+    "mxSd0"
+   ]
+  },
+  {
+   "name": "mxSp0",
+   "op": "dense",
+   "inputs": [
+    "shpV"
+   ],
+   "out": 16
+  },
+  {
+   "name": "mxSm0",
+   "op": "add",
+   "inputs": [
+    "mxSa0",
+    "mxSp0"
+   ]
+  },
+  {
+   "name": "mxSd1",
+   "op": "dense",
+   "inputs": [
+    "mxSm0"
+   ],
+   "out": 16
+  },
+  {
+   "name": "mxSa1",
+   "op": "relu",
+   "inputs": [
+    "mxSd1"
+   ]
+  },
+  {
+   "name": "mxSp1",
+   "op": "dense",
+   "inputs": [
+    "mxSm0"
+   ],
+   "out": 16
+  },
+  {
+   "name": "mxSm1",
+   "op": "add",
+   "inputs": [
+    "mxSa1",
+    "mxSp1"
+   ]
+  },
+  {
+   "name": "mxDd0",
+   "op": "dense",
+   "inputs": [
+    "digV"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDa0",
+   "op": "relu",
+   "inputs": [
+    "mxDd0"
+   ]
+  },
+  {
+   "name": "mxDp0",
+   "op": "dense",
+   "inputs": [
+    "digV"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDm0",
+   "op": "add",
+   "inputs": [
+    "mxDa0",
+    "mxDp0"
+   ]
+  },
+  {
+   "name": "mxDd1",
+   "op": "dense",
+   "inputs": [
+    "mxDm0"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDa1",
+   "op": "relu",
+   "inputs": [
+    "mxDd1"
+   ]
+  },
+  {
+   "name": "mxDp1",
+   "op": "dense",
+   "inputs": [
+    "mxDm0"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDm1",
+   "op": "add",
+   "inputs": [
+    "mxDa1",
+    "mxDp1"
+   ]
+  },
+  {
+   "name": "mxDd2",
+   "op": "dense",
+   "inputs": [
+    "mxDm1"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDa2",
+   "op": "relu",
+   "inputs": [
+    "mxDd2"
+   ]
+  },
+  {
+   "name": "mxDp2",
+   "op": "dense",
+   "inputs": [
+    "mxDm1"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxDm2",
+   "op": "add",
+   "inputs": [
+    "mxDa2",
+    "mxDp2"
+   ]
+  },
+  {
+   "name": "mxAd0",
+   "op": "dense",
+   "inputs": [
+    "arrV"
+   ],
+   "out": 24
+  },
+  {
+   "name": "mxAa0",
+   "op": "relu",
+   "inputs": [
+    "mxAd0"
+   ]
+  },
+  {
+   "name": "mxAp0",
+   "op": "dense",
+   "inputs": [
+    "arrV"
+   ],
+   "out": 24
+  },
+  {
+   "name": "mxAm0",
+   "op": "add",
+   "inputs": [
+    "mxAa0",
+    "mxAp0"
+   ]
+  },
+  {
+   "name": "mxAd1",
+   "op": "dense",
+   "inputs": [
+    "mxAm0"
+   ],
+   "out": 24
+  },
+  {
+   "name": "mxAa1",
+   "op": "relu",
+   "inputs": [
+    "mxAd1"
+   ]
+  },
+  {
+   "name": "mxAp1",
+   "op": "dense",
+   "inputs": [
+    "mxAm0"
+   ],
+   "out": 24
+  },
+  {
+   "name": "mxAm1",
+   "op": "add",
+   "inputs": [
+    "mxAa1",
+    "mxAp1"
+   ]
+  },
+  {
+   "name": "mxTd0",
+   "op": "dense",
+   "inputs": [
+    "triV"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxTa0",
+   "op": "relu",
+   "inputs": [
+    "mxTd0"
+   ]
+  },
+  {
+   "name": "mxTp0",
+   "op": "dense",
+   "inputs": [
+    "triV"
+   ],
+   "out": 30
+  },
+  {
+   "name": "mxTm0",
+   "op": "add",
+   "inputs": [
+    "mxTa0",
+    "mxTp0"
+   ]
+  },
+  {
+   "name": "mxGd0",
+   "op": "dense",
+   "inputs": [
+    "tlcV"
+   ],
+   "out": 6
+  },
+  {
+   "name": "mxGa0",
+   "op": "relu",
+   "inputs": [
+    "mxGd0"
+   ]
+  },
+  {
+   "name": "mxGp0",
+   "op": "dense",
+   "inputs": [
+    "tlcV"
+   ],
+   "out": 6
+  },
+  {
+   "name": "mxGm0",
+   "op": "add",
+   "inputs": [
+    "mxGa0",
+    "mxGp0"
+   ]
+  },
+  {
+   "name": "catV",
+   "op": "dense",
+   "inputs": [
+    "mxSm1"
+   ],
+   "out": 7
+  },
+  {
+   "name": "othV",
+   "op": "dense",
+   "inputs": [
+    "catV"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOd0",
+   "op": "dense",
+   "inputs": [
+    "othV"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOa0",
+   "op": "relu",
+   "inputs": [
+    "mxOd0"
+   ]
+  },
+  {
+   "name": "mxOp0",
+   "op": "dense",
+   "inputs": [
+    "othV"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOm0",
+   "op": "add",
+   "inputs": [
+    "mxOa0",
+    "mxOp0"
+   ]
+  },
+  {
+   "name": "mxOd1",
+   "op": "dense",
+   "inputs": [
+    "mxOm0"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOa1",
+   "op": "relu",
+   "inputs": [
+    "mxOd1"
+   ]
+  },
+  {
+   "name": "mxOp1",
+   "op": "dense",
+   "inputs": [
+    "mxOm0"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOm1",
+   "op": "add",
+   "inputs": [
+    "mxOa1",
+    "mxOp1"
+   ]
+  },
+  {
+   "name": "mxOd2",
+   "op": "dense",
+   "inputs": [
+    "mxOm1"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOa2",
+   "op": "relu",
+   "inputs": [
+    "mxOd2"
+   ]
+  },
+  {
+   "name": "mxOp2",
+   "op": "dense",
+   "inputs": [
+    "mxOm1"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOm2",
+   "op": "add",
+   "inputs": [
+    "mxOa2",
+    "mxOp2"
+   ]
+  },
+  {
+   "name": "mxOd3",
+   "op": "dense",
+   "inputs": [
+    "mxOm2"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOa3",
+   "op": "relu",
+   "inputs": [
+    "mxOd3"
+   ]
+  },
+  {
+   "name": "mxOp3",
+   "op": "dense",
+   "inputs": [
+    "mxOm2"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOm3",
+   "op": "add",
+   "inputs": [
+    "mxOa3",
+    "mxOp3"
+   ]
+  },
+  {
+   "name": "mxOd4",
+   "op": "dense",
+   "inputs": [
+    "mxOm3"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOa4",
+   "op": "relu",
+   "inputs": [
+    "mxOd4"
+   ]
+  },
+  {
+   "name": "mxOp4",
+   "op": "dense",
+   "inputs": [
+    "mxOm3"
+   ],
+   "out": 42
+  },
+  {
+   "name": "mxOm4",
+   "op": "add",
+   "inputs": [
+    "mxOa4",
+    "mxOp4"
+   ]
+  },
+  {
+   "name": "othX",
+   "op": "dense",
+   "inputs": [
+    "mxOm4"
+   ],
+   "out": 7
+  },
+  {
+   "name": "digRep",
+   "op": "dense",
+   "inputs": [
+    "mxDm2"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2d0",
+   "op": "dense",
+   "inputs": [
+    "digRep"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a0",
+   "op": "relu",
+   "inputs": [
+    "mxA2d0"
+   ]
+  },
+  {
+   "name": "mxA2p0",
+   "op": "dense",
+   "inputs": [
+    "digRep"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m0",
+   "op": "add",
+   "inputs": [
+    "mxA2a0",
+    "mxA2p0"
+   ]
+  },
+  {
+   "name": "mxA2d1",
+   "op": "dense",
+   "inputs": [
+    "mxA2m0"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a1",
+   "op": "relu",
+   "inputs": [
+    "mxA2d1"
+   ]
+  },
+  {
+   "name": "mxA2p1",
+   "op": "dense",
+   "inputs": [
+    "mxA2m0"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m1",
+   "op": "add",
+   "inputs": [
+    "mxA2a1",
+    "mxA2p1"
+   ]
+  },
+  {
+   "name": "mxA2d2",
+   "op": "dense",
+   "inputs": [
+    "mxA2m1"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a2",
+   "op": "relu",
+   "inputs": [
+    "mxA2d2"
+   ]
+  },
+  {
+   "name": "mxA2p2",
+   "op": "dense",
+   "inputs": [
+    "mxA2m1"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m2",
+   "op": "add",
+   "inputs": [
+    "mxA2a2",
+    "mxA2p2"
+   ]
+  },
+  {
+   "name": "mxA2d3",
+   "op": "dense",
+   "inputs": [
+    "mxA2m2"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a3",
+   "op": "relu",
+   "inputs": [
+    "mxA2d3"
+   ]
+  },
+  {
+   "name": "mxA2p3",
+   "op": "dense",
+   "inputs": [
+    "mxA2m2"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m3",
+   "op": "add",
+   "inputs": [
+    "mxA2a3",
+    "mxA2p3"
+   ]
+  },
+  {
+   "name": "mxA2d4",
+   "op": "dense",
+   "inputs": [
+    "mxA2m3"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a4",
+   "op": "relu",
+   "inputs": [
+    "mxA2d4"
+   ]
+  },
+  {
+   "name": "mxA2p4",
+   "op": "dense",
+   "inputs": [
+    "mxA2m3"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m4",
+   "op": "add",
+   "inputs": [
+    "mxA2a4",
+    "mxA2p4"
+   ]
+  },
+  {
+   "name": "mxA2d5",
+   "op": "dense",
+   "inputs": [
+    "mxA2m4"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a5",
+   "op": "relu",
+   "inputs": [
+    "mxA2d5"
+   ]
+  },
+  {
+   "name": "mxA2p5",
+   "op": "dense",
+   "inputs": [
+    "mxA2m4"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m5",
+   "op": "add",
+   "inputs": [
+    "mxA2a5",
+    "mxA2p5"
+   ]
+  },
+  {
+   "name": "mxA2d6",
+   "op": "dense",
+   "inputs": [
+    "mxA2m5"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2a6",
+   "op": "relu",
+   "inputs": [
+    "mxA2d6"
+   ]
+  },
+  {
+   "name": "mxA2p6",
+   "op": "dense",
+   "inputs": [
+    "mxA2m5"
+   ],
+   "out": 8
+  },
+  {
+   "name": "mxA2m6",
+   "op": "add",
+   "inputs": [
+    "mxA2a6",
+    "mxA2p6"
+   ]
+  },
+  {
+   "name": "digAny",
+   "op": "dense",
+   "inputs": [
+    "mxA2m6"
+   ],
+   "out": 1
+  },
+  {
+   "name": "dShape",
+   "op": "dense",
+   "inputs": [
+    "catV"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dShape2",
+   "op": "dense",
+   "inputs": [
+    "othX"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dDigit",
+   "op": "dense",
+   "inputs": [
+    "mxDm2"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dArrow",
+   "op": "dense",
+   "inputs": [
+    "mxAm1"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dTri",
+   "op": "dense",
+   "inputs": [
+    "mxTm0"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dTlc",
+   "op": "dense",
+   "inputs": [
+    "mxGm0"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dReg",
+   "op": "dense",
+   "inputs": [
+    "regV"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dDigAny",
+   "op": "dense",
+   "inputs": [
+    "digAny"
+   ],
+   "out": 43
+  },
+  {
+   "name": "dEdge",
+   "op": "dense",
+   "inputs": [
+    "egV"
+   ],
+   "out": 43
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "dShape",
+    "dShape2",
+    "dDigit",
+    "dArrow",
+    "dTri",
+    "dTlc",
+    "dReg",
+    "dEdge",
+    "dDigAny"
+   ]
+  }
+ ]
+}

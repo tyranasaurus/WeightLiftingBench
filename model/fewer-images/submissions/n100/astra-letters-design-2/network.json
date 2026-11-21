@@ -1,0 +1,328 @@
+{
+  "layers": [
+    {
+      "name": "exposure",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "border",
+      "op": "dense",
+      "inputs": [
+        "exposure"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "padded",
+      "op": "reshape",
+      "inputs": [
+        "border"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "differentials",
+      "op": "conv",
+      "inputs": [
+        "padded"
+      ],
+      "out": 10,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "half_waves",
+      "op": "relu",
+      "inputs": [
+        "differentials"
+      ]
+    },
+    {
+      "name": "orient_and_clip",
+      "op": "conv",
+      "inputs": [
+        "half_waves"
+      ],
+      "out": 20,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rectified",
+      "op": "relu",
+      "inputs": [
+        "orient_and_clip"
+      ]
+    },
+    {
+      "name": "edge_fields",
+      "op": "conv",
+      "inputs": [
+        "rectified"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cells",
+      "op": "avgpool",
+      "inputs": [
+        "edge_fields"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "standard_fields",
+      "op": "norm",
+      "inputs": [
+        "cells"
+      ]
+    },
+    {
+      "name": "soft_light",
+      "op": "avgpool",
+      "inputs": [
+        "exposure"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "light_field",
+      "op": "norm",
+      "inputs": [
+        "soft_light"
+      ]
+    },
+    {
+      "name": "edge_channels",
+      "op": "dense",
+      "inputs": [
+        "standard_fields"
+      ],
+      "out": 1859
+    },
+    {
+      "name": "light_channel",
+      "op": "dense",
+      "inputs": [
+        "light_field"
+      ],
+      "out": 1859
+    },
+    {
+      "name": "all_channels",
+      "op": "add",
+      "inputs": [
+        "edge_channels",
+        "light_channel"
+      ]
+    },
+    {
+      "name": "upper",
+      "op": "dense",
+      "inputs": [
+        "all_channels"
+      ],
+      "out": 1144
+    },
+    {
+      "name": "offsets",
+      "op": "dense",
+      "inputs": [
+        "all_channels"
+      ],
+      "out": 2860
+    },
+    {
+      "name": "shifted_lower",
+      "op": "reshape",
+      "inputs": [
+        "offsets"
+      ],
+      "shape": [
+        715,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "upper_matches",
+      "op": "dense",
+      "inputs": [
+        "upper"
+      ],
+      "out": 57600
+    },
+    {
+      "name": "lower_matches",
+      "op": "conv",
+      "inputs": [
+        "shifted_lower"
+      ],
+      "out": 57600,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "wrist_offset",
+      "op": "maxpool",
+      "inputs": [
+        "lower_matches"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "lower_result",
+      "op": "reshape",
+      "inputs": [
+        "wrist_offset"
+      ],
+      "shape": [
+        57600
+      ]
+    },
+    {
+      "name": "whole_matches",
+      "op": "add",
+      "inputs": [
+        "upper_matches",
+        "lower_result"
+      ]
+    },
+    {
+      "name": "group_by_letter",
+      "op": "reshape",
+      "inputs": [
+        "whole_matches"
+      ],
+      "shape": [
+        24,
+        1,
+        2400
+      ]
+    },
+    {
+      "name": "local_best",
+      "op": "maxpool",
+      "inputs": [
+        "group_by_letter"
+      ],
+      "size": [
+        1,
+        24
+      ],
+      "stride": [
+        1,
+        24
+      ]
+    },
+    {
+      "name": "group_best",
+      "op": "maxpool",
+      "inputs": [
+        "local_best"
+      ],
+      "size": [
+        1,
+        25
+      ],
+      "stride": [
+        1,
+        25
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "group_best"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "pose_support",
+      "op": "avgpool",
+      "inputs": [
+        "group_best"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "combined_support",
+      "op": "add",
+      "inputs": [
+        "best_pose",
+        "pose_support"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "combined_support"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

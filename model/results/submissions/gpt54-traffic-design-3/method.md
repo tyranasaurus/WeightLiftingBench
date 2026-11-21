@@ -1,0 +1,3 @@
+I built a hand-designed template-matching network. The first branch normalizes the RGB image, and a second branch converts it to grayscale and normalizes that too. Large 32x32 convolution filters are generated from synthetic drawings of the 43 traffic sign classes at three hand-chosen scales, using simple geometric primitives such as circles, triangles, arrows, vehicles, digits and warning symbols.
+
+The convolution outputs are pooled over small shifts to allow some translation tolerance. Dense layers then implement repeated pairwise maxima so that each class score is the maximum over its three scale templates. All weights are produced directly from formulas and typed geometric models in build.py, with no fitting or training.

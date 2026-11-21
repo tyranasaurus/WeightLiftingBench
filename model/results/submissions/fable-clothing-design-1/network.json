@@ -1,0 +1,415 @@
+{
+ "layers": [
+  {
+   "name": "sil",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sil_r",
+   "op": "relu",
+   "inputs": [
+    "sil"
+   ]
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "sil_r"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "blur"
+   ],
+   "out": 50000
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    5000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    5000
+   ],
+   "stride": [
+    1,
+    5000
+   ]
+  },
+  {
+   "name": "shape10",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "xn",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "line",
+   "op": "conv",
+   "inputs": [
+    "xn"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "line_gate",
+   "op": "conv",
+   "inputs": [
+    "sil_r"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "line_g",
+   "op": "add",
+   "inputs": [
+    "line",
+    "line_gate"
+   ]
+  },
+  {
+   "name": "line_r",
+   "op": "relu",
+   "inputs": [
+    "line_g"
+   ]
+  },
+  {
+   "name": "line_p",
+   "op": "maxpool",
+   "inputs": [
+    "line_r"
+   ],
+   "size": [
+    9,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "line_c",
+   "op": "dense",
+   "inputs": [
+    "line_p"
+   ],
+   "out": 2
+  },
+  {
+   "name": "line1",
+   "op": "conv",
+   "inputs": [
+    "xn"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "line1_r",
+   "op": "relu",
+   "inputs": [
+    "line1"
+   ]
+  },
+  {
+   "name": "line_o",
+   "op": "dense",
+   "inputs": [
+    "line1_r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "line_h",
+   "op": "add",
+   "inputs": [
+    "line_c",
+    "line_o"
+   ]
+  },
+  {
+   "name": "line_hr",
+   "op": "relu",
+   "inputs": [
+    "line_h"
+   ]
+  },
+  {
+   "name": "line_s",
+   "op": "dense",
+   "inputs": [
+    "line_hr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "shift",
+   "op": "conv",
+   "inputs": [
+    "sil_r"
+   ],
+   "out": 12,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "shift_g",
+   "op": "reshape",
+   "inputs": [
+    "shift"
+   ],
+   "shape": [
+    3,
+    4,
+    784
+   ]
+  },
+  {
+   "name": "shift_m",
+   "op": "maxpool",
+   "inputs": [
+    "shift_g"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "uds",
+   "op": "reshape",
+   "inputs": [
+    "shift_m"
+   ],
+   "shape": [
+    3,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "gap",
+   "op": "conv",
+   "inputs": [
+    "uds"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gap_r",
+   "op": "relu",
+   "inputs": [
+    "gap"
+   ]
+  },
+  {
+   "name": "band",
+   "op": "conv",
+   "inputs": [
+    "gap_r"
+   ],
+   "out": 2,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "band_r",
+   "op": "relu",
+   "inputs": [
+    "band"
+   ]
+  },
+  {
+   "name": "bandw",
+   "op": "conv",
+   "inputs": [
+    "band_r"
+   ],
+   "out": 2,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "bandw_r",
+   "op": "relu",
+   "inputs": [
+    "bandw"
+   ]
+  },
+  {
+   "name": "sgap_g",
+   "op": "conv",
+   "inputs": [
+    "gap_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sgap_m",
+   "op": "conv",
+   "inputs": [
+    "bandw_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sgap",
+   "op": "add",
+   "inputs": [
+    "sgap_g",
+    "sgap_m"
+   ]
+  },
+  {
+   "name": "sgap_r",
+   "op": "relu",
+   "inputs": [
+    "sgap"
+   ]
+  },
+  {
+   "name": "gap_a",
+   "op": "avgpool",
+   "inputs": [
+    "sgap_r"
+   ],
+   "size": [
+    28,
+    28
+   ],
+   "stride": [
+    28,
+    28
+   ]
+  },
+  {
+   "name": "gap_h",
+   "op": "dense",
+   "inputs": [
+    "gap_a"
+   ],
+   "out": 2
+  },
+  {
+   "name": "gap_hr",
+   "op": "relu",
+   "inputs": [
+    "gap_h"
+   ]
+  },
+  {
+   "name": "gap_s",
+   "op": "dense",
+   "inputs": [
+    "gap_hr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape10",
+    "line_s",
+    "gap_s"
+   ]
+  }
+ ]
+}

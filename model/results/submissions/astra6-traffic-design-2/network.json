@@ -1,0 +1,717 @@
+{
+  "layers": [
+    {
+      "name": "log_hinges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "log_relu",
+      "op": "relu",
+      "inputs": [
+        "log_hinges"
+      ]
+    },
+    {
+      "name": "log_rgb",
+      "op": "conv",
+      "inputs": [
+        "log_relu"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "log_rgb"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "global_luminance_norm",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "colour_hinges",
+      "op": "conv",
+      "inputs": [
+        "log_rgb"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_relu",
+      "op": "relu",
+      "inputs": [
+        "colour_hinges"
+      ]
+    },
+    {
+      "name": "bounded_colours",
+      "op": "conv",
+      "inputs": [
+        "colour_relu"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "grey_feature",
+      "op": "conv",
+      "inputs": [
+        "global_luminance_norm"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_and_grey",
+      "op": "add",
+      "inputs": [
+        "bounded_colours",
+        "grey_feature"
+      ]
+    },
+    {
+      "name": "family_geometry",
+      "op": "dense",
+      "inputs": [
+        "colour_and_grey"
+      ],
+      "out": 756
+    },
+    {
+      "name": "family_grid",
+      "op": "reshape",
+      "inputs": [
+        "family_geometry"
+      ],
+      "shape": [
+        7,
+        108,
+        1
+      ]
+    },
+    {
+      "name": "circle_resample",
+      "op": "dense",
+      "inputs": [
+        "global_luminance_norm"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "circle_patches",
+      "op": "reshape",
+      "inputs": [
+        "circle_resample"
+      ],
+      "shape": [
+        108,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "circle_contrast",
+      "op": "norm",
+      "inputs": [
+        "circle_patches"
+      ]
+    },
+    {
+      "name": "circle_strip",
+      "op": "reshape",
+      "inputs": [
+        "circle_contrast"
+      ],
+      "shape": [
+        1,
+        1728,
+        16
+      ]
+    },
+    {
+      "name": "circle_symbols",
+      "op": "conv",
+      "inputs": [
+        "circle_strip"
+      ],
+      "out": 3375,
+      "kernel": [
+        16,
+        16
+      ],
+      "stride": 16,
+      "padding": 0
+    },
+    {
+      "name": "circle_symbol_variants",
+      "op": "reshape",
+      "inputs": [
+        "circle_symbols"
+      ],
+      "shape": [
+        25,
+        135,
+        108
+      ]
+    },
+    {
+      "name": "circle_best_artwork",
+      "op": "maxpool",
+      "inputs": [
+        "circle_symbol_variants"
+      ],
+      "size": [
+        135,
+        1
+      ],
+      "stride": [
+        135,
+        1
+      ]
+    },
+    {
+      "name": "circle_symbol_grid",
+      "op": "reshape",
+      "inputs": [
+        "circle_best_artwork"
+      ],
+      "shape": [
+        25,
+        108,
+        1
+      ]
+    },
+    {
+      "name": "circle_colour_rules",
+      "op": "conv",
+      "inputs": [
+        "family_grid"
+      ],
+      "out": 25,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_joint_scores",
+      "op": "add",
+      "inputs": [
+        "circle_symbol_grid",
+        "circle_colour_rules"
+      ]
+    },
+    {
+      "name": "circle_best",
+      "op": "maxpool",
+      "inputs": [
+        "circle_joint_scores"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "circle_outputs",
+      "op": "dense",
+      "inputs": [
+        "circle_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "triangle_resample",
+      "op": "dense",
+      "inputs": [
+        "global_luminance_norm"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "triangle_patches",
+      "op": "reshape",
+      "inputs": [
+        "triangle_resample"
+      ],
+      "shape": [
+        108,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "triangle_contrast",
+      "op": "norm",
+      "inputs": [
+        "triangle_patches"
+      ]
+    },
+    {
+      "name": "triangle_strip",
+      "op": "reshape",
+      "inputs": [
+        "triangle_contrast"
+      ],
+      "shape": [
+        1,
+        1728,
+        16
+      ]
+    },
+    {
+      "name": "triangle_symbols",
+      "op": "conv",
+      "inputs": [
+        "triangle_strip"
+      ],
+      "out": 2025,
+      "kernel": [
+        16,
+        16
+      ],
+      "stride": 16,
+      "padding": 0
+    },
+    {
+      "name": "triangle_symbol_variants",
+      "op": "reshape",
+      "inputs": [
+        "triangle_symbols"
+      ],
+      "shape": [
+        15,
+        135,
+        108
+      ]
+    },
+    {
+      "name": "triangle_best_artwork",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_symbol_variants"
+      ],
+      "size": [
+        135,
+        1
+      ],
+      "stride": [
+        135,
+        1
+      ]
+    },
+    {
+      "name": "triangle_symbol_grid",
+      "op": "reshape",
+      "inputs": [
+        "triangle_best_artwork"
+      ],
+      "shape": [
+        15,
+        108,
+        1
+      ]
+    },
+    {
+      "name": "triangle_colour_rules",
+      "op": "conv",
+      "inputs": [
+        "family_grid"
+      ],
+      "out": 15,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_joint_scores",
+      "op": "add",
+      "inputs": [
+        "triangle_symbol_grid",
+        "triangle_colour_rules"
+      ]
+    },
+    {
+      "name": "triangle_best",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_joint_scores"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "triangle_outputs",
+      "op": "dense",
+      "inputs": [
+        "triangle_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "yield_resample",
+      "op": "dense",
+      "inputs": [
+        "global_luminance_norm"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "yield_patches",
+      "op": "reshape",
+      "inputs": [
+        "yield_resample"
+      ],
+      "shape": [
+        108,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "blank_13_strip",
+      "op": "reshape",
+      "inputs": [
+        "yield_patches"
+      ],
+      "shape": [
+        1,
+        1728,
+        16
+      ]
+    },
+    {
+      "name": "blank_13_signed",
+      "op": "conv",
+      "inputs": [
+        "blank_13_strip"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_13_absolute_halves",
+      "op": "relu",
+      "inputs": [
+        "blank_13_signed"
+      ]
+    },
+    {
+      "name": "blank_13_mean_deviations",
+      "op": "avgpool",
+      "inputs": [
+        "blank_13_absolute_halves"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "blank_13_flatness",
+      "op": "conv",
+      "inputs": [
+        "blank_13_mean_deviations"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_13_family",
+      "op": "conv",
+      "inputs": [
+        "family_grid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_13_joint",
+      "op": "add",
+      "inputs": [
+        "blank_13_flatness",
+        "blank_13_family"
+      ]
+    },
+    {
+      "name": "blank_13_best",
+      "op": "maxpool",
+      "inputs": [
+        "blank_13_joint"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "blank_13_output",
+      "op": "dense",
+      "inputs": [
+        "blank_13_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "blank_15_strip",
+      "op": "reshape",
+      "inputs": [
+        "circle_patches"
+      ],
+      "shape": [
+        1,
+        1728,
+        16
+      ]
+    },
+    {
+      "name": "blank_15_signed",
+      "op": "conv",
+      "inputs": [
+        "blank_15_strip"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_15_absolute_halves",
+      "op": "relu",
+      "inputs": [
+        "blank_15_signed"
+      ]
+    },
+    {
+      "name": "blank_15_mean_deviations",
+      "op": "avgpool",
+      "inputs": [
+        "blank_15_absolute_halves"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "blank_15_flatness",
+      "op": "conv",
+      "inputs": [
+        "blank_15_mean_deviations"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_15_family",
+      "op": "conv",
+      "inputs": [
+        "family_grid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "blank_15_joint",
+      "op": "add",
+      "inputs": [
+        "blank_15_flatness",
+        "blank_15_family"
+      ]
+    },
+    {
+      "name": "blank_15_best",
+      "op": "maxpool",
+      "inputs": [
+        "blank_15_joint"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "blank_15_output",
+      "op": "dense",
+      "inputs": [
+        "blank_15_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "whole_sign_family",
+      "op": "maxpool",
+      "inputs": [
+        "family_grid"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "whole_sign_compatibility",
+      "op": "dense",
+      "inputs": [
+        "whole_sign_family"
+      ],
+      "out": 43
+    },
+    {
+      "name": "priority_family",
+      "op": "conv",
+      "inputs": [
+        "family_grid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "priority_best",
+      "op": "maxpool",
+      "inputs": [
+        "priority_family"
+      ],
+      "size": [
+        108,
+        1
+      ],
+      "stride": [
+        108,
+        1
+      ]
+    },
+    {
+      "name": "priority_output",
+      "op": "dense",
+      "inputs": [
+        "priority_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "circle_outputs",
+        "triangle_outputs",
+        "blank_13_output",
+        "blank_15_output",
+        "whole_sign_compatibility",
+        "priority_output"
+      ]
+    }
+  ]
+}

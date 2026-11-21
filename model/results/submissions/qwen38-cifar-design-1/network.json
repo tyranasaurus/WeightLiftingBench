@@ -1,0 +1,153 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 16,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "n1",
+   "op": "norm",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "n1"
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "maxpool",
+   "inputs": [
+    "r1"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "p1"
+   ],
+   "out": 16,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "n2",
+   "op": "norm",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "n2"
+   ]
+  },
+  {
+   "name": "p2",
+   "op": "maxpool",
+   "inputs": [
+    "r2"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "a4",
+   "op": "avgpool",
+   "inputs": [
+    "p2"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "a1",
+   "op": "avgpool",
+   "inputs": [
+    "p2"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "d8",
+   "op": "dense",
+   "inputs": [
+    "p2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "d4",
+   "op": "dense",
+   "inputs": [
+    "a4"
+   ],
+   "out": 10
+  },
+  {
+   "name": "d1",
+   "op": "dense",
+   "inputs": [
+    "a1"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "d8",
+    "d4",
+    "d1"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,291 @@
+{
+ "layers": [
+  {
+   "name": "p48",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "p48"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "S48",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "S24",
+   "op": "avgpool",
+   "inputs": [
+    "S48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "S12",
+   "op": "avgpool",
+   "inputs": [
+    "S24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "b48",
+   "op": "conv",
+   "inputs": [
+    "S48"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "b48r",
+   "op": "relu",
+   "inputs": [
+    "b48"
+   ]
+  },
+  {
+   "name": "b48m",
+   "op": "maxpool",
+   "inputs": [
+    "b48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "b48d",
+   "op": "dense",
+   "inputs": [
+    "b48m"
+   ],
+   "out": 2
+  },
+  {
+   "name": "b24",
+   "op": "conv",
+   "inputs": [
+    "S24"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "b24r",
+   "op": "relu",
+   "inputs": [
+    "b24"
+   ]
+  },
+  {
+   "name": "b24m",
+   "op": "maxpool",
+   "inputs": [
+    "b24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b24d",
+   "op": "dense",
+   "inputs": [
+    "b24m"
+   ],
+   "out": 2
+  },
+  {
+   "name": "b12",
+   "op": "conv",
+   "inputs": [
+    "S12"
+   ],
+   "out": 1,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "b12r",
+   "op": "relu",
+   "inputs": [
+    "b12"
+   ]
+  },
+  {
+   "name": "b12m",
+   "op": "maxpool",
+   "inputs": [
+    "b12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "b12d",
+   "op": "dense",
+   "inputs": [
+    "b12m"
+   ],
+   "out": 2
+  },
+  {
+   "name": "favg",
+   "op": "avgpool",
+   "inputs": [
+    "S48"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "fc",
+   "op": "conv",
+   "inputs": [
+    "favg"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fr",
+   "op": "relu",
+   "inputs": [
+    "fc"
+   ]
+  },
+  {
+   "name": "fd",
+   "op": "dense",
+   "inputs": [
+    "fr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "b48d",
+    "b24d",
+    "b12d",
+    "fd"
+   ]
+  }
+ ]
+}

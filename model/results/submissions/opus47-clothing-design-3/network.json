@@ -1,0 +1,1 @@
+{"layers": [{"name": "pool", "op": "avgpool", "inputs": ["image"], "size": [2, 2], "stride": [2, 2]}, {"name": "flat", "op": "reshape", "inputs": ["pool"], "shape": [196]}, {"name": "out", "op": "dense", "inputs": ["flat"], "out": 10}]}

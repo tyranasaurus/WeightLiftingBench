@@ -1,0 +1,742 @@
+{
+ "layers": [
+  {
+   "name": "colf",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "c28",
+   "op": "conv",
+   "inputs": [
+    "colf"
+   ],
+   "out": 3,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c28n_m",
+   "op": "avgpool",
+   "inputs": [
+    "c28"
+   ],
+   "size": [
+    28,
+    28
+   ],
+   "stride": [
+    28,
+    28
+   ]
+  },
+  {
+   "name": "c28n_d",
+   "op": "dense",
+   "inputs": [
+    "c28n_m"
+   ],
+   "out": 2352
+  },
+  {
+   "name": "c28n_e",
+   "op": "reshape",
+   "inputs": [
+    "c28n_d"
+   ],
+   "shape": [
+    3,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "c28n_z",
+   "op": "add",
+   "inputs": [
+    "c28",
+    "c28n_e"
+   ]
+  },
+  {
+   "name": "c28n_pm",
+   "op": "conv",
+   "inputs": [
+    "c28n_z"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c28n_r",
+   "op": "reshape",
+   "inputs": [
+    "c28n_pm"
+   ],
+   "shape": [
+    1,
+    168,
+    28
+   ]
+  },
+  {
+   "name": "c28n_n",
+   "op": "norm",
+   "inputs": [
+    "c28n_r"
+   ]
+  },
+  {
+   "name": "c28n_b",
+   "op": "reshape",
+   "inputs": [
+    "c28n_n"
+   ],
+   "shape": [
+    6,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "c28n",
+   "op": "conv",
+   "inputs": [
+    "c28n_b"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "w2",
+   "op": "conv",
+   "inputs": [
+    "c28n"
+   ],
+   "out": 817,
+   "kernel": [
+    22,
+    22
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c22",
+   "op": "conv",
+   "inputs": [
+    "colf"
+   ],
+   "out": 3,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c22n_m",
+   "op": "avgpool",
+   "inputs": [
+    "c22"
+   ],
+   "size": [
+    22,
+    22
+   ],
+   "stride": [
+    22,
+    22
+   ]
+  },
+  {
+   "name": "c22n_d",
+   "op": "dense",
+   "inputs": [
+    "c22n_m"
+   ],
+   "out": 1452
+  },
+  {
+   "name": "c22n_e",
+   "op": "reshape",
+   "inputs": [
+    "c22n_d"
+   ],
+   "shape": [
+    3,
+    22,
+    22
+   ]
+  },
+  {
+   "name": "c22n_z",
+   "op": "add",
+   "inputs": [
+    "c22",
+    "c22n_e"
+   ]
+  },
+  {
+   "name": "c22n_pm",
+   "op": "conv",
+   "inputs": [
+    "c22n_z"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c22n_r",
+   "op": "reshape",
+   "inputs": [
+    "c22n_pm"
+   ],
+   "shape": [
+    1,
+    132,
+    22
+   ]
+  },
+  {
+   "name": "c22n_n",
+   "op": "norm",
+   "inputs": [
+    "c22n_r"
+   ]
+  },
+  {
+   "name": "c22n_b",
+   "op": "reshape",
+   "inputs": [
+    "c22n_n"
+   ],
+   "shape": [
+    6,
+    22,
+    22
+   ]
+  },
+  {
+   "name": "c22n",
+   "op": "conv",
+   "inputs": [
+    "c22n_b"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "w3",
+   "op": "conv",
+   "inputs": [
+    "c22n"
+   ],
+   "out": 817,
+   "kernel": [
+    16,
+    16
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c14",
+   "op": "avgpool",
+   "inputs": [
+    "c28"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "c14n_m",
+   "op": "avgpool",
+   "inputs": [
+    "c14"
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "stride": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "c14n_d",
+   "op": "dense",
+   "inputs": [
+    "c14n_m"
+   ],
+   "out": 588
+  },
+  {
+   "name": "c14n_e",
+   "op": "reshape",
+   "inputs": [
+    "c14n_d"
+   ],
+   "shape": [
+    3,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "c14n_z",
+   "op": "add",
+   "inputs": [
+    "c14",
+    "c14n_e"
+   ]
+  },
+  {
+   "name": "c14n_pm",
+   "op": "conv",
+   "inputs": [
+    "c14n_z"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c14n_r",
+   "op": "reshape",
+   "inputs": [
+    "c14n_pm"
+   ],
+   "shape": [
+    1,
+    84,
+    14
+   ]
+  },
+  {
+   "name": "c14n_n",
+   "op": "norm",
+   "inputs": [
+    "c14n_r"
+   ]
+  },
+  {
+   "name": "c14n_b",
+   "op": "reshape",
+   "inputs": [
+    "c14n_n"
+   ],
+   "shape": [
+    6,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "c14n",
+   "op": "conv",
+   "inputs": [
+    "c14n_b"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "w1",
+   "op": "conv",
+   "inputs": [
+    "c14n"
+   ],
+   "out": 817,
+   "kernel": [
+    14,
+    14
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "hg",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 24,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hg_r",
+   "op": "relu",
+   "inputs": [
+    "hg"
+   ]
+  },
+  {
+   "name": "hs",
+   "op": "conv",
+   "inputs": [
+    "hg_r"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hs_r",
+   "op": "relu",
+   "inputs": [
+    "hs"
+   ]
+  },
+  {
+   "name": "hq",
+   "op": "conv",
+   "inputs": [
+    "hs_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hf",
+   "op": "conv",
+   "inputs": [
+    "hq"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hf22",
+   "op": "conv",
+   "inputs": [
+    "hf"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hf22n_r",
+   "op": "reshape",
+   "inputs": [
+    "hf22"
+   ],
+   "shape": [
+    1,
+    176,
+    22
+   ]
+  },
+  {
+   "name": "hf22n_n",
+   "op": "norm",
+   "inputs": [
+    "hf22n_r"
+   ]
+  },
+  {
+   "name": "hf22n",
+   "op": "reshape",
+   "inputs": [
+    "hf22n_n"
+   ],
+   "shape": [
+    8,
+    22,
+    22
+   ]
+  },
+  {
+   "name": "h3",
+   "op": "conv",
+   "inputs": [
+    "hf22n"
+   ],
+   "out": 817,
+   "kernel": [
+    16,
+    16
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hc",
+   "op": "conv",
+   "inputs": [
+    "hq"
+   ],
+   "out": 8,
+   "kernel": [
+    10,
+    10
+   ],
+   "stride": 2,
+   "padding": 4
+  },
+  {
+   "name": "hcn_r",
+   "op": "reshape",
+   "inputs": [
+    "hc"
+   ],
+   "shape": [
+    1,
+    112,
+    14
+   ]
+  },
+  {
+   "name": "hcn_n",
+   "op": "norm",
+   "inputs": [
+    "hcn_r"
+   ]
+  },
+  {
+   "name": "hcn",
+   "op": "reshape",
+   "inputs": [
+    "hcn_n"
+   ],
+   "shape": [
+    8,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "h1",
+   "op": "conv",
+   "inputs": [
+    "hcn"
+   ],
+   "out": 817,
+   "kernel": [
+    14,
+    14
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "hc12",
+   "op": "conv",
+   "inputs": [
+    "hc"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hc12n_r",
+   "op": "reshape",
+   "inputs": [
+    "hc12"
+   ],
+   "shape": [
+    1,
+    96,
+    12
+   ]
+  },
+  {
+   "name": "hc12n_n",
+   "op": "norm",
+   "inputs": [
+    "hc12n_r"
+   ]
+  },
+  {
+   "name": "hc12n",
+   "op": "reshape",
+   "inputs": [
+    "hc12n_n"
+   ],
+   "shape": [
+    8,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "h2",
+   "op": "conv",
+   "inputs": [
+    "hc12n"
+   ],
+   "out": 817,
+   "kernel": [
+    10,
+    10
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fine",
+   "op": "add",
+   "inputs": [
+    "w2",
+    "w3",
+    "h3"
+   ]
+  },
+  {
+   "name": "fine_p",
+   "op": "maxpool",
+   "inputs": [
+    "fine"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "all",
+   "op": "add",
+   "inputs": [
+    "fine_p",
+    "w1",
+    "h1",
+    "h2"
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "all"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "byvar",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    1,
+    19,
+    43
+   ]
+  },
+  {
+   "name": "cls",
+   "op": "maxpool",
+   "inputs": [
+    "byvar"
+   ],
+   "size": [
+    19,
+    1
+   ],
+   "stride": [
+    19,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "cls"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

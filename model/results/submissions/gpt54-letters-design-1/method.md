@@ -1,0 +1,3 @@
+I built a hand-designed template-matching network. The first conv layer measures dark-vs-light occupancy and oriented edges with Sobel-like filters; a second conv lightly blurs those feature maps. I then generated 24 analytic hand-shape templates from code alone, using palm ellipses plus finger and thumb capsules, and made three scale variants of each. Large learned-by-construction conv filters score how well the feature maps match each template, and a final dense layer sums the three variants for each letter class.
+
+All weights come from fixed geometric formulas and hand-chosen constants in build.py, with no training or fitting to the dataset.

@@ -1,0 +1,543 @@
+{
+ "layers": [
+  {
+   "name": "col1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col1r",
+   "op": "relu",
+   "inputs": [
+    "col1"
+   ]
+  },
+  {
+   "name": "col2",
+   "op": "conv",
+   "inputs": [
+    "col1r"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col2r",
+   "op": "relu",
+   "inputs": [
+    "col2"
+   ]
+  },
+  {
+   "name": "col3",
+   "op": "conv",
+   "inputs": [
+    "col2r"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col3r",
+   "op": "relu",
+   "inputs": [
+    "col3"
+   ]
+  },
+  {
+   "name": "col_pool",
+   "op": "avgpool",
+   "inputs": [
+    "col3r"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "gray",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge1",
+   "op": "conv",
+   "inputs": [
+    "gray"
+   ],
+   "out": 6,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge1r",
+   "op": "relu",
+   "inputs": [
+    "edge1"
+   ]
+  },
+  {
+   "name": "edge2",
+   "op": "conv",
+   "inputs": [
+    "edge1r"
+   ],
+   "out": 11,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge2r",
+   "op": "relu",
+   "inputs": [
+    "edge2"
+   ]
+  },
+  {
+   "name": "edge3",
+   "op": "conv",
+   "inputs": [
+    "edge2r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge3r",
+   "op": "relu",
+   "inputs": [
+    "edge3"
+   ]
+  },
+  {
+   "name": "edge4",
+   "op": "conv",
+   "inputs": [
+    "edge3r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge4r",
+   "op": "relu",
+   "inputs": [
+    "edge4"
+   ]
+  },
+  {
+   "name": "edge_pool",
+   "op": "avgpool",
+   "inputs": [
+    "edge4r"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "line1",
+   "op": "conv",
+   "inputs": [
+    "edge1r"
+   ],
+   "out": 8,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "line1r",
+   "op": "relu",
+   "inputs": [
+    "line1"
+   ]
+  },
+  {
+   "name": "line2",
+   "op": "conv",
+   "inputs": [
+    "line1r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "line2r",
+   "op": "relu",
+   "inputs": [
+    "line2"
+   ]
+  },
+  {
+   "name": "line_max",
+   "op": "maxpool",
+   "inputs": [
+    "line2r"
+   ],
+   "size": [
+    20,
+    20
+   ],
+   "stride": [
+    20,
+    20
+   ]
+  },
+  {
+   "name": "line_rowmean",
+   "op": "avgpool",
+   "inputs": [
+    "line2r"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "line_rowmax",
+   "op": "maxpool",
+   "inputs": [
+    "line_rowmean"
+   ],
+   "size": [
+    20,
+    1
+   ],
+   "stride": [
+    20,
+    1
+   ]
+  },
+  {
+   "name": "line_colmean",
+   "op": "avgpool",
+   "inputs": [
+    "line2r"
+   ],
+   "size": [
+    20,
+    1
+   ],
+   "stride": [
+    20,
+    1
+   ]
+  },
+  {
+   "name": "line_colmax",
+   "op": "maxpool",
+   "inputs": [
+    "line_colmean"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "blob1",
+   "op": "conv",
+   "inputs": [
+    "gray"
+   ],
+   "out": 16,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blob1r",
+   "op": "relu",
+   "inputs": [
+    "blob1"
+   ]
+  },
+  {
+   "name": "blob2",
+   "op": "conv",
+   "inputs": [
+    "blob1r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blob2r",
+   "op": "relu",
+   "inputs": [
+    "blob2"
+   ]
+  },
+  {
+   "name": "blob3",
+   "op": "conv",
+   "inputs": [
+    "blob2r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blob3r",
+   "op": "relu",
+   "inputs": [
+    "blob3"
+   ]
+  },
+  {
+   "name": "blob4",
+   "op": "conv",
+   "inputs": [
+    "blob3r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blob4r",
+   "op": "relu",
+   "inputs": [
+    "blob4"
+   ]
+  },
+  {
+   "name": "blob_q",
+   "op": "maxpool",
+   "inputs": [
+    "blob4r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "blob_3",
+   "op": "maxpool",
+   "inputs": [
+    "blob4r"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "rgb_pool",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cue_col",
+   "op": "dense",
+   "inputs": [
+    "col_pool"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_edge",
+   "op": "dense",
+   "inputs": [
+    "edge_pool"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_line",
+   "op": "dense",
+   "inputs": [
+    "line2r"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_lmax",
+   "op": "dense",
+   "inputs": [
+    "line_max"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_lrow",
+   "op": "dense",
+   "inputs": [
+    "line_rowmax"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_lcol",
+   "op": "dense",
+   "inputs": [
+    "line_colmax"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_blobq",
+   "op": "dense",
+   "inputs": [
+    "blob_q"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_blob3",
+   "op": "dense",
+   "inputs": [
+    "blob_3"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_rgb",
+   "op": "dense",
+   "inputs": [
+    "rgb_pool"
+   ],
+   "out": 97
+  },
+  {
+   "name": "cue_sum",
+   "op": "add",
+   "inputs": [
+    "cue_col",
+    "cue_edge",
+    "cue_line",
+    "cue_lmax",
+    "cue_lrow",
+    "cue_lcol",
+    "cue_blobq",
+    "cue_blob3",
+    "cue_rgb"
+   ]
+  },
+  {
+   "name": "cues",
+   "op": "relu",
+   "inputs": [
+    "cue_sum"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "cues"
+   ],
+   "out": 10
+  }
+ ]
+}

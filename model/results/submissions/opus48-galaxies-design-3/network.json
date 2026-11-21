@@ -1,0 +1,115 @@
+{
+ "layers": [
+  {
+   "name": "pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "zn",
+   "op": "norm",
+   "inputs": [
+    "pre"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "zn"
+   ],
+   "out": 20,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "fr",
+   "op": "relu",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "fp",
+   "op": "avgpool",
+   "inputs": [
+    "fr"
+   ],
+   "size": [
+    16,
+    16
+   ],
+   "stride": [
+    16,
+    16
+   ]
+  },
+  {
+   "name": "sfeat",
+   "op": "dense",
+   "inputs": [
+    "fp"
+   ],
+   "out": 48
+  },
+  {
+   "name": "sfr",
+   "op": "relu",
+   "inputs": [
+    "sfeat"
+   ]
+  },
+  {
+   "name": "lin",
+   "op": "dense",
+   "inputs": [
+    "sfr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "hid",
+   "op": "dense",
+   "inputs": [
+    "sfr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "hr",
+   "op": "relu",
+   "inputs": [
+    "hid"
+   ]
+  },
+  {
+   "name": "gat",
+   "op": "dense",
+   "inputs": [
+    "hr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "lin",
+    "gat"
+   ]
+  }
+ ]
+}

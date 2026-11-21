@@ -1,0 +1,1818 @@
+{
+ "layers": [
+  {
+   "name": "directions",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "kernel": [
+    5,
+    5
+   ],
+   "out": 9,
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "edge_energy",
+   "op": "relu",
+   "inputs": [
+    "directions"
+   ]
+  },
+  {
+   "name": "cells",
+   "op": "conv",
+   "inputs": [
+    "edge_energy"
+   ],
+   "kernel": [
+    5,
+    5
+   ],
+   "out": 9,
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "cell_scales",
+   "op": "conv",
+   "inputs": [
+    "cells"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 9,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "one_field",
+   "op": "reshape",
+   "inputs": [
+    "cell_scales"
+   ],
+   "shape": [
+    1,
+    63,
+    7
+   ]
+  },
+  {
+   "name": "descriptor",
+   "op": "norm",
+   "inputs": [
+    "one_field"
+   ]
+  },
+  {
+   "name": "individual_pen_templates",
+   "op": "dense",
+   "inputs": [
+    "descriptor"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "digit_family_member",
+   "op": "reshape",
+   "inputs": [
+    "individual_pen_templates"
+   ],
+   "shape": [
+    10,
+    4,
+    1024
+   ]
+  },
+  {
+   "name": "best_8",
+   "op": "maxpool",
+   "inputs": [
+    "digit_family_member"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_9",
+   "op": "maxpool",
+   "inputs": [
+    "best_8"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_10",
+   "op": "maxpool",
+   "inputs": [
+    "best_9"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_11",
+   "op": "maxpool",
+   "inputs": [
+    "best_10"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_12",
+   "op": "maxpool",
+   "inputs": [
+    "best_11"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "vote_of_families",
+   "op": "avgpool",
+   "inputs": [
+    "best_12"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "shape_match",
+   "op": "reshape",
+   "inputs": [
+    "vote_of_families"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "low_resolution_ink",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "clearance",
+   "op": "conv",
+   "inputs": [
+    "low_resolution_ink"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_of_frame",
+   "op": "dense",
+   "inputs": [
+    "clearance"
+   ],
+   "out": 196
+  },
+  {
+   "name": "outside_0",
+   "op": "reshape",
+   "inputs": [
+    "edge_of_frame"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neighbors_0",
+   "op": "conv",
+   "inputs": [
+    "outside_0"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_0",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_0"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_0",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_0"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_0",
+   "op": "reshape",
+   "inputs": [
+    "step_0"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_0",
+   "op": "conv",
+   "inputs": [
+    "arrival_0"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_0",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_0"
+   ]
+  },
+  {
+   "name": "cavity_0",
+   "op": "relu",
+   "inputs": [
+    "not_reached_0"
+   ]
+  },
+  {
+   "name": "neg_cavity_0",
+   "op": "conv",
+   "inputs": [
+    "cavity_0"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_1",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_0"
+   ]
+  },
+  {
+   "name": "neighbors_1",
+   "op": "conv",
+   "inputs": [
+    "outside_1"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_1",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_1"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_1",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_1"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_1",
+   "op": "reshape",
+   "inputs": [
+    "step_1"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_1",
+   "op": "conv",
+   "inputs": [
+    "arrival_1"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_1",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_1"
+   ]
+  },
+  {
+   "name": "cavity_1",
+   "op": "relu",
+   "inputs": [
+    "not_reached_1"
+   ]
+  },
+  {
+   "name": "neg_cavity_1",
+   "op": "conv",
+   "inputs": [
+    "cavity_1"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_2",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_1"
+   ]
+  },
+  {
+   "name": "neighbors_2",
+   "op": "conv",
+   "inputs": [
+    "outside_2"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_2",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_2"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_2",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_2"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_2",
+   "op": "reshape",
+   "inputs": [
+    "step_2"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_2",
+   "op": "conv",
+   "inputs": [
+    "arrival_2"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_2",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_2"
+   ]
+  },
+  {
+   "name": "cavity_2",
+   "op": "relu",
+   "inputs": [
+    "not_reached_2"
+   ]
+  },
+  {
+   "name": "neg_cavity_2",
+   "op": "conv",
+   "inputs": [
+    "cavity_2"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_3",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_2"
+   ]
+  },
+  {
+   "name": "neighbors_3",
+   "op": "conv",
+   "inputs": [
+    "outside_3"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_3",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_3"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_3",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_3"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_3",
+   "op": "reshape",
+   "inputs": [
+    "step_3"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_3",
+   "op": "conv",
+   "inputs": [
+    "arrival_3"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_3",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_3"
+   ]
+  },
+  {
+   "name": "cavity_3",
+   "op": "relu",
+   "inputs": [
+    "not_reached_3"
+   ]
+  },
+  {
+   "name": "neg_cavity_3",
+   "op": "conv",
+   "inputs": [
+    "cavity_3"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_4",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_3"
+   ]
+  },
+  {
+   "name": "neighbors_4",
+   "op": "conv",
+   "inputs": [
+    "outside_4"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_4",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_4"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_4",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_4"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_4",
+   "op": "reshape",
+   "inputs": [
+    "step_4"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_4",
+   "op": "conv",
+   "inputs": [
+    "arrival_4"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_4",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_4"
+   ]
+  },
+  {
+   "name": "cavity_4",
+   "op": "relu",
+   "inputs": [
+    "not_reached_4"
+   ]
+  },
+  {
+   "name": "neg_cavity_4",
+   "op": "conv",
+   "inputs": [
+    "cavity_4"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_5",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_4"
+   ]
+  },
+  {
+   "name": "neighbors_5",
+   "op": "conv",
+   "inputs": [
+    "outside_5"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_5",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_5"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_5",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_5"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_5",
+   "op": "reshape",
+   "inputs": [
+    "step_5"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_5",
+   "op": "conv",
+   "inputs": [
+    "arrival_5"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_5",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_5"
+   ]
+  },
+  {
+   "name": "cavity_5",
+   "op": "relu",
+   "inputs": [
+    "not_reached_5"
+   ]
+  },
+  {
+   "name": "neg_cavity_5",
+   "op": "conv",
+   "inputs": [
+    "cavity_5"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_6",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_5"
+   ]
+  },
+  {
+   "name": "neighbors_6",
+   "op": "conv",
+   "inputs": [
+    "outside_6"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_6",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_6"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_6",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_6"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_6",
+   "op": "reshape",
+   "inputs": [
+    "step_6"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_6",
+   "op": "conv",
+   "inputs": [
+    "arrival_6"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_6",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_6"
+   ]
+  },
+  {
+   "name": "cavity_6",
+   "op": "relu",
+   "inputs": [
+    "not_reached_6"
+   ]
+  },
+  {
+   "name": "neg_cavity_6",
+   "op": "conv",
+   "inputs": [
+    "cavity_6"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_7",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_6"
+   ]
+  },
+  {
+   "name": "neighbors_7",
+   "op": "conv",
+   "inputs": [
+    "outside_7"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_7",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_7"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_7",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_7"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_7",
+   "op": "reshape",
+   "inputs": [
+    "step_7"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_7",
+   "op": "conv",
+   "inputs": [
+    "arrival_7"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_7",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_7"
+   ]
+  },
+  {
+   "name": "cavity_7",
+   "op": "relu",
+   "inputs": [
+    "not_reached_7"
+   ]
+  },
+  {
+   "name": "neg_cavity_7",
+   "op": "conv",
+   "inputs": [
+    "cavity_7"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_8",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_7"
+   ]
+  },
+  {
+   "name": "neighbors_8",
+   "op": "conv",
+   "inputs": [
+    "outside_8"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_8",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_8"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_8",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_8"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_8",
+   "op": "reshape",
+   "inputs": [
+    "step_8"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_8",
+   "op": "conv",
+   "inputs": [
+    "arrival_8"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_8",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_8"
+   ]
+  },
+  {
+   "name": "cavity_8",
+   "op": "relu",
+   "inputs": [
+    "not_reached_8"
+   ]
+  },
+  {
+   "name": "neg_cavity_8",
+   "op": "conv",
+   "inputs": [
+    "cavity_8"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_9",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_8"
+   ]
+  },
+  {
+   "name": "neighbors_9",
+   "op": "conv",
+   "inputs": [
+    "outside_9"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_9",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_9"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_9",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_9"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_9",
+   "op": "reshape",
+   "inputs": [
+    "step_9"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_9",
+   "op": "conv",
+   "inputs": [
+    "arrival_9"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_9",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_9"
+   ]
+  },
+  {
+   "name": "cavity_9",
+   "op": "relu",
+   "inputs": [
+    "not_reached_9"
+   ]
+  },
+  {
+   "name": "neg_cavity_9",
+   "op": "conv",
+   "inputs": [
+    "cavity_9"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_10",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_9"
+   ]
+  },
+  {
+   "name": "neighbors_10",
+   "op": "conv",
+   "inputs": [
+    "outside_10"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_10",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_10"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_10",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_10"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_10",
+   "op": "reshape",
+   "inputs": [
+    "step_10"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_10",
+   "op": "conv",
+   "inputs": [
+    "arrival_10"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_10",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_10"
+   ]
+  },
+  {
+   "name": "cavity_10",
+   "op": "relu",
+   "inputs": [
+    "not_reached_10"
+   ]
+  },
+  {
+   "name": "neg_cavity_10",
+   "op": "conv",
+   "inputs": [
+    "cavity_10"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_11",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_10"
+   ]
+  },
+  {
+   "name": "neighbors_11",
+   "op": "conv",
+   "inputs": [
+    "outside_11"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_11",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_11"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_11",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_11"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_11",
+   "op": "reshape",
+   "inputs": [
+    "step_11"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_11",
+   "op": "conv",
+   "inputs": [
+    "arrival_11"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_11",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_11"
+   ]
+  },
+  {
+   "name": "cavity_11",
+   "op": "relu",
+   "inputs": [
+    "not_reached_11"
+   ]
+  },
+  {
+   "name": "neg_cavity_11",
+   "op": "conv",
+   "inputs": [
+    "cavity_11"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_12",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_11"
+   ]
+  },
+  {
+   "name": "neighbors_12",
+   "op": "conv",
+   "inputs": [
+    "outside_12"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_12",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_12"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_12",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_12"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_12",
+   "op": "reshape",
+   "inputs": [
+    "step_12"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_12",
+   "op": "conv",
+   "inputs": [
+    "arrival_12"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_12",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_12"
+   ]
+  },
+  {
+   "name": "cavity_12",
+   "op": "relu",
+   "inputs": [
+    "not_reached_12"
+   ]
+  },
+  {
+   "name": "neg_cavity_12",
+   "op": "conv",
+   "inputs": [
+    "cavity_12"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_13",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_12"
+   ]
+  },
+  {
+   "name": "neighbors_13",
+   "op": "conv",
+   "inputs": [
+    "outside_13"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_13",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_13"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_13",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_13"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_13",
+   "op": "reshape",
+   "inputs": [
+    "step_13"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_13",
+   "op": "conv",
+   "inputs": [
+    "arrival_13"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_13",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_13"
+   ]
+  },
+  {
+   "name": "cavity_13",
+   "op": "relu",
+   "inputs": [
+    "not_reached_13"
+   ]
+  },
+  {
+   "name": "neg_cavity_13",
+   "op": "conv",
+   "inputs": [
+    "cavity_13"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "outside_14",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_cavity_13"
+   ]
+  },
+  {
+   "name": "neighbors_14",
+   "op": "conv",
+   "inputs": [
+    "outside_14"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 5,
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "stencil_14",
+   "op": "reshape",
+   "inputs": [
+    "neighbors_14"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "step_14",
+   "op": "maxpool",
+   "inputs": [
+    "stencil_14"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "arrival_14",
+   "op": "reshape",
+   "inputs": [
+    "step_14"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "neg_arrival_14",
+   "op": "conv",
+   "inputs": [
+    "arrival_14"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "not_reached_14",
+   "op": "add",
+   "inputs": [
+    "clearance",
+    "neg_arrival_14"
+   ]
+  },
+  {
+   "name": "cavity_14",
+   "op": "relu",
+   "inputs": [
+    "not_reached_14"
+   ]
+  },
+  {
+   "name": "loop_mass",
+   "op": "dense",
+   "inputs": [
+    "cavity_14"
+   ],
+   "out": 3
+  },
+  {
+   "name": "test_loop_mass",
+   "op": "dense",
+   "inputs": [
+    "loop_mass"
+   ],
+   "out": 6
+  },
+  {
+   "name": "above_loop_threshold",
+   "op": "relu",
+   "inputs": [
+    "test_loop_mass"
+   ]
+  },
+  {
+   "name": "loop_evidence",
+   "op": "dense",
+   "inputs": [
+    "above_loop_threshold"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape_match",
+    "loop_evidence"
+   ]
+  }
+ ]
+}

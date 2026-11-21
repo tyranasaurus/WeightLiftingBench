@@ -1,0 +1,668 @@
+{
+  "layers": [
+    {
+      "name": "rgb",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "color_constraints",
+      "op": "conv",
+      "inputs": [
+        "rgb"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "violations",
+      "op": "relu",
+      "inputs": [
+        "color_constraints"
+      ]
+    },
+    {
+      "name": "membership",
+      "op": "conv",
+      "inputs": [
+        "violations"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "tone_maps",
+      "op": "relu",
+      "inputs": [
+        "membership"
+      ]
+    },
+    {
+      "name": "local_contrast",
+      "op": "conv",
+      "inputs": [
+        "tone_maps"
+      ],
+      "out": 5,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "detail",
+      "op": "relu",
+      "inputs": [
+        "local_contrast"
+      ]
+    },
+    {
+      "name": "scaled_evidence",
+      "op": "conv",
+      "inputs": [
+        "detail"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence",
+      "op": "relu",
+      "inputs": [
+        "scaled_evidence"
+      ]
+    },
+    {
+      "name": "face_geometry7",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 6,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "face7",
+      "op": "relu",
+      "inputs": [
+        "face_geometry7"
+      ]
+    },
+    {
+      "name": "peak7",
+      "op": "maxpool",
+      "inputs": [
+        "face7"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_geometry11",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 6,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "face11",
+      "op": "relu",
+      "inputs": [
+        "face_geometry11"
+      ]
+    },
+    {
+      "name": "peak11",
+      "op": "maxpool",
+      "inputs": [
+        "face11"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_geometry17",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 6,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 2,
+      "padding": 8
+    },
+    {
+      "name": "face17",
+      "op": "relu",
+      "inputs": [
+        "face_geometry17"
+      ]
+    },
+    {
+      "name": "peak17",
+      "op": "maxpool",
+      "inputs": [
+        "face17"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_geometry25",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 6,
+      "kernel": [
+        25,
+        25
+      ],
+      "stride": 2,
+      "padding": 12
+    },
+    {
+      "name": "face25",
+      "op": "relu",
+      "inputs": [
+        "face_geometry25"
+      ]
+    },
+    {
+      "name": "peak25",
+      "op": "maxpool",
+      "inputs": [
+        "face25"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_geometry35",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 6,
+      "kernel": [
+        35,
+        35
+      ],
+      "stride": 2,
+      "padding": 17
+    },
+    {
+      "name": "face35",
+      "op": "relu",
+      "inputs": [
+        "face_geometry35"
+      ]
+    },
+    {
+      "name": "peak35",
+      "op": "maxpool",
+      "inputs": [
+        "face35"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "tone_support",
+      "op": "conv",
+      "inputs": [
+        "evidence"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coherent_tone",
+      "op": "relu",
+      "inputs": [
+        "tone_support"
+      ]
+    },
+    {
+      "name": "tone_area",
+      "op": "avgpool",
+      "inputs": [
+        "coherent_tone"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "views0",
+      "op": "reshape",
+      "inputs": [
+        "peak7"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "best_view0",
+      "op": "maxpool",
+      "inputs": [
+        "views0"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "views1",
+      "op": "reshape",
+      "inputs": [
+        "peak11"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "best_view1",
+      "op": "maxpool",
+      "inputs": [
+        "views1"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "views2",
+      "op": "reshape",
+      "inputs": [
+        "peak17"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "best_view2",
+      "op": "maxpool",
+      "inputs": [
+        "views2"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "views3",
+      "op": "reshape",
+      "inputs": [
+        "peak25"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "best_view3",
+      "op": "maxpool",
+      "inputs": [
+        "views3"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "views4",
+      "op": "reshape",
+      "inputs": [
+        "peak35"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "best_view4",
+      "op": "maxpool",
+      "inputs": [
+        "views4"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "neg0",
+      "op": "conv",
+      "inputs": [
+        "best_view1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "delta0",
+      "op": "add",
+      "inputs": [
+        "best_view0",
+        "neg0"
+      ]
+    },
+    {
+      "name": "positive0",
+      "op": "relu",
+      "inputs": [
+        "delta0"
+      ]
+    },
+    {
+      "name": "best_scale0",
+      "op": "add",
+      "inputs": [
+        "best_view1",
+        "positive0"
+      ]
+    },
+    {
+      "name": "neg1",
+      "op": "conv",
+      "inputs": [
+        "best_view2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "delta1",
+      "op": "add",
+      "inputs": [
+        "best_scale0",
+        "neg1"
+      ]
+    },
+    {
+      "name": "positive1",
+      "op": "relu",
+      "inputs": [
+        "delta1"
+      ]
+    },
+    {
+      "name": "best_scale1",
+      "op": "add",
+      "inputs": [
+        "best_view2",
+        "positive1"
+      ]
+    },
+    {
+      "name": "neg2",
+      "op": "conv",
+      "inputs": [
+        "best_view3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "delta2",
+      "op": "add",
+      "inputs": [
+        "best_scale1",
+        "neg2"
+      ]
+    },
+    {
+      "name": "positive2",
+      "op": "relu",
+      "inputs": [
+        "delta2"
+      ]
+    },
+    {
+      "name": "best_scale2",
+      "op": "add",
+      "inputs": [
+        "best_view3",
+        "positive2"
+      ]
+    },
+    {
+      "name": "neg3",
+      "op": "conv",
+      "inputs": [
+        "best_view4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "delta3",
+      "op": "add",
+      "inputs": [
+        "best_scale2",
+        "neg3"
+      ]
+    },
+    {
+      "name": "positive3",
+      "op": "relu",
+      "inputs": [
+        "delta3"
+      ]
+    },
+    {
+      "name": "best_scale3",
+      "op": "add",
+      "inputs": [
+        "best_view4",
+        "positive3"
+      ]
+    },
+    {
+      "name": "area_gain",
+      "op": "conv",
+      "inputs": [
+        "tone_area"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "area_hinge",
+      "op": "conv",
+      "inputs": [
+        "area_gain"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "excess_area",
+      "op": "relu",
+      "inputs": [
+        "area_hinge"
+      ]
+    },
+    {
+      "name": "cap_subtraction",
+      "op": "conv",
+      "inputs": [
+        "excess_area"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "person_evidence",
+      "op": "add",
+      "inputs": [
+        "best_scale3",
+        "area_gain",
+        "cap_subtraction"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "person_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

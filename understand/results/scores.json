@@ -1,0 +1,310 @@
+{
+ "GPT-6.2 Sol": {
+  "date": "2026-11-17",
+  "atari": {
+   "correct": 19.0,
+   "n": 40,
+   "skill": 0.417
+  },
+  "all": {
+   "correct": 32.0,
+   "n": 62,
+   "skill": 0.429
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 2.0,
+   "n": 5,
+   "skill": 0.2
+  },
+  "bert": {
+   "correct": 11.0,
+   "n": 17,
+   "skill": 0.529
+  }
+ },
+ "Opus 5.5": {
+  "date": "2026-09-22",
+  "atari": {
+   "correct": 15.0,
+   "n": 40,
+   "skill": 0.306
+  },
+  "all": {
+   "correct": 25.0,
+   "n": 62,
+   "skill": 0.295
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 1.0,
+   "n": 5,
+   "skill": -0.067
+  },
+  "bert": {
+   "correct": 9.0,
+   "n": 17,
+   "skill": 0.373
+  }
+ },
+ "GPT-5.5": {
+  "date": "2026-04-24",
+  "atari": {
+   "correct": 7.0,
+   "n": 40,
+   "skill": 0.083
+  },
+  "all": {
+   "correct": 13.0,
+   "n": 62,
+   "skill": 0.067
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 7,
+   "skill": 0.048
+  },
+  "style": {
+   "correct": 1.0,
+   "n": 5,
+   "skill": -0.067
+  },
+  "bert": {
+   "correct": 5.0,
+   "n": 17,
+   "skill": 0.059
+  }
+ },
+ "Opus 4.8": {
+  "date": "2026-05-27",
+  "atari": {
+   "correct": 12.0,
+   "n": 40,
+   "skill": 0.222
+  },
+  "all": {
+   "correct": 20.0,
+   "n": 62,
+   "skill": 0.2
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 0.0,
+   "n": 5,
+   "skill": -0.333
+  },
+  "bert": {
+   "correct": 8.0,
+   "n": 17,
+   "skill": 0.294
+  }
+ },
+ "Fable 5.2": {
+  "date": "2026-11-09",
+  "atari": {
+   "correct": 20.0,
+   "n": 40,
+   "skill": 0.444
+  },
+  "all": {
+   "correct": 36.0,
+   "n": 62,
+   "skill": 0.505
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 2.0,
+   "n": 5,
+   "skill": 0.2
+  },
+  "bert": {
+   "correct": 14.0,
+   "n": 17,
+   "skill": 0.765
+  }
+ },
+ "GPT-6.2 Astra": {
+  "date": "2026-11-17",
+  "atari": {
+   "correct": 34.0,
+   "n": 40,
+   "skill": 0.833
+  },
+  "all": {
+   "correct": 53.0,
+   "n": 62,
+   "skill": 0.829
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 2.0,
+   "n": 5,
+   "skill": 0.2
+  },
+  "bert": {
+   "correct": 17.0,
+   "n": 17,
+   "skill": 1.0
+  }
+ },
+ "GPT-6.1 Sol": {
+  "date": "2026-09-29",
+  "atari": {
+   "correct": 17.0,
+   "n": 40,
+   "skill": 0.361
+  },
+  "all": {
+   "correct": 31.0,
+   "n": 62,
+   "skill": 0.41
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 3.0,
+   "n": 5,
+   "skill": 0.467
+  },
+  "bert": {
+   "correct": 11.0,
+   "n": 17,
+   "skill": 0.529
+  }
+ },
+ "GPT-6 Astra": {
+  "date": "2026-09-04",
+  "atari": {
+   "correct": 19.0,
+   "n": 40,
+   "skill": 0.417
+  },
+  "all": {
+   "correct": 33.0,
+   "n": 62,
+   "skill": 0.448
+  },
+  "lora": {
+   "correct": 2.0,
+   "n": 8,
+   "skill": 0.0
+  },
+  "style": {
+   "correct": 1.0,
+   "n": 5,
+   "skill": -0.067
+  },
+  "bert": {
+   "correct": 13.0,
+   "n": 17,
+   "skill": 0.686
+  }
+ },
+ "Fable 5.1": {
+  "date": "2026-09-01",
+  "atari": {
+   "correct": 12.0,
+   "n": 40,
+   "skill": 0.222
+  },
+  "all": {
+   "correct": 23.0,
+   "n": 62,
+   "skill": 0.257
+  },
+  "lora": {
+   "correct": 3.0,
+   "n": 8,
+   "skill": 0.167
+  },
+  "style": {
+   "correct": 0.0,
+   "n": 5,
+   "skill": -0.333
+  },
+  "bert": {
+   "correct": 11.0,
+   "n": 17,
+   "skill": 0.529
+  }
+ },
+ "Kimi K3.1 Pro": {
+  "date": "2026-10-23",
+  "atari": {
+   "correct": 7.0,
+   "n": 40,
+   "skill": 0.083
+  },
+  "all": {
+   "correct": 17.0,
+   "n": 62,
+   "skill": 0.143
+  },
+  "lora": {
+   "correct": 1.0,
+   "n": 8,
+   "skill": -0.167
+  },
+  "style": {
+   "correct": 1.0,
+   "n": 5,
+   "skill": -0.067
+  },
+  "bert": {
+   "correct": 9.0,
+   "n": 17,
+   "skill": 0.373
+  }
+ },
+ "GLM-5.3": {
+  "date": "2026-08-18",
+  "atari": {
+   "correct": 6.0,
+   "n": 40,
+   "skill": 0.056
+  },
+  "all": {
+   "correct": 17.0,
+   "n": 62,
+   "skill": 0.143
+  },
+  "lora": {
+   "correct": 1.0,
+   "n": 8,
+   "skill": -0.167
+  },
+  "style": {
+   "correct": 1.0,
+   "n": 5,
+   "skill": -0.067
+  },
+  "bert": {
+   "correct": 10.0,
+   "n": 17,
+   "skill": 0.451
+  }
+ }
+}

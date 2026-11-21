@@ -1,0 +1,3 @@
+The classifier searches for sign outlines using log-color contrasts, then samples each candidate face in a common coordinate system. It compares the interior with hand-drawn models made from polygons, curves, and strokes; for speed limits, it also reads individual digits and checks for gaps between them. Warning-sign matching combines intensity, edge direction, and the distribution of contrast across the pictogram. Ambiguous matches get a second look after mild smoothing.
+
+`build.py` generates all stencils, transformed views, and sampling weights from the geometry in its source. It reads no data files and performs no training. I used the supplied photographs for visual inspection and the official labeled checks, not as templates or parameter estimates.

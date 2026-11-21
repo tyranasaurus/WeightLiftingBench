@@ -1,0 +1,962 @@
+{
+  "layers": [
+    {
+      "name": "visibility_hinges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "visibility_positive",
+      "op": "relu",
+      "inputs": [
+        "visibility_hinges"
+      ]
+    },
+    {
+      "name": "absolute_foreground",
+      "op": "conv",
+      "inputs": [
+        "visibility_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "standardized",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "above_black",
+      "op": "dense",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 784
+    },
+    {
+      "name": "relative_image",
+      "op": "reshape",
+      "inputs": [
+        "above_black"
+      ],
+      "shape": [
+        1,
+        28,
+        28
+      ]
+    },
+    {
+      "name": "relative_visibility",
+      "op": "conv",
+      "inputs": [
+        "relative_image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_visibility_positive",
+      "op": "relu",
+      "inputs": [
+        "relative_visibility"
+      ]
+    },
+    {
+      "name": "relative_foreground",
+      "op": "conv",
+      "inputs": [
+        "relative_visibility_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "absolute_negative",
+      "op": "conv",
+      "inputs": [
+        "absolute_foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_excess",
+      "op": "add",
+      "inputs": [
+        "relative_foreground",
+        "absolute_negative"
+      ]
+    },
+    {
+      "name": "relative_excess_positive",
+      "op": "relu",
+      "inputs": [
+        "relative_excess"
+      ]
+    },
+    {
+      "name": "relative_blend",
+      "op": "conv",
+      "inputs": [
+        "relative_excess_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground",
+      "op": "add",
+      "inputs": [
+        "absolute_foreground",
+        "relative_blend"
+      ]
+    },
+    {
+      "name": "silhouette_detail",
+      "op": "avgpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "foreground_border",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "foreground_closed",
+      "op": "maxpool",
+      "inputs": [
+        "foreground_border"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "silhouette_solid",
+      "op": "avgpool",
+      "inputs": [
+        "foreground_closed"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "detail_models",
+      "op": "dense",
+      "inputs": [
+        "silhouette_detail"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "solid_models",
+      "op": "dense",
+      "inputs": [
+        "silhouette_solid"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "geometric_models",
+      "op": "add",
+      "inputs": [
+        "detail_models",
+        "solid_models"
+      ]
+    },
+    {
+      "name": "models_by_class",
+      "op": "reshape",
+      "inputs": [
+        "geometric_models"
+      ],
+      "shape": [
+        10,
+        1024,
+        1
+      ]
+    },
+    {
+      "name": "best_geometry",
+      "op": "maxpool",
+      "inputs": [
+        "models_by_class"
+      ],
+      "size": [
+        1024,
+        1
+      ],
+      "stride": [
+        1024,
+        1
+      ]
+    },
+    {
+      "name": "geometry_scores",
+      "op": "dense",
+      "inputs": [
+        "best_geometry"
+      ],
+      "out": 10
+    },
+    {
+      "name": "front_line_responses",
+      "op": "dense",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 36
+    },
+    {
+      "name": "front_line_positive",
+      "op": "relu",
+      "inputs": [
+        "front_line_responses"
+      ]
+    },
+    {
+      "name": "front_line_negative",
+      "op": "dense",
+      "inputs": [
+        "front_line_positive"
+      ],
+      "out": 36
+    },
+    {
+      "name": "front_line_bands",
+      "op": "reshape",
+      "inputs": [
+        "front_line_negative"
+      ],
+      "shape": [
+        12,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "front_line_consistency",
+      "op": "maxpool",
+      "inputs": [
+        "front_line_bands"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "front_line_strength",
+      "op": "dense",
+      "inputs": [
+        "front_line_consistency"
+      ],
+      "out": 12
+    },
+    {
+      "name": "front_line_candidates",
+      "op": "reshape",
+      "inputs": [
+        "front_line_strength"
+      ],
+      "shape": [
+        1,
+        12,
+        1
+      ]
+    },
+    {
+      "name": "front_line_best",
+      "op": "maxpool",
+      "inputs": [
+        "front_line_candidates"
+      ],
+      "size": [
+        12,
+        1
+      ],
+      "stride": [
+        12,
+        1
+      ]
+    },
+    {
+      "name": "collar_ridges",
+      "op": "dense",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 18
+    },
+    {
+      "name": "collar_ridges_positive",
+      "op": "relu",
+      "inputs": [
+        "collar_ridges"
+      ]
+    },
+    {
+      "name": "collar_candidates",
+      "op": "reshape",
+      "inputs": [
+        "collar_ridges_positive"
+      ],
+      "shape": [
+        1,
+        18,
+        1
+      ]
+    },
+    {
+      "name": "collar_best",
+      "op": "maxpool",
+      "inputs": [
+        "collar_candidates"
+      ],
+      "size": [
+        18,
+        1
+      ],
+      "stride": [
+        18,
+        1
+      ]
+    },
+    {
+      "name": "fabric_curvature",
+      "op": "conv",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "fabric_curvature_positive",
+      "op": "relu",
+      "inputs": [
+        "fabric_curvature"
+      ]
+    },
+    {
+      "name": "fabric_two_axes",
+      "op": "dense",
+      "inputs": [
+        "fabric_curvature_positive"
+      ],
+      "out": 2
+    },
+    {
+      "name": "fabric_axes_negated",
+      "op": "dense",
+      "inputs": [
+        "fabric_two_axes"
+      ],
+      "out": 2
+    },
+    {
+      "name": "fabric_axes_pool",
+      "op": "reshape",
+      "inputs": [
+        "fabric_axes_negated"
+      ],
+      "shape": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "fabric_weave_minimum",
+      "op": "maxpool",
+      "inputs": [
+        "fabric_axes_pool"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "fabric_weave",
+      "op": "dense",
+      "inputs": [
+        "fabric_weave_minimum"
+      ],
+      "out": 1
+    },
+    {
+      "name": "opening_signal",
+      "op": "dense",
+      "inputs": [
+        "front_line_best"
+      ],
+      "out": 1
+    },
+    {
+      "name": "opening_background",
+      "op": "dense",
+      "inputs": [
+        "fabric_weave"
+      ],
+      "out": 1
+    },
+    {
+      "name": "opening_contrast",
+      "op": "add",
+      "inputs": [
+        "opening_signal",
+        "opening_background"
+      ]
+    },
+    {
+      "name": "opening_distinct",
+      "op": "relu",
+      "inputs": [
+        "opening_contrast"
+      ]
+    },
+    {
+      "name": "opening_hinges",
+      "op": "dense",
+      "inputs": [
+        "opening_distinct"
+      ],
+      "out": 2
+    },
+    {
+      "name": "opening_positive",
+      "op": "relu",
+      "inputs": [
+        "opening_hinges"
+      ]
+    },
+    {
+      "name": "opening_scores",
+      "op": "dense",
+      "inputs": [
+        "opening_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "lapels_hinges",
+      "op": "dense",
+      "inputs": [
+        "collar_best"
+      ],
+      "out": 2
+    },
+    {
+      "name": "lapels_positive",
+      "op": "relu",
+      "inputs": [
+        "lapels_hinges"
+      ]
+    },
+    {
+      "name": "lapels_scores",
+      "op": "dense",
+      "inputs": [
+        "lapels_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "plaid_lines",
+      "op": "dense",
+      "inputs": [
+        "standardized"
+      ],
+      "out": 56
+    },
+    {
+      "name": "plaid_lines_positive",
+      "op": "relu",
+      "inputs": [
+        "plaid_lines"
+      ]
+    },
+    {
+      "name": "plaid_orientations",
+      "op": "reshape",
+      "inputs": [
+        "plaid_lines_positive"
+      ],
+      "shape": [
+        2,
+        28,
+        1
+      ]
+    },
+    {
+      "name": "plaid_strongest_axes",
+      "op": "maxpool",
+      "inputs": [
+        "plaid_orientations"
+      ],
+      "size": [
+        28,
+        1
+      ],
+      "stride": [
+        28,
+        1
+      ]
+    },
+    {
+      "name": "plaid_axes_negative",
+      "op": "dense",
+      "inputs": [
+        "plaid_strongest_axes"
+      ],
+      "out": 2
+    },
+    {
+      "name": "plaid_both_axes",
+      "op": "reshape",
+      "inputs": [
+        "plaid_axes_negative"
+      ],
+      "shape": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "plaid_axes_minimum",
+      "op": "maxpool",
+      "inputs": [
+        "plaid_both_axes"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "plaid_strength",
+      "op": "dense",
+      "inputs": [
+        "plaid_axes_minimum"
+      ],
+      "out": 1
+    },
+    {
+      "name": "woven_pattern_hinges",
+      "op": "dense",
+      "inputs": [
+        "plaid_strength"
+      ],
+      "out": 2
+    },
+    {
+      "name": "woven_pattern_positive",
+      "op": "relu",
+      "inputs": [
+        "woven_pattern_hinges"
+      ]
+    },
+    {
+      "name": "woven_pattern_scores",
+      "op": "dense",
+      "inputs": [
+        "woven_pattern_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "air_border",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "strap_neighborhood",
+      "op": "maxpool",
+      "inputs": [
+        "air_border"
+      ],
+      "size": [
+        9,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "air_negated",
+      "op": "conv",
+      "inputs": [
+        "strap_neighborhood"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "air_eroded_negated",
+      "op": "maxpool",
+      "inputs": [
+        "air_negated"
+      ],
+      "size": [
+        9,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "upper_coverage",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1
+    },
+    {
+      "name": "upper_envelope",
+      "op": "dense",
+      "inputs": [
+        "air_eroded_negated"
+      ],
+      "out": 1
+    },
+    {
+      "name": "negative_coverage",
+      "op": "dense",
+      "inputs": [
+        "upper_coverage"
+      ],
+      "out": 1
+    },
+    {
+      "name": "open_upper",
+      "op": "add",
+      "inputs": [
+        "negative_coverage",
+        "upper_envelope"
+      ]
+    },
+    {
+      "name": "sandal_straps_hinges",
+      "op": "dense",
+      "inputs": [
+        "open_upper"
+      ],
+      "out": 2
+    },
+    {
+      "name": "sandal_straps_positive",
+      "op": "relu",
+      "inputs": [
+        "sandal_straps_hinges"
+      ]
+    },
+    {
+      "name": "sandal_straps_scores",
+      "op": "dense",
+      "inputs": [
+        "sandal_straps_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "leg_gap_responses",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 27
+    },
+    {
+      "name": "leg_gap_positive",
+      "op": "relu",
+      "inputs": [
+        "leg_gap_responses"
+      ]
+    },
+    {
+      "name": "leg_gap_negative",
+      "op": "dense",
+      "inputs": [
+        "leg_gap_positive"
+      ],
+      "out": 27
+    },
+    {
+      "name": "leg_gap_bands",
+      "op": "reshape",
+      "inputs": [
+        "leg_gap_negative"
+      ],
+      "shape": [
+        9,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "leg_gap_consistency",
+      "op": "maxpool",
+      "inputs": [
+        "leg_gap_bands"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "leg_gap_strength",
+      "op": "dense",
+      "inputs": [
+        "leg_gap_consistency"
+      ],
+      "out": 9
+    },
+    {
+      "name": "leg_gap_candidates",
+      "op": "reshape",
+      "inputs": [
+        "leg_gap_strength"
+      ],
+      "shape": [
+        1,
+        9,
+        1
+      ]
+    },
+    {
+      "name": "leg_gap_best",
+      "op": "maxpool",
+      "inputs": [
+        "leg_gap_candidates"
+      ],
+      "size": [
+        9,
+        1
+      ],
+      "stride": [
+        9,
+        1
+      ]
+    },
+    {
+      "name": "separate_legs_hinges",
+      "op": "dense",
+      "inputs": [
+        "leg_gap_best"
+      ],
+      "out": 2
+    },
+    {
+      "name": "separate_legs_positive",
+      "op": "relu",
+      "inputs": [
+        "separate_legs_hinges"
+      ]
+    },
+    {
+      "name": "separate_legs_scores",
+      "op": "dense",
+      "inputs": [
+        "separate_legs_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "lower_sleeve_presence",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 4
+    },
+    {
+      "name": "sleeve_negative",
+      "op": "dense",
+      "inputs": [
+        "lower_sleeve_presence"
+      ],
+      "out": 4
+    },
+    {
+      "name": "sleeve_bands",
+      "op": "reshape",
+      "inputs": [
+        "sleeve_negative"
+      ],
+      "shape": [
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "sleeve_consistency",
+      "op": "maxpool",
+      "inputs": [
+        "sleeve_bands"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "sleeve_strength",
+      "op": "dense",
+      "inputs": [
+        "sleeve_consistency"
+      ],
+      "out": 1
+    },
+    {
+      "name": "long_arms_hinges",
+      "op": "dense",
+      "inputs": [
+        "sleeve_strength"
+      ],
+      "out": 2
+    },
+    {
+      "name": "long_arms_positive",
+      "op": "relu",
+      "inputs": [
+        "long_arms_hinges"
+      ]
+    },
+    {
+      "name": "long_arms_scores",
+      "op": "dense",
+      "inputs": [
+        "long_arms_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "geometry_scores",
+        "opening_scores",
+        "lapels_scores",
+        "woven_pattern_scores",
+        "sandal_straps_scores",
+        "separate_legs_scores",
+        "long_arms_scores"
+      ]
+    }
+  ]
+}

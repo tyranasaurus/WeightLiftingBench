@@ -1,0 +1,5932 @@
+{
+  "layers": [
+    {
+      "name": "half_rgb",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "cast",
+      "op": "conv",
+      "inputs": [
+        "half_rgb"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "block_cast",
+      "op": "avgpool",
+      "inputs": [
+        "cast"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "mean_cast",
+      "op": "avgpool",
+      "inputs": [
+        "block_cast"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "cast_deadzone",
+      "op": "conv",
+      "inputs": [
+        "mean_cast"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cast_tails",
+      "op": "relu",
+      "inputs": [
+        "cast_deadzone"
+      ]
+    },
+    {
+      "name": "illuminant_field",
+      "op": "dense",
+      "inputs": [
+        "cast_tails"
+      ],
+      "out": 6912
+    },
+    {
+      "name": "illuminant",
+      "op": "reshape",
+      "inputs": [
+        "illuminant_field"
+      ],
+      "shape": [
+        3,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "adapted_half",
+      "op": "add",
+      "inputs": [
+        "half_rgb",
+        "illuminant"
+      ]
+    },
+    {
+      "name": "hue_planes",
+      "op": "conv",
+      "inputs": [
+        "adapted_half"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "hue_costs",
+      "op": "relu",
+      "inputs": [
+        "hue_planes"
+      ]
+    },
+    {
+      "name": "skin_margin",
+      "op": "conv",
+      "inputs": [
+        "hue_costs"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin",
+      "op": "relu",
+      "inputs": [
+        "skin_margin"
+      ]
+    },
+    {
+      "name": "warm_fraction",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "area_knots",
+      "op": "dense",
+      "inputs": [
+        "warm_fraction"
+      ],
+      "out": 4
+    },
+    {
+      "name": "area_segments",
+      "op": "relu",
+      "inputs": [
+        "area_knots"
+      ]
+    },
+    {
+      "name": "area_gain",
+      "op": "dense",
+      "inputs": [
+        "area_segments"
+      ],
+      "out": 1
+    },
+    {
+      "name": "half_light",
+      "op": "conv",
+      "inputs": [
+        "half_rgb"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "light_differences",
+      "op": "conv",
+      "inputs": [
+        "half_light"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 2,
+      "padding": 1
+    },
+    {
+      "name": "edge_signs",
+      "op": "relu",
+      "inputs": [
+        "light_differences"
+      ]
+    },
+    {
+      "name": "normal_magnitude",
+      "op": "conv",
+      "inputs": [
+        "edge_signs"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "composition",
+      "op": "dense",
+      "inputs": [
+        "normal_magnitude"
+      ],
+      "out": 1
+    },
+    {
+      "name": "edge_gate",
+      "op": "conv",
+      "inputs": [
+        "normal_magnitude"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_ramps",
+      "op": "relu",
+      "inputs": [
+        "edge_gate"
+      ]
+    },
+    {
+      "name": "contours",
+      "op": "conv",
+      "inputs": [
+        "edge_ramps"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_regions",
+      "op": "conv",
+      "inputs": [
+        "skin"
+      ],
+      "out": 5,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "distant_contrast",
+      "op": "conv",
+      "inputs": [
+        "half_light"
+      ],
+      "out": 4,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "distant_region_thresholds",
+      "op": "conv",
+      "inputs": [
+        "distant_regions"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_region_gates",
+      "op": "relu",
+      "inputs": [
+        "distant_region_thresholds"
+      ]
+    },
+    {
+      "name": "distant_bounded_color",
+      "op": "conv",
+      "inputs": [
+        "distant_region_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_contrast_thresholds",
+      "op": "conv",
+      "inputs": [
+        "distant_contrast"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_contrast_gates",
+      "op": "relu",
+      "inputs": [
+        "distant_contrast_thresholds"
+      ]
+    },
+    {
+      "name": "distant_bounded_contrast",
+      "op": "conv",
+      "inputs": [
+        "distant_contrast_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_garment_grid",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "distant_shirt_differences",
+      "op": "conv",
+      "inputs": [
+        "distant_garment_grid"
+      ],
+      "out": 18,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "distant_shirt_abs",
+      "op": "relu",
+      "inputs": [
+        "distant_shirt_differences"
+      ]
+    },
+    {
+      "name": "distant_shirt_sides",
+      "op": "conv",
+      "inputs": [
+        "distant_shirt_abs"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_shirt_knots",
+      "op": "conv",
+      "inputs": [
+        "distant_shirt_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_shirt_gates",
+      "op": "relu",
+      "inputs": [
+        "distant_shirt_knots"
+      ]
+    },
+    {
+      "name": "distant_shirt_bonus",
+      "op": "conv",
+      "inputs": [
+        "distant_shirt_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distant_context_source",
+      "op": "avgpool",
+      "inputs": [
+        "distant_bounded_color"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "distant_level",
+      "op": "dense",
+      "inputs": [
+        "distant_context_source"
+      ],
+      "out": 576
+    },
+    {
+      "name": "distant_level_map",
+      "op": "reshape",
+      "inputs": [
+        "distant_level"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "distant_candidate",
+      "op": "add",
+      "inputs": [
+        "distant_bounded_color",
+        "distant_bounded_contrast",
+        "distant_shirt_bonus",
+        "distant_level_map"
+      ]
+    },
+    {
+      "name": "distant_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "distant_candidate"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "distant_position_bias",
+      "op": "dense",
+      "inputs": [
+        "distant_unit_source"
+      ],
+      "out": 576
+    },
+    {
+      "name": "distant_position",
+      "op": "reshape",
+      "inputs": [
+        "distant_position_bias"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "distant_located",
+      "op": "add",
+      "inputs": [
+        "distant_candidate",
+        "distant_position"
+      ]
+    },
+    {
+      "name": "distant_positive",
+      "op": "relu",
+      "inputs": [
+        "distant_located"
+      ]
+    },
+    {
+      "name": "distant_regional",
+      "op": "maxpool",
+      "inputs": [
+        "distant_positive"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "distant_peak",
+      "op": "maxpool",
+      "inputs": [
+        "distant_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "distant_support",
+      "op": "avgpool",
+      "inputs": [
+        "distant_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "distant_best",
+      "op": "dense",
+      "inputs": [
+        "distant_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "distant_coverage",
+      "op": "dense",
+      "inputs": [
+        "distant_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "distant_read",
+      "op": "add",
+      "inputs": [
+        "distant_best",
+        "distant_coverage"
+      ]
+    },
+    {
+      "name": "small_regions",
+      "op": "conv",
+      "inputs": [
+        "skin"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 3,
+      "padding": 6
+    },
+    {
+      "name": "small_contrast",
+      "op": "conv",
+      "inputs": [
+        "half_light"
+      ],
+      "out": 4,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 3,
+      "padding": 6
+    },
+    {
+      "name": "small_region_thresholds",
+      "op": "conv",
+      "inputs": [
+        "small_regions"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_region_gates",
+      "op": "relu",
+      "inputs": [
+        "small_region_thresholds"
+      ]
+    },
+    {
+      "name": "small_bounded_color",
+      "op": "conv",
+      "inputs": [
+        "small_region_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_contrast_thresholds",
+      "op": "conv",
+      "inputs": [
+        "small_contrast"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_contrast_gates",
+      "op": "relu",
+      "inputs": [
+        "small_contrast_thresholds"
+      ]
+    },
+    {
+      "name": "small_bounded_contrast",
+      "op": "conv",
+      "inputs": [
+        "small_contrast_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_garment_grid",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "small_shirt_differences",
+      "op": "conv",
+      "inputs": [
+        "small_garment_grid"
+      ],
+      "out": 18,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "small_shirt_abs",
+      "op": "relu",
+      "inputs": [
+        "small_shirt_differences"
+      ]
+    },
+    {
+      "name": "small_shirt_sides",
+      "op": "conv",
+      "inputs": [
+        "small_shirt_abs"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_shirt_knots",
+      "op": "conv",
+      "inputs": [
+        "small_shirt_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_shirt_gates",
+      "op": "relu",
+      "inputs": [
+        "small_shirt_knots"
+      ]
+    },
+    {
+      "name": "small_shirt_bonus",
+      "op": "conv",
+      "inputs": [
+        "small_shirt_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_context_source",
+      "op": "avgpool",
+      "inputs": [
+        "small_bounded_color"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "small_level",
+      "op": "dense",
+      "inputs": [
+        "small_context_source"
+      ],
+      "out": 256
+    },
+    {
+      "name": "small_level_map",
+      "op": "reshape",
+      "inputs": [
+        "small_level"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "small_candidate",
+      "op": "add",
+      "inputs": [
+        "small_bounded_color",
+        "small_bounded_contrast",
+        "small_shirt_bonus",
+        "small_level_map"
+      ]
+    },
+    {
+      "name": "small_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "small_candidate"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "small_position_bias",
+      "op": "dense",
+      "inputs": [
+        "small_unit_source"
+      ],
+      "out": 256
+    },
+    {
+      "name": "small_position",
+      "op": "reshape",
+      "inputs": [
+        "small_position_bias"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "small_located",
+      "op": "add",
+      "inputs": [
+        "small_candidate",
+        "small_position"
+      ]
+    },
+    {
+      "name": "small_positive",
+      "op": "relu",
+      "inputs": [
+        "small_located"
+      ]
+    },
+    {
+      "name": "small_regional",
+      "op": "maxpool",
+      "inputs": [
+        "small_positive"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "small_peak",
+      "op": "maxpool",
+      "inputs": [
+        "small_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "small_support",
+      "op": "avgpool",
+      "inputs": [
+        "small_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "small_best",
+      "op": "dense",
+      "inputs": [
+        "small_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "small_coverage",
+      "op": "dense",
+      "inputs": [
+        "small_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "small_read",
+      "op": "add",
+      "inputs": [
+        "small_best",
+        "small_coverage"
+      ]
+    },
+    {
+      "name": "middle_skin_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "middle_light_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "middle_regions",
+      "op": "conv",
+      "inputs": [
+        "middle_skin_scale"
+      ],
+      "out": 5,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "middle_contrast",
+      "op": "conv",
+      "inputs": [
+        "middle_light_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "middle_region_thresholds",
+      "op": "conv",
+      "inputs": [
+        "middle_regions"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_region_gates",
+      "op": "relu",
+      "inputs": [
+        "middle_region_thresholds"
+      ]
+    },
+    {
+      "name": "middle_bounded_color",
+      "op": "conv",
+      "inputs": [
+        "middle_region_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_contrast_thresholds",
+      "op": "conv",
+      "inputs": [
+        "middle_contrast"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_contrast_gates",
+      "op": "relu",
+      "inputs": [
+        "middle_contrast_thresholds"
+      ]
+    },
+    {
+      "name": "middle_bounded_contrast",
+      "op": "conv",
+      "inputs": [
+        "middle_contrast_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_rgb_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "middle_garment_grid",
+      "op": "avgpool",
+      "inputs": [
+        "middle_rgb_scale"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "middle_shirt_differences",
+      "op": "conv",
+      "inputs": [
+        "middle_garment_grid"
+      ],
+      "out": 18,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "middle_shirt_abs",
+      "op": "relu",
+      "inputs": [
+        "middle_shirt_differences"
+      ]
+    },
+    {
+      "name": "middle_shirt_sides",
+      "op": "conv",
+      "inputs": [
+        "middle_shirt_abs"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_shirt_knots",
+      "op": "conv",
+      "inputs": [
+        "middle_shirt_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_shirt_gates",
+      "op": "relu",
+      "inputs": [
+        "middle_shirt_knots"
+      ]
+    },
+    {
+      "name": "middle_shirt_bonus",
+      "op": "conv",
+      "inputs": [
+        "middle_shirt_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "middle_context_source",
+      "op": "avgpool",
+      "inputs": [
+        "middle_bounded_color"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "middle_level",
+      "op": "dense",
+      "inputs": [
+        "middle_context_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "middle_level_map",
+      "op": "reshape",
+      "inputs": [
+        "middle_level"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "middle_candidate",
+      "op": "add",
+      "inputs": [
+        "middle_bounded_color",
+        "middle_bounded_contrast",
+        "middle_shirt_bonus",
+        "middle_level_map"
+      ]
+    },
+    {
+      "name": "middle_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "middle_candidate"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "middle_position_bias",
+      "op": "dense",
+      "inputs": [
+        "middle_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "middle_position",
+      "op": "reshape",
+      "inputs": [
+        "middle_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "middle_located",
+      "op": "add",
+      "inputs": [
+        "middle_candidate",
+        "middle_position"
+      ]
+    },
+    {
+      "name": "middle_positive",
+      "op": "relu",
+      "inputs": [
+        "middle_located"
+      ]
+    },
+    {
+      "name": "middle_regional",
+      "op": "maxpool",
+      "inputs": [
+        "middle_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "middle_peak",
+      "op": "maxpool",
+      "inputs": [
+        "middle_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "middle_support",
+      "op": "avgpool",
+      "inputs": [
+        "middle_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "middle_best",
+      "op": "dense",
+      "inputs": [
+        "middle_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "middle_coverage",
+      "op": "dense",
+      "inputs": [
+        "middle_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "middle_read",
+      "op": "add",
+      "inputs": [
+        "middle_best",
+        "middle_coverage"
+      ]
+    },
+    {
+      "name": "near_skin_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "near_light_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "near_regions",
+      "op": "conv",
+      "inputs": [
+        "near_skin_scale"
+      ],
+      "out": 5,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "near_contrast",
+      "op": "conv",
+      "inputs": [
+        "near_light_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "near_region_thresholds",
+      "op": "conv",
+      "inputs": [
+        "near_regions"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_region_gates",
+      "op": "relu",
+      "inputs": [
+        "near_region_thresholds"
+      ]
+    },
+    {
+      "name": "near_bounded_color",
+      "op": "conv",
+      "inputs": [
+        "near_region_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_contrast_thresholds",
+      "op": "conv",
+      "inputs": [
+        "near_contrast"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_contrast_gates",
+      "op": "relu",
+      "inputs": [
+        "near_contrast_thresholds"
+      ]
+    },
+    {
+      "name": "near_bounded_contrast",
+      "op": "conv",
+      "inputs": [
+        "near_contrast_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_rgb_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "near_garment_grid",
+      "op": "avgpool",
+      "inputs": [
+        "near_rgb_scale"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "near_shirt_differences",
+      "op": "conv",
+      "inputs": [
+        "near_garment_grid"
+      ],
+      "out": 18,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "near_shirt_abs",
+      "op": "relu",
+      "inputs": [
+        "near_shirt_differences"
+      ]
+    },
+    {
+      "name": "near_shirt_sides",
+      "op": "conv",
+      "inputs": [
+        "near_shirt_abs"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_shirt_knots",
+      "op": "conv",
+      "inputs": [
+        "near_shirt_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_shirt_gates",
+      "op": "relu",
+      "inputs": [
+        "near_shirt_knots"
+      ]
+    },
+    {
+      "name": "near_shirt_bonus",
+      "op": "conv",
+      "inputs": [
+        "near_shirt_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_context_source",
+      "op": "avgpool",
+      "inputs": [
+        "near_bounded_color"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "near_level",
+      "op": "dense",
+      "inputs": [
+        "near_context_source"
+      ],
+      "out": 64
+    },
+    {
+      "name": "near_level_map",
+      "op": "reshape",
+      "inputs": [
+        "near_level"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "near_candidate",
+      "op": "add",
+      "inputs": [
+        "near_bounded_color",
+        "near_bounded_contrast",
+        "near_shirt_bonus",
+        "near_level_map"
+      ]
+    },
+    {
+      "name": "near_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "near_candidate"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "near_position_bias",
+      "op": "dense",
+      "inputs": [
+        "near_unit_source"
+      ],
+      "out": 64
+    },
+    {
+      "name": "near_position",
+      "op": "reshape",
+      "inputs": [
+        "near_position_bias"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "near_located",
+      "op": "add",
+      "inputs": [
+        "near_candidate",
+        "near_position"
+      ]
+    },
+    {
+      "name": "near_positive",
+      "op": "relu",
+      "inputs": [
+        "near_located"
+      ]
+    },
+    {
+      "name": "near_regional",
+      "op": "maxpool",
+      "inputs": [
+        "near_positive"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "near_peak",
+      "op": "maxpool",
+      "inputs": [
+        "near_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "near_support",
+      "op": "avgpool",
+      "inputs": [
+        "near_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "near_best",
+      "op": "dense",
+      "inputs": [
+        "near_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "near_coverage",
+      "op": "dense",
+      "inputs": [
+        "near_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "near_read",
+      "op": "add",
+      "inputs": [
+        "near_best",
+        "near_coverage"
+      ]
+    },
+    {
+      "name": "large_skin_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "large_light_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "large_regions",
+      "op": "conv",
+      "inputs": [
+        "large_skin_scale"
+      ],
+      "out": 5,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "large_contrast",
+      "op": "conv",
+      "inputs": [
+        "large_light_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "large_region_thresholds",
+      "op": "conv",
+      "inputs": [
+        "large_regions"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_region_gates",
+      "op": "relu",
+      "inputs": [
+        "large_region_thresholds"
+      ]
+    },
+    {
+      "name": "large_bounded_color",
+      "op": "conv",
+      "inputs": [
+        "large_region_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_contrast_thresholds",
+      "op": "conv",
+      "inputs": [
+        "large_contrast"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_contrast_gates",
+      "op": "relu",
+      "inputs": [
+        "large_contrast_thresholds"
+      ]
+    },
+    {
+      "name": "large_bounded_contrast",
+      "op": "conv",
+      "inputs": [
+        "large_contrast_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_rgb_scale",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "large_garment_grid",
+      "op": "avgpool",
+      "inputs": [
+        "large_rgb_scale"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "large_shirt_differences",
+      "op": "conv",
+      "inputs": [
+        "large_garment_grid"
+      ],
+      "out": 18,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "large_shirt_abs",
+      "op": "relu",
+      "inputs": [
+        "large_shirt_differences"
+      ]
+    },
+    {
+      "name": "large_shirt_sides",
+      "op": "conv",
+      "inputs": [
+        "large_shirt_abs"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_shirt_knots",
+      "op": "conv",
+      "inputs": [
+        "large_shirt_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_shirt_gates",
+      "op": "relu",
+      "inputs": [
+        "large_shirt_knots"
+      ]
+    },
+    {
+      "name": "large_shirt_bonus",
+      "op": "conv",
+      "inputs": [
+        "large_shirt_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "large_context_source",
+      "op": "avgpool",
+      "inputs": [
+        "large_bounded_color"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "large_level",
+      "op": "dense",
+      "inputs": [
+        "large_context_source"
+      ],
+      "out": 36
+    },
+    {
+      "name": "large_level_map",
+      "op": "reshape",
+      "inputs": [
+        "large_level"
+      ],
+      "shape": [
+        1,
+        6,
+        6
+      ]
+    },
+    {
+      "name": "large_candidate",
+      "op": "add",
+      "inputs": [
+        "large_bounded_color",
+        "large_bounded_contrast",
+        "large_shirt_bonus",
+        "large_level_map"
+      ]
+    },
+    {
+      "name": "large_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "large_candidate"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "large_position_bias",
+      "op": "dense",
+      "inputs": [
+        "large_unit_source"
+      ],
+      "out": 36
+    },
+    {
+      "name": "large_position",
+      "op": "reshape",
+      "inputs": [
+        "large_position_bias"
+      ],
+      "shape": [
+        1,
+        6,
+        6
+      ]
+    },
+    {
+      "name": "large_located",
+      "op": "add",
+      "inputs": [
+        "large_candidate",
+        "large_position"
+      ]
+    },
+    {
+      "name": "large_positive",
+      "op": "relu",
+      "inputs": [
+        "large_located"
+      ]
+    },
+    {
+      "name": "large_regional",
+      "op": "maxpool",
+      "inputs": [
+        "large_positive"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "large_peak",
+      "op": "maxpool",
+      "inputs": [
+        "large_regional"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "large_support",
+      "op": "avgpool",
+      "inputs": [
+        "large_regional"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "large_best",
+      "op": "dense",
+      "inputs": [
+        "large_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "large_coverage",
+      "op": "dense",
+      "inputs": [
+        "large_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "large_read",
+      "op": "add",
+      "inputs": [
+        "large_best",
+        "large_coverage"
+      ]
+    },
+    {
+      "name": "face8_haar",
+      "op": "conv",
+      "inputs": [
+        "half_light"
+      ],
+      "out": 9,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "face8_pigment",
+      "op": "conv",
+      "inputs": [
+        "skin"
+      ],
+      "out": 2,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "face8_part_gates",
+      "op": "conv",
+      "inputs": [
+        "face8_haar"
+      ],
+      "out": 19,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face8_parts",
+      "op": "relu",
+      "inputs": [
+        "face8_part_gates"
+      ]
+    },
+    {
+      "name": "face8_part_vote",
+      "op": "conv",
+      "inputs": [
+        "face8_parts"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face8_skin_bound",
+      "op": "conv",
+      "inputs": [
+        "face8_pigment"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face8_skin_gate",
+      "op": "relu",
+      "inputs": [
+        "face8_skin_bound"
+      ]
+    },
+    {
+      "name": "face8_skin_vote",
+      "op": "conv",
+      "inputs": [
+        "face8_skin_gate"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face8_mixture",
+      "op": "add",
+      "inputs": [
+        "face8_part_vote",
+        "face8_skin_vote"
+      ]
+    },
+    {
+      "name": "face8_source",
+      "op": "avgpool",
+      "inputs": [
+        "face8_mixture"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face8_level",
+      "op": "dense",
+      "inputs": [
+        "face8_source"
+      ],
+      "out": 576
+    },
+    {
+      "name": "face8_level_map",
+      "op": "reshape",
+      "inputs": [
+        "face8_level"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face8_raw",
+      "op": "add",
+      "inputs": [
+        "face8_mixture",
+        "face8_level_map"
+      ]
+    },
+    {
+      "name": "face8_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "face8_raw"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face8_position_bias",
+      "op": "dense",
+      "inputs": [
+        "face8_unit_source"
+      ],
+      "out": 576
+    },
+    {
+      "name": "face8_position",
+      "op": "reshape",
+      "inputs": [
+        "face8_position_bias"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face8_located",
+      "op": "add",
+      "inputs": [
+        "face8_raw",
+        "face8_position"
+      ]
+    },
+    {
+      "name": "face8_positive",
+      "op": "relu",
+      "inputs": [
+        "face8_located"
+      ]
+    },
+    {
+      "name": "face8_regional",
+      "op": "maxpool",
+      "inputs": [
+        "face8_positive"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face8_peak",
+      "op": "maxpool",
+      "inputs": [
+        "face8_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face8_support",
+      "op": "avgpool",
+      "inputs": [
+        "face8_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face8_best",
+      "op": "dense",
+      "inputs": [
+        "face8_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face8_coverage",
+      "op": "dense",
+      "inputs": [
+        "face8_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face8_read",
+      "op": "add",
+      "inputs": [
+        "face8_best",
+        "face8_coverage"
+      ]
+    },
+    {
+      "name": "face15_light",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face15_hue",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face15_haar",
+      "op": "conv",
+      "inputs": [
+        "face15_light"
+      ],
+      "out": 27,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "face15_pigment",
+      "op": "conv",
+      "inputs": [
+        "face15_hue"
+      ],
+      "out": 6,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "face15_part_gates",
+      "op": "conv",
+      "inputs": [
+        "face15_haar"
+      ],
+      "out": 57,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face15_parts",
+      "op": "relu",
+      "inputs": [
+        "face15_part_gates"
+      ]
+    },
+    {
+      "name": "face15_part_vote",
+      "op": "conv",
+      "inputs": [
+        "face15_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face15_skin_bound",
+      "op": "conv",
+      "inputs": [
+        "face15_pigment"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face15_skin_gate",
+      "op": "relu",
+      "inputs": [
+        "face15_skin_bound"
+      ]
+    },
+    {
+      "name": "face15_skin_vote",
+      "op": "conv",
+      "inputs": [
+        "face15_skin_gate"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face15_mixture",
+      "op": "add",
+      "inputs": [
+        "face15_part_vote",
+        "face15_skin_vote"
+      ]
+    },
+    {
+      "name": "face15_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "face15_mixture"
+      ],
+      "shape": [
+        1,
+        3,
+        144
+      ]
+    },
+    {
+      "name": "face15_angle_max",
+      "op": "maxpool",
+      "inputs": [
+        "face15_hypotheses"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "face15_angle_map",
+      "op": "reshape",
+      "inputs": [
+        "face15_angle_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face15_source",
+      "op": "avgpool",
+      "inputs": [
+        "face15_angle_map"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face15_level",
+      "op": "dense",
+      "inputs": [
+        "face15_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "face15_level_map",
+      "op": "reshape",
+      "inputs": [
+        "face15_level"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face15_raw",
+      "op": "add",
+      "inputs": [
+        "face15_angle_map",
+        "face15_level_map"
+      ]
+    },
+    {
+      "name": "face15_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "face15_raw"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face15_position_bias",
+      "op": "dense",
+      "inputs": [
+        "face15_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "face15_position",
+      "op": "reshape",
+      "inputs": [
+        "face15_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face15_located",
+      "op": "add",
+      "inputs": [
+        "face15_raw",
+        "face15_position"
+      ]
+    },
+    {
+      "name": "face15_positive",
+      "op": "relu",
+      "inputs": [
+        "face15_located"
+      ]
+    },
+    {
+      "name": "face15_regional",
+      "op": "maxpool",
+      "inputs": [
+        "face15_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face15_peak",
+      "op": "maxpool",
+      "inputs": [
+        "face15_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face15_support",
+      "op": "avgpool",
+      "inputs": [
+        "face15_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face15_best",
+      "op": "dense",
+      "inputs": [
+        "face15_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face15_coverage",
+      "op": "dense",
+      "inputs": [
+        "face15_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face15_read",
+      "op": "add",
+      "inputs": [
+        "face15_best",
+        "face15_coverage"
+      ]
+    },
+    {
+      "name": "face27_light",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face27_hue",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face27_haar",
+      "op": "conv",
+      "inputs": [
+        "face27_light"
+      ],
+      "out": 27,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "face27_pigment",
+      "op": "conv",
+      "inputs": [
+        "face27_hue"
+      ],
+      "out": 6,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "face27_part_gates",
+      "op": "conv",
+      "inputs": [
+        "face27_haar"
+      ],
+      "out": 57,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face27_parts",
+      "op": "relu",
+      "inputs": [
+        "face27_part_gates"
+      ]
+    },
+    {
+      "name": "face27_part_vote",
+      "op": "conv",
+      "inputs": [
+        "face27_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face27_skin_bound",
+      "op": "conv",
+      "inputs": [
+        "face27_pigment"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face27_skin_gate",
+      "op": "relu",
+      "inputs": [
+        "face27_skin_bound"
+      ]
+    },
+    {
+      "name": "face27_skin_vote",
+      "op": "conv",
+      "inputs": [
+        "face27_skin_gate"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face27_mixture",
+      "op": "add",
+      "inputs": [
+        "face27_part_vote",
+        "face27_skin_vote"
+      ]
+    },
+    {
+      "name": "face27_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "face27_mixture"
+      ],
+      "shape": [
+        1,
+        3,
+        64
+      ]
+    },
+    {
+      "name": "face27_angle_max",
+      "op": "maxpool",
+      "inputs": [
+        "face27_hypotheses"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "face27_angle_map",
+      "op": "reshape",
+      "inputs": [
+        "face27_angle_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face27_source",
+      "op": "avgpool",
+      "inputs": [
+        "face27_angle_map"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face27_level",
+      "op": "dense",
+      "inputs": [
+        "face27_source"
+      ],
+      "out": 64
+    },
+    {
+      "name": "face27_level_map",
+      "op": "reshape",
+      "inputs": [
+        "face27_level"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face27_raw",
+      "op": "add",
+      "inputs": [
+        "face27_angle_map",
+        "face27_level_map"
+      ]
+    },
+    {
+      "name": "face27_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "face27_raw"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face27_position_bias",
+      "op": "dense",
+      "inputs": [
+        "face27_unit_source"
+      ],
+      "out": 64
+    },
+    {
+      "name": "face27_position",
+      "op": "reshape",
+      "inputs": [
+        "face27_position_bias"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face27_located",
+      "op": "add",
+      "inputs": [
+        "face27_raw",
+        "face27_position"
+      ]
+    },
+    {
+      "name": "face27_positive",
+      "op": "relu",
+      "inputs": [
+        "face27_located"
+      ]
+    },
+    {
+      "name": "face27_regional",
+      "op": "maxpool",
+      "inputs": [
+        "face27_positive"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face27_peak",
+      "op": "maxpool",
+      "inputs": [
+        "face27_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face27_support",
+      "op": "avgpool",
+      "inputs": [
+        "face27_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face27_best",
+      "op": "dense",
+      "inputs": [
+        "face27_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face27_coverage",
+      "op": "dense",
+      "inputs": [
+        "face27_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face27_read",
+      "op": "add",
+      "inputs": [
+        "face27_best",
+        "face27_coverage"
+      ]
+    },
+    {
+      "name": "face42_light",
+      "op": "avgpool",
+      "inputs": [
+        "half_light"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face42_hue",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face42_haar",
+      "op": "conv",
+      "inputs": [
+        "face42_light"
+      ],
+      "out": 27,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "face42_pigment",
+      "op": "conv",
+      "inputs": [
+        "face42_hue"
+      ],
+      "out": 6,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "face42_part_gates",
+      "op": "conv",
+      "inputs": [
+        "face42_haar"
+      ],
+      "out": 57,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face42_parts",
+      "op": "relu",
+      "inputs": [
+        "face42_part_gates"
+      ]
+    },
+    {
+      "name": "face42_part_vote",
+      "op": "conv",
+      "inputs": [
+        "face42_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face42_skin_bound",
+      "op": "conv",
+      "inputs": [
+        "face42_pigment"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face42_skin_gate",
+      "op": "relu",
+      "inputs": [
+        "face42_skin_bound"
+      ]
+    },
+    {
+      "name": "face42_skin_vote",
+      "op": "conv",
+      "inputs": [
+        "face42_skin_gate"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face42_mixture",
+      "op": "add",
+      "inputs": [
+        "face42_part_vote",
+        "face42_skin_vote"
+      ]
+    },
+    {
+      "name": "face42_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "face42_mixture"
+      ],
+      "shape": [
+        1,
+        3,
+        36
+      ]
+    },
+    {
+      "name": "face42_angle_max",
+      "op": "maxpool",
+      "inputs": [
+        "face42_hypotheses"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "face42_angle_map",
+      "op": "reshape",
+      "inputs": [
+        "face42_angle_max"
+      ],
+      "shape": [
+        1,
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face42_source",
+      "op": "avgpool",
+      "inputs": [
+        "face42_angle_map"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face42_level",
+      "op": "dense",
+      "inputs": [
+        "face42_source"
+      ],
+      "out": 36
+    },
+    {
+      "name": "face42_level_map",
+      "op": "reshape",
+      "inputs": [
+        "face42_level"
+      ],
+      "shape": [
+        1,
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face42_raw",
+      "op": "add",
+      "inputs": [
+        "face42_angle_map",
+        "face42_level_map"
+      ]
+    },
+    {
+      "name": "face42_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "face42_raw"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face42_position_bias",
+      "op": "dense",
+      "inputs": [
+        "face42_unit_source"
+      ],
+      "out": 36
+    },
+    {
+      "name": "face42_position",
+      "op": "reshape",
+      "inputs": [
+        "face42_position_bias"
+      ],
+      "shape": [
+        1,
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face42_located",
+      "op": "add",
+      "inputs": [
+        "face42_raw",
+        "face42_position"
+      ]
+    },
+    {
+      "name": "face42_positive",
+      "op": "relu",
+      "inputs": [
+        "face42_located"
+      ]
+    },
+    {
+      "name": "face42_regional",
+      "op": "maxpool",
+      "inputs": [
+        "face42_positive"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face42_peak",
+      "op": "maxpool",
+      "inputs": [
+        "face42_regional"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face42_support",
+      "op": "avgpool",
+      "inputs": [
+        "face42_regional"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face42_best",
+      "op": "dense",
+      "inputs": [
+        "face42_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face42_coverage",
+      "op": "dense",
+      "inputs": [
+        "face42_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face42_read",
+      "op": "add",
+      "inputs": [
+        "face42_best",
+        "face42_coverage"
+      ]
+    },
+    {
+      "name": "figure24_outline",
+      "op": "conv",
+      "inputs": [
+        "contours"
+      ],
+      "out": 12,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "figure24_shape_bounds",
+      "op": "conv",
+      "inputs": [
+        "figure24_outline"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure24_shape_gates",
+      "op": "relu",
+      "inputs": [
+        "figure24_shape_bounds"
+      ]
+    },
+    {
+      "name": "figure24_geometry",
+      "op": "conv",
+      "inputs": [
+        "figure24_shape_gates"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure24_hue_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "figure24_head",
+      "op": "conv",
+      "inputs": [
+        "figure24_hue_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "figure24_head_gate",
+      "op": "relu",
+      "inputs": [
+        "figure24_head"
+      ]
+    },
+    {
+      "name": "figure24_head_vote",
+      "op": "conv",
+      "inputs": [
+        "figure24_head_gate"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure24_match",
+      "op": "add",
+      "inputs": [
+        "figure24_geometry",
+        "figure24_head_vote"
+      ]
+    },
+    {
+      "name": "figure24_poses",
+      "op": "reshape",
+      "inputs": [
+        "figure24_match"
+      ],
+      "shape": [
+        1,
+        4,
+        144
+      ]
+    },
+    {
+      "name": "figure24_pose_max",
+      "op": "maxpool",
+      "inputs": [
+        "figure24_poses"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "figure24_map",
+      "op": "reshape",
+      "inputs": [
+        "figure24_pose_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure24_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure24_map"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure24_level",
+      "op": "dense",
+      "inputs": [
+        "figure24_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure24_level_map",
+      "op": "reshape",
+      "inputs": [
+        "figure24_level"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure24_raw",
+      "op": "add",
+      "inputs": [
+        "figure24_map",
+        "figure24_level_map"
+      ]
+    },
+    {
+      "name": "figure24_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure24_raw"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure24_position_bias",
+      "op": "dense",
+      "inputs": [
+        "figure24_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure24_position",
+      "op": "reshape",
+      "inputs": [
+        "figure24_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure24_located",
+      "op": "add",
+      "inputs": [
+        "figure24_raw",
+        "figure24_position"
+      ]
+    },
+    {
+      "name": "figure24_positive",
+      "op": "relu",
+      "inputs": [
+        "figure24_located"
+      ]
+    },
+    {
+      "name": "figure24_regional",
+      "op": "maxpool",
+      "inputs": [
+        "figure24_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "figure24_peak",
+      "op": "maxpool",
+      "inputs": [
+        "figure24_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure24_support",
+      "op": "avgpool",
+      "inputs": [
+        "figure24_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure24_best",
+      "op": "dense",
+      "inputs": [
+        "figure24_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure24_coverage",
+      "op": "dense",
+      "inputs": [
+        "figure24_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure24_read",
+      "op": "add",
+      "inputs": [
+        "figure24_best",
+        "figure24_coverage"
+      ]
+    },
+    {
+      "name": "figure45_scale",
+      "op": "avgpool",
+      "inputs": [
+        "contours"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "figure45_outline",
+      "op": "conv",
+      "inputs": [
+        "figure45_scale"
+      ],
+      "out": 12,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "figure45_shape_bounds",
+      "op": "conv",
+      "inputs": [
+        "figure45_outline"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure45_shape_gates",
+      "op": "relu",
+      "inputs": [
+        "figure45_shape_bounds"
+      ]
+    },
+    {
+      "name": "figure45_geometry",
+      "op": "conv",
+      "inputs": [
+        "figure45_shape_gates"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure45_hue_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure45_head",
+      "op": "conv",
+      "inputs": [
+        "figure45_hue_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "figure45_head_gate",
+      "op": "relu",
+      "inputs": [
+        "figure45_head"
+      ]
+    },
+    {
+      "name": "figure45_head_vote",
+      "op": "conv",
+      "inputs": [
+        "figure45_head_gate"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure45_match",
+      "op": "add",
+      "inputs": [
+        "figure45_geometry",
+        "figure45_head_vote"
+      ]
+    },
+    {
+      "name": "figure45_poses",
+      "op": "reshape",
+      "inputs": [
+        "figure45_match"
+      ],
+      "shape": [
+        1,
+        4,
+        144
+      ]
+    },
+    {
+      "name": "figure45_pose_max",
+      "op": "maxpool",
+      "inputs": [
+        "figure45_poses"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "figure45_map",
+      "op": "reshape",
+      "inputs": [
+        "figure45_pose_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure45_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure45_map"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure45_level",
+      "op": "dense",
+      "inputs": [
+        "figure45_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure45_level_map",
+      "op": "reshape",
+      "inputs": [
+        "figure45_level"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure45_raw",
+      "op": "add",
+      "inputs": [
+        "figure45_map",
+        "figure45_level_map"
+      ]
+    },
+    {
+      "name": "figure45_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure45_raw"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure45_position_bias",
+      "op": "dense",
+      "inputs": [
+        "figure45_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure45_position",
+      "op": "reshape",
+      "inputs": [
+        "figure45_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure45_located",
+      "op": "add",
+      "inputs": [
+        "figure45_raw",
+        "figure45_position"
+      ]
+    },
+    {
+      "name": "figure45_positive",
+      "op": "relu",
+      "inputs": [
+        "figure45_located"
+      ]
+    },
+    {
+      "name": "figure45_regional",
+      "op": "maxpool",
+      "inputs": [
+        "figure45_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "figure45_peak",
+      "op": "maxpool",
+      "inputs": [
+        "figure45_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure45_support",
+      "op": "avgpool",
+      "inputs": [
+        "figure45_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure45_best",
+      "op": "dense",
+      "inputs": [
+        "figure45_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure45_coverage",
+      "op": "dense",
+      "inputs": [
+        "figure45_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure45_read",
+      "op": "add",
+      "inputs": [
+        "figure45_best",
+        "figure45_coverage"
+      ]
+    },
+    {
+      "name": "figure70_scale",
+      "op": "avgpool",
+      "inputs": [
+        "contours"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "figure70_outline",
+      "op": "conv",
+      "inputs": [
+        "figure70_scale"
+      ],
+      "out": 12,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "figure70_shape_bounds",
+      "op": "conv",
+      "inputs": [
+        "figure70_outline"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure70_shape_gates",
+      "op": "relu",
+      "inputs": [
+        "figure70_shape_bounds"
+      ]
+    },
+    {
+      "name": "figure70_geometry",
+      "op": "conv",
+      "inputs": [
+        "figure70_shape_gates"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure70_hue_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure70_head",
+      "op": "conv",
+      "inputs": [
+        "figure70_hue_scale"
+      ],
+      "out": 4,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "figure70_head_gate",
+      "op": "relu",
+      "inputs": [
+        "figure70_head"
+      ]
+    },
+    {
+      "name": "figure70_head_vote",
+      "op": "conv",
+      "inputs": [
+        "figure70_head_gate"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "figure70_match",
+      "op": "add",
+      "inputs": [
+        "figure70_geometry",
+        "figure70_head_vote"
+      ]
+    },
+    {
+      "name": "figure70_poses",
+      "op": "reshape",
+      "inputs": [
+        "figure70_match"
+      ],
+      "shape": [
+        1,
+        4,
+        144
+      ]
+    },
+    {
+      "name": "figure70_pose_max",
+      "op": "maxpool",
+      "inputs": [
+        "figure70_poses"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "figure70_map",
+      "op": "reshape",
+      "inputs": [
+        "figure70_pose_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure70_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure70_map"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure70_level",
+      "op": "dense",
+      "inputs": [
+        "figure70_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure70_level_map",
+      "op": "reshape",
+      "inputs": [
+        "figure70_level"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure70_raw",
+      "op": "add",
+      "inputs": [
+        "figure70_map",
+        "figure70_level_map"
+      ]
+    },
+    {
+      "name": "figure70_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "figure70_raw"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure70_position_bias",
+      "op": "dense",
+      "inputs": [
+        "figure70_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "figure70_position",
+      "op": "reshape",
+      "inputs": [
+        "figure70_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "figure70_located",
+      "op": "add",
+      "inputs": [
+        "figure70_raw",
+        "figure70_position"
+      ]
+    },
+    {
+      "name": "figure70_positive",
+      "op": "relu",
+      "inputs": [
+        "figure70_located"
+      ]
+    },
+    {
+      "name": "figure70_regional",
+      "op": "maxpool",
+      "inputs": [
+        "figure70_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "figure70_peak",
+      "op": "maxpool",
+      "inputs": [
+        "figure70_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure70_support",
+      "op": "avgpool",
+      "inputs": [
+        "figure70_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "figure70_best",
+      "op": "dense",
+      "inputs": [
+        "figure70_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure70_coverage",
+      "op": "dense",
+      "inputs": [
+        "figure70_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "figure70_read",
+      "op": "add",
+      "inputs": [
+        "figure70_best",
+        "figure70_coverage"
+      ]
+    },
+    {
+      "name": "head_scales_lane0",
+      "op": "dense",
+      "inputs": [
+        "distant_read"
+      ],
+      "out": 5
+    },
+    {
+      "name": "head_scales_lane1",
+      "op": "dense",
+      "inputs": [
+        "small_read"
+      ],
+      "out": 5
+    },
+    {
+      "name": "head_scales_lane2",
+      "op": "dense",
+      "inputs": [
+        "middle_read"
+      ],
+      "out": 5
+    },
+    {
+      "name": "head_scales_lane3",
+      "op": "dense",
+      "inputs": [
+        "near_read"
+      ],
+      "out": 5
+    },
+    {
+      "name": "head_scales_lane4",
+      "op": "dense",
+      "inputs": [
+        "large_read"
+      ],
+      "out": 5
+    },
+    {
+      "name": "head_scales_values",
+      "op": "add",
+      "inputs": [
+        "head_scales_lane0",
+        "head_scales_lane1",
+        "head_scales_lane2",
+        "head_scales_lane3",
+        "head_scales_lane4"
+      ]
+    },
+    {
+      "name": "head_scales_column",
+      "op": "reshape",
+      "inputs": [
+        "head_scales_values"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "head_scales_strongest",
+      "op": "maxpool",
+      "inputs": [
+        "head_scales_column"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "head_scales_max_gain",
+      "op": "dense",
+      "inputs": [
+        "head_scales_strongest"
+      ],
+      "out": 1
+    },
+    {
+      "name": "head_scales_mean_gain",
+      "op": "dense",
+      "inputs": [
+        "head_scales_values"
+      ],
+      "out": 1
+    },
+    {
+      "name": "head_scales_vote",
+      "op": "add",
+      "inputs": [
+        "head_scales_max_gain",
+        "head_scales_mean_gain"
+      ]
+    },
+    {
+      "name": "face_scales_lane0",
+      "op": "dense",
+      "inputs": [
+        "face8_read"
+      ],
+      "out": 4
+    },
+    {
+      "name": "face_scales_lane1",
+      "op": "dense",
+      "inputs": [
+        "face15_read"
+      ],
+      "out": 4
+    },
+    {
+      "name": "face_scales_lane2",
+      "op": "dense",
+      "inputs": [
+        "face27_read"
+      ],
+      "out": 4
+    },
+    {
+      "name": "face_scales_lane3",
+      "op": "dense",
+      "inputs": [
+        "face42_read"
+      ],
+      "out": 4
+    },
+    {
+      "name": "face_scales_values",
+      "op": "add",
+      "inputs": [
+        "face_scales_lane0",
+        "face_scales_lane1",
+        "face_scales_lane2",
+        "face_scales_lane3"
+      ]
+    },
+    {
+      "name": "face_scales_column",
+      "op": "reshape",
+      "inputs": [
+        "face_scales_values"
+      ],
+      "shape": [
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "face_scales_strongest",
+      "op": "maxpool",
+      "inputs": [
+        "face_scales_column"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "face_scales_max_gain",
+      "op": "dense",
+      "inputs": [
+        "face_scales_strongest"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face_scales_mean_gain",
+      "op": "dense",
+      "inputs": [
+        "face_scales_values"
+      ],
+      "out": 1
+    },
+    {
+      "name": "face_scales_vote",
+      "op": "add",
+      "inputs": [
+        "face_scales_max_gain",
+        "face_scales_mean_gain"
+      ]
+    },
+    {
+      "name": "body_scales_lane0",
+      "op": "dense",
+      "inputs": [
+        "figure24_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "body_scales_lane1",
+      "op": "dense",
+      "inputs": [
+        "figure45_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "body_scales_lane2",
+      "op": "dense",
+      "inputs": [
+        "figure70_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "body_scales_values",
+      "op": "add",
+      "inputs": [
+        "body_scales_lane0",
+        "body_scales_lane1",
+        "body_scales_lane2"
+      ]
+    },
+    {
+      "name": "body_scales_column",
+      "op": "reshape",
+      "inputs": [
+        "body_scales_values"
+      ],
+      "shape": [
+        1,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "body_scales_strongest",
+      "op": "maxpool",
+      "inputs": [
+        "body_scales_column"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "body_scales_max_gain",
+      "op": "dense",
+      "inputs": [
+        "body_scales_strongest"
+      ],
+      "out": 1
+    },
+    {
+      "name": "body_scales_mean_gain",
+      "op": "dense",
+      "inputs": [
+        "body_scales_values"
+      ],
+      "out": 1
+    },
+    {
+      "name": "body_scales_vote",
+      "op": "add",
+      "inputs": [
+        "body_scales_max_gain",
+        "body_scales_mean_gain"
+      ]
+    },
+    {
+      "name": "limb_small_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "limb_small_compactness",
+      "op": "conv",
+      "inputs": [
+        "limb_small_scale"
+      ],
+      "out": 3,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "limb_small_blob_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_small_compactness"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_small_blob_bounds",
+      "op": "relu",
+      "inputs": [
+        "limb_small_blob_knots"
+      ]
+    },
+    {
+      "name": "limb_small_blobs",
+      "op": "conv",
+      "inputs": [
+        "limb_small_blob_bounds"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_small_limb_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "limb_small_blobs"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "limb_small_limb_grid",
+      "op": "conv",
+      "inputs": [
+        "limb_small_limb_tolerance"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "limb_small_sites",
+      "op": "conv",
+      "inputs": [
+        "limb_small_limb_grid"
+      ],
+      "out": 4,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "limb_small_site_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_small_sites"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_small_site_gates",
+      "op": "relu",
+      "inputs": [
+        "limb_small_site_knots"
+      ]
+    },
+    {
+      "name": "limb_small_limb_support",
+      "op": "conv",
+      "inputs": [
+        "limb_small_site_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_small_head_strength",
+      "op": "conv",
+      "inputs": [
+        "limb_small_blobs"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_small_association",
+      "op": "add",
+      "inputs": [
+        "limb_small_head_strength",
+        "limb_small_limb_support"
+      ]
+    },
+    {
+      "name": "limb_small_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "limb_small_association"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "limb_small_position_bias",
+      "op": "dense",
+      "inputs": [
+        "limb_small_unit_source"
+      ],
+      "out": 576
+    },
+    {
+      "name": "limb_small_position",
+      "op": "reshape",
+      "inputs": [
+        "limb_small_position_bias"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "limb_small_located",
+      "op": "add",
+      "inputs": [
+        "limb_small_association",
+        "limb_small_position"
+      ]
+    },
+    {
+      "name": "limb_small_positive",
+      "op": "relu",
+      "inputs": [
+        "limb_small_located"
+      ]
+    },
+    {
+      "name": "limb_small_regional",
+      "op": "maxpool",
+      "inputs": [
+        "limb_small_positive"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "limb_small_peak",
+      "op": "maxpool",
+      "inputs": [
+        "limb_small_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_small_support",
+      "op": "avgpool",
+      "inputs": [
+        "limb_small_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_small_best",
+      "op": "dense",
+      "inputs": [
+        "limb_small_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_small_coverage",
+      "op": "dense",
+      "inputs": [
+        "limb_small_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_small_read",
+      "op": "add",
+      "inputs": [
+        "limb_small_best",
+        "limb_small_coverage"
+      ]
+    },
+    {
+      "name": "limb_medium_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "limb_medium_compactness",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_scale"
+      ],
+      "out": 3,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "limb_medium_blob_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_compactness"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_medium_blob_bounds",
+      "op": "relu",
+      "inputs": [
+        "limb_medium_blob_knots"
+      ]
+    },
+    {
+      "name": "limb_medium_blobs",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_blob_bounds"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_medium_limb_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "limb_medium_blobs"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "limb_medium_limb_grid",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_limb_tolerance"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "limb_medium_sites",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_limb_grid"
+      ],
+      "out": 4,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "limb_medium_site_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_sites"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_medium_site_gates",
+      "op": "relu",
+      "inputs": [
+        "limb_medium_site_knots"
+      ]
+    },
+    {
+      "name": "limb_medium_limb_support",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_site_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_medium_head_strength",
+      "op": "conv",
+      "inputs": [
+        "limb_medium_blobs"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_medium_association",
+      "op": "add",
+      "inputs": [
+        "limb_medium_head_strength",
+        "limb_medium_limb_support"
+      ]
+    },
+    {
+      "name": "limb_medium_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "limb_medium_association"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "limb_medium_position_bias",
+      "op": "dense",
+      "inputs": [
+        "limb_medium_unit_source"
+      ],
+      "out": 256
+    },
+    {
+      "name": "limb_medium_position",
+      "op": "reshape",
+      "inputs": [
+        "limb_medium_position_bias"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "limb_medium_located",
+      "op": "add",
+      "inputs": [
+        "limb_medium_association",
+        "limb_medium_position"
+      ]
+    },
+    {
+      "name": "limb_medium_positive",
+      "op": "relu",
+      "inputs": [
+        "limb_medium_located"
+      ]
+    },
+    {
+      "name": "limb_medium_regional",
+      "op": "maxpool",
+      "inputs": [
+        "limb_medium_positive"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_medium_peak",
+      "op": "maxpool",
+      "inputs": [
+        "limb_medium_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_medium_support",
+      "op": "avgpool",
+      "inputs": [
+        "limb_medium_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_medium_best",
+      "op": "dense",
+      "inputs": [
+        "limb_medium_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_medium_coverage",
+      "op": "dense",
+      "inputs": [
+        "limb_medium_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_medium_read",
+      "op": "add",
+      "inputs": [
+        "limb_medium_best",
+        "limb_medium_coverage"
+      ]
+    },
+    {
+      "name": "limb_near_scale",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_near_compactness",
+      "op": "conv",
+      "inputs": [
+        "limb_near_scale"
+      ],
+      "out": 3,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "limb_near_blob_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_near_compactness"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_near_blob_bounds",
+      "op": "relu",
+      "inputs": [
+        "limb_near_blob_knots"
+      ]
+    },
+    {
+      "name": "limb_near_blobs",
+      "op": "conv",
+      "inputs": [
+        "limb_near_blob_bounds"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_near_limb_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "limb_near_blobs"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "limb_near_limb_grid",
+      "op": "conv",
+      "inputs": [
+        "limb_near_limb_tolerance"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "limb_near_sites",
+      "op": "conv",
+      "inputs": [
+        "limb_near_limb_grid"
+      ],
+      "out": 4,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "limb_near_site_knots",
+      "op": "conv",
+      "inputs": [
+        "limb_near_sites"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_near_site_gates",
+      "op": "relu",
+      "inputs": [
+        "limb_near_site_knots"
+      ]
+    },
+    {
+      "name": "limb_near_limb_support",
+      "op": "conv",
+      "inputs": [
+        "limb_near_site_gates"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_near_head_strength",
+      "op": "conv",
+      "inputs": [
+        "limb_near_blobs"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "limb_near_association",
+      "op": "add",
+      "inputs": [
+        "limb_near_head_strength",
+        "limb_near_limb_support"
+      ]
+    },
+    {
+      "name": "limb_near_unit_source",
+      "op": "avgpool",
+      "inputs": [
+        "limb_near_association"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "limb_near_position_bias",
+      "op": "dense",
+      "inputs": [
+        "limb_near_unit_source"
+      ],
+      "out": 144
+    },
+    {
+      "name": "limb_near_position",
+      "op": "reshape",
+      "inputs": [
+        "limb_near_position_bias"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "limb_near_located",
+      "op": "add",
+      "inputs": [
+        "limb_near_association",
+        "limb_near_position"
+      ]
+    },
+    {
+      "name": "limb_near_positive",
+      "op": "relu",
+      "inputs": [
+        "limb_near_located"
+      ]
+    },
+    {
+      "name": "limb_near_regional",
+      "op": "maxpool",
+      "inputs": [
+        "limb_near_positive"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "limb_near_peak",
+      "op": "maxpool",
+      "inputs": [
+        "limb_near_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_near_support",
+      "op": "avgpool",
+      "inputs": [
+        "limb_near_regional"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "limb_near_best",
+      "op": "dense",
+      "inputs": [
+        "limb_near_peak"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_near_coverage",
+      "op": "dense",
+      "inputs": [
+        "limb_near_support"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_near_read",
+      "op": "add",
+      "inputs": [
+        "limb_near_best",
+        "limb_near_coverage"
+      ]
+    },
+    {
+      "name": "limb_scales_lane0",
+      "op": "dense",
+      "inputs": [
+        "limb_small_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "limb_scales_lane1",
+      "op": "dense",
+      "inputs": [
+        "limb_medium_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "limb_scales_lane2",
+      "op": "dense",
+      "inputs": [
+        "limb_near_read"
+      ],
+      "out": 3
+    },
+    {
+      "name": "limb_scales_values",
+      "op": "add",
+      "inputs": [
+        "limb_scales_lane0",
+        "limb_scales_lane1",
+        "limb_scales_lane2"
+      ]
+    },
+    {
+      "name": "limb_scales_column",
+      "op": "reshape",
+      "inputs": [
+        "limb_scales_values"
+      ],
+      "shape": [
+        1,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "limb_scales_strongest",
+      "op": "maxpool",
+      "inputs": [
+        "limb_scales_column"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "limb_scales_max_gain",
+      "op": "dense",
+      "inputs": [
+        "limb_scales_strongest"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_scales_mean_gain",
+      "op": "dense",
+      "inputs": [
+        "limb_scales_values"
+      ],
+      "out": 1
+    },
+    {
+      "name": "limb_scales_vote",
+      "op": "add",
+      "inputs": [
+        "limb_scales_max_gain",
+        "limb_scales_mean_gain"
+      ]
+    },
+    {
+      "name": "coarse_rgb",
+      "op": "avgpool",
+      "inputs": [
+        "half_rgb"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "scene_color_planes",
+      "op": "conv",
+      "inputs": [
+        "coarse_rgb"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scene_colors",
+      "op": "relu",
+      "inputs": [
+        "scene_color_planes"
+      ]
+    },
+    {
+      "name": "field_context",
+      "op": "dense",
+      "inputs": [
+        "scene_colors"
+      ],
+      "out": 1
+    },
+    {
+      "name": "long_lines",
+      "op": "conv",
+      "inputs": [
+        "contours"
+      ],
+      "out": 4,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 0
+    },
+    {
+      "name": "straight_runs",
+      "op": "relu",
+      "inputs": [
+        "long_lines"
+      ]
+    },
+    {
+      "name": "line_density",
+      "op": "avgpool",
+      "inputs": [
+        "straight_runs"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "linear_context",
+      "op": "dense",
+      "inputs": [
+        "line_density"
+      ],
+      "out": 1
+    },
+    {
+      "name": "turf_planes",
+      "op": "conv",
+      "inputs": [
+        "coarse_rgb"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "turf_costs",
+      "op": "relu",
+      "inputs": [
+        "turf_planes"
+      ]
+    },
+    {
+      "name": "turf_membership",
+      "op": "conv",
+      "inputs": [
+        "turf_costs"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "turf_pixel",
+      "op": "relu",
+      "inputs": [
+        "turf_membership"
+      ]
+    },
+    {
+      "name": "patch_edge_energy",
+      "op": "avgpool",
+      "inputs": [
+        "normal_magnitude"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "turf_roughness",
+      "op": "conv",
+      "inputs": [
+        "patch_edge_energy"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "roughness",
+      "op": "relu",
+      "inputs": [
+        "turf_roughness"
+      ]
+    },
+    {
+      "name": "roughness_cost",
+      "op": "conv",
+      "inputs": [
+        "roughness"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "grass_contrast",
+      "op": "add",
+      "inputs": [
+        "turf_pixel",
+        "roughness_cost"
+      ]
+    },
+    {
+      "name": "unbroken_grass",
+      "op": "relu",
+      "inputs": [
+        "grass_contrast"
+      ]
+    },
+    {
+      "name": "grass_coverage",
+      "op": "dense",
+      "inputs": [
+        "unbroken_grass"
+      ],
+      "out": 1
+    },
+    {
+      "name": "foreground_detail",
+      "op": "dense",
+      "inputs": [
+        "normal_magnitude"
+      ],
+      "out": 1
+    },
+    {
+      "name": "grass_extent",
+      "op": "relu",
+      "inputs": [
+        "grass_coverage"
+      ]
+    },
+    {
+      "name": "field_detail",
+      "op": "relu",
+      "inputs": [
+        "foreground_detail"
+      ]
+    },
+    {
+      "name": "inverted_detail",
+      "op": "dense",
+      "inputs": [
+        "field_detail"
+      ],
+      "out": 1
+    },
+    {
+      "name": "grass_excess",
+      "op": "add",
+      "inputs": [
+        "grass_extent",
+        "inverted_detail"
+      ]
+    },
+    {
+      "name": "grass_without_detail",
+      "op": "relu",
+      "inputs": [
+        "grass_excess"
+      ]
+    },
+    {
+      "name": "grass_gain",
+      "op": "dense",
+      "inputs": [
+        "grass_extent"
+      ],
+      "out": 1
+    },
+    {
+      "name": "grass_limit",
+      "op": "dense",
+      "inputs": [
+        "grass_without_detail"
+      ],
+      "out": 1
+    },
+    {
+      "name": "playing_field",
+      "op": "add",
+      "inputs": [
+        "grass_gain",
+        "grass_limit"
+      ]
+    },
+    {
+      "name": "context_unbounded",
+      "op": "add",
+      "inputs": [
+        "composition",
+        "field_context",
+        "linear_context",
+        "playing_field"
+      ]
+    },
+    {
+      "name": "context_limit_planes",
+      "op": "dense",
+      "inputs": [
+        "context_unbounded"
+      ],
+      "out": 2
+    },
+    {
+      "name": "context_limit_gates",
+      "op": "relu",
+      "inputs": [
+        "context_limit_planes"
+      ]
+    },
+    {
+      "name": "context_bend",
+      "op": "dense",
+      "inputs": [
+        "context_limit_gates"
+      ],
+      "out": 1
+    },
+    {
+      "name": "context",
+      "op": "add",
+      "inputs": [
+        "context_unbounded",
+        "context_bend"
+      ]
+    },
+    {
+      "name": "person_evidence",
+      "op": "add",
+      "inputs": [
+        "head_scales_vote",
+        "face_scales_vote",
+        "body_scales_vote",
+        "limb_scales_vote",
+        "area_gain",
+        "context"
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "person_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

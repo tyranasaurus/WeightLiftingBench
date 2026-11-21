@@ -1,0 +1,852 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 33,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 25,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 27,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "words",
+   "op": "relu",
+   "inputs": [
+    "c3"
+   ]
+  },
+  {
+   "name": "grid",
+   "op": "avgpool",
+   "inputs": [
+    "words"
+   ],
+   "size": [
+    9,
+    9
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "scene",
+   "op": "dense",
+   "inputs": [
+    "grid"
+   ],
+   "out": 1840
+  },
+  {
+   "name": "scene_r",
+   "op": "reshape",
+   "inputs": [
+    "scene"
+   ],
+   "shape": [
+    1,
+    10,
+    184
+   ]
+  },
+  {
+   "name": "scene_max",
+   "op": "maxpool",
+   "inputs": [
+    "scene_r"
+   ],
+   "size": [
+    1,
+    184
+   ],
+   "stride": [
+    1,
+    184
+   ]
+  },
+  {
+   "name": "cls_scene",
+   "op": "reshape",
+   "inputs": [
+    "scene_max"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "cs_d1",
+   "op": "dense",
+   "inputs": [
+    "grid"
+   ],
+   "out": 11
+  },
+  {
+   "name": "cs_r1",
+   "op": "relu",
+   "inputs": [
+    "cs_d1"
+   ]
+  },
+  {
+   "name": "cs_d2",
+   "op": "dense",
+   "inputs": [
+    "cs_r1"
+   ],
+   "out": 11
+  },
+  {
+   "name": "cs_r2",
+   "op": "relu",
+   "inputs": [
+    "cs_d2"
+   ]
+  },
+  {
+   "name": "cls_cs",
+   "op": "dense",
+   "inputs": [
+    "cs_r2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "tb_d1",
+   "op": "dense",
+   "inputs": [
+    "grid"
+   ],
+   "out": 10
+  },
+  {
+   "name": "tb_r1",
+   "op": "relu",
+   "inputs": [
+    "tb_d1"
+   ]
+  },
+  {
+   "name": "tb_d2",
+   "op": "dense",
+   "inputs": [
+    "tb_r1"
+   ],
+   "out": 4
+  },
+  {
+   "name": "tb_r2",
+   "op": "relu",
+   "inputs": [
+    "tb_d2"
+   ]
+  },
+  {
+   "name": "tb_d3",
+   "op": "dense",
+   "inputs": [
+    "tb_r2"
+   ],
+   "out": 3
+  },
+  {
+   "name": "tb_r3",
+   "op": "relu",
+   "inputs": [
+    "tb_d3"
+   ]
+  },
+  {
+   "name": "cls_tb",
+   "op": "dense",
+   "inputs": [
+    "tb_r3"
+   ],
+   "out": 10
+  },
+  {
+   "name": "lg_run",
+   "op": "conv",
+   "inputs": [
+    "words"
+   ],
+   "out": 12,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lg_rr",
+   "op": "relu",
+   "inputs": [
+    "lg_run"
+   ]
+  },
+  {
+   "name": "lg_share",
+   "op": "avgpool",
+   "inputs": [
+    "lg_rr"
+   ],
+   "size": [
+    22,
+    22
+   ],
+   "stride": [
+    22,
+    22
+   ]
+  },
+  {
+   "name": "lg_d",
+   "op": "dense",
+   "inputs": [
+    "lg_share"
+   ],
+   "out": 4
+  },
+  {
+   "name": "lg_r",
+   "op": "relu",
+   "inputs": [
+    "lg_d"
+   ]
+  },
+  {
+   "name": "cls_long",
+   "op": "dense",
+   "inputs": [
+    "lg_r"
+   ],
+   "out": 10
+  },
+  {
+   "name": "hz_pool",
+   "op": "avgpool",
+   "inputs": [
+    "r1"
+   ],
+   "size": [
+    1,
+    10
+   ],
+   "stride": [
+    1,
+    10
+   ]
+  },
+  {
+   "name": "hz_c1",
+   "op": "conv",
+   "inputs": [
+    "hz_pool"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hz_r1",
+   "op": "relu",
+   "inputs": [
+    "hz_c1"
+   ]
+  },
+  {
+   "name": "hz_c2",
+   "op": "conv",
+   "inputs": [
+    "hz_r1"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hz_mp",
+   "op": "maxpool",
+   "inputs": [
+    "hz_c2"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "hz_c3",
+   "op": "conv",
+   "inputs": [
+    "hz_mp"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hz_r3",
+   "op": "relu",
+   "inputs": [
+    "hz_c3"
+   ]
+  },
+  {
+   "name": "hz_band",
+   "op": "dense",
+   "inputs": [
+    "hz_r3"
+   ],
+   "out": 52
+  },
+  {
+   "name": "hz_band_r",
+   "op": "reshape",
+   "inputs": [
+    "hz_band"
+   ],
+   "shape": [
+    2,
+    26,
+    1
+   ]
+  },
+  {
+   "name": "hz_max",
+   "op": "maxpool",
+   "inputs": [
+    "hz_band_r"
+   ],
+   "size": [
+    26,
+    1
+   ],
+   "stride": [
+    26,
+    1
+   ]
+  },
+  {
+   "name": "cls_hz",
+   "op": "dense",
+   "inputs": [
+    "hz_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "half",
+   "op": "avgpool",
+   "inputs": [
+    "words"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "mk_rgb",
+   "op": "conv",
+   "inputs": [
+    "half"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mk_d1",
+   "op": "dense",
+   "inputs": [
+    "mk_rgb"
+   ],
+   "out": 2700
+  },
+  {
+   "name": "mk_d1r",
+   "op": "reshape",
+   "inputs": [
+    "mk_d1"
+   ],
+   "shape": [
+    12,
+    15,
+    15
+   ]
+  },
+  {
+   "name": "mk_r1",
+   "op": "relu",
+   "inputs": [
+    "mk_d1r"
+   ]
+  },
+  {
+   "name": "mk_c2",
+   "op": "conv",
+   "inputs": [
+    "mk_r1"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mk_r2",
+   "op": "relu",
+   "inputs": [
+    "mk_c2"
+   ]
+  },
+  {
+   "name": "mk_c3",
+   "op": "conv",
+   "inputs": [
+    "mk_r2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mask",
+   "op": "relu",
+   "inputs": [
+    "mk_c3"
+   ]
+  },
+  {
+   "name": "rowprof",
+   "op": "avgpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "row_c1",
+   "op": "conv",
+   "inputs": [
+    "rowprof"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "row_r1",
+   "op": "relu",
+   "inputs": [
+    "row_c1"
+   ]
+  },
+  {
+   "name": "row_c2",
+   "op": "conv",
+   "inputs": [
+    "row_r1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "h_ext",
+   "op": "avgpool",
+   "inputs": [
+    "row_c2"
+   ],
+   "size": [
+    15,
+    1
+   ],
+   "stride": [
+    15,
+    1
+   ]
+  },
+  {
+   "name": "colprof",
+   "op": "avgpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    15,
+    1
+   ],
+   "stride": [
+    15,
+    1
+   ]
+  },
+  {
+   "name": "col_c1",
+   "op": "conv",
+   "inputs": [
+    "colprof"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col_r1",
+   "op": "relu",
+   "inputs": [
+    "col_c1"
+   ]
+  },
+  {
+   "name": "col_c2",
+   "op": "conv",
+   "inputs": [
+    "col_r1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "w_ext",
+   "op": "avgpool",
+   "inputs": [
+    "col_c2"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "area",
+   "op": "avgpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    15,
+    15
+   ],
+   "stride": [
+    15,
+    15
+   ]
+  },
+  {
+   "name": "ext_h",
+   "op": "dense",
+   "inputs": [
+    "h_ext"
+   ],
+   "out": 10
+  },
+  {
+   "name": "ext_w",
+   "op": "dense",
+   "inputs": [
+    "w_ext"
+   ],
+   "out": 10
+  },
+  {
+   "name": "ext_a",
+   "op": "dense",
+   "inputs": [
+    "area"
+   ],
+   "out": 10
+  },
+  {
+   "name": "ext_sum",
+   "op": "add",
+   "inputs": [
+    "ext_h",
+    "ext_w",
+    "ext_a"
+   ]
+  },
+  {
+   "name": "ext_r1",
+   "op": "relu",
+   "inputs": [
+    "ext_sum"
+   ]
+  },
+  {
+   "name": "ext_d2",
+   "op": "dense",
+   "inputs": [
+    "ext_r1"
+   ],
+   "out": 7
+  },
+  {
+   "name": "ext_r2",
+   "op": "relu",
+   "inputs": [
+    "ext_d2"
+   ]
+  },
+  {
+   "name": "ext_d3",
+   "op": "dense",
+   "inputs": [
+    "ext_r2"
+   ],
+   "out": 7
+  },
+  {
+   "name": "ext_r3",
+   "op": "relu",
+   "inputs": [
+    "ext_d3"
+   ]
+  },
+  {
+   "name": "cls_ext",
+   "op": "dense",
+   "inputs": [
+    "ext_r3"
+   ],
+   "out": 10
+  },
+  {
+   "name": "mw_words",
+   "op": "conv",
+   "inputs": [
+    "half"
+   ],
+   "out": 11,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mw_mask",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 11,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mw_sum",
+   "op": "add",
+   "inputs": [
+    "mw_words",
+    "mw_mask"
+   ]
+  },
+  {
+   "name": "mw",
+   "op": "relu",
+   "inputs": [
+    "mw_sum"
+   ]
+  },
+  {
+   "name": "mw_hist",
+   "op": "avgpool",
+   "inputs": [
+    "mw"
+   ],
+   "size": [
+    15,
+    15
+   ],
+   "stride": [
+    15,
+    15
+   ]
+  },
+  {
+   "name": "oc_d1",
+   "op": "dense",
+   "inputs": [
+    "mw_hist"
+   ],
+   "out": 11
+  },
+  {
+   "name": "oc_r1",
+   "op": "relu",
+   "inputs": [
+    "oc_d1"
+   ]
+  },
+  {
+   "name": "oc_d2",
+   "op": "dense",
+   "inputs": [
+    "oc_r1"
+   ],
+   "out": 11
+  },
+  {
+   "name": "oc_gate",
+   "op": "dense",
+   "inputs": [
+    "ext_r2"
+   ],
+   "out": 11
+  },
+  {
+   "name": "oc_sum",
+   "op": "add",
+   "inputs": [
+    "oc_d2",
+    "oc_gate"
+   ]
+  },
+  {
+   "name": "oc_r2",
+   "op": "relu",
+   "inputs": [
+    "oc_sum"
+   ]
+  },
+  {
+   "name": "cls_obj",
+   "op": "dense",
+   "inputs": [
+    "oc_r2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "cls_scene",
+    "cls_cs",
+    "cls_tb",
+    "cls_long",
+    "cls_hz",
+    "cls_ext",
+    "cls_obj"
+   ]
+  }
+ ]
+}

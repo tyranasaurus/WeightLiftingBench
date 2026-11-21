@@ -1,0 +1,70 @@
+{
+ "layers": [
+  {
+   "name": "match",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 16800,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "pos",
+   "op": "maxpool",
+   "inputs": [
+    "match"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "grp",
+   "op": "reshape",
+   "inputs": [
+    "pos"
+   ],
+   "shape": [
+    10,
+    1680,
+    1
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "grp"
+   ],
+   "size": [
+    1680,
+    1
+   ],
+   "stride": [
+    1680,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

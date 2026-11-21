@@ -1,0 +1,1 @@
+{"layers": [{"name": "pool", "op": "maxpool", "inputs": ["image"], "size": [2, 2], "stride": [2, 2]}, {"name": "match", "op": "dense", "inputs": ["pool"], "out": 18}, {"name": "match_relu", "op": "relu", "inputs": ["match"]}, {"name": "scores", "op": "dense", "inputs": ["match_relu"], "out": 10}]}

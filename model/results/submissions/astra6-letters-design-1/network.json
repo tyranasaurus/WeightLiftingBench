@@ -1,0 +1,255 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "signed_edges",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "orientation_competition",
+      "op": "conv",
+      "inputs": [
+        "signed_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "orientation_competition"
+      ]
+    },
+    {
+      "name": "edge_cap_components",
+      "op": "conv",
+      "inputs": [
+        "oriented_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_cap_relu",
+      "op": "relu",
+      "inputs": [
+        "edge_cap_components"
+      ]
+    },
+    {
+      "name": "bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "edge_cap_relu"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_plane",
+      "op": "reshape",
+      "inputs": [
+        "edge_cells"
+      ],
+      "shape": [
+        1,
+        48,
+        12
+      ]
+    },
+    {
+      "name": "edge_normalization",
+      "op": "norm",
+      "inputs": [
+        "edge_plane"
+      ]
+    },
+    {
+      "name": "intensity_cells",
+      "op": "avgpool",
+      "inputs": [
+        "contrast"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "outline_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "edge_normalization"
+      ],
+      "out": 25920
+    },
+    {
+      "name": "foreground_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "intensity_cells"
+      ],
+      "out": 25920
+    },
+    {
+      "name": "foreground_plane",
+      "op": "reshape",
+      "inputs": [
+        "foreground_hypotheses"
+      ],
+      "shape": [
+        1,
+        25920,
+        1
+      ]
+    },
+    {
+      "name": "foreground_polarities",
+      "op": "conv",
+      "inputs": [
+        "foreground_plane"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_polarity_relu",
+      "op": "relu",
+      "inputs": [
+        "foreground_polarities"
+      ]
+    },
+    {
+      "name": "foreground_absolute",
+      "op": "conv",
+      "inputs": [
+        "foreground_polarity_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_scores",
+      "op": "reshape",
+      "inputs": [
+        "foreground_absolute"
+      ],
+      "shape": [
+        25920
+      ]
+    },
+    {
+      "name": "pose_scores",
+      "op": "add",
+      "inputs": [
+        "outline_hypotheses",
+        "foreground_scores"
+      ]
+    },
+    {
+      "name": "class_pose_grid",
+      "op": "reshape",
+      "inputs": [
+        "pose_scores"
+      ],
+      "shape": [
+        24,
+        1080,
+        1
+      ]
+    },
+    {
+      "name": "best_anatomical_pose",
+      "op": "maxpool",
+      "inputs": [
+        "class_pose_grid"
+      ],
+      "size": [
+        1080,
+        1
+      ],
+      "stride": [
+        1080,
+        1
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_anatomical_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

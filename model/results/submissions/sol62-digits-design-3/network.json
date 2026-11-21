@@ -1,0 +1,150 @@
+{
+  "layers": [
+    {
+      "name": "knees",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "positive",
+      "op": "relu",
+      "inputs": [
+        "knees"
+      ]
+    },
+    {
+      "name": "ink",
+      "op": "conv",
+      "inputs": [
+        "positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "coarse",
+      "op": "avgpool",
+      "inputs": [
+        "ink"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "near",
+      "op": "maxpool",
+      "inputs": [
+        "coarse"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "raw_grid",
+      "op": "reshape",
+      "inputs": [
+        "coarse"
+      ],
+      "shape": [
+        1,
+        1,
+        196
+      ]
+    },
+    {
+      "name": "near_grid",
+      "op": "reshape",
+      "inputs": [
+        "near"
+      ],
+      "shape": [
+        1,
+        1,
+        144
+      ]
+    },
+    {
+      "name": "local_match",
+      "op": "dense",
+      "inputs": [
+        "raw_grid"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "tolerant_match",
+      "op": "dense",
+      "inputs": [
+        "near_grid"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "match",
+      "op": "add",
+      "inputs": [
+        "local_match",
+        "tolerant_match"
+      ]
+    },
+    {
+      "name": "families",
+      "op": "reshape",
+      "inputs": [
+        "match"
+      ],
+      "shape": [
+        10,
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "best",
+      "op": "maxpool",
+      "inputs": [
+        "families"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

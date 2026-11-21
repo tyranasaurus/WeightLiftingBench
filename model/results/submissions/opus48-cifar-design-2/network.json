@@ -1,0 +1,138 @@
+{
+  "layers": [
+    {
+      "name": "opp",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cpool",
+      "op": "avgpool",
+      "inputs": [
+        "opp"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "oppr",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "oppr_r",
+      "op": "relu",
+      "inputs": [
+        "oppr"
+      ]
+    },
+    {
+      "name": "spool",
+      "op": "avgpool",
+      "inputs": [
+        "oppr_r"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "edge",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 6,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "erl",
+      "op": "relu",
+      "inputs": [
+        "edge"
+      ]
+    },
+    {
+      "name": "tpool",
+      "op": "avgpool",
+      "inputs": [
+        "erl"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "scoreC",
+      "op": "dense",
+      "inputs": [
+        "cpool"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scoreS",
+      "op": "dense",
+      "inputs": [
+        "spool"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scoreT",
+      "op": "dense",
+      "inputs": [
+        "tpool"
+      ],
+      "out": 10
+    },
+    {
+      "name": "out",
+      "op": "add",
+      "inputs": [
+        "scoreC",
+        "scoreS",
+        "scoreT"
+      ]
+    }
+  ]
+}

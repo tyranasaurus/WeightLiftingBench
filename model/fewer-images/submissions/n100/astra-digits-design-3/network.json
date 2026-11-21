@@ -1,0 +1,1390 @@
+{
+  "layers": [
+    {
+      "name": "ink_blur",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "ink_vector",
+      "op": "reshape",
+      "inputs": [
+        "ink_blur"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "ink",
+      "op": "norm",
+      "inputs": [
+        "ink_vector"
+      ]
+    },
+    {
+      "name": "direction",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 2,
+      "padding": 2
+    },
+    {
+      "name": "positive_direction",
+      "op": "relu",
+      "inputs": [
+        "direction"
+      ]
+    },
+    {
+      "name": "spread_direction",
+      "op": "conv",
+      "inputs": [
+        "positive_direction"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "stroke_vector",
+      "op": "reshape",
+      "inputs": [
+        "spread_direction"
+      ],
+      "shape": [
+        1,
+        56,
+        7
+      ]
+    },
+    {
+      "name": "stroke",
+      "op": "norm",
+      "inputs": [
+        "stroke_vector"
+      ]
+    },
+    {
+      "name": "probe",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 9,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 2,
+      "padding": 8
+    },
+    {
+      "name": "missing_ink",
+      "op": "conv",
+      "inputs": [
+        "probe"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "clear",
+      "op": "relu",
+      "inputs": [
+        "missing_ink"
+      ]
+    },
+    {
+      "name": "pocket",
+      "op": "conv",
+      "inputs": [
+        "clear"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_pocket",
+      "op": "relu",
+      "inputs": [
+        "pocket"
+      ]
+    },
+    {
+      "name": "spread_space",
+      "op": "conv",
+      "inputs": [
+        "positive_pocket"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "space_vector",
+      "op": "reshape",
+      "inputs": [
+        "spread_space"
+      ],
+      "shape": [
+        1,
+        56,
+        7
+      ]
+    },
+    {
+      "name": "space",
+      "op": "norm",
+      "inputs": [
+        "space_vector"
+      ]
+    },
+    {
+      "name": "mean_ink",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "room",
+      "op": "conv",
+      "inputs": [
+        "mean_ink"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rim",
+      "op": "dense",
+      "inputs": [
+        "room"
+      ],
+      "out": 196
+    },
+    {
+      "name": "border",
+      "op": "reshape",
+      "inputs": [
+        "rim"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "pad0",
+      "op": "conv",
+      "inputs": [
+        "border"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit0",
+      "op": "maxpool",
+      "inputs": [
+        "pad0"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit0",
+      "op": "conv",
+      "inputs": [
+        "visit0"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit0",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit0"
+      ]
+    },
+    {
+      "name": "unreachable0",
+      "op": "relu",
+      "inputs": [
+        "deficit0"
+      ]
+    },
+    {
+      "name": "neg_deficit0",
+      "op": "conv",
+      "inputs": [
+        "unreachable0"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach0",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit0"
+      ]
+    },
+    {
+      "name": "pad1",
+      "op": "conv",
+      "inputs": [
+        "reach0"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit1",
+      "op": "maxpool",
+      "inputs": [
+        "pad1"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit1",
+      "op": "conv",
+      "inputs": [
+        "visit1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit1",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit1"
+      ]
+    },
+    {
+      "name": "unreachable1",
+      "op": "relu",
+      "inputs": [
+        "deficit1"
+      ]
+    },
+    {
+      "name": "neg_deficit1",
+      "op": "conv",
+      "inputs": [
+        "unreachable1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach1",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit1"
+      ]
+    },
+    {
+      "name": "pad2",
+      "op": "conv",
+      "inputs": [
+        "reach1"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit2",
+      "op": "maxpool",
+      "inputs": [
+        "pad2"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit2",
+      "op": "conv",
+      "inputs": [
+        "visit2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit2",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit2"
+      ]
+    },
+    {
+      "name": "unreachable2",
+      "op": "relu",
+      "inputs": [
+        "deficit2"
+      ]
+    },
+    {
+      "name": "neg_deficit2",
+      "op": "conv",
+      "inputs": [
+        "unreachable2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach2",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit2"
+      ]
+    },
+    {
+      "name": "pad3",
+      "op": "conv",
+      "inputs": [
+        "reach2"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit3",
+      "op": "maxpool",
+      "inputs": [
+        "pad3"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit3",
+      "op": "conv",
+      "inputs": [
+        "visit3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit3",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit3"
+      ]
+    },
+    {
+      "name": "unreachable3",
+      "op": "relu",
+      "inputs": [
+        "deficit3"
+      ]
+    },
+    {
+      "name": "neg_deficit3",
+      "op": "conv",
+      "inputs": [
+        "unreachable3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach3",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit3"
+      ]
+    },
+    {
+      "name": "pad4",
+      "op": "conv",
+      "inputs": [
+        "reach3"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit4",
+      "op": "maxpool",
+      "inputs": [
+        "pad4"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit4",
+      "op": "conv",
+      "inputs": [
+        "visit4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit4",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit4"
+      ]
+    },
+    {
+      "name": "unreachable4",
+      "op": "relu",
+      "inputs": [
+        "deficit4"
+      ]
+    },
+    {
+      "name": "neg_deficit4",
+      "op": "conv",
+      "inputs": [
+        "unreachable4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach4",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit4"
+      ]
+    },
+    {
+      "name": "pad5",
+      "op": "conv",
+      "inputs": [
+        "reach4"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit5",
+      "op": "maxpool",
+      "inputs": [
+        "pad5"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit5",
+      "op": "conv",
+      "inputs": [
+        "visit5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit5",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit5"
+      ]
+    },
+    {
+      "name": "unreachable5",
+      "op": "relu",
+      "inputs": [
+        "deficit5"
+      ]
+    },
+    {
+      "name": "neg_deficit5",
+      "op": "conv",
+      "inputs": [
+        "unreachable5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach5",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit5"
+      ]
+    },
+    {
+      "name": "pad6",
+      "op": "conv",
+      "inputs": [
+        "reach5"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit6",
+      "op": "maxpool",
+      "inputs": [
+        "pad6"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit6",
+      "op": "conv",
+      "inputs": [
+        "visit6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit6",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit6"
+      ]
+    },
+    {
+      "name": "unreachable6",
+      "op": "relu",
+      "inputs": [
+        "deficit6"
+      ]
+    },
+    {
+      "name": "neg_deficit6",
+      "op": "conv",
+      "inputs": [
+        "unreachable6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach6",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit6"
+      ]
+    },
+    {
+      "name": "pad7",
+      "op": "conv",
+      "inputs": [
+        "reach6"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit7",
+      "op": "maxpool",
+      "inputs": [
+        "pad7"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit7",
+      "op": "conv",
+      "inputs": [
+        "visit7"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit7",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit7"
+      ]
+    },
+    {
+      "name": "unreachable7",
+      "op": "relu",
+      "inputs": [
+        "deficit7"
+      ]
+    },
+    {
+      "name": "neg_deficit7",
+      "op": "conv",
+      "inputs": [
+        "unreachable7"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach7",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit7"
+      ]
+    },
+    {
+      "name": "pad8",
+      "op": "conv",
+      "inputs": [
+        "reach7"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit8",
+      "op": "maxpool",
+      "inputs": [
+        "pad8"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit8",
+      "op": "conv",
+      "inputs": [
+        "visit8"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit8",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit8"
+      ]
+    },
+    {
+      "name": "unreachable8",
+      "op": "relu",
+      "inputs": [
+        "deficit8"
+      ]
+    },
+    {
+      "name": "neg_deficit8",
+      "op": "conv",
+      "inputs": [
+        "unreachable8"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach8",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit8"
+      ]
+    },
+    {
+      "name": "pad9",
+      "op": "conv",
+      "inputs": [
+        "reach8"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit9",
+      "op": "maxpool",
+      "inputs": [
+        "pad9"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit9",
+      "op": "conv",
+      "inputs": [
+        "visit9"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit9",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit9"
+      ]
+    },
+    {
+      "name": "unreachable9",
+      "op": "relu",
+      "inputs": [
+        "deficit9"
+      ]
+    },
+    {
+      "name": "neg_deficit9",
+      "op": "conv",
+      "inputs": [
+        "unreachable9"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach9",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit9"
+      ]
+    },
+    {
+      "name": "pad10",
+      "op": "conv",
+      "inputs": [
+        "reach9"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit10",
+      "op": "maxpool",
+      "inputs": [
+        "pad10"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit10",
+      "op": "conv",
+      "inputs": [
+        "visit10"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit10",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit10"
+      ]
+    },
+    {
+      "name": "unreachable10",
+      "op": "relu",
+      "inputs": [
+        "deficit10"
+      ]
+    },
+    {
+      "name": "neg_deficit10",
+      "op": "conv",
+      "inputs": [
+        "unreachable10"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach10",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit10"
+      ]
+    },
+    {
+      "name": "pad11",
+      "op": "conv",
+      "inputs": [
+        "reach10"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit11",
+      "op": "maxpool",
+      "inputs": [
+        "pad11"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit11",
+      "op": "conv",
+      "inputs": [
+        "visit11"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit11",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit11"
+      ]
+    },
+    {
+      "name": "unreachable11",
+      "op": "relu",
+      "inputs": [
+        "deficit11"
+      ]
+    },
+    {
+      "name": "neg_deficit11",
+      "op": "conv",
+      "inputs": [
+        "unreachable11"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "reach11",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_deficit11"
+      ]
+    },
+    {
+      "name": "pad12",
+      "op": "conv",
+      "inputs": [
+        "reach11"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "visit12",
+      "op": "maxpool",
+      "inputs": [
+        "pad12"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "neg_visit12",
+      "op": "conv",
+      "inputs": [
+        "visit12"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deficit12",
+      "op": "add",
+      "inputs": [
+        "room",
+        "neg_visit12"
+      ]
+    },
+    {
+      "name": "unreachable12",
+      "op": "relu",
+      "inputs": [
+        "deficit12"
+      ]
+    },
+    {
+      "name": "spread_holes",
+      "op": "conv",
+      "inputs": [
+        "unreachable12"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "signed_holes",
+      "op": "dense",
+      "inputs": [
+        "spread_holes"
+      ],
+      "out": 100
+    },
+    {
+      "name": "cavity_norm_vector",
+      "op": "reshape",
+      "inputs": [
+        "signed_holes"
+      ],
+      "shape": [
+        1,
+        100,
+        1
+      ]
+    },
+    {
+      "name": "cavity_norm",
+      "op": "norm",
+      "inputs": [
+        "cavity_norm_vector"
+      ]
+    },
+    {
+      "name": "cavity",
+      "op": "dense",
+      "inputs": [
+        "cavity_norm"
+      ],
+      "out": 50
+    },
+    {
+      "name": "silhouette_match",
+      "op": "dense",
+      "inputs": [
+        "ink"
+      ],
+      "out": 53760
+    },
+    {
+      "name": "gradient_match",
+      "op": "dense",
+      "inputs": [
+        "stroke"
+      ],
+      "out": 53760
+    },
+    {
+      "name": "counterspace_match",
+      "op": "dense",
+      "inputs": [
+        "space"
+      ],
+      "out": 53760
+    },
+    {
+      "name": "enclosed_match",
+      "op": "dense",
+      "inputs": [
+        "cavity"
+      ],
+      "out": 53760
+    },
+    {
+      "name": "agreement",
+      "op": "add",
+      "inputs": [
+        "silhouette_match",
+        "gradient_match",
+        "counterspace_match",
+        "enclosed_match"
+      ]
+    },
+    {
+      "name": "style_panels",
+      "op": "reshape",
+      "inputs": [
+        "agreement"
+      ],
+      "shape": [
+        10,
+        6,
+        896
+      ]
+    },
+    {
+      "name": "panel_best",
+      "op": "maxpool",
+      "inputs": [
+        "style_panels"
+      ],
+      "size": [
+        1,
+        896
+      ],
+      "stride": [
+        1,
+        896
+      ]
+    },
+    {
+      "name": "consensus",
+      "op": "avgpool",
+      "inputs": [
+        "panel_best"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "consensus"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

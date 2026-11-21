@@ -1,0 +1,135 @@
+{
+  "layers": [
+    {
+      "name": "conv_a",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_a",
+      "op": "relu",
+      "inputs": [
+        "conv_a"
+      ]
+    },
+    {
+      "name": "conv_b",
+      "op": "conv",
+      "inputs": [
+        "relu_a"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_b",
+      "op": "relu",
+      "inputs": [
+        "conv_b"
+      ]
+    },
+    {
+      "name": "pool_cell",
+      "op": "avgpool",
+      "inputs": [
+        "relu_b"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "pool_max",
+      "op": "maxpool",
+      "inputs": [
+        "pool_cell"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "pool_avg",
+      "op": "avgpool",
+      "inputs": [
+        "pool_cell"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "flat_max",
+      "op": "reshape",
+      "inputs": [
+        "pool_max"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "flat_avg",
+      "op": "reshape",
+      "inputs": [
+        "pool_avg"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "dense_max",
+      "op": "dense",
+      "inputs": [
+        "flat_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "dense_avg",
+      "op": "dense",
+      "inputs": [
+        "flat_avg"
+      ],
+      "out": 2
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "dense_max",
+        "dense_avg"
+      ]
+    }
+  ]
+}

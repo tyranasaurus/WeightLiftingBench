@@ -1,0 +1,9 @@
+task        P-P   N-N   P-N  coverage same/approx/absent/unclear  same-role numbers  clusters
+cifar      3.00  3.33  3.00   45/ 19/ 15/  2 of 27 steps x 3    9   NNNPPP
+traffic    4.00  4.00  3.00   25/ 26/ 17/  1 of 23 steps x 3   10   PPP | NNN
+galaxies   4.00  2.33  1.67   36/ 50/ 30/  4 of 40 steps x 3    7   PPP | NN | N
+person     3.33  3.67  2.00   46/ 20/ 33/  0 of 33 steps x 3    4   NNN | PPP
+digits     4.00  3.00  2.00   16/ 16/ 25/  0 of 19 steps x 3    3   NNN | PPP
+clothing   3.00  4.00  3.00    7/ 76/ 26/  2 of 37 steps x 3    0   NNN | PPP
+letters    2.67  3.00  2.00   19/ 18/ 22/  1 of 20 steps x 3    5   NNN | PPP
+ALL       3.45 3.33 2.38  {'same': 194, 'approximated': 225, 'absent': 168, 'unclear': 10}

@@ -1,0 +1,5005 @@
+{
+  "layers": [
+    {
+      "name": "antialias_half",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "colour_inequalities",
+      "op": "conv",
+      "inputs": [
+        "antialias_half"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_violations",
+      "op": "relu",
+      "inputs": [
+        "colour_inequalities"
+      ]
+    },
+    {
+      "name": "skin_membership_affine",
+      "op": "conv",
+      "inputs": [
+        "colour_violations"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_membership",
+      "op": "relu",
+      "inputs": [
+        "skin_membership_affine"
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "antialias_half"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "luminance_standardized",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "luminance_embedding",
+      "op": "conv",
+      "inputs": [
+        "luminance_standardized"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_and_luminance",
+      "op": "add",
+      "inputs": [
+        "skin_membership",
+        "luminance_embedding"
+      ]
+    },
+    {
+      "name": "scale0_face_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 72,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "scale0_face_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_face_tests"
+      ]
+    },
+    {
+      "name": "scale0_face_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_face_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_face_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_face_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_face_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_face_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_face_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_face_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_face_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_face_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale0_context0_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_context0_tests"
+      ]
+    },
+    {
+      "name": "scale0_context0_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_context0_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_context0_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context0_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_context0_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context0_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_context0_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context0_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context0_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_context0_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context0_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale0_context1_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_context1_tests"
+      ]
+    },
+    {
+      "name": "scale0_context1_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_context1_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_context1_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context1_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_context1_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context1_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_context1_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context1_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context1_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_context1_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale0_context2_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_context2_tests"
+      ]
+    },
+    {
+      "name": "scale0_context2_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_context2_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_context2_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context2_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_context2_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context2_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_context2_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context2_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context2_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_context2_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale0_context3_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_context3_tests"
+      ]
+    },
+    {
+      "name": "scale0_context3_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_context3_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_context3_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context3_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_context3_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context3_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_context3_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context3_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context3_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_context3_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_tests",
+      "op": "conv",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "out": 66,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale0_context4_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale0_context4_tests"
+      ]
+    },
+    {
+      "name": "scale0_context4_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_context4_conjunctions"
+      ]
+    },
+    {
+      "name": "scale0_context4_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context4_choices_split0"
+      ]
+    },
+    {
+      "name": "scale0_context4_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context4_choices_split1"
+      ]
+    },
+    {
+      "name": "scale0_context4_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context4_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context4_choices_split2"
+      ]
+    },
+    {
+      "name": "scale0_context4_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context_neg0",
+      "op": "conv",
+      "inputs": [
+        "scale0_context1_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context_diff0",
+      "op": "add",
+      "inputs": [
+        "scale0_context0_choices_max2",
+        "scale0_context_neg0"
+      ]
+    },
+    {
+      "name": "scale0_context_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale0_context_diff0"
+      ]
+    },
+    {
+      "name": "scale0_context_merge0",
+      "op": "add",
+      "inputs": [
+        "scale0_context1_choices_max2",
+        "scale0_context_hinge0"
+      ]
+    },
+    {
+      "name": "scale0_context_neg1",
+      "op": "conv",
+      "inputs": [
+        "scale0_context2_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context_diff1",
+      "op": "add",
+      "inputs": [
+        "scale0_context_merge0",
+        "scale0_context_neg1"
+      ]
+    },
+    {
+      "name": "scale0_context_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale0_context_diff1"
+      ]
+    },
+    {
+      "name": "scale0_context_merge1",
+      "op": "add",
+      "inputs": [
+        "scale0_context2_choices_max2",
+        "scale0_context_hinge1"
+      ]
+    },
+    {
+      "name": "scale0_context_neg2",
+      "op": "conv",
+      "inputs": [
+        "scale0_context3_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context_diff2",
+      "op": "add",
+      "inputs": [
+        "scale0_context_merge1",
+        "scale0_context_neg2"
+      ]
+    },
+    {
+      "name": "scale0_context_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale0_context_diff2"
+      ]
+    },
+    {
+      "name": "scale0_context_merge2",
+      "op": "add",
+      "inputs": [
+        "scale0_context3_choices_max2",
+        "scale0_context_hinge2"
+      ]
+    },
+    {
+      "name": "scale0_context_neg3",
+      "op": "conv",
+      "inputs": [
+        "scale0_context4_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_context_diff3",
+      "op": "add",
+      "inputs": [
+        "scale0_context_merge2",
+        "scale0_context_neg3"
+      ]
+    },
+    {
+      "name": "scale0_context_hinge3",
+      "op": "relu",
+      "inputs": [
+        "scale0_context_diff3"
+      ]
+    },
+    {
+      "name": "scale0_context_merge3",
+      "op": "add",
+      "inputs": [
+        "scale0_context4_choices_max2",
+        "scale0_context_hinge3"
+      ]
+    },
+    {
+      "name": "scale0_align_face_to_context",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "scale0_face_with_body",
+      "op": "add",
+      "inputs": [
+        "scale0_align_face_to_context",
+        "scale0_context_merge3"
+      ]
+    },
+    {
+      "name": "scale0_joint_anatomy",
+      "op": "conv",
+      "inputs": [
+        "scale0_face_with_body"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale0_joint_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale0_joint_anatomy"
+      ]
+    },
+    {
+      "name": "scale0_joint_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale0_joint_candidates"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "scale0_joint_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale0_joint_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale0_joint_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale0_joint_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale0_joint_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale0_joint_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale0_body_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale0_context_merge3"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "scale0_body_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale0_body_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale0_body_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale0_body_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale0_body_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale0_body_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale0_embed_0",
+      "op": "dense",
+      "inputs": [
+        "scale0_joint_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale0_embed_1",
+      "op": "dense",
+      "inputs": [
+        "scale0_body_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale1_appearance_down",
+      "op": "avgpool",
+      "inputs": [
+        "skin_and_luminance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "scale1_face_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 72,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "scale1_face_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_face_tests"
+      ]
+    },
+    {
+      "name": "scale1_face_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_face_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_face_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_face_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_face_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_face_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_face_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_face_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_face_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_face_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale1_context0_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_context0_tests"
+      ]
+    },
+    {
+      "name": "scale1_context0_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_context0_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_context0_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context0_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_context0_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context0_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_context0_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context0_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context0_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_context0_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context0_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale1_context1_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_context1_tests"
+      ]
+    },
+    {
+      "name": "scale1_context1_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_context1_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_context1_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context1_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_context1_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context1_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_context1_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context1_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context1_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_context1_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale1_context2_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_context2_tests"
+      ]
+    },
+    {
+      "name": "scale1_context2_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_context2_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_context2_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context2_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_context2_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context2_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_context2_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context2_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context2_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_context2_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale1_context3_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_context3_tests"
+      ]
+    },
+    {
+      "name": "scale1_context3_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_context3_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_context3_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context3_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_context3_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context3_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_context3_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context3_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context3_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_context3_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_tests",
+      "op": "conv",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "out": 66,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale1_context4_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale1_context4_tests"
+      ]
+    },
+    {
+      "name": "scale1_context4_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_context4_conjunctions"
+      ]
+    },
+    {
+      "name": "scale1_context4_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context4_choices_split0"
+      ]
+    },
+    {
+      "name": "scale1_context4_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context4_choices_split1"
+      ]
+    },
+    {
+      "name": "scale1_context4_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context4_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context4_choices_split2"
+      ]
+    },
+    {
+      "name": "scale1_context4_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context_neg0",
+      "op": "conv",
+      "inputs": [
+        "scale1_context1_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context_diff0",
+      "op": "add",
+      "inputs": [
+        "scale1_context0_choices_max2",
+        "scale1_context_neg0"
+      ]
+    },
+    {
+      "name": "scale1_context_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale1_context_diff0"
+      ]
+    },
+    {
+      "name": "scale1_context_merge0",
+      "op": "add",
+      "inputs": [
+        "scale1_context1_choices_max2",
+        "scale1_context_hinge0"
+      ]
+    },
+    {
+      "name": "scale1_context_neg1",
+      "op": "conv",
+      "inputs": [
+        "scale1_context2_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context_diff1",
+      "op": "add",
+      "inputs": [
+        "scale1_context_merge0",
+        "scale1_context_neg1"
+      ]
+    },
+    {
+      "name": "scale1_context_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale1_context_diff1"
+      ]
+    },
+    {
+      "name": "scale1_context_merge1",
+      "op": "add",
+      "inputs": [
+        "scale1_context2_choices_max2",
+        "scale1_context_hinge1"
+      ]
+    },
+    {
+      "name": "scale1_context_neg2",
+      "op": "conv",
+      "inputs": [
+        "scale1_context3_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context_diff2",
+      "op": "add",
+      "inputs": [
+        "scale1_context_merge1",
+        "scale1_context_neg2"
+      ]
+    },
+    {
+      "name": "scale1_context_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale1_context_diff2"
+      ]
+    },
+    {
+      "name": "scale1_context_merge2",
+      "op": "add",
+      "inputs": [
+        "scale1_context3_choices_max2",
+        "scale1_context_hinge2"
+      ]
+    },
+    {
+      "name": "scale1_context_neg3",
+      "op": "conv",
+      "inputs": [
+        "scale1_context4_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_context_diff3",
+      "op": "add",
+      "inputs": [
+        "scale1_context_merge2",
+        "scale1_context_neg3"
+      ]
+    },
+    {
+      "name": "scale1_context_hinge3",
+      "op": "relu",
+      "inputs": [
+        "scale1_context_diff3"
+      ]
+    },
+    {
+      "name": "scale1_context_merge3",
+      "op": "add",
+      "inputs": [
+        "scale1_context4_choices_max2",
+        "scale1_context_hinge3"
+      ]
+    },
+    {
+      "name": "scale1_align_face_to_context",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "scale1_face_with_body",
+      "op": "add",
+      "inputs": [
+        "scale1_align_face_to_context",
+        "scale1_context_merge3"
+      ]
+    },
+    {
+      "name": "scale1_joint_anatomy",
+      "op": "conv",
+      "inputs": [
+        "scale1_face_with_body"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale1_joint_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale1_joint_anatomy"
+      ]
+    },
+    {
+      "name": "scale1_joint_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale1_joint_candidates"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "scale1_joint_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale1_joint_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale1_joint_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale1_joint_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale1_joint_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale1_joint_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale1_body_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale1_context_merge3"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "scale1_body_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale1_body_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale1_body_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale1_body_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale1_body_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale1_body_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale1_embed_0",
+      "op": "dense",
+      "inputs": [
+        "scale1_joint_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale1_embed_1",
+      "op": "dense",
+      "inputs": [
+        "scale1_body_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale2_appearance_down",
+      "op": "avgpool",
+      "inputs": [
+        "scale1_appearance_down"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "scale2_face_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 72,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "scale2_face_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_face_tests"
+      ]
+    },
+    {
+      "name": "scale2_face_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_face_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_face_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_face_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_face_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_face_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_face_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_face_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_face_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_face_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale2_context0_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_context0_tests"
+      ]
+    },
+    {
+      "name": "scale2_context0_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_context0_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_context0_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context0_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_context0_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context0_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_context0_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context0_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context0_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_context0_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context0_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale2_context1_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_context1_tests"
+      ]
+    },
+    {
+      "name": "scale2_context1_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_context1_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_context1_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context1_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_context1_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context1_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_context1_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context1_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context1_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_context1_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale2_context2_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_context2_tests"
+      ]
+    },
+    {
+      "name": "scale2_context2_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_context2_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_context2_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context2_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_context2_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context2_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_context2_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context2_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context2_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_context2_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale2_context3_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_context3_tests"
+      ]
+    },
+    {
+      "name": "scale2_context3_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_context3_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_context3_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context3_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_context3_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context3_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_context3_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context3_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context3_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_context3_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_tests",
+      "op": "conv",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "out": 66,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale2_context4_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale2_context4_tests"
+      ]
+    },
+    {
+      "name": "scale2_context4_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_context4_conjunctions"
+      ]
+    },
+    {
+      "name": "scale2_context4_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context4_choices_split0"
+      ]
+    },
+    {
+      "name": "scale2_context4_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context4_choices_split1"
+      ]
+    },
+    {
+      "name": "scale2_context4_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context4_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context4_choices_split2"
+      ]
+    },
+    {
+      "name": "scale2_context4_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context_neg0",
+      "op": "conv",
+      "inputs": [
+        "scale2_context1_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context_diff0",
+      "op": "add",
+      "inputs": [
+        "scale2_context0_choices_max2",
+        "scale2_context_neg0"
+      ]
+    },
+    {
+      "name": "scale2_context_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale2_context_diff0"
+      ]
+    },
+    {
+      "name": "scale2_context_merge0",
+      "op": "add",
+      "inputs": [
+        "scale2_context1_choices_max2",
+        "scale2_context_hinge0"
+      ]
+    },
+    {
+      "name": "scale2_context_neg1",
+      "op": "conv",
+      "inputs": [
+        "scale2_context2_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context_diff1",
+      "op": "add",
+      "inputs": [
+        "scale2_context_merge0",
+        "scale2_context_neg1"
+      ]
+    },
+    {
+      "name": "scale2_context_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale2_context_diff1"
+      ]
+    },
+    {
+      "name": "scale2_context_merge1",
+      "op": "add",
+      "inputs": [
+        "scale2_context2_choices_max2",
+        "scale2_context_hinge1"
+      ]
+    },
+    {
+      "name": "scale2_context_neg2",
+      "op": "conv",
+      "inputs": [
+        "scale2_context3_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context_diff2",
+      "op": "add",
+      "inputs": [
+        "scale2_context_merge1",
+        "scale2_context_neg2"
+      ]
+    },
+    {
+      "name": "scale2_context_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale2_context_diff2"
+      ]
+    },
+    {
+      "name": "scale2_context_merge2",
+      "op": "add",
+      "inputs": [
+        "scale2_context3_choices_max2",
+        "scale2_context_hinge2"
+      ]
+    },
+    {
+      "name": "scale2_context_neg3",
+      "op": "conv",
+      "inputs": [
+        "scale2_context4_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_context_diff3",
+      "op": "add",
+      "inputs": [
+        "scale2_context_merge2",
+        "scale2_context_neg3"
+      ]
+    },
+    {
+      "name": "scale2_context_hinge3",
+      "op": "relu",
+      "inputs": [
+        "scale2_context_diff3"
+      ]
+    },
+    {
+      "name": "scale2_context_merge3",
+      "op": "add",
+      "inputs": [
+        "scale2_context4_choices_max2",
+        "scale2_context_hinge3"
+      ]
+    },
+    {
+      "name": "scale2_align_face_to_context",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "scale2_face_with_body",
+      "op": "add",
+      "inputs": [
+        "scale2_align_face_to_context",
+        "scale2_context_merge3"
+      ]
+    },
+    {
+      "name": "scale2_joint_anatomy",
+      "op": "conv",
+      "inputs": [
+        "scale2_face_with_body"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale2_joint_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale2_joint_anatomy"
+      ]
+    },
+    {
+      "name": "scale2_joint_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale2_joint_candidates"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "scale2_joint_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale2_joint_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale2_joint_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale2_joint_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale2_joint_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale2_joint_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale2_body_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale2_context_merge3"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "scale2_body_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale2_body_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale2_body_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale2_body_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale2_body_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale2_body_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale2_embed_0",
+      "op": "dense",
+      "inputs": [
+        "scale2_joint_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale2_embed_1",
+      "op": "dense",
+      "inputs": [
+        "scale2_body_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale3_appearance_down",
+      "op": "avgpool",
+      "inputs": [
+        "scale2_appearance_down"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "scale3_face_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 72,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "scale3_face_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_face_tests"
+      ]
+    },
+    {
+      "name": "scale3_face_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_face_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_face_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_face_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_face_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_face_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_face_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_face_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_face_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_face_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale3_context0_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_context0_tests"
+      ]
+    },
+    {
+      "name": "scale3_context0_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_context0_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_context0_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context0_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_context0_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context0_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_context0_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context0_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context0_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_context0_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context0_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale3_context1_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_context1_tests"
+      ]
+    },
+    {
+      "name": "scale3_context1_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_context1_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_context1_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context1_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_context1_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context1_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_context1_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context1_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context1_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_context1_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale3_context2_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_context2_tests"
+      ]
+    },
+    {
+      "name": "scale3_context2_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_context2_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_context2_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context2_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_context2_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context2_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_context2_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context2_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context2_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_context2_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 88,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale3_context3_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_context3_tests"
+      ]
+    },
+    {
+      "name": "scale3_context3_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_shortfalls"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_context3_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_context3_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_candidates"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context3_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_context3_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_hinge0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context3_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_context3_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context3_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context3_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_context3_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_tests",
+      "op": "conv",
+      "inputs": [
+        "scale3_appearance_down"
+      ],
+      "out": 66,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "scale3_context4_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "scale3_context4_tests"
+      ]
+    },
+    {
+      "name": "scale3_context4_conjunctions",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_shortfalls"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_context4_conjunctions"
+      ]
+    },
+    {
+      "name": "scale3_context4_choices_split0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_candidates"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_choices_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context4_choices_split0"
+      ]
+    },
+    {
+      "name": "scale3_context4_choices_max0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_hinge0"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_choices_split1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_max0"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_choices_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context4_choices_split1"
+      ]
+    },
+    {
+      "name": "scale3_context4_choices_max1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_hinge1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_choices_split2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_max1"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context4_choices_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context4_choices_split2"
+      ]
+    },
+    {
+      "name": "scale3_context4_choices_max2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_hinge2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context_neg0",
+      "op": "conv",
+      "inputs": [
+        "scale3_context1_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context_diff0",
+      "op": "add",
+      "inputs": [
+        "scale3_context0_choices_max2",
+        "scale3_context_neg0"
+      ]
+    },
+    {
+      "name": "scale3_context_hinge0",
+      "op": "relu",
+      "inputs": [
+        "scale3_context_diff0"
+      ]
+    },
+    {
+      "name": "scale3_context_merge0",
+      "op": "add",
+      "inputs": [
+        "scale3_context1_choices_max2",
+        "scale3_context_hinge0"
+      ]
+    },
+    {
+      "name": "scale3_context_neg1",
+      "op": "conv",
+      "inputs": [
+        "scale3_context2_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context_diff1",
+      "op": "add",
+      "inputs": [
+        "scale3_context_merge0",
+        "scale3_context_neg1"
+      ]
+    },
+    {
+      "name": "scale3_context_hinge1",
+      "op": "relu",
+      "inputs": [
+        "scale3_context_diff1"
+      ]
+    },
+    {
+      "name": "scale3_context_merge1",
+      "op": "add",
+      "inputs": [
+        "scale3_context2_choices_max2",
+        "scale3_context_hinge1"
+      ]
+    },
+    {
+      "name": "scale3_context_neg2",
+      "op": "conv",
+      "inputs": [
+        "scale3_context3_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context_diff2",
+      "op": "add",
+      "inputs": [
+        "scale3_context_merge1",
+        "scale3_context_neg2"
+      ]
+    },
+    {
+      "name": "scale3_context_hinge2",
+      "op": "relu",
+      "inputs": [
+        "scale3_context_diff2"
+      ]
+    },
+    {
+      "name": "scale3_context_merge2",
+      "op": "add",
+      "inputs": [
+        "scale3_context3_choices_max2",
+        "scale3_context_hinge2"
+      ]
+    },
+    {
+      "name": "scale3_context_neg3",
+      "op": "conv",
+      "inputs": [
+        "scale3_context4_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_context_diff3",
+      "op": "add",
+      "inputs": [
+        "scale3_context_merge2",
+        "scale3_context_neg3"
+      ]
+    },
+    {
+      "name": "scale3_context_hinge3",
+      "op": "relu",
+      "inputs": [
+        "scale3_context_diff3"
+      ]
+    },
+    {
+      "name": "scale3_context_merge3",
+      "op": "add",
+      "inputs": [
+        "scale3_context4_choices_max2",
+        "scale3_context_hinge3"
+      ]
+    },
+    {
+      "name": "scale3_align_face_to_context",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_choices_max2"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "scale3_face_with_body",
+      "op": "add",
+      "inputs": [
+        "scale3_align_face_to_context",
+        "scale3_context_merge3"
+      ]
+    },
+    {
+      "name": "scale3_joint_anatomy",
+      "op": "conv",
+      "inputs": [
+        "scale3_face_with_body"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "scale3_joint_candidates",
+      "op": "relu",
+      "inputs": [
+        "scale3_joint_anatomy"
+      ]
+    },
+    {
+      "name": "scale3_joint_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale3_joint_candidates"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "scale3_joint_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale3_joint_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale3_joint_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale3_joint_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale3_joint_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale3_joint_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale3_body_max_xy",
+      "op": "maxpool",
+      "inputs": [
+        "scale3_context_merge3"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "scale3_body_max_as_column",
+      "op": "reshape",
+      "inputs": [
+        "scale3_body_max_xy"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale3_body_max_channels",
+      "op": "maxpool",
+      "inputs": [
+        "scale3_body_max_as_column"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scale3_body_max_scalar",
+      "op": "reshape",
+      "inputs": [
+        "scale3_body_max_channels"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scale3_embed_0",
+      "op": "dense",
+      "inputs": [
+        "scale3_joint_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "scale3_embed_1",
+      "op": "dense",
+      "inputs": [
+        "scale3_body_max_scalar"
+      ],
+      "out": 8
+    },
+    {
+      "name": "all_scale_summaries",
+      "op": "add",
+      "inputs": [
+        "scale0_embed_0",
+        "scale0_embed_1",
+        "scale1_embed_0",
+        "scale1_embed_1",
+        "scale2_embed_0",
+        "scale2_embed_1",
+        "scale3_embed_0",
+        "scale3_embed_1"
+      ]
+    },
+    {
+      "name": "scale_axis",
+      "op": "reshape",
+      "inputs": [
+        "all_scale_summaries"
+      ],
+      "shape": [
+        2,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "best_scale",
+      "op": "maxpool",
+      "inputs": [
+        "scale_axis"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "person_alternatives",
+      "op": "dense",
+      "inputs": [
+        "best_scale"
+      ],
+      "out": 2
+    },
+    {
+      "name": "alternative_axis",
+      "op": "reshape",
+      "inputs": [
+        "person_alternatives"
+      ],
+      "shape": [
+        1,
+        2,
+        1
+      ]
+    },
+    {
+      "name": "best_person_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "alternative_axis"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "best_person_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

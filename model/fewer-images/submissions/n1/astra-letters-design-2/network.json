@@ -1,0 +1,270 @@
+{
+ "layers": [
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "oriented",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 10,
+   "kernel": [
+    5,
+    5
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "grad_cutoffs",
+   "op": "conv",
+   "inputs": [
+    "oriented"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "grad_hinges",
+   "op": "relu",
+   "inputs": [
+    "grad_cutoffs"
+   ]
+  },
+  {
+   "name": "grad_limited",
+   "op": "conv",
+   "inputs": [
+    "grad_hinges"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cells",
+   "op": "avgpool",
+   "inputs": [
+    "grad_limited"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "vote",
+   "op": "conv",
+   "inputs": [
+    "cells"
+   ],
+   "out": 10,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "one_histogram",
+   "op": "reshape",
+   "inputs": [
+    "vote"
+   ],
+   "shape": [
+    1,
+    10,
+    144
+   ]
+  },
+  {
+   "name": "grad_energy",
+   "op": "norm",
+   "inputs": [
+    "one_histogram"
+   ]
+  },
+  {
+   "name": "albedo_cells",
+   "op": "avgpool",
+   "inputs": [
+    "contrast"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "brightness_cutoffs",
+   "op": "conv",
+   "inputs": [
+    "albedo_cells"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "brightness_hinges",
+   "op": "relu",
+   "inputs": [
+    "brightness_cutoffs"
+   ]
+  },
+  {
+   "name": "brightness_limited",
+   "op": "conv",
+   "inputs": [
+    "brightness_hinges"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "albedo_energy",
+   "op": "norm",
+   "inputs": [
+    "brightness_limited"
+   ]
+  },
+  {
+   "name": "pose_grad_match",
+   "op": "dense",
+   "inputs": [
+    "grad_energy"
+   ],
+   "out": 15360
+  },
+  {
+   "name": "pose_albedo_match",
+   "op": "dense",
+   "inputs": [
+    "albedo_energy"
+   ],
+   "out": 15360
+  },
+  {
+   "name": "pose_similarity",
+   "op": "add",
+   "inputs": [
+    "pose_grad_match",
+    "pose_albedo_match"
+   ]
+  },
+  {
+   "name": "group_by_sign",
+   "op": "reshape",
+   "inputs": [
+    "pose_similarity"
+   ],
+   "shape": [
+    24,
+    8,
+    80
+   ]
+  },
+  {
+   "name": "best_in_group",
+   "op": "maxpool",
+   "inputs": [
+    "group_by_sign"
+   ],
+   "size": [
+    1,
+    80
+   ],
+   "stride": [
+    1,
+    80
+   ]
+  },
+  {
+   "name": "consensus",
+   "op": "avgpool",
+   "inputs": [
+    "best_in_group"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "best_pose",
+   "op": "maxpool",
+   "inputs": [
+    "best_in_group"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "consensus_weight",
+   "op": "dense",
+   "inputs": [
+    "consensus"
+   ],
+   "out": 24
+  },
+  {
+   "name": "best_weight",
+   "op": "dense",
+   "inputs": [
+    "best_pose"
+   ],
+   "out": 24
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "consensus_weight",
+    "best_weight"
+   ]
+  }
+ ]
+}

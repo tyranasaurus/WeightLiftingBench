@@ -1,0 +1,3 @@
+`build.py` draws 6,144 individual templates per digit from hand-written pen paths: for example, a four can have an open or a triangular top, and a seven can have a crossbar. A fixed-seed generator varies the path geometry, slant and pen pressure. Each drawing is deskewed and described independently; no drawing is averaged with another, and no training image or fitted parameter is used.
+
+`predict` applies the same normalization to each input. It finds candidate templates using coarse ink and edge-orientation maps, aspect ratio, slant, and the location of enclosed background. It then compares fine maps on overlapping patches that can shift by a few pixels, choosing the digit with the lowest match cost.

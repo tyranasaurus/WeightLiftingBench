@@ -1,0 +1,325 @@
+{
+ "layers": [
+  {
+   "name": "gray",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sg",
+   "op": "norm",
+   "inputs": [
+    "gray"
+   ]
+  },
+  {
+   "name": "iso_pre",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "M",
+   "op": "relu",
+   "inputs": [
+    "iso_pre"
+   ]
+  },
+  {
+   "name": "logp",
+   "op": "conv",
+   "inputs": [
+    "sg"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Mlog",
+   "op": "relu",
+   "inputs": [
+    "logp"
+   ]
+  },
+  {
+   "name": "fM",
+   "op": "dense",
+   "inputs": [
+    "M"
+   ],
+   "out": 19
+  },
+  {
+   "name": "fLog",
+   "op": "dense",
+   "inputs": [
+    "Mlog"
+   ],
+   "out": 19
+  },
+  {
+   "name": "fCol",
+   "op": "dense",
+   "inputs": [
+    "col"
+   ],
+   "out": 19
+  },
+  {
+   "name": "F",
+   "op": "add",
+   "inputs": [
+    "fM",
+    "fLog",
+    "fCol"
+   ]
+  },
+  {
+   "name": "g1",
+   "op": "dense",
+   "inputs": [
+    "F"
+   ],
+   "out": 36
+  },
+  {
+   "name": "g1r",
+   "op": "reshape",
+   "inputs": [
+    "g1"
+   ],
+   "shape": [
+    3,
+    1,
+    12
+   ]
+  },
+  {
+   "name": "g1p",
+   "op": "maxpool",
+   "inputs": [
+    "g1r"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "g1f",
+   "op": "reshape",
+   "inputs": [
+    "g1p"
+   ],
+   "shape": [
+    3
+   ]
+  },
+  {
+   "name": "hP",
+   "op": "dense",
+   "inputs": [
+    "g1f"
+   ],
+   "out": 8
+  },
+  {
+   "name": "hF",
+   "op": "dense",
+   "inputs": [
+    "F"
+   ],
+   "out": 8
+  },
+  {
+   "name": "H",
+   "op": "add",
+   "inputs": [
+    "hP",
+    "hF"
+   ]
+  },
+  {
+   "name": "Clin",
+   "op": "dense",
+   "inputs": [
+    "H"
+   ],
+   "out": 15
+  },
+  {
+   "name": "C",
+   "op": "relu",
+   "inputs": [
+    "Clin"
+   ]
+  },
+  {
+   "name": "d1",
+   "op": "dense",
+   "inputs": [
+    "C"
+   ],
+   "out": 11
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "d1"
+   ]
+  },
+  {
+   "name": "Sa",
+   "op": "dense",
+   "inputs": [
+    "C"
+   ],
+   "out": 11
+  },
+  {
+   "name": "Sneg",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 11
+  },
+  {
+   "name": "S",
+   "op": "add",
+   "inputs": [
+    "Sa",
+    "Sneg"
+   ]
+  },
+  {
+   "name": "d2S",
+   "op": "dense",
+   "inputs": [
+    "S"
+   ],
+   "out": 5
+  },
+  {
+   "name": "d2C",
+   "op": "dense",
+   "inputs": [
+    "C"
+   ],
+   "out": 5
+  },
+  {
+   "name": "d2",
+   "op": "add",
+   "inputs": [
+    "d2S",
+    "d2C"
+   ]
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "d2"
+   ]
+  },
+  {
+   "name": "Ta",
+   "op": "dense",
+   "inputs": [
+    "S"
+   ],
+   "out": 5
+  },
+  {
+   "name": "Tneg",
+   "op": "dense",
+   "inputs": [
+    "r2"
+   ],
+   "out": 5
+  },
+  {
+   "name": "T",
+   "op": "add",
+   "inputs": [
+    "Ta",
+    "Tneg"
+   ]
+  },
+  {
+   "name": "outS",
+   "op": "dense",
+   "inputs": [
+    "S"
+   ],
+   "out": 10
+  },
+  {
+   "name": "outT",
+   "op": "dense",
+   "inputs": [
+    "T"
+   ],
+   "out": 10
+  },
+  {
+   "name": "outC",
+   "op": "dense",
+   "inputs": [
+    "C"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "outS",
+    "outT",
+    "outC"
+   ]
+  }
+ ]
+}

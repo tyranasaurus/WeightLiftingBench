@@ -1,0 +1,425 @@
+{
+  "layers": [
+    {
+      "name": "brightness_invariant",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "directional_derivatives",
+      "op": "conv",
+      "inputs": [
+        "brightness_invariant"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "split_edge_polarities",
+      "op": "relu",
+      "inputs": [
+        "directional_derivatives"
+      ]
+    },
+    {
+      "name": "edge_floor_and_ceiling",
+      "op": "conv",
+      "inputs": [
+        "split_edge_polarities"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "bounded_edge_hinges",
+      "op": "relu",
+      "inputs": [
+        "edge_floor_and_ceiling"
+      ]
+    },
+    {
+      "name": "peak_oriented_edges",
+      "op": "conv",
+      "inputs": [
+        "bounded_edge_hinges"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edges_with_local_slack",
+      "op": "maxpool",
+      "inputs": [
+        "peak_oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "mean_oriented_edges",
+      "op": "conv",
+      "inputs": [
+        "bounded_edge_hinges"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cell_average_edges",
+      "op": "avgpool",
+      "inputs": [
+        "mean_oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "oriented_edge_cells",
+      "op": "add",
+      "inputs": [
+        "edges_with_local_slack",
+        "cell_average_edges"
+      ]
+    },
+    {
+      "name": "opposite_sides_of_strips",
+      "op": "conv",
+      "inputs": [
+        "brightness_invariant"
+      ],
+      "out": 16,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_strip_halves",
+      "op": "relu",
+      "inputs": [
+        "opposite_sides_of_strips"
+      ]
+    },
+    {
+      "name": "strip_half_differences",
+      "op": "conv",
+      "inputs": [
+        "positive_strip_halves"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "one_sided_strip_response",
+      "op": "relu",
+      "inputs": [
+        "strip_half_differences"
+      ]
+    },
+    {
+      "name": "two_sided_ridge_response",
+      "op": "conv",
+      "inputs": [
+        "one_sided_strip_response"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ridge_contrast_floor",
+      "op": "relu",
+      "inputs": [
+        "two_sided_ridge_response"
+      ]
+    },
+    {
+      "name": "ridge_cells",
+      "op": "maxpool",
+      "inputs": [
+        "ridge_contrast_floor"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "tangential_ridge_support",
+      "op": "conv",
+      "inputs": [
+        "ridge_cells"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "subtract_scanline_background",
+      "op": "dense",
+      "inputs": [
+        "brightness_invariant"
+      ],
+      "out": 784
+    },
+    {
+      "name": "contrast_field",
+      "op": "reshape",
+      "inputs": [
+        "subtract_scanline_background"
+      ],
+      "shape": [
+        1,
+        28,
+        28
+      ]
+    },
+    {
+      "name": "contrast_floor_and_ceiling",
+      "op": "conv",
+      "inputs": [
+        "contrast_field"
+      ],
+      "out": 4,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "bounded_contrast_hinges",
+      "op": "relu",
+      "inputs": [
+        "contrast_floor_and_ceiling"
+      ]
+    },
+    {
+      "name": "even_and_odd_contrast",
+      "op": "conv",
+      "inputs": [
+        "bounded_contrast_hinges"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "regional_contrast",
+      "op": "avgpool",
+      "inputs": [
+        "even_and_odd_contrast"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "hand_evidence",
+      "op": "add",
+      "inputs": [
+        "regional_contrast",
+        "oriented_edge_cells",
+        "tangential_ridge_support"
+      ]
+    },
+    {
+      "name": "whole_hand_match",
+      "op": "dense",
+      "inputs": [
+        "hand_evidence"
+      ],
+      "out": 19584
+    },
+    {
+      "name": "whole_hand_by_pose",
+      "op": "reshape",
+      "inputs": [
+        "whole_hand_match"
+      ],
+      "shape": [
+        24,
+        816,
+        1
+      ]
+    },
+    {
+      "name": "landmark_evidence",
+      "op": "dense",
+      "inputs": [
+        "hand_evidence"
+      ],
+      "out": 58752
+    },
+    {
+      "name": "landmarks_by_pose",
+      "op": "reshape",
+      "inputs": [
+        "landmark_evidence"
+      ],
+      "shape": [
+        1,
+        24,
+        2448
+      ]
+    },
+    {
+      "name": "landmark_hinges",
+      "op": "conv",
+      "inputs": [
+        "landmarks_by_pose"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rectified_landmark_hinges",
+      "op": "relu",
+      "inputs": [
+        "landmark_hinges"
+      ]
+    },
+    {
+      "name": "bounded_landmark_votes",
+      "op": "conv",
+      "inputs": [
+        "rectified_landmark_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pose_votes",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_landmark_votes"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "local_votes_by_pose",
+      "op": "reshape",
+      "inputs": [
+        "pose_votes"
+      ],
+      "shape": [
+        24,
+        816,
+        1
+      ]
+    },
+    {
+      "name": "aggregate_pose_evidence",
+      "op": "add",
+      "inputs": [
+        "whole_hand_by_pose",
+        "local_votes_by_pose"
+      ]
+    },
+    {
+      "name": "best_compatible_pose",
+      "op": "maxpool",
+      "inputs": [
+        "aggregate_pose_evidence"
+      ],
+      "size": [
+        816,
+        1
+      ],
+      "stride": [
+        816,
+        1
+      ]
+    },
+    {
+      "name": "letter_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_compatible_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

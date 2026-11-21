@@ -1,0 +1,443 @@
+{
+  "layers": [
+    {
+      "name": "mean_ink",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ray_shift",
+      "op": "conv",
+      "inputs": [
+        "mean_ink"
+      ],
+      "out": 68,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "ray_offsets",
+      "op": "reshape",
+      "inputs": [
+        "ray_shift"
+      ],
+      "shape": [
+        1,
+        68,
+        196
+      ]
+    },
+    {
+      "name": "ray_max",
+      "op": "maxpool",
+      "inputs": [
+        "ray_offsets"
+      ],
+      "size": [
+        17,
+        1
+      ],
+      "stride": [
+        17,
+        1
+      ]
+    },
+    {
+      "name": "four_sides",
+      "op": "reshape",
+      "inputs": [
+        "ray_max"
+      ],
+      "shape": [
+        4,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "opposite_ray_differences",
+      "op": "conv",
+      "inputs": [
+        "four_sides"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_ray_differences",
+      "op": "relu",
+      "inputs": [
+        "opposite_ray_differences"
+      ]
+    },
+    {
+      "name": "opposite_ray_minima",
+      "op": "conv",
+      "inputs": [
+        "positive_ray_differences"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "exclude_centers",
+      "op": "conv",
+      "inputs": [
+        "mean_ink"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "bay_raw",
+      "op": "add",
+      "inputs": [
+        "opposite_ray_minima",
+        "exclude_centers"
+      ]
+    },
+    {
+      "name": "bays",
+      "op": "relu",
+      "inputs": [
+        "bay_raw"
+      ]
+    },
+    {
+      "name": "bay_difference",
+      "op": "conv",
+      "inputs": [
+        "bays"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_bay_difference",
+      "op": "relu",
+      "inputs": [
+        "bay_difference"
+      ]
+    },
+    {
+      "name": "bays_and_cavities",
+      "op": "conv",
+      "inputs": [
+        "positive_bay_difference"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cavity_cells",
+      "op": "avgpool",
+      "inputs": [
+        "bays_and_cavities"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "blurred_ink",
+      "op": "conv",
+      "inputs": [
+        "mean_ink"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "contrast_normalized",
+      "op": "norm",
+      "inputs": [
+        "blurred_ink"
+      ]
+    },
+    {
+      "name": "ink_peaks",
+      "op": "maxpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "spread_ink",
+      "op": "conv",
+      "inputs": [
+        "ink_peaks"
+      ],
+      "out": 25,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "offsets",
+      "op": "reshape",
+      "inputs": [
+        "spread_ink"
+      ],
+      "shape": [
+        1,
+        25,
+        196
+      ]
+    },
+    {
+      "name": "near_ink",
+      "op": "maxpool",
+      "inputs": [
+        "offsets"
+      ],
+      "size": [
+        25,
+        1
+      ],
+      "stride": [
+        25,
+        1
+      ]
+    },
+    {
+      "name": "oriented_ridges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "bright_ridges",
+      "op": "relu",
+      "inputs": [
+        "oriented_ridges"
+      ]
+    },
+    {
+      "name": "ridge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "bright_ridges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ink_fit",
+      "op": "dense",
+      "inputs": [
+        "mean_ink"
+      ],
+      "out": 128000
+    },
+    {
+      "name": "stroke_coverage",
+      "op": "dense",
+      "inputs": [
+        "near_ink"
+      ],
+      "out": 128000
+    },
+    {
+      "name": "tangent_fit",
+      "op": "dense",
+      "inputs": [
+        "ridge_cells"
+      ],
+      "out": 128000
+    },
+    {
+      "name": "enclosure_fit",
+      "op": "dense",
+      "inputs": [
+        "cavity_cells"
+      ],
+      "out": 128000
+    },
+    {
+      "name": "broad_shape_fit",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 128000
+    },
+    {
+      "name": "shape_match",
+      "op": "add",
+      "inputs": [
+        "ink_fit",
+        "stroke_coverage",
+        "tangent_fit",
+        "enclosure_fit",
+        "broad_shape_fit"
+      ]
+    },
+    {
+      "name": "shape_families",
+      "op": "reshape",
+      "inputs": [
+        "shape_match"
+      ],
+      "shape": [
+        1,
+        40,
+        3200
+      ]
+    },
+    {
+      "name": "best_in_banks",
+      "op": "maxpool",
+      "inputs": [
+        "shape_families"
+      ],
+      "size": [
+        1,
+        3200
+      ],
+      "stride": [
+        1,
+        3200
+      ]
+    },
+    {
+      "name": "group_bank_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_in_banks"
+      ],
+      "shape": [
+        1,
+        10,
+        4
+      ]
+    },
+    {
+      "name": "best_in_family",
+      "op": "maxpool",
+      "inputs": [
+        "group_bank_scores"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "bank_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "group_bank_scores"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "strongest_match",
+      "op": "dense",
+      "inputs": [
+        "best_in_family"
+      ],
+      "out": 10
+    },
+    {
+      "name": "consistent_match",
+      "op": "dense",
+      "inputs": [
+        "bank_consensus"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "strongest_match",
+        "consistent_match"
+      ]
+    }
+  ]
+}

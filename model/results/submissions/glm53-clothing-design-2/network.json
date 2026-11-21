@@ -1,0 +1,281 @@
+{
+ "layers": [
+  {
+   "name": "imgn",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "imgp",
+   "op": "relu",
+   "inputs": [
+    "imgn"
+   ]
+  },
+  {
+   "name": "spars",
+   "op": "avgpool",
+   "inputs": [
+    "imgp"
+   ],
+   "size": [
+    28,
+    28
+   ],
+   "stride": [
+    28,
+    28
+   ]
+  },
+  {
+   "name": "peak",
+   "op": "maxpool",
+   "inputs": [
+    "imgn"
+   ],
+   "size": [
+    28,
+    28
+   ],
+   "stride": [
+    28,
+    28
+   ]
+  },
+  {
+   "name": "econv",
+   "op": "conv",
+   "inputs": [
+    "imgn"
+   ],
+   "out": 12,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "er",
+   "op": "relu",
+   "inputs": [
+    "econv"
+   ]
+  },
+  {
+   "name": "ep",
+   "op": "avgpool",
+   "inputs": [
+    "er"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "sp",
+   "op": "avgpool",
+   "inputs": [
+    "imgp"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "sp2",
+   "op": "avgpool",
+   "inputs": [
+    "imgp"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "rm",
+   "op": "maxpool",
+   "inputs": [
+    "imgp"
+   ],
+   "size": [
+    4,
+    28
+   ],
+   "stride": [
+    4,
+    28
+   ]
+  },
+  {
+   "name": "cm",
+   "op": "maxpool",
+   "inputs": [
+    "imgp"
+   ],
+   "size": [
+    28,
+    4
+   ],
+   "stride": [
+    28,
+    4
+   ]
+  },
+  {
+   "name": "tc",
+   "op": "conv",
+   "inputs": [
+    "imgn"
+   ],
+   "out": 13,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 8
+  },
+  {
+   "name": "tm",
+   "op": "maxpool",
+   "inputs": [
+    "tc"
+   ],
+   "size": [
+    17,
+    17
+   ],
+   "stride": [
+    17,
+    17
+   ]
+  },
+  {
+   "name": "dE",
+   "op": "dense",
+   "inputs": [
+    "ep"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dS",
+   "op": "dense",
+   "inputs": [
+    "sp"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dS2",
+   "op": "dense",
+   "inputs": [
+    "sp2"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dR",
+   "op": "dense",
+   "inputs": [
+    "rm"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dC",
+   "op": "dense",
+   "inputs": [
+    "cm"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dT",
+   "op": "dense",
+   "inputs": [
+    "tm"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dX",
+   "op": "dense",
+   "inputs": [
+    "spars"
+   ],
+   "out": 59
+  },
+  {
+   "name": "dP",
+   "op": "dense",
+   "inputs": [
+    "peak"
+   ],
+   "out": 59
+  },
+  {
+   "name": "hsum",
+   "op": "add",
+   "inputs": [
+    "dE",
+    "dS",
+    "dS2",
+    "dR",
+    "dC",
+    "dT",
+    "dX",
+    "dP"
+   ]
+  },
+  {
+   "name": "hid",
+   "op": "relu",
+   "inputs": [
+    "hsum"
+   ]
+  },
+  {
+   "name": "dH2",
+   "op": "dense",
+   "inputs": [
+    "hid"
+   ],
+   "out": 11
+  },
+  {
+   "name": "ev",
+   "op": "relu",
+   "inputs": [
+    "dH2"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "ev"
+   ],
+   "out": 10
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "s",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "d1",
+   "op": "dense",
+   "inputs": [
+    "s"
+   ],
+   "out": 21
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "d1"
+   ]
+  },
+  {
+   "name": "d2",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 12
+  },
+  {
+   "name": "tri",
+   "op": "reshape",
+   "inputs": [
+    "d2"
+   ],
+   "shape": [
+    4,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "ratio",
+   "op": "norm",
+   "inputs": [
+    "tri"
+   ]
+  },
+  {
+   "name": "d3",
+   "op": "dense",
+   "inputs": [
+    "ratio"
+   ],
+   "out": 16
+  },
+  {
+   "name": "r3",
+   "op": "relu",
+   "inputs": [
+    "d3"
+   ]
+  },
+  {
+   "name": "d4",
+   "op": "dense",
+   "inputs": [
+    "r3"
+   ],
+   "out": 10
+  }
+ ]
+}

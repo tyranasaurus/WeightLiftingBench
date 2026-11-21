@@ -1,0 +1,188 @@
+{
+ "layers": [
+  {
+   "name": "g",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 16,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "g_relu",
+   "op": "relu",
+   "inputs": [
+    "g"
+   ]
+  },
+  {
+   "name": "ori",
+   "op": "conv",
+   "inputs": [
+    "g_relu"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ori_relu",
+   "op": "relu",
+   "inputs": [
+    "ori"
+   ]
+  },
+  {
+   "name": "pool",
+   "op": "conv",
+   "inputs": [
+    "ori_relu"
+   ],
+   "out": 8,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "gather",
+   "op": "dense",
+   "inputs": [
+    "pool"
+   ],
+   "out": 5408
+  },
+  {
+   "name": "cells",
+   "op": "reshape",
+   "inputs": [
+    "gather"
+   ],
+   "shape": [
+    169,
+    32,
+    1
+   ]
+  },
+  {
+   "name": "lnorm",
+   "op": "norm",
+   "inputs": [
+    "cells"
+   ]
+  },
+  {
+   "name": "pick",
+   "op": "maxpool",
+   "inputs": [
+    "lnorm"
+   ],
+   "size": [
+    1,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "back",
+   "op": "dense",
+   "inputs": [
+    "pick"
+   ],
+   "out": 1352
+  },
+  {
+   "name": "maps",
+   "op": "reshape",
+   "inputs": [
+    "back"
+   ],
+   "shape": [
+    8,
+    13,
+    13
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "conv",
+   "inputs": [
+    "maps"
+   ],
+   "out": 6000,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tm_max",
+   "op": "maxpool",
+   "inputs": [
+    "tm"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "tm_max"
+   ],
+   "shape": [
+    1,
+    24,
+    250
+   ]
+  },
+  {
+   "name": "cls_max",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    250
+   ],
+   "stride": [
+    1,
+    250
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "cls_max"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

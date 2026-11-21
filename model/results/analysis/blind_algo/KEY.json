@@ -1,0 +1,380 @@
+{
+ "x39": {
+  "run": "astra-digits-design-1",
+  "task": "digits",
+  "arm": "network",
+  "src": [
+   "outs2/astra-digits-design-1/digits-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-design-1/digits-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x15": {
+  "run": "astra-digits-design-2",
+  "task": "digits",
+  "arm": "network",
+  "src": [
+   "outs2/astra-digits-design-2/digits-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-design-2/digits-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x07": {
+  "run": "astra-digits-design-3",
+  "task": "digits",
+  "arm": "network",
+  "src": [
+   "outs2/astra-digits-design-3/digits-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-design-3/digits-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x09": {
+  "run": "astra-digits-program-1",
+  "task": "digits",
+  "arm": "program",
+  "src": [
+   "outs2/astra-digits-program-1/digits-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-program-1/digits-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x32": {
+  "run": "astra-digits-program-2",
+  "task": "digits",
+  "arm": "program",
+  "src": [
+   "outs2/astra-digits-program-2/digits-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-program-2/digits-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x21": {
+  "run": "astra-digits-program-3",
+  "task": "digits",
+  "arm": "program",
+  "src": [
+   "outs2/astra-digits-program-3/digits-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-digits-program-3/digits-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x36": {
+  "run": "astra-clothing-design-1",
+  "task": "clothing",
+  "arm": "network",
+  "src": [
+   "outs2/astra-clothing-design-1/clothing-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-design-1/clothing-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x10": {
+  "run": "astra-clothing-design-2",
+  "task": "clothing",
+  "arm": "network",
+  "src": [
+   "outs2/astra-clothing-design-2/clothing-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-design-2/clothing-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x35": {
+  "run": "astra-clothing-design-3",
+  "task": "clothing",
+  "arm": "network",
+  "src": [
+   "outs2/astra-clothing-design-3/clothing-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-design-3/clothing-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x29": {
+  "run": "astra-clothing-program-1",
+  "task": "clothing",
+  "arm": "program",
+  "src": [
+   "outs2/astra-clothing-program-1/clothing-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-program-1/clothing-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x26": {
+  "run": "astra-clothing-program-2",
+  "task": "clothing",
+  "arm": "program",
+  "src": [
+   "outs2/astra-clothing-program-2/clothing-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-program-2/clothing-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x40": {
+  "run": "astra-clothing-program-3",
+  "task": "clothing",
+  "arm": "program",
+  "src": [
+   "outs2/astra-clothing-program-3/clothing-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-clothing-program-3/clothing-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x37": {
+  "run": "astra-traffic-design-1",
+  "task": "traffic",
+  "arm": "network",
+  "src": [
+   "outs2/astra-traffic-design-1/traffic-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-traffic-design-1/traffic-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x02": {
+  "run": "astra-traffic-design-2",
+  "task": "traffic",
+  "arm": "network",
+  "src": [
+   "outs2/astra-traffic-design-2/traffic-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-traffic-design-2/traffic-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x17": {
+  "run": "astra-traffic-design-3",
+  "task": "traffic",
+  "arm": "network",
+  "src": [
+   "outs3/astra-traffic-design-3/traffic-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs3/astra-traffic-design-3/traffic-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x33": {
+  "run": "astra-traffic-program-1",
+  "task": "traffic",
+  "arm": "program",
+  "src": [
+   "outs2/astra-traffic-program-1/traffic-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-traffic-program-1/traffic-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x19": {
+  "run": "astra-traffic-program-2",
+  "task": "traffic",
+  "arm": "program",
+  "src": [
+   "outs2/astra-traffic-program-2/traffic-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-traffic-program-2/traffic-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x16": {
+  "run": "astra-traffic-program-3",
+  "task": "traffic",
+  "arm": "program",
+  "src": [
+   "outs2/astra-traffic-program-3/traffic-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-traffic-program-3/traffic-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x03": {
+  "run": "astra-galaxies-design-1",
+  "task": "galaxies",
+  "arm": "network",
+  "src": [
+   "outs2/astra-galaxies-design-1/galaxies-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-galaxies-design-1/galaxies-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x14": {
+  "run": "astra-galaxies-design-2",
+  "task": "galaxies",
+  "arm": "network",
+  "src": [
+   "outs2/astra-galaxies-design-2/galaxies-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-galaxies-design-2/galaxies-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x08": {
+  "run": "astra-galaxies-design-3",
+  "task": "galaxies",
+  "arm": "network",
+  "src": [
+   "outs2/astra-galaxies-design-3/galaxies-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-galaxies-design-3/galaxies-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x04": {
+  "run": "astra-galaxies-program-1",
+  "task": "galaxies",
+  "arm": "program",
+  "src": [
+   "outs2/astra-galaxies-program-1/galaxies-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-galaxies-program-1/galaxies-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x28": {
+  "run": "astra-galaxies-program-2",
+  "task": "galaxies",
+  "arm": "program",
+  "src": [
+   "outs2/astra-galaxies-program-2/galaxies-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-galaxies-program-2/galaxies-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x25": {
+  "run": "astra-galaxies-program-3",
+  "task": "galaxies",
+  "arm": "program",
+  "src": [
+   "outs2/astra-galaxies-program-3/galaxies-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-galaxies-program-3/galaxies-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x27": {
+  "run": "astra-letters-design-1",
+  "task": "letters",
+  "arm": "network",
+  "src": [
+   "outs2/astra-letters-design-1/letters-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-letters-design-1/letters-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x13": {
+  "run": "astra-letters-design-2",
+  "task": "letters",
+  "arm": "network",
+  "src": [
+   "outs2/astra-letters-design-2/letters-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-letters-design-2/letters-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x31": {
+  "run": "astra-letters-design-3",
+  "task": "letters",
+  "arm": "network",
+  "src": [
+   "outs2/astra-letters-design-3/letters-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-letters-design-3/letters-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x20": {
+  "run": "astra-letters-program-1",
+  "task": "letters",
+  "arm": "program",
+  "src": [
+   "outs2/astra-letters-program-1/letters-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-letters-program-1/letters-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x30": {
+  "run": "astra-letters-program-2",
+  "task": "letters",
+  "arm": "program",
+  "src": [
+   "outs2/astra-letters-program-2/letters-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-letters-program-2/letters-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x38": {
+  "run": "astra-letters-program-3",
+  "task": "letters",
+  "arm": "program",
+  "src": [
+   "outs2/astra-letters-program-3/letters-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-letters-program-3/letters-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x42": {
+  "run": "astra-cifar-design-1",
+  "task": "cifar",
+  "arm": "network",
+  "src": [
+   "outs2/astra-cifar-design-1/cifar-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-design-1/cifar-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x24": {
+  "run": "astra-cifar-design-2",
+  "task": "cifar",
+  "arm": "network",
+  "src": [
+   "outs2/astra-cifar-design-2/cifar-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-design-2/cifar-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x11": {
+  "run": "astra-cifar-design-3",
+  "task": "cifar",
+  "arm": "network",
+  "src": [
+   "outs2/astra-cifar-design-3/cifar-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-design-3/cifar-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x41": {
+  "run": "astra-cifar-program-1",
+  "task": "cifar",
+  "arm": "program",
+  "src": [
+   "outs2/astra-cifar-program-1/cifar-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-program-1/cifar-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x01": {
+  "run": "astra-cifar-program-2",
+  "task": "cifar",
+  "arm": "program",
+  "src": [
+   "outs2/astra-cifar-program-2/cifar-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-program-2/cifar-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x05": {
+  "run": "astra-cifar-program-3",
+  "task": "cifar",
+  "arm": "program",
+  "src": [
+   "outs2/astra-cifar-program-3/cifar-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-cifar-program-3/cifar-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x22": {
+  "run": "astra-person-design-1",
+  "task": "person",
+  "arm": "network",
+  "src": [
+   "outs2/astra-person-design-1/person-nocopy-design/artifacts/app/out/out/build.py",
+   "outs2/astra-person-design-1/person-nocopy-design/artifacts/app/out/out/network.json"
+  ]
+ },
+ "x06": {
+  "run": "astra-person-design-2",
+  "task": "person",
+  "arm": "network",
+  "src": [
+   "outs2/astra-person-design-2/person-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-person-design-2/person-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x23": {
+  "run": "astra-person-design-3",
+  "task": "person",
+  "arm": "network",
+  "src": [
+   "outs2/astra-person-design-3/person-nocopy-design-slim/artifacts/app/out/build.py/build.py",
+   "outs2/astra-person-design-3/person-nocopy-design-slim/artifacts/app/out/network.json/network.json"
+  ]
+ },
+ "x18": {
+  "run": "astra-person-program-1",
+  "task": "person",
+  "arm": "program",
+  "src": [
+   "outs2/astra-person-program-1/person-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-person-program-1/person-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x12": {
+  "run": "astra-person-program-2",
+  "task": "person",
+  "arm": "program",
+  "src": [
+   "outs2/astra-person-program-2/person-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-person-program-2/person-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ },
+ "x34": {
+  "run": "astra-person-program-3",
+  "task": "person",
+  "arm": "program",
+  "src": [
+   "outs2/astra-person-program-3/person-nocopy-program/artifacts/app/out/out/build.py",
+   "outs2/astra-person-program-3/person-nocopy-program/artifacts/app/out/out/solution.py"
+  ]
+ }
+}

@@ -1,0 +1,1311 @@
+{
+  "layers": [
+    {
+      "name": "colour_halfspaces",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_violations",
+      "op": "relu",
+      "inputs": [
+        "colour_halfspaces"
+      ]
+    },
+    {
+      "name": "colour_evidence",
+      "op": "conv",
+      "inputs": [
+        "colour_violations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "colour_evidence"
+      ]
+    },
+    {
+      "name": "base_48",
+      "op": "avgpool",
+      "inputs": [
+        "colour_evidence_positive"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "s48_gray",
+      "op": "conv",
+      "inputs": [
+        "base_48"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_gray_contrast",
+      "op": "norm",
+      "inputs": [
+        "s48_gray"
+      ]
+    },
+    {
+      "name": "s48_skin_extract",
+      "op": "conv",
+      "inputs": [
+        "base_48"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_skin_rarity",
+      "op": "norm",
+      "inputs": [
+        "s48_skin_extract"
+      ]
+    },
+    {
+      "name": "s48_colour_embed",
+      "op": "conv",
+      "inputs": [
+        "base_48"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_gray_embed",
+      "op": "conv",
+      "inputs": [
+        "s48_gray_contrast"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_rarity_embed",
+      "op": "conv",
+      "inputs": [
+        "s48_skin_rarity"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_colour_features",
+      "op": "add",
+      "inputs": [
+        "s48_colour_embed",
+        "s48_gray_embed",
+        "s48_rarity_embed"
+      ]
+    },
+    {
+      "name": "s48_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s48_gray_contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s48_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "s48_derivatives"
+      ]
+    },
+    {
+      "name": "s48_edge_selectivity",
+      "op": "conv",
+      "inputs": [
+        "s48_signed_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_edge_hinges",
+      "op": "relu",
+      "inputs": [
+        "s48_edge_selectivity"
+      ]
+    },
+    {
+      "name": "s48_bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "s48_edge_hinges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_face_stencils",
+      "op": "conv",
+      "inputs": [
+        "s48_colour_features"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s48_contour_stencils",
+      "op": "conv",
+      "inputs": [
+        "s48_bounded_edges"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s48_cue_sum",
+      "op": "add",
+      "inputs": [
+        "s48_face_stencils",
+        "s48_contour_stencils"
+      ]
+    },
+    {
+      "name": "s48_cue_hinges",
+      "op": "relu",
+      "inputs": [
+        "s48_cue_sum"
+      ]
+    },
+    {
+      "name": "s48_part_rules",
+      "op": "conv",
+      "inputs": [
+        "s48_cue_hinges"
+      ],
+      "out": 36,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_part_gates",
+      "op": "relu",
+      "inputs": [
+        "s48_part_rules"
+      ]
+    },
+    {
+      "name": "s48_bilateral_minima",
+      "op": "conv",
+      "inputs": [
+        "s48_part_gates"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_bilateral_gates",
+      "op": "relu",
+      "inputs": [
+        "s48_bilateral_minima"
+      ]
+    },
+    {
+      "name": "s48_detector_margins",
+      "op": "conv",
+      "inputs": [
+        "s48_bilateral_gates"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s48_positive_detections",
+      "op": "relu",
+      "inputs": [
+        "s48_detector_margins"
+      ]
+    },
+    {
+      "name": "s48_all_candidates",
+      "op": "reshape",
+      "inputs": [
+        "s48_positive_detections"
+      ],
+      "shape": [
+        1,
+        480,
+        48
+      ]
+    },
+    {
+      "name": "s48_strongest_detection",
+      "op": "maxpool",
+      "inputs": [
+        "s48_all_candidates"
+      ],
+      "size": [
+        480,
+        48
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "s48_place_evidence",
+      "op": "dense",
+      "inputs": [
+        "s48_strongest_detection"
+      ],
+      "out": 4
+    },
+    {
+      "name": "s24_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "base_48"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "s24_gray",
+      "op": "conv",
+      "inputs": [
+        "s24_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_gray_contrast",
+      "op": "norm",
+      "inputs": [
+        "s24_gray"
+      ]
+    },
+    {
+      "name": "s24_skin_extract",
+      "op": "conv",
+      "inputs": [
+        "s24_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_skin_rarity",
+      "op": "norm",
+      "inputs": [
+        "s24_skin_extract"
+      ]
+    },
+    {
+      "name": "s24_colour_embed",
+      "op": "conv",
+      "inputs": [
+        "s24_pyramid"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_gray_embed",
+      "op": "conv",
+      "inputs": [
+        "s24_gray_contrast"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_rarity_embed",
+      "op": "conv",
+      "inputs": [
+        "s24_skin_rarity"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_colour_features",
+      "op": "add",
+      "inputs": [
+        "s24_colour_embed",
+        "s24_gray_embed",
+        "s24_rarity_embed"
+      ]
+    },
+    {
+      "name": "s24_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s24_gray_contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s24_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "s24_derivatives"
+      ]
+    },
+    {
+      "name": "s24_edge_selectivity",
+      "op": "conv",
+      "inputs": [
+        "s24_signed_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_edge_hinges",
+      "op": "relu",
+      "inputs": [
+        "s24_edge_selectivity"
+      ]
+    },
+    {
+      "name": "s24_bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "s24_edge_hinges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_face_stencils",
+      "op": "conv",
+      "inputs": [
+        "s24_colour_features"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s24_contour_stencils",
+      "op": "conv",
+      "inputs": [
+        "s24_bounded_edges"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s24_cue_sum",
+      "op": "add",
+      "inputs": [
+        "s24_face_stencils",
+        "s24_contour_stencils"
+      ]
+    },
+    {
+      "name": "s24_cue_hinges",
+      "op": "relu",
+      "inputs": [
+        "s24_cue_sum"
+      ]
+    },
+    {
+      "name": "s24_part_rules",
+      "op": "conv",
+      "inputs": [
+        "s24_cue_hinges"
+      ],
+      "out": 36,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_part_gates",
+      "op": "relu",
+      "inputs": [
+        "s24_part_rules"
+      ]
+    },
+    {
+      "name": "s24_bilateral_minima",
+      "op": "conv",
+      "inputs": [
+        "s24_part_gates"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_bilateral_gates",
+      "op": "relu",
+      "inputs": [
+        "s24_bilateral_minima"
+      ]
+    },
+    {
+      "name": "s24_detector_margins",
+      "op": "conv",
+      "inputs": [
+        "s24_bilateral_gates"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s24_positive_detections",
+      "op": "relu",
+      "inputs": [
+        "s24_detector_margins"
+      ]
+    },
+    {
+      "name": "s24_all_candidates",
+      "op": "reshape",
+      "inputs": [
+        "s24_positive_detections"
+      ],
+      "shape": [
+        1,
+        240,
+        24
+      ]
+    },
+    {
+      "name": "s24_strongest_detection",
+      "op": "maxpool",
+      "inputs": [
+        "s24_all_candidates"
+      ],
+      "size": [
+        240,
+        24
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "s24_place_evidence",
+      "op": "dense",
+      "inputs": [
+        "s24_strongest_detection"
+      ],
+      "out": 4
+    },
+    {
+      "name": "s12_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "s24_pyramid"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "s12_gray",
+      "op": "conv",
+      "inputs": [
+        "s12_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_gray_contrast",
+      "op": "norm",
+      "inputs": [
+        "s12_gray"
+      ]
+    },
+    {
+      "name": "s12_skin_extract",
+      "op": "conv",
+      "inputs": [
+        "s12_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_skin_rarity",
+      "op": "norm",
+      "inputs": [
+        "s12_skin_extract"
+      ]
+    },
+    {
+      "name": "s12_colour_embed",
+      "op": "conv",
+      "inputs": [
+        "s12_pyramid"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_gray_embed",
+      "op": "conv",
+      "inputs": [
+        "s12_gray_contrast"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_rarity_embed",
+      "op": "conv",
+      "inputs": [
+        "s12_skin_rarity"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_colour_features",
+      "op": "add",
+      "inputs": [
+        "s12_colour_embed",
+        "s12_gray_embed",
+        "s12_rarity_embed"
+      ]
+    },
+    {
+      "name": "s12_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s12_gray_contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s12_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "s12_derivatives"
+      ]
+    },
+    {
+      "name": "s12_edge_selectivity",
+      "op": "conv",
+      "inputs": [
+        "s12_signed_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_edge_hinges",
+      "op": "relu",
+      "inputs": [
+        "s12_edge_selectivity"
+      ]
+    },
+    {
+      "name": "s12_bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "s12_edge_hinges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_face_stencils",
+      "op": "conv",
+      "inputs": [
+        "s12_colour_features"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s12_contour_stencils",
+      "op": "conv",
+      "inputs": [
+        "s12_bounded_edges"
+      ],
+      "out": 128,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s12_cue_sum",
+      "op": "add",
+      "inputs": [
+        "s12_face_stencils",
+        "s12_contour_stencils"
+      ]
+    },
+    {
+      "name": "s12_cue_hinges",
+      "op": "relu",
+      "inputs": [
+        "s12_cue_sum"
+      ]
+    },
+    {
+      "name": "s12_part_rules",
+      "op": "conv",
+      "inputs": [
+        "s12_cue_hinges"
+      ],
+      "out": 36,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_part_gates",
+      "op": "relu",
+      "inputs": [
+        "s12_part_rules"
+      ]
+    },
+    {
+      "name": "s12_bilateral_minima",
+      "op": "conv",
+      "inputs": [
+        "s12_part_gates"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_bilateral_gates",
+      "op": "relu",
+      "inputs": [
+        "s12_bilateral_minima"
+      ]
+    },
+    {
+      "name": "s12_detector_margins",
+      "op": "conv",
+      "inputs": [
+        "s12_bilateral_gates"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s12_positive_detections",
+      "op": "relu",
+      "inputs": [
+        "s12_detector_margins"
+      ]
+    },
+    {
+      "name": "s12_all_candidates",
+      "op": "reshape",
+      "inputs": [
+        "s12_positive_detections"
+      ],
+      "shape": [
+        1,
+        120,
+        12
+      ]
+    },
+    {
+      "name": "s12_strongest_detection",
+      "op": "maxpool",
+      "inputs": [
+        "s12_all_candidates"
+      ],
+      "size": [
+        120,
+        12
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "s12_place_evidence",
+      "op": "dense",
+      "inputs": [
+        "s12_strongest_detection"
+      ],
+      "out": 4
+    },
+    {
+      "name": "s6_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "s12_pyramid"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "s6_gray",
+      "op": "conv",
+      "inputs": [
+        "s6_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_gray_contrast",
+      "op": "norm",
+      "inputs": [
+        "s6_gray"
+      ]
+    },
+    {
+      "name": "s6_skin_extract",
+      "op": "conv",
+      "inputs": [
+        "s6_pyramid"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_skin_rarity",
+      "op": "norm",
+      "inputs": [
+        "s6_skin_extract"
+      ]
+    },
+    {
+      "name": "s6_colour_embed",
+      "op": "conv",
+      "inputs": [
+        "s6_pyramid"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_gray_embed",
+      "op": "conv",
+      "inputs": [
+        "s6_gray_contrast"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_rarity_embed",
+      "op": "conv",
+      "inputs": [
+        "s6_skin_rarity"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_colour_features",
+      "op": "add",
+      "inputs": [
+        "s6_colour_embed",
+        "s6_gray_embed",
+        "s6_rarity_embed"
+      ]
+    },
+    {
+      "name": "s6_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s6_gray_contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s6_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "s6_derivatives"
+      ]
+    },
+    {
+      "name": "s6_edge_selectivity",
+      "op": "conv",
+      "inputs": [
+        "s6_signed_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_edge_hinges",
+      "op": "relu",
+      "inputs": [
+        "s6_edge_selectivity"
+      ]
+    },
+    {
+      "name": "s6_bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "s6_edge_hinges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_face_stencils",
+      "op": "conv",
+      "inputs": [
+        "s6_colour_features"
+      ],
+      "out": 64,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s6_contour_stencils",
+      "op": "conv",
+      "inputs": [
+        "s6_bounded_edges"
+      ],
+      "out": 64,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "s6_cue_sum",
+      "op": "add",
+      "inputs": [
+        "s6_face_stencils",
+        "s6_contour_stencils"
+      ]
+    },
+    {
+      "name": "s6_cue_hinges",
+      "op": "relu",
+      "inputs": [
+        "s6_cue_sum"
+      ]
+    },
+    {
+      "name": "s6_part_rules",
+      "op": "conv",
+      "inputs": [
+        "s6_cue_hinges"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_part_gates",
+      "op": "relu",
+      "inputs": [
+        "s6_part_rules"
+      ]
+    },
+    {
+      "name": "s6_bilateral_minima",
+      "op": "conv",
+      "inputs": [
+        "s6_part_gates"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_bilateral_gates",
+      "op": "relu",
+      "inputs": [
+        "s6_bilateral_minima"
+      ]
+    },
+    {
+      "name": "s6_detector_margins",
+      "op": "conv",
+      "inputs": [
+        "s6_bilateral_gates"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_positive_detections",
+      "op": "relu",
+      "inputs": [
+        "s6_detector_margins"
+      ]
+    },
+    {
+      "name": "s6_all_candidates",
+      "op": "reshape",
+      "inputs": [
+        "s6_positive_detections"
+      ],
+      "shape": [
+        1,
+        30,
+        6
+      ]
+    },
+    {
+      "name": "s6_strongest_detection",
+      "op": "maxpool",
+      "inputs": [
+        "s6_all_candidates"
+      ],
+      "size": [
+        30,
+        6
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "s6_place_evidence",
+      "op": "dense",
+      "inputs": [
+        "s6_strongest_detection"
+      ],
+      "out": 4
+    },
+    {
+      "name": "scale_evidence",
+      "op": "add",
+      "inputs": [
+        "s48_place_evidence",
+        "s24_place_evidence",
+        "s12_place_evidence",
+        "s6_place_evidence"
+      ]
+    },
+    {
+      "name": "scale_axis",
+      "op": "reshape",
+      "inputs": [
+        "scale_evidence"
+      ],
+      "shape": [
+        1,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "best_scale",
+      "op": "maxpool",
+      "inputs": [
+        "scale_axis"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "best_scale"
+      ],
+      "out": 2
+    }
+  ]
+}

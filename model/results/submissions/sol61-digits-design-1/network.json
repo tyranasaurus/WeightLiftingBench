@@ -1,0 +1,400 @@
+{
+  "layers": [
+    {
+      "name": "border",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilation",
+      "op": "maxpool",
+      "inputs": [
+        "border"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "blur",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "rays",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "ray_excess",
+      "op": "conv",
+      "inputs": [
+        "rays"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ray_excess_relu",
+      "op": "relu",
+      "inputs": [
+        "ray_excess"
+      ]
+    },
+    {
+      "name": "negative_rays",
+      "op": "conv",
+      "inputs": [
+        "rays"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_clipped",
+      "op": "add",
+      "inputs": [
+        "ray_excess_relu",
+        "negative_rays"
+      ]
+    },
+    {
+      "name": "pair_difference",
+      "op": "conv",
+      "inputs": [
+        "negative_clipped"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pair_difference_relu",
+      "op": "relu",
+      "inputs": [
+        "pair_difference"
+      ]
+    },
+    {
+      "name": "pair_base",
+      "op": "conv",
+      "inputs": [
+        "negative_clipped"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pair_max",
+      "op": "add",
+      "inputs": [
+        "pair_base",
+        "pair_difference_relu"
+      ]
+    },
+    {
+      "name": "last_difference",
+      "op": "conv",
+      "inputs": [
+        "pair_max"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "last_difference_relu",
+      "op": "relu",
+      "inputs": [
+        "last_difference"
+      ]
+    },
+    {
+      "name": "last_base",
+      "op": "conv",
+      "inputs": [
+        "pair_max"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_minimum",
+      "op": "add",
+      "inputs": [
+        "last_base",
+        "last_difference_relu"
+      ]
+    },
+    {
+      "name": "minimum_rays",
+      "op": "conv",
+      "inputs": [
+        "negative_minimum"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_ink",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "empty_blocked_regions",
+      "op": "add",
+      "inputs": [
+        "minimum_rays",
+        "negative_ink"
+      ]
+    },
+    {
+      "name": "enclosure",
+      "op": "relu",
+      "inputs": [
+        "empty_blocked_regions"
+      ]
+    },
+    {
+      "name": "sharp_small",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sharp_norm",
+      "op": "norm",
+      "inputs": [
+        "sharp_small"
+      ]
+    },
+    {
+      "name": "soft_small",
+      "op": "avgpool",
+      "inputs": [
+        "blur"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "soft_norm",
+      "op": "norm",
+      "inputs": [
+        "soft_small"
+      ]
+    },
+    {
+      "name": "wide_small",
+      "op": "avgpool",
+      "inputs": [
+        "dilation"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "wide_norm",
+      "op": "norm",
+      "inputs": [
+        "wide_small"
+      ]
+    },
+    {
+      "name": "holes_small",
+      "op": "avgpool",
+      "inputs": [
+        "enclosure"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "holes_norm",
+      "op": "norm",
+      "inputs": [
+        "holes_small"
+      ]
+    },
+    {
+      "name": "sharp_match",
+      "op": "dense",
+      "inputs": [
+        "sharp_norm"
+      ],
+      "out": 81920
+    },
+    {
+      "name": "soft_match",
+      "op": "dense",
+      "inputs": [
+        "soft_norm"
+      ],
+      "out": 81920
+    },
+    {
+      "name": "wide_match",
+      "op": "dense",
+      "inputs": [
+        "wide_norm"
+      ],
+      "out": 81920
+    },
+    {
+      "name": "holes_match",
+      "op": "dense",
+      "inputs": [
+        "holes_norm"
+      ],
+      "out": 81920
+    },
+    {
+      "name": "template_scores",
+      "op": "add",
+      "inputs": [
+        "sharp_match",
+        "soft_match",
+        "wide_match",
+        "holes_match"
+      ]
+    },
+    {
+      "name": "group_by_digit",
+      "op": "reshape",
+      "inputs": [
+        "template_scores"
+      ],
+      "shape": [
+        10,
+        1,
+        8192
+      ]
+    },
+    {
+      "name": "best_writing_style",
+      "op": "maxpool",
+      "inputs": [
+        "group_by_digit"
+      ],
+      "size": [
+        1,
+        8192
+      ],
+      "stride": [
+        1,
+        8192
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_writing_style"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

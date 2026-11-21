@@ -1,0 +1,5 @@
+# Method
+
+The network is a hand-designed nearest-prototype shape classifier. It first forms a soft foreground occupancy map by a clipped piecewise-linear transform, then computes seven fixed local channels (intensity, signed horizontal/vertical differences, and signed center-surround responses). These channels and a coarse grayscale image are averaged onto a 7 by 7 grid. A dense layer compares that descriptor with 384 synthetic prototypes per class, and max pooling chooses the best prototype score for each class.
+
+Every prototype is generated in `build.py` from general geometric clothing knowledge: polygonal bodies and sleeves for tops, pullovers, shirts, coats, and dresses; forked legs for trousers; soles, straps, quarters, shafts, and toes for footwear; and a rectangular body plus an elliptical handle for bags. Fixed-seed randomness varies generic proportions, pose reflection, scale, and centering. The dense weights analytically implement weighted squared-distance template scores, `2*T*x - ||T||^2`, rather than being fitted. No image, label, measured coordinate, dataset statistic, optimization, regression, or learned parameter is used to produce the weights.

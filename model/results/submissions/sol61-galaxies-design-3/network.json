@@ -1,0 +1,1522 @@
+{
+  "layers": [
+    {
+      "name": "two_pixel_sampling",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "seeing_smoothing",
+      "op": "conv",
+      "inputs": [
+        "two_pixel_sampling"
+      ],
+      "out": 3,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "bright_sky_sources",
+      "op": "conv",
+      "inputs": [
+        "seeing_smoothing"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sky_source_positive",
+      "op": "relu",
+      "inputs": [
+        "bright_sky_sources"
+      ]
+    },
+    {
+      "name": "negative_sky_sources",
+      "op": "conv",
+      "inputs": [
+        "sky_source_positive"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "clipped_sky_image",
+      "op": "add",
+      "inputs": [
+        "seeing_smoothing",
+        "negative_sky_sources"
+      ]
+    },
+    {
+      "name": "sky_level",
+      "op": "dense",
+      "inputs": [
+        "clipped_sky_image"
+      ],
+      "out": 3
+    },
+    {
+      "name": "subtract_sky",
+      "op": "dense",
+      "inputs": [
+        "sky_level"
+      ],
+      "out": 12288
+    },
+    {
+      "name": "sky_field",
+      "op": "reshape",
+      "inputs": [
+        "subtract_sky"
+      ],
+      "shape": [
+        3,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "sky_subtracted_colour",
+      "op": "add",
+      "inputs": [
+        "seeing_smoothing",
+        "sky_field"
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_galaxy_light",
+      "op": "relu",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "tone_hinges",
+      "op": "conv",
+      "inputs": [
+        "positive_galaxy_light"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "tone_positive",
+      "op": "relu",
+      "inputs": [
+        "tone_hinges"
+      ]
+    },
+    {
+      "name": "tone_adjustment",
+      "op": "conv",
+      "inputs": [
+        "tone_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compressed_galaxy_light",
+      "op": "add",
+      "inputs": [
+        "positive_galaxy_light",
+        "tone_adjustment"
+      ]
+    },
+    {
+      "name": "central_peak_window",
+      "op": "dense",
+      "inputs": [
+        "positive_galaxy_light"
+      ],
+      "out": 4096
+    },
+    {
+      "name": "central_peak_map",
+      "op": "reshape",
+      "inputs": [
+        "central_peak_window"
+      ],
+      "shape": [
+        1,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "central_surface_brightness",
+      "op": "maxpool",
+      "inputs": [
+        "central_peak_map"
+      ],
+      "size": [
+        64,
+        64
+      ],
+      "stride": [
+        64,
+        64
+      ]
+    },
+    {
+      "name": "relative_nucleus_clip",
+      "op": "dense",
+      "inputs": [
+        "central_surface_brightness"
+      ],
+      "out": 4096
+    },
+    {
+      "name": "nucleus_clip_field",
+      "op": "reshape",
+      "inputs": [
+        "relative_nucleus_clip"
+      ],
+      "shape": [
+        1,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "bright_nucleus_excess",
+      "op": "add",
+      "inputs": [
+        "positive_galaxy_light",
+        "nucleus_clip_field"
+      ]
+    },
+    {
+      "name": "positive_nucleus_excess",
+      "op": "relu",
+      "inputs": [
+        "bright_nucleus_excess"
+      ]
+    },
+    {
+      "name": "negative_nucleus_excess",
+      "op": "conv",
+      "inputs": [
+        "positive_nucleus_excess"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "nucleus_clipped_light",
+      "op": "add",
+      "inputs": [
+        "positive_galaxy_light",
+        "negative_nucleus_excess"
+      ]
+    },
+    {
+      "name": "relative_isophote",
+      "op": "dense",
+      "inputs": [
+        "central_surface_brightness"
+      ],
+      "out": 4096
+    },
+    {
+      "name": "isophote_field",
+      "op": "reshape",
+      "inputs": [
+        "relative_isophote"
+      ],
+      "shape": [
+        1,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "isophote_excess",
+      "op": "add",
+      "inputs": [
+        "nucleus_clipped_light",
+        "isophote_field"
+      ]
+    },
+    {
+      "name": "galaxy_isophote",
+      "op": "relu",
+      "inputs": [
+        "isophote_excess"
+      ]
+    },
+    {
+      "name": "morphology_sampling",
+      "op": "avgpool",
+      "inputs": [
+        "galaxy_isophote"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "structure_sampling",
+      "op": "avgpool",
+      "inputs": [
+        "positive_galaxy_light"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "structure_lowpass",
+      "op": "conv",
+      "inputs": [
+        "structure_sampling"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "negative_lowpass",
+      "op": "conv",
+      "inputs": [
+        "structure_lowpass"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "unsharp_contrast",
+      "op": "add",
+      "inputs": [
+        "structure_sampling",
+        "negative_lowpass"
+      ]
+    },
+    {
+      "name": "positive_substructure",
+      "op": "relu",
+      "inputs": [
+        "unsharp_contrast"
+      ]
+    },
+    {
+      "name": "extended_nucleus_filter",
+      "op": "conv",
+      "inputs": [
+        "structure_sampling"
+      ],
+      "out": 1,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "extended_nuclei",
+      "op": "relu",
+      "inputs": [
+        "extended_nucleus_filter"
+      ]
+    },
+    {
+      "name": "positive_colour_flux",
+      "op": "relu",
+      "inputs": [
+        "sky_subtracted_colour"
+      ]
+    },
+    {
+      "name": "moments",
+      "op": "dense",
+      "inputs": [
+        "galaxy_isophote"
+      ],
+      "out": 90
+    },
+    {
+      "name": "photometry",
+      "op": "dense",
+      "inputs": [
+        "positive_galaxy_light"
+      ],
+      "out": 30
+    },
+    {
+      "name": "clumpiness",
+      "op": "dense",
+      "inputs": [
+        "positive_substructure"
+      ],
+      "out": 6
+    },
+    {
+      "name": "chromatic_differences",
+      "op": "dense",
+      "inputs": [
+        "sky_subtracted_colour"
+      ],
+      "out": 12
+    },
+    {
+      "name": "chromatic_fluxes",
+      "op": "dense",
+      "inputs": [
+        "positive_colour_flux"
+      ],
+      "out": 12
+    },
+    {
+      "name": "rotation_difference",
+      "op": "dense",
+      "inputs": [
+        "morphology_sampling"
+      ],
+      "out": 9216
+    },
+    {
+      "name": "positive_rotation_difference",
+      "op": "relu",
+      "inputs": [
+        "rotation_difference"
+      ]
+    },
+    {
+      "name": "negative_asymmetry_integrals",
+      "op": "dense",
+      "inputs": [
+        "positive_rotation_difference"
+      ],
+      "out": 54
+    },
+    {
+      "name": "trial_centres",
+      "op": "reshape",
+      "inputs": [
+        "negative_asymmetry_integrals"
+      ],
+      "shape": [
+        6,
+        1,
+        9
+      ]
+    },
+    {
+      "name": "best_rotation_centre",
+      "op": "maxpool",
+      "inputs": [
+        "trial_centres"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "asymmetry_integrals",
+      "op": "dense",
+      "inputs": [
+        "best_rotation_centre"
+      ],
+      "out": 6
+    },
+    {
+      "name": "nucleus_apertures",
+      "op": "dense",
+      "inputs": [
+        "extended_nuclei"
+      ],
+      "out": 12288
+    },
+    {
+      "name": "nucleus_maps",
+      "op": "reshape",
+      "inputs": [
+        "nucleus_apertures"
+      ],
+      "shape": [
+        12,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "nucleus_maxima",
+      "op": "maxpool",
+      "inputs": [
+        "nucleus_maps"
+      ],
+      "size": [
+        32,
+        32
+      ],
+      "stride": [
+        32,
+        32
+      ]
+    },
+    {
+      "name": "nucleus_values",
+      "op": "reshape",
+      "inputs": [
+        "nucleus_maxima"
+      ],
+      "shape": [
+        12
+      ]
+    },
+    {
+      "name": "raw_descriptors_part0",
+      "op": "dense",
+      "inputs": [
+        "moments"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part1",
+      "op": "dense",
+      "inputs": [
+        "photometry"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part2",
+      "op": "dense",
+      "inputs": [
+        "clumpiness"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part3",
+      "op": "dense",
+      "inputs": [
+        "chromatic_differences"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part4",
+      "op": "dense",
+      "inputs": [
+        "chromatic_fluxes"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part5",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_integrals"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part6",
+      "op": "dense",
+      "inputs": [
+        "nucleus_values"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors_part7",
+      "op": "dense",
+      "inputs": [
+        "central_surface_brightness"
+      ],
+      "out": 169
+    },
+    {
+      "name": "raw_descriptors",
+      "op": "add",
+      "inputs": [
+        "raw_descriptors_part0",
+        "raw_descriptors_part1",
+        "raw_descriptors_part2",
+        "raw_descriptors_part3",
+        "raw_descriptors_part4",
+        "raw_descriptors_part5",
+        "raw_descriptors_part6",
+        "raw_descriptors_part7"
+      ]
+    },
+    {
+      "name": "moment_denominator_limits",
+      "op": "dense",
+      "inputs": [
+        "raw_descriptors"
+      ],
+      "out": 18
+    },
+    {
+      "name": "positive_denominator_limits",
+      "op": "relu",
+      "inputs": [
+        "moment_denominator_limits"
+      ]
+    },
+    {
+      "name": "stable_descriptors_part0",
+      "op": "dense",
+      "inputs": [
+        "raw_descriptors"
+      ],
+      "out": 187
+    },
+    {
+      "name": "stable_descriptors_part1",
+      "op": "dense",
+      "inputs": [
+        "positive_denominator_limits"
+      ],
+      "out": 187
+    },
+    {
+      "name": "stable_descriptors",
+      "op": "add",
+      "inputs": [
+        "stable_descriptors_part0",
+        "stable_descriptors_part1"
+      ]
+    },
+    {
+      "name": "normalized_descriptors_pack",
+      "op": "dense",
+      "inputs": [
+        "stable_descriptors"
+      ],
+      "out": 288
+    },
+    {
+      "name": "normalized_descriptors_groups",
+      "op": "reshape",
+      "inputs": [
+        "normalized_descriptors_pack"
+      ],
+      "shape": [
+        48,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "normalized_descriptors_normalize",
+      "op": "norm",
+      "inputs": [
+        "normalized_descriptors_groups"
+      ]
+    },
+    {
+      "name": "normalized_descriptors",
+      "op": "dense",
+      "inputs": [
+        "normalized_descriptors_normalize"
+      ],
+      "out": 78
+    },
+    {
+      "name": "bounded_descriptors_hinges",
+      "op": "dense",
+      "inputs": [
+        "normalized_descriptors"
+      ],
+      "out": 156
+    },
+    {
+      "name": "bounded_descriptors_positive",
+      "op": "relu",
+      "inputs": [
+        "bounded_descriptors_hinges"
+      ]
+    },
+    {
+      "name": "bounded_descriptors",
+      "op": "dense",
+      "inputs": [
+        "bounded_descriptors_positive"
+      ],
+      "out": 78
+    },
+    {
+      "name": "analytic_spiral_correlations",
+      "op": "dense",
+      "inputs": [
+        "morphology_sampling"
+      ],
+      "out": 1728
+    },
+    {
+      "name": "spiral_flux_denominators",
+      "op": "dense",
+      "inputs": [
+        "stable_descriptors"
+      ],
+      "out": 6
+    },
+    {
+      "name": "spiral_numerators_and_flux_part0",
+      "op": "dense",
+      "inputs": [
+        "analytic_spiral_correlations"
+      ],
+      "out": 1734
+    },
+    {
+      "name": "spiral_numerators_and_flux_part1",
+      "op": "dense",
+      "inputs": [
+        "spiral_flux_denominators"
+      ],
+      "out": 1734
+    },
+    {
+      "name": "spiral_numerators_and_flux",
+      "op": "add",
+      "inputs": [
+        "spiral_numerators_and_flux_part0",
+        "spiral_numerators_and_flux_part1"
+      ]
+    },
+    {
+      "name": "normalized_spiral_correlations_pack",
+      "op": "dense",
+      "inputs": [
+        "spiral_numerators_and_flux"
+      ],
+      "out": 3468
+    },
+    {
+      "name": "normalized_spiral_correlations_groups",
+      "op": "reshape",
+      "inputs": [
+        "normalized_spiral_correlations_pack"
+      ],
+      "shape": [
+        6,
+        1,
+        578
+      ]
+    },
+    {
+      "name": "normalized_spiral_correlations_normalize",
+      "op": "norm",
+      "inputs": [
+        "normalized_spiral_correlations_groups"
+      ]
+    },
+    {
+      "name": "normalized_spiral_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalized_spiral_correlations_normalize"
+      ],
+      "out": 1728
+    },
+    {
+      "name": "spiral_geometry_mismatch",
+      "op": "dense",
+      "inputs": [
+        "bounded_descriptors"
+      ],
+      "out": 216
+    },
+    {
+      "name": "positive_geometry_mismatch",
+      "op": "relu",
+      "inputs": [
+        "spiral_geometry_mismatch"
+      ]
+    },
+    {
+      "name": "spiral_geometry_and_response_part0",
+      "op": "dense",
+      "inputs": [
+        "normalized_spiral_correlations"
+      ],
+      "out": 1944
+    },
+    {
+      "name": "spiral_geometry_and_response_part1",
+      "op": "dense",
+      "inputs": [
+        "positive_geometry_mismatch"
+      ],
+      "out": 1944
+    },
+    {
+      "name": "spiral_geometry_and_response",
+      "op": "add",
+      "inputs": [
+        "spiral_geometry_and_response_part0",
+        "spiral_geometry_and_response_part1"
+      ]
+    },
+    {
+      "name": "shape_compatible_spiral_scores",
+      "op": "dense",
+      "inputs": [
+        "spiral_geometry_and_response"
+      ],
+      "out": 1728
+    },
+    {
+      "name": "pitch_candidates",
+      "op": "reshape",
+      "inputs": [
+        "shape_compatible_spiral_scores"
+      ],
+      "shape": [
+        12,
+        1,
+        144
+      ]
+    },
+    {
+      "name": "best_arm_templates",
+      "op": "maxpool",
+      "inputs": [
+        "pitch_candidates"
+      ],
+      "size": [
+        1,
+        144
+      ],
+      "stride": [
+        1,
+        144
+      ]
+    },
+    {
+      "name": "arm_evidence",
+      "op": "reshape",
+      "inputs": [
+        "best_arm_templates"
+      ],
+      "shape": [
+        12
+      ]
+    },
+    {
+      "name": "bounded_arm_evidence_hinges",
+      "op": "dense",
+      "inputs": [
+        "arm_evidence"
+      ],
+      "out": 24
+    },
+    {
+      "name": "bounded_arm_evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "bounded_arm_evidence_hinges"
+      ]
+    },
+    {
+      "name": "bounded_arm_evidence",
+      "op": "dense",
+      "inputs": [
+        "bounded_arm_evidence_positive"
+      ],
+      "out": 12
+    },
+    {
+      "name": "ellipticity_amplitudes_directions",
+      "op": "dense",
+      "inputs": [
+        "bounded_descriptors"
+      ],
+      "out": 480
+    },
+    {
+      "name": "ellipticity_amplitudes_angles",
+      "op": "reshape",
+      "inputs": [
+        "ellipticity_amplitudes_directions"
+      ],
+      "shape": [
+        30,
+        1,
+        16
+      ]
+    },
+    {
+      "name": "ellipticity_amplitudes_maximum",
+      "op": "maxpool",
+      "inputs": [
+        "ellipticity_amplitudes_angles"
+      ],
+      "size": [
+        1,
+        16
+      ],
+      "stride": [
+        1,
+        16
+      ]
+    },
+    {
+      "name": "ellipticity_amplitudes",
+      "op": "reshape",
+      "inputs": [
+        "ellipticity_amplitudes_maximum"
+      ],
+      "shape": [
+        30
+      ]
+    },
+    {
+      "name": "bounded_ellipticities_hinges",
+      "op": "dense",
+      "inputs": [
+        "ellipticity_amplitudes"
+      ],
+      "out": 60
+    },
+    {
+      "name": "bounded_ellipticities_positive",
+      "op": "relu",
+      "inputs": [
+        "bounded_ellipticities_hinges"
+      ]
+    },
+    {
+      "name": "bounded_ellipticities",
+      "op": "dense",
+      "inputs": [
+        "bounded_ellipticities_positive"
+      ],
+      "out": 30
+    },
+    {
+      "name": "per_scale_evidence_part0",
+      "op": "dense",
+      "inputs": [
+        "bounded_descriptors"
+      ],
+      "out": 120
+    },
+    {
+      "name": "per_scale_evidence_part1",
+      "op": "dense",
+      "inputs": [
+        "bounded_ellipticities"
+      ],
+      "out": 120
+    },
+    {
+      "name": "per_scale_evidence_part2",
+      "op": "dense",
+      "inputs": [
+        "bounded_arm_evidence"
+      ],
+      "out": 120
+    },
+    {
+      "name": "per_scale_evidence",
+      "op": "add",
+      "inputs": [
+        "per_scale_evidence_part0",
+        "per_scale_evidence_part1",
+        "per_scale_evidence_part2"
+      ]
+    },
+    {
+      "name": "radius_cdf_affine",
+      "op": "dense",
+      "inputs": [
+        "per_scale_evidence"
+      ],
+      "out": 5
+    },
+    {
+      "name": "radius_cdf_hinges",
+      "op": "dense",
+      "inputs": [
+        "radius_cdf_affine"
+      ],
+      "out": 10
+    },
+    {
+      "name": "radius_cdf_positive",
+      "op": "relu",
+      "inputs": [
+        "radius_cdf_hinges"
+      ]
+    },
+    {
+      "name": "radius_cdf",
+      "op": "dense",
+      "inputs": [
+        "radius_cdf_positive"
+      ],
+      "out": 5
+    },
+    {
+      "name": "radius_mixture_weights",
+      "op": "dense",
+      "inputs": [
+        "radius_cdf"
+      ],
+      "out": 6
+    },
+    {
+      "name": "nonnegative_radius_weights",
+      "op": "relu",
+      "inputs": [
+        "radius_mixture_weights"
+      ]
+    },
+    {
+      "name": "radial_bar_excess",
+      "op": "dense",
+      "inputs": [
+        "per_scale_evidence"
+      ],
+      "out": 12
+    },
+    {
+      "name": "bar_radii",
+      "op": "reshape",
+      "inputs": [
+        "radial_bar_excess"
+      ],
+      "shape": [
+        6,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "strongest_bar_radius",
+      "op": "maxpool",
+      "inputs": [
+        "bar_radii"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "bar_strengths",
+      "op": "reshape",
+      "inputs": [
+        "strongest_bar_radius"
+      ],
+      "shape": [
+        6
+      ]
+    },
+    {
+      "name": "bounded_bar_strengths_hinges",
+      "op": "dense",
+      "inputs": [
+        "bar_strengths"
+      ],
+      "out": 12
+    },
+    {
+      "name": "bounded_bar_strengths_positive",
+      "op": "relu",
+      "inputs": [
+        "bounded_bar_strengths_hinges"
+      ]
+    },
+    {
+      "name": "bounded_bar_strengths",
+      "op": "dense",
+      "inputs": [
+        "bounded_bar_strengths_positive"
+      ],
+      "out": 6
+    },
+    {
+      "name": "adaptive_scale_inputs_part0",
+      "op": "dense",
+      "inputs": [
+        "per_scale_evidence"
+      ],
+      "out": 132
+    },
+    {
+      "name": "adaptive_scale_inputs_part1",
+      "op": "dense",
+      "inputs": [
+        "bounded_bar_strengths"
+      ],
+      "out": 132
+    },
+    {
+      "name": "adaptive_scale_inputs_part2",
+      "op": "dense",
+      "inputs": [
+        "nonnegative_radius_weights"
+      ],
+      "out": 132
+    },
+    {
+      "name": "adaptive_scale_inputs",
+      "op": "add",
+      "inputs": [
+        "adaptive_scale_inputs_part0",
+        "adaptive_scale_inputs_part1",
+        "adaptive_scale_inputs_part2"
+      ]
+    },
+    {
+      "name": "radius_product_spline",
+      "op": "dense",
+      "inputs": [
+        "adaptive_scale_inputs"
+      ],
+      "out": 11082
+    },
+    {
+      "name": "positive_radius_spline",
+      "op": "relu",
+      "inputs": [
+        "radius_product_spline"
+      ]
+    },
+    {
+      "name": "scale_adapted_morphology",
+      "op": "dense",
+      "inputs": [
+        "positive_radius_spline"
+      ],
+      "out": 13
+    },
+    {
+      "name": "seeing_broadened_ellipse_templates",
+      "op": "dense",
+      "inputs": [
+        "galaxy_isophote"
+      ],
+      "out": 672
+    },
+    {
+      "name": "ellipse_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "seeing_broadened_ellipse_templates"
+      ],
+      "shape": [
+        4,
+        1,
+        168
+      ]
+    },
+    {
+      "name": "best_ellipse_per_inclination",
+      "op": "maxpool",
+      "inputs": [
+        "ellipse_hypotheses"
+      ],
+      "size": [
+        1,
+        168
+      ],
+      "stride": [
+        1,
+        168
+      ]
+    },
+    {
+      "name": "inclination_template_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_ellipse_per_inclination"
+      ],
+      "shape": [
+        4
+      ]
+    },
+    {
+      "name": "inclination_sign_pairs",
+      "op": "dense",
+      "inputs": [
+        "inclination_template_scores"
+      ],
+      "out": 8
+    },
+    {
+      "name": "inclination_norm_group",
+      "op": "reshape",
+      "inputs": [
+        "inclination_sign_pairs"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "inclination_norm",
+      "op": "norm",
+      "inputs": [
+        "inclination_norm_group"
+      ]
+    },
+    {
+      "name": "inclination_crossings_affine",
+      "op": "dense",
+      "inputs": [
+        "inclination_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "inclination_crossings_hinges",
+      "op": "dense",
+      "inputs": [
+        "inclination_crossings_affine"
+      ],
+      "out": 6
+    },
+    {
+      "name": "inclination_crossings_positive",
+      "op": "relu",
+      "inputs": [
+        "inclination_crossings_hinges"
+      ]
+    },
+    {
+      "name": "inclination_crossings",
+      "op": "dense",
+      "inputs": [
+        "inclination_crossings_positive"
+      ],
+      "out": 3
+    },
+    {
+      "name": "moment_inclination_evidence",
+      "op": "dense",
+      "inputs": [
+        "scale_adapted_morphology"
+      ],
+      "out": 1
+    },
+    {
+      "name": "independent_inclinations_part0",
+      "op": "dense",
+      "inputs": [
+        "scale_adapted_morphology"
+      ],
+      "out": 16
+    },
+    {
+      "name": "independent_inclinations_part1",
+      "op": "dense",
+      "inputs": [
+        "inclination_crossings"
+      ],
+      "out": 16
+    },
+    {
+      "name": "independent_inclinations",
+      "op": "add",
+      "inputs": [
+        "independent_inclinations_part0",
+        "independent_inclinations_part1"
+      ]
+    },
+    {
+      "name": "hybrid_morphology",
+      "op": "dense",
+      "inputs": [
+        "independent_inclinations"
+      ],
+      "out": 13
+    },
+    {
+      "name": "physical_descriptors_hinges",
+      "op": "dense",
+      "inputs": [
+        "hybrid_morphology"
+      ],
+      "out": 26
+    },
+    {
+      "name": "physical_descriptors_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_descriptors_hinges"
+      ]
+    },
+    {
+      "name": "physical_descriptors",
+      "op": "dense",
+      "inputs": [
+        "physical_descriptors_positive"
+      ],
+      "out": 13
+    },
+    {
+      "name": "morphology_membership_affine",
+      "op": "dense",
+      "inputs": [
+        "physical_descriptors"
+      ],
+      "out": 9
+    },
+    {
+      "name": "morphology_memberships_hinges",
+      "op": "dense",
+      "inputs": [
+        "morphology_membership_affine"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_memberships_positive",
+      "op": "relu",
+      "inputs": [
+        "morphology_memberships_hinges"
+      ]
+    },
+    {
+      "name": "morphology_memberships",
+      "op": "dense",
+      "inputs": [
+        "morphology_memberships_positive"
+      ],
+      "out": 9
+    },
+    {
+      "name": "arm_max_difference",
+      "op": "dense",
+      "inputs": [
+        "morphology_memberships"
+      ],
+      "out": 1
+    },
+    {
+      "name": "positive_arm_difference",
+      "op": "relu",
+      "inputs": [
+        "arm_max_difference"
+      ]
+    },
+    {
+      "name": "decision_evidence_part0",
+      "op": "dense",
+      "inputs": [
+        "physical_descriptors"
+      ],
+      "out": 23
+    },
+    {
+      "name": "decision_evidence_part1",
+      "op": "dense",
+      "inputs": [
+        "morphology_memberships"
+      ],
+      "out": 23
+    },
+    {
+      "name": "decision_evidence_part2",
+      "op": "dense",
+      "inputs": [
+        "positive_arm_difference"
+      ],
+      "out": 23
+    },
+    {
+      "name": "decision_evidence",
+      "op": "add",
+      "inputs": [
+        "decision_evidence_part0",
+        "decision_evidence_part1",
+        "decision_evidence_part2"
+      ]
+    },
+    {
+      "name": "class_family_affine",
+      "op": "dense",
+      "inputs": [
+        "decision_evidence"
+      ],
+      "out": 3
+    },
+    {
+      "name": "class_family_memberships_hinges",
+      "op": "dense",
+      "inputs": [
+        "class_family_affine"
+      ],
+      "out": 6
+    },
+    {
+      "name": "class_family_memberships_positive",
+      "op": "relu",
+      "inputs": [
+        "class_family_memberships_hinges"
+      ]
+    },
+    {
+      "name": "class_family_memberships",
+      "op": "dense",
+      "inputs": [
+        "class_family_memberships_positive"
+      ],
+      "out": 3
+    },
+    {
+      "name": "class_rule_inputs_part0",
+      "op": "dense",
+      "inputs": [
+        "decision_evidence"
+      ],
+      "out": 26
+    },
+    {
+      "name": "class_rule_inputs_part1",
+      "op": "dense",
+      "inputs": [
+        "class_family_memberships"
+      ],
+      "out": 26
+    },
+    {
+      "name": "class_rule_inputs",
+      "op": "add",
+      "inputs": [
+        "class_rule_inputs_part0",
+        "class_rule_inputs_part1"
+      ]
+    },
+    {
+      "name": "inclination_distances",
+      "op": "dense",
+      "inputs": [
+        "class_rule_inputs"
+      ],
+      "out": 7
+    },
+    {
+      "name": "positive_inclination_distances",
+      "op": "relu",
+      "inputs": [
+        "inclination_distances"
+      ]
+    },
+    {
+      "name": "all_class_rule_terms_part0",
+      "op": "dense",
+      "inputs": [
+        "class_rule_inputs"
+      ],
+      "out": 33
+    },
+    {
+      "name": "all_class_rule_terms_part1",
+      "op": "dense",
+      "inputs": [
+        "positive_inclination_distances"
+      ],
+      "out": 33
+    },
+    {
+      "name": "all_class_rule_terms",
+      "op": "add",
+      "inputs": [
+        "all_class_rule_terms_part0",
+        "all_class_rule_terms_part1"
+      ]
+    },
+    {
+      "name": "galaxy_class_scores",
+      "op": "dense",
+      "inputs": [
+        "all_class_rule_terms"
+      ],
+      "out": 10
+    }
+  ]
+}

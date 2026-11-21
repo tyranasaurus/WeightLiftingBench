@@ -1,0 +1,705 @@
+{
+  "layers": [
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lumnorm",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "lum48",
+      "op": "avgpool",
+      "inputs": [
+        "lumnorm"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "signed_edges",
+      "op": "conv",
+      "inputs": [
+        "lum48"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "edge_relu",
+      "op": "relu",
+      "inputs": [
+        "signed_edges"
+      ]
+    },
+    {
+      "name": "orient_edges",
+      "op": "conv",
+      "inputs": [
+        "edge_relu"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge24",
+      "op": "avgpool",
+      "inputs": [
+        "orient_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edgenorm",
+      "op": "norm",
+      "inputs": [
+        "edge24"
+      ]
+    },
+    {
+      "name": "edge_features",
+      "op": "conv",
+      "inputs": [
+        "edgenorm"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_limits",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_penalty",
+      "op": "relu",
+      "inputs": [
+        "skin_limits"
+      ]
+    },
+    {
+      "name": "skin_tents0",
+      "op": "conv",
+      "inputs": [
+        "skin_penalty"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_tents",
+      "op": "relu",
+      "inputs": [
+        "skin_tents0"
+      ]
+    },
+    {
+      "name": "skin24",
+      "op": "avgpool",
+      "inputs": [
+        "skin_tents"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "skinnorm",
+      "op": "norm",
+      "inputs": [
+        "skin24"
+      ]
+    },
+    {
+      "name": "skin_features",
+      "op": "conv",
+      "inputs": [
+        "skinnorm"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lum24raw",
+      "op": "avgpool",
+      "inputs": [
+        "lumnorm"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "lum24",
+      "op": "norm",
+      "inputs": [
+        "lum24raw"
+      ]
+    },
+    {
+      "name": "light_features",
+      "op": "conv",
+      "inputs": [
+        "lum24"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "features",
+      "op": "add",
+      "inputs": [
+        "edge_features",
+        "skin_features",
+        "light_features"
+      ]
+    },
+    {
+      "name": "shapes5",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 16,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes5_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes5"
+      ]
+    },
+    {
+      "name": "shapes5_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes5_relu"
+      ],
+      "shape": [
+        1,
+        320,
+        20
+      ]
+    },
+    {
+      "name": "shapes5_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes5_flat"
+      ],
+      "size": [
+        320,
+        20
+      ],
+      "stride": [
+        320,
+        20
+      ]
+    },
+    {
+      "name": "shapes5_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes5_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes7",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 36,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes7_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes7"
+      ]
+    },
+    {
+      "name": "shapes7_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes7_relu"
+      ],
+      "shape": [
+        1,
+        648,
+        18
+      ]
+    },
+    {
+      "name": "shapes7_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes7_flat"
+      ],
+      "size": [
+        648,
+        18
+      ],
+      "stride": [
+        648,
+        18
+      ]
+    },
+    {
+      "name": "shapes7_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes7_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes9",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes9_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes9"
+      ]
+    },
+    {
+      "name": "shapes9_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes9_relu"
+      ],
+      "shape": [
+        1,
+        1248,
+        16
+      ]
+    },
+    {
+      "name": "shapes9_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes9_flat"
+      ],
+      "size": [
+        1248,
+        16
+      ],
+      "stride": [
+        1248,
+        16
+      ]
+    },
+    {
+      "name": "shapes9_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes9_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes11",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes11_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes11"
+      ]
+    },
+    {
+      "name": "shapes11_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes11_relu"
+      ],
+      "shape": [
+        1,
+        1092,
+        14
+      ]
+    },
+    {
+      "name": "shapes11_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes11_flat"
+      ],
+      "size": [
+        1092,
+        14
+      ],
+      "stride": [
+        1092,
+        14
+      ]
+    },
+    {
+      "name": "shapes11_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes11_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes13",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes13_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes13"
+      ]
+    },
+    {
+      "name": "shapes13_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes13_relu"
+      ],
+      "shape": [
+        1,
+        936,
+        12
+      ]
+    },
+    {
+      "name": "shapes13_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes13_flat"
+      ],
+      "size": [
+        936,
+        12
+      ],
+      "stride": [
+        936,
+        12
+      ]
+    },
+    {
+      "name": "shapes13_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes13_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes15",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes15_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes15"
+      ]
+    },
+    {
+      "name": "shapes15_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes15_relu"
+      ],
+      "shape": [
+        1,
+        780,
+        10
+      ]
+    },
+    {
+      "name": "shapes15_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes15_flat"
+      ],
+      "size": [
+        780,
+        10
+      ],
+      "stride": [
+        780,
+        10
+      ]
+    },
+    {
+      "name": "shapes15_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes15_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes19",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes19_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes19"
+      ]
+    },
+    {
+      "name": "shapes19_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes19_relu"
+      ],
+      "shape": [
+        1,
+        468,
+        6
+      ]
+    },
+    {
+      "name": "shapes19_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes19_flat"
+      ],
+      "size": [
+        468,
+        6
+      ],
+      "stride": [
+        468,
+        6
+      ]
+    },
+    {
+      "name": "shapes19_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes19_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "shapes23",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 78,
+      "kernel": [
+        23,
+        23
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shapes23_relu",
+      "op": "relu",
+      "inputs": [
+        "shapes23"
+      ]
+    },
+    {
+      "name": "shapes23_flat",
+      "op": "reshape",
+      "inputs": [
+        "shapes23_relu"
+      ],
+      "shape": [
+        1,
+        156,
+        2
+      ]
+    },
+    {
+      "name": "shapes23_max",
+      "op": "maxpool",
+      "inputs": [
+        "shapes23_flat"
+      ],
+      "size": [
+        156,
+        2
+      ],
+      "stride": [
+        156,
+        2
+      ]
+    },
+    {
+      "name": "shapes23_vote",
+      "op": "dense",
+      "inputs": [
+        "shapes23_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "decision_bias",
+      "op": "dense",
+      "inputs": [
+        "shapes5_max"
+      ],
+      "out": 2
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "shapes5_vote",
+        "shapes7_vote",
+        "shapes9_vote",
+        "shapes11_vote",
+        "shapes13_vote",
+        "shapes15_vote",
+        "shapes19_vote",
+        "shapes23_vote",
+        "decision_bias"
+      ]
+    }
+  ]
+}

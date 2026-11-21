@@ -1,0 +1,1229 @@
+{
+  "layers": [
+    {
+      "name": "bin2",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "bin2"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "central_sky_subtraction",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "central_image",
+      "op": "reshape",
+      "inputs": [
+        "central_sky_subtraction"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "positive_signal",
+      "op": "relu",
+      "inputs": [
+        "central_image"
+      ]
+    },
+    {
+      "name": "saturation_hinges",
+      "op": "conv",
+      "inputs": [
+        "positive_signal"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "saturation_relu",
+      "op": "relu",
+      "inputs": [
+        "saturation_hinges"
+      ]
+    },
+    {
+      "name": "bounded_signal",
+      "op": "conv",
+      "inputs": [
+        "saturation_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rotate_half_turn",
+      "op": "dense",
+      "inputs": [
+        "bounded_signal"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "rotated_image",
+      "op": "reshape",
+      "inputs": [
+        "rotate_half_turn"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "rotation_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "rotated_image"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "inner_image",
+      "op": "conv",
+      "inputs": [
+        "bounded_signal"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_rotated",
+      "op": "conv",
+      "inputs": [
+        "rotation_tolerance"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "symmetry_difference",
+      "op": "add",
+      "inputs": [
+        "inner_image",
+        "negative_rotated"
+      ]
+    },
+    {
+      "name": "unmatched_light",
+      "op": "relu",
+      "inputs": [
+        "symmetry_difference"
+      ]
+    },
+    {
+      "name": "negative_unmatched",
+      "op": "conv",
+      "inputs": [
+        "unmatched_light"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "symmetric_light",
+      "op": "add",
+      "inputs": [
+        "inner_image",
+        "negative_unmatched"
+      ]
+    },
+    {
+      "name": "diffuse_light",
+      "op": "conv",
+      "inputs": [
+        "bounded_signal"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "inner_diffuse",
+      "op": "conv",
+      "inputs": [
+        "diffuse_light"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_diffuse",
+      "op": "conv",
+      "inputs": [
+        "inner_diffuse"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "fine_structure",
+      "op": "add",
+      "inputs": [
+        "inner_image",
+        "negative_diffuse"
+      ]
+    },
+    {
+      "name": "positive_fine_structure",
+      "op": "relu",
+      "inputs": [
+        "fine_structure"
+      ]
+    },
+    {
+      "name": "negative_reverse_diffuse",
+      "op": "dense",
+      "inputs": [
+        "inner_diffuse"
+      ],
+      "out": 900
+    },
+    {
+      "name": "reverse_diffuse_image",
+      "op": "reshape",
+      "inputs": [
+        "negative_reverse_diffuse"
+      ],
+      "shape": [
+        1,
+        30,
+        30
+      ]
+    },
+    {
+      "name": "outer_symmetry_difference",
+      "op": "add",
+      "inputs": [
+        "inner_diffuse",
+        "reverse_diffuse_image"
+      ]
+    },
+    {
+      "name": "outer_asymmetric_light",
+      "op": "relu",
+      "inputs": [
+        "outer_symmetry_difference"
+      ]
+    },
+    {
+      "name": "symmetric_stretch_knots",
+      "op": "conv",
+      "inputs": [
+        "symmetric_light"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "symmetric_stretch_hinges",
+      "op": "relu",
+      "inputs": [
+        "symmetric_stretch_knots"
+      ]
+    },
+    {
+      "name": "symmetric_stretch_root",
+      "op": "conv",
+      "inputs": [
+        "symmetric_stretch_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "central_window_symmetric",
+      "op": "dense",
+      "inputs": [
+        "symmetric_stretch_root"
+      ],
+      "out": 900
+    },
+    {
+      "name": "window_symmetric_image",
+      "op": "reshape",
+      "inputs": [
+        "central_window_symmetric"
+      ],
+      "shape": [
+        1,
+        30,
+        30
+      ]
+    },
+    {
+      "name": "normalize_symmetric",
+      "op": "norm",
+      "inputs": [
+        "window_symmetric_image"
+      ]
+    },
+    {
+      "name": "original_stretch_knots",
+      "op": "conv",
+      "inputs": [
+        "inner_image"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "original_stretch_hinges",
+      "op": "relu",
+      "inputs": [
+        "original_stretch_knots"
+      ]
+    },
+    {
+      "name": "original_stretch_root",
+      "op": "conv",
+      "inputs": [
+        "original_stretch_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "central_window_original",
+      "op": "dense",
+      "inputs": [
+        "original_stretch_root"
+      ],
+      "out": 900
+    },
+    {
+      "name": "window_original_image",
+      "op": "reshape",
+      "inputs": [
+        "central_window_original"
+      ],
+      "shape": [
+        1,
+        30,
+        30
+      ]
+    },
+    {
+      "name": "normalize_original",
+      "op": "norm",
+      "inputs": [
+        "window_original_image"
+      ]
+    },
+    {
+      "name": "round_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 156
+    },
+    {
+      "name": "round_grid",
+      "op": "reshape",
+      "inputs": [
+        "round_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        156
+      ]
+    },
+    {
+      "name": "round_best",
+      "op": "maxpool",
+      "inputs": [
+        "round_grid"
+      ],
+      "size": [
+        1,
+        156
+      ],
+      "stride": [
+        1,
+        156
+      ]
+    },
+    {
+      "name": "oval_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 432
+    },
+    {
+      "name": "oval_grid",
+      "op": "reshape",
+      "inputs": [
+        "oval_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        432
+      ]
+    },
+    {
+      "name": "oval_best",
+      "op": "maxpool",
+      "inputs": [
+        "oval_grid"
+      ],
+      "size": [
+        1,
+        432
+      ],
+      "stride": [
+        1,
+        432
+      ]
+    },
+    {
+      "name": "cigar_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 288
+    },
+    {
+      "name": "cigar_grid",
+      "op": "reshape",
+      "inputs": [
+        "cigar_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        288
+      ]
+    },
+    {
+      "name": "cigar_best",
+      "op": "maxpool",
+      "inputs": [
+        "cigar_grid"
+      ],
+      "size": [
+        1,
+        288
+      ],
+      "stride": [
+        1,
+        288
+      ]
+    },
+    {
+      "name": "thin_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 480
+    },
+    {
+      "name": "thin_grid",
+      "op": "reshape",
+      "inputs": [
+        "thin_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        480
+      ]
+    },
+    {
+      "name": "thin_best",
+      "op": "maxpool",
+      "inputs": [
+        "thin_grid"
+      ],
+      "size": [
+        1,
+        480
+      ],
+      "stride": [
+        1,
+        480
+      ]
+    },
+    {
+      "name": "thin_bulge_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 960
+    },
+    {
+      "name": "thin_bulge_grid",
+      "op": "reshape",
+      "inputs": [
+        "thin_bulge_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        960
+      ]
+    },
+    {
+      "name": "thin_bulge_best",
+      "op": "maxpool",
+      "inputs": [
+        "thin_bulge_grid"
+      ],
+      "size": [
+        1,
+        960
+      ],
+      "stride": [
+        1,
+        960
+      ]
+    },
+    {
+      "name": "disk_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 882
+    },
+    {
+      "name": "disk_grid",
+      "op": "reshape",
+      "inputs": [
+        "disk_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        882
+      ]
+    },
+    {
+      "name": "disk_best",
+      "op": "maxpool",
+      "inputs": [
+        "disk_grid"
+      ],
+      "size": [
+        1,
+        882
+      ],
+      "stride": [
+        1,
+        882
+      ]
+    },
+    {
+      "name": "bar_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 3744
+    },
+    {
+      "name": "bar_grid",
+      "op": "reshape",
+      "inputs": [
+        "bar_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        3744
+      ]
+    },
+    {
+      "name": "bar_best",
+      "op": "maxpool",
+      "inputs": [
+        "bar_grid"
+      ],
+      "size": [
+        1,
+        3744
+      ],
+      "stride": [
+        1,
+        3744
+      ]
+    },
+    {
+      "name": "bar_null_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 208
+    },
+    {
+      "name": "bar_null_grid",
+      "op": "reshape",
+      "inputs": [
+        "bar_null_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        208
+      ]
+    },
+    {
+      "name": "bar_null_best",
+      "op": "maxpool",
+      "inputs": [
+        "bar_null_grid"
+      ],
+      "size": [
+        1,
+        208
+      ],
+      "stride": [
+        1,
+        208
+      ]
+    },
+    {
+      "name": "tight_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 2496
+    },
+    {
+      "name": "tight_grid",
+      "op": "reshape",
+      "inputs": [
+        "tight_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        2496
+      ]
+    },
+    {
+      "name": "tight_best",
+      "op": "maxpool",
+      "inputs": [
+        "tight_grid"
+      ],
+      "size": [
+        1,
+        2496
+      ],
+      "stride": [
+        1,
+        2496
+      ]
+    },
+    {
+      "name": "loose_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_symmetric"
+      ],
+      "out": 2496
+    },
+    {
+      "name": "loose_grid",
+      "op": "reshape",
+      "inputs": [
+        "loose_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        2496
+      ]
+    },
+    {
+      "name": "loose_best",
+      "op": "maxpool",
+      "inputs": [
+        "loose_grid"
+      ],
+      "size": [
+        1,
+        2496
+      ],
+      "stride": [
+        1,
+        2496
+      ]
+    },
+    {
+      "name": "single_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_original"
+      ],
+      "out": 588
+    },
+    {
+      "name": "single_grid",
+      "op": "reshape",
+      "inputs": [
+        "single_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        588
+      ]
+    },
+    {
+      "name": "single_best",
+      "op": "maxpool",
+      "inputs": [
+        "single_grid"
+      ],
+      "size": [
+        1,
+        588
+      ],
+      "stride": [
+        1,
+        588
+      ]
+    },
+    {
+      "name": "pair_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalize_original"
+      ],
+      "out": 3072
+    },
+    {
+      "name": "pair_grid",
+      "op": "reshape",
+      "inputs": [
+        "pair_correlations"
+      ],
+      "shape": [
+        1,
+        1,
+        3072
+      ]
+    },
+    {
+      "name": "pair_best",
+      "op": "maxpool",
+      "inputs": [
+        "pair_grid"
+      ],
+      "size": [
+        1,
+        3072
+      ],
+      "stride": [
+        1,
+        3072
+      ]
+    },
+    {
+      "name": "bar_null_alternative_0",
+      "op": "dense",
+      "inputs": [
+        "bar_null_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_1",
+      "op": "dense",
+      "inputs": [
+        "disk_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_2",
+      "op": "dense",
+      "inputs": [
+        "round_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_3",
+      "op": "dense",
+      "inputs": [
+        "oval_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_4",
+      "op": "dense",
+      "inputs": [
+        "cigar_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_5",
+      "op": "dense",
+      "inputs": [
+        "thin_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternative_6",
+      "op": "dense",
+      "inputs": [
+        "thin_bulge_best"
+      ],
+      "out": 7
+    },
+    {
+      "name": "bar_null_alternatives",
+      "op": "add",
+      "inputs": [
+        "bar_null_alternative_0",
+        "bar_null_alternative_1",
+        "bar_null_alternative_2",
+        "bar_null_alternative_3",
+        "bar_null_alternative_4",
+        "bar_null_alternative_5",
+        "bar_null_alternative_6"
+      ]
+    },
+    {
+      "name": "bar_null_shapes",
+      "op": "reshape",
+      "inputs": [
+        "bar_null_alternatives"
+      ],
+      "shape": [
+        1,
+        1,
+        7
+      ]
+    },
+    {
+      "name": "best_nonbarred_explanation",
+      "op": "maxpool",
+      "inputs": [
+        "bar_null_shapes"
+      ],
+      "size": [
+        1,
+        7
+      ],
+      "stride": [
+        1,
+        7
+      ]
+    },
+    {
+      "name": "ratio_inputs_0",
+      "op": "dense",
+      "inputs": [
+        "unmatched_light"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_1",
+      "op": "dense",
+      "inputs": [
+        "inner_image"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_2",
+      "op": "dense",
+      "inputs": [
+        "positive_fine_structure"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_3",
+      "op": "dense",
+      "inputs": [
+        "symmetric_light"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_4",
+      "op": "dense",
+      "inputs": [
+        "bin2"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_5",
+      "op": "dense",
+      "inputs": [
+        "outer_asymmetric_light"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs_6",
+      "op": "dense",
+      "inputs": [
+        "inner_diffuse"
+      ],
+      "out": 168
+    },
+    {
+      "name": "ratio_inputs",
+      "op": "add",
+      "inputs": [
+        "ratio_inputs_0",
+        "ratio_inputs_1",
+        "ratio_inputs_2",
+        "ratio_inputs_3",
+        "ratio_inputs_4",
+        "ratio_inputs_5",
+        "ratio_inputs_6"
+      ]
+    },
+    {
+      "name": "ratio_channels",
+      "op": "reshape",
+      "inputs": [
+        "ratio_inputs"
+      ],
+      "shape": [
+        42,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "ratio_normalization",
+      "op": "norm",
+      "inputs": [
+        "ratio_channels"
+      ]
+    },
+    {
+      "name": "dimensionless_measurements",
+      "op": "dense",
+      "inputs": [
+        "ratio_normalization"
+      ],
+      "out": 42
+    },
+    {
+      "name": "oriented_ellipticity",
+      "op": "dense",
+      "inputs": [
+        "dimensionless_measurements"
+      ],
+      "out": 36
+    },
+    {
+      "name": "ellipticity_angles",
+      "op": "reshape",
+      "inputs": [
+        "oriented_ellipticity"
+      ],
+      "shape": [
+        3,
+        1,
+        12
+      ]
+    },
+    {
+      "name": "rotation_invariant_ellipticity",
+      "op": "maxpool",
+      "inputs": [
+        "ellipticity_angles"
+      ],
+      "size": [
+        1,
+        12
+      ],
+      "stride": [
+        1,
+        12
+      ]
+    },
+    {
+      "name": "feature_round",
+      "op": "dense",
+      "inputs": [
+        "round_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_oval",
+      "op": "dense",
+      "inputs": [
+        "oval_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_cigar",
+      "op": "dense",
+      "inputs": [
+        "cigar_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_thin",
+      "op": "dense",
+      "inputs": [
+        "thin_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_thin_bulge",
+      "op": "dense",
+      "inputs": [
+        "thin_bulge_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_disk",
+      "op": "dense",
+      "inputs": [
+        "disk_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_bar",
+      "op": "dense",
+      "inputs": [
+        "bar_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_bar_null",
+      "op": "dense",
+      "inputs": [
+        "best_nonbarred_explanation"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_tight",
+      "op": "dense",
+      "inputs": [
+        "tight_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_loose",
+      "op": "dense",
+      "inputs": [
+        "loose_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_single",
+      "op": "dense",
+      "inputs": [
+        "single_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_pair",
+      "op": "dense",
+      "inputs": [
+        "pair_best"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_ratios",
+      "op": "dense",
+      "inputs": [
+        "dimensionless_measurements"
+      ],
+      "out": 21
+    },
+    {
+      "name": "feature_ellipticity",
+      "op": "dense",
+      "inputs": [
+        "rotation_invariant_ellipticity"
+      ],
+      "out": 21
+    },
+    {
+      "name": "morphology_features",
+      "op": "add",
+      "inputs": [
+        "feature_round",
+        "feature_oval",
+        "feature_cigar",
+        "feature_thin",
+        "feature_thin_bulge",
+        "feature_disk",
+        "feature_bar",
+        "feature_bar_null",
+        "feature_tight",
+        "feature_loose",
+        "feature_single",
+        "feature_pair",
+        "feature_ratios",
+        "feature_ellipticity"
+      ]
+    },
+    {
+      "name": "rule_conditions",
+      "op": "dense",
+      "inputs": [
+        "morphology_features"
+      ],
+      "out": 25
+    },
+    {
+      "name": "rule_hinges",
+      "op": "relu",
+      "inputs": [
+        "rule_conditions"
+      ]
+    },
+    {
+      "name": "morphology_scores",
+      "op": "dense",
+      "inputs": [
+        "morphology_features"
+      ],
+      "out": 10
+    },
+    {
+      "name": "physical_rule_scores",
+      "op": "dense",
+      "inputs": [
+        "rule_hinges"
+      ],
+      "out": 10
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "morphology_scores",
+        "physical_rule_scores"
+      ]
+    }
+  ]
+}

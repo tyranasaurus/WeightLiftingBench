@@ -1,0 +1,686 @@
+{
+  "layers": [
+    {
+      "name": "rgb16",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "luminance16",
+      "op": "conv",
+      "inputs": [
+        "rgb16"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_normalized_luminance",
+      "op": "norm",
+      "inputs": [
+        "luminance16"
+      ]
+    },
+    {
+      "name": "color_constraints",
+      "op": "conv",
+      "inputs": [
+        "rgb16"
+      ],
+      "out": 60,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_constraint_groups",
+      "op": "reshape",
+      "inputs": [
+        "color_constraints"
+      ],
+      "shape": [
+        10,
+        6,
+        256
+      ]
+    },
+    {
+      "name": "color_worst_constraint",
+      "op": "maxpool",
+      "inputs": [
+        "color_constraint_groups"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "color_map_shape",
+      "op": "reshape",
+      "inputs": [
+        "color_worst_constraint"
+      ],
+      "shape": [
+        10,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "color_minimum",
+      "op": "conv",
+      "inputs": [
+        "color_map_shape"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_memberships",
+      "op": "relu",
+      "inputs": [
+        "color_minimum"
+      ]
+    },
+    {
+      "name": "color_edges_signed",
+      "op": "conv",
+      "inputs": [
+        "rgb16"
+      ],
+      "out": 24,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_edges_phases",
+      "op": "relu",
+      "inputs": [
+        "color_edges_signed"
+      ]
+    },
+    {
+      "name": "color_edges_energy",
+      "op": "conv",
+      "inputs": [
+        "color_edges_phases"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "tolerant_contours",
+      "op": "conv",
+      "inputs": [
+        "color_edges_energy"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "joint_orientation_shape",
+      "op": "reshape",
+      "inputs": [
+        "tolerant_contours"
+      ],
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    },
+    {
+      "name": "contour_contrast_normalization",
+      "op": "norm",
+      "inputs": [
+        "joint_orientation_shape"
+      ]
+    },
+    {
+      "name": "normalized_contours",
+      "op": "reshape",
+      "inputs": [
+        "contour_contrast_normalization"
+      ],
+      "shape": [
+        4,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "orientation_selectivity",
+      "op": "conv",
+      "inputs": [
+        "tolerant_contours"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "orientation_selectivity_shape",
+      "op": "reshape",
+      "inputs": [
+        "orientation_selectivity"
+      ],
+      "shape": [
+        1,
+        64,
+        16
+      ]
+    },
+    {
+      "name": "orientation_selectivity_norm",
+      "op": "norm",
+      "inputs": [
+        "orientation_selectivity_shape"
+      ]
+    },
+    {
+      "name": "orientation_selectivity_grid",
+      "op": "reshape",
+      "inputs": [
+        "orientation_selectivity_norm"
+      ],
+      "shape": [
+        4,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "long_edges_signed",
+      "op": "conv",
+      "inputs": [
+        "luminance16"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "long_edges_phases",
+      "op": "relu",
+      "inputs": [
+        "long_edges_signed"
+      ]
+    },
+    {
+      "name": "long_edges_energy",
+      "op": "conv",
+      "inputs": [
+        "long_edges_phases"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "luminance32",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "fine_edges_signed",
+      "op": "conv",
+      "inputs": [
+        "luminance32"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "fine_edges_phases",
+      "op": "relu",
+      "inputs": [
+        "fine_edges_signed"
+      ]
+    },
+    {
+      "name": "fine_edges_energy",
+      "op": "conv",
+      "inputs": [
+        "fine_edges_phases"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "fine_texture_grid",
+      "op": "avgpool",
+      "inputs": [
+        "fine_edges_energy"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "microtexture_signed",
+      "op": "conv",
+      "inputs": [
+        "luminance32"
+      ],
+      "out": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "microtexture_phases",
+      "op": "relu",
+      "inputs": [
+        "microtexture_signed"
+      ]
+    },
+    {
+      "name": "microtexture_magnitude",
+      "op": "conv",
+      "inputs": [
+        "microtexture_phases"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "microtexture_grid",
+      "op": "avgpool",
+      "inputs": [
+        "microtexture_magnitude"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "shape_luminance_matches",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized_luminance"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "shape_contour_matches",
+      "op": "dense",
+      "inputs": [
+        "normalized_contours"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "shape_orientation_matches",
+      "op": "dense",
+      "inputs": [
+        "orientation_selectivity_grid"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "shape_material_matches",
+      "op": "dense",
+      "inputs": [
+        "color_memberships"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "shape_texture_matches",
+      "op": "dense",
+      "inputs": [
+        "microtexture_grid"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "shape_matches",
+      "op": "add",
+      "inputs": [
+        "shape_luminance_matches",
+        "shape_contour_matches",
+        "shape_orientation_matches",
+        "shape_material_matches",
+        "shape_texture_matches"
+      ]
+    },
+    {
+      "name": "shape_class_groups",
+      "op": "reshape",
+      "inputs": [
+        "shape_matches"
+      ],
+      "shape": [
+        10,
+        360,
+        1
+      ]
+    },
+    {
+      "name": "shape_pose_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "shape_class_groups"
+      ],
+      "size": [
+        360,
+        1
+      ],
+      "stride": [
+        360,
+        1
+      ]
+    },
+    {
+      "name": "shape_evidence",
+      "op": "reshape",
+      "inputs": [
+        "shape_pose_invariance"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "local_part_contrasts",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized_luminance"
+      ],
+      "out": 3600
+    },
+    {
+      "name": "local_part_groups",
+      "op": "reshape",
+      "inputs": [
+        "local_part_contrasts"
+      ],
+      "shape": [
+        1200,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "weakest_object_part",
+      "op": "maxpool",
+      "inputs": [
+        "local_part_groups"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "part_class_layout",
+      "op": "reshape",
+      "inputs": [
+        "weakest_object_part"
+      ],
+      "shape": [
+        10,
+        120,
+        1
+      ]
+    },
+    {
+      "name": "part_sign",
+      "op": "conv",
+      "inputs": [
+        "part_class_layout"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "present_part_conjunctions",
+      "op": "relu",
+      "inputs": [
+        "part_sign"
+      ]
+    },
+    {
+      "name": "part_pose_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "present_part_conjunctions"
+      ],
+      "size": [
+        120,
+        1
+      ],
+      "stride": [
+        120,
+        1
+      ]
+    },
+    {
+      "name": "part_evidence",
+      "op": "reshape",
+      "inputs": [
+        "part_pose_invariance"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "summarize_color",
+      "op": "dense",
+      "inputs": [
+        "color_memberships"
+      ],
+      "out": 168
+    },
+    {
+      "name": "summarize_edge",
+      "op": "dense",
+      "inputs": [
+        "color_edges_energy"
+      ],
+      "out": 168
+    },
+    {
+      "name": "summarize_fine",
+      "op": "dense",
+      "inputs": [
+        "fine_texture_grid"
+      ],
+      "out": 168
+    },
+    {
+      "name": "summarize_long",
+      "op": "dense",
+      "inputs": [
+        "long_edges_energy"
+      ],
+      "out": 168
+    },
+    {
+      "name": "summarize_micro",
+      "op": "dense",
+      "inputs": [
+        "microtexture_grid"
+      ],
+      "out": 168
+    },
+    {
+      "name": "summarize_light",
+      "op": "dense",
+      "inputs": [
+        "luminance16"
+      ],
+      "out": 168
+    },
+    {
+      "name": "scene_features",
+      "op": "add",
+      "inputs": [
+        "summarize_color",
+        "summarize_edge",
+        "summarize_fine",
+        "summarize_long",
+        "summarize_micro",
+        "summarize_light"
+      ]
+    },
+    {
+      "name": "scene_linear_evidence",
+      "op": "dense",
+      "inputs": [
+        "scene_features"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scene_rule_tests",
+      "op": "dense",
+      "inputs": [
+        "scene_features"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scene_rules",
+      "op": "relu",
+      "inputs": [
+        "scene_rule_tests"
+      ]
+    },
+    {
+      "name": "scene_rule_evidence",
+      "op": "dense",
+      "inputs": [
+        "scene_rules"
+      ],
+      "out": 10
+    },
+    {
+      "name": "geometric_evidence",
+      "op": "dense",
+      "inputs": [
+        "shape_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "local_geometric_evidence",
+      "op": "dense",
+      "inputs": [
+        "part_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "scene_linear_evidence",
+        "scene_rule_evidence",
+        "geometric_evidence",
+        "local_geometric_evidence"
+      ]
+    }
+  ]
+}

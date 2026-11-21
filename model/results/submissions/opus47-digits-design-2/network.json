@@ -1,0 +1,77 @@
+{
+  "layers": [
+    {
+      "name": "n1",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "c1",
+      "op": "conv",
+      "inputs": [
+        "n1"
+      ],
+      "out": 100,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "mp1",
+      "op": "maxpool",
+      "inputs": [
+        "c1"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "r1",
+      "op": "reshape",
+      "inputs": [
+        "mp1"
+      ],
+      "shape": [
+        10,
+        1,
+        10
+      ]
+    },
+    {
+      "name": "mp2",
+      "op": "maxpool",
+      "inputs": [
+        "r1"
+      ],
+      "size": [
+        1,
+        10
+      ],
+      "stride": [
+        1,
+        10
+      ]
+    },
+    {
+      "name": "out",
+      "op": "reshape",
+      "inputs": [
+        "mp2"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

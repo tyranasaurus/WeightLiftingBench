@@ -1,0 +1,70 @@
+{
+  "layers": [
+    {
+      "name": "soft_ink",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "standard_silhouette",
+      "op": "norm",
+      "inputs": [
+        "soft_ink"
+      ]
+    },
+    {
+      "name": "model_scores",
+      "op": "dense",
+      "inputs": [
+        "standard_silhouette"
+      ],
+      "out": 143360
+    },
+    {
+      "name": "class_models",
+      "op": "reshape",
+      "inputs": [
+        "model_scores"
+      ],
+      "shape": [
+        10,
+        14336,
+        1
+      ]
+    },
+    {
+      "name": "best_model",
+      "op": "maxpool",
+      "inputs": [
+        "class_models"
+      ],
+      "size": [
+        14336,
+        1
+      ],
+      "stride": [
+        14336,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_model"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

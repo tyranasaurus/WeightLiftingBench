@@ -1,0 +1,6608 @@
+{
+  "layers": [
+    {
+      "name": "antialias",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "channel_differences",
+      "op": "conv",
+      "inputs": [
+        "antialias"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "absolute_channel_differences",
+      "op": "relu",
+      "inputs": [
+        "channel_differences"
+      ]
+    },
+    {
+      "name": "average_chromaticity",
+      "op": "avgpool",
+      "inputs": [
+        "absolute_channel_differences"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "monochrome_gate",
+      "op": "dense",
+      "inputs": [
+        "average_chromaticity"
+      ],
+      "out": 1
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "antialias"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_normalize",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "skin_inequalities",
+      "op": "conv",
+      "inputs": [
+        "antialias"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_violations",
+      "op": "relu",
+      "inputs": [
+        "skin_inequalities"
+      ]
+    },
+    {
+      "name": "skin_confidence",
+      "op": "conv",
+      "inputs": [
+        "skin_violations"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin",
+      "op": "relu",
+      "inputs": [
+        "skin_confidence"
+      ]
+    },
+    {
+      "name": "skin_axis",
+      "op": "conv",
+      "inputs": [
+        "skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "light_axis",
+      "op": "conv",
+      "inputs": [
+        "contrast_normalize"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_and_light",
+      "op": "add",
+      "inputs": [
+        "skin_axis",
+        "light_axis"
+      ]
+    },
+    {
+      "name": "head_0_0_measure",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 30,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "head_0_0_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_0_0_measure"
+      ]
+    },
+    {
+      "name": "head_0_0_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_limit",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_limited",
+      "op": "relu",
+      "inputs": [
+        "head_0_0_limit"
+      ]
+    },
+    {
+      "name": "head_0_0_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_0_0_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_0_0_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_0_0_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_0_0_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_0_0_colour_vote",
+        "head_0_0_negative_structure"
+      ]
+    },
+    {
+      "name": "head_0_0_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_0_0_colour_excess"
+      ]
+    },
+    {
+      "name": "head_0_0_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_0_0_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_0_vote",
+      "op": "add",
+      "inputs": [
+        "head_0_0_colour_vote",
+        "head_0_0_structure_veto"
+      ]
+    },
+    {
+      "name": "head_0_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_0_vote"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "head_0_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_0_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_0_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_0_max",
+      "op": "reshape",
+      "inputs": [
+        "head_0_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_0_1_measure",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 30,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "head_0_1_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_0_1_measure"
+      ]
+    },
+    {
+      "name": "head_0_1_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_limit",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_limited",
+      "op": "relu",
+      "inputs": [
+        "head_0_1_limit"
+      ]
+    },
+    {
+      "name": "head_0_1_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_0_1_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_0_1_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_0_1_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_0_1_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_0_1_colour_vote",
+        "head_0_1_negative_structure"
+      ]
+    },
+    {
+      "name": "head_0_1_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_0_1_colour_excess"
+      ]
+    },
+    {
+      "name": "head_0_1_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_0_1_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_1_vote",
+      "op": "add",
+      "inputs": [
+        "head_0_1_colour_vote",
+        "head_0_1_structure_veto"
+      ]
+    },
+    {
+      "name": "head_0_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_1_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "head_0_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_0_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_1_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_1_max",
+      "op": "reshape",
+      "inputs": [
+        "head_0_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_0_2_measure",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 30,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 2,
+      "padding": 9
+    },
+    {
+      "name": "head_0_2_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_0_2_measure"
+      ]
+    },
+    {
+      "name": "head_0_2_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_limit",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_limited",
+      "op": "relu",
+      "inputs": [
+        "head_0_2_limit"
+      ]
+    },
+    {
+      "name": "head_0_2_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_0_2_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_0_2_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_0_2_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_0_2_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_0_2_colour_vote",
+        "head_0_2_negative_structure"
+      ]
+    },
+    {
+      "name": "head_0_2_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_0_2_colour_excess"
+      ]
+    },
+    {
+      "name": "head_0_2_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_0_2_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_2_vote",
+      "op": "add",
+      "inputs": [
+        "head_0_2_colour_vote",
+        "head_0_2_structure_veto"
+      ]
+    },
+    {
+      "name": "head_0_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_2_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "head_0_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_0_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_2_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_2_max",
+      "op": "reshape",
+      "inputs": [
+        "head_0_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_0_3_measure",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 30,
+      "kernel": [
+        23,
+        23
+      ],
+      "stride": 2,
+      "padding": 11
+    },
+    {
+      "name": "head_0_3_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_0_3_measure"
+      ]
+    },
+    {
+      "name": "head_0_3_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_limit",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_limited",
+      "op": "relu",
+      "inputs": [
+        "head_0_3_limit"
+      ]
+    },
+    {
+      "name": "head_0_3_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_0_3_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_0_3_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_0_3_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_0_3_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_0_3_colour_vote",
+        "head_0_3_negative_structure"
+      ]
+    },
+    {
+      "name": "head_0_3_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_0_3_colour_excess"
+      ]
+    },
+    {
+      "name": "head_0_3_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_0_3_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_0_3_vote",
+      "op": "add",
+      "inputs": [
+        "head_0_3_colour_vote",
+        "head_0_3_structure_veto"
+      ]
+    },
+    {
+      "name": "head_0_3_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_3_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "head_0_3_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_0_3_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_3_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_0_3_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_0_3_max",
+      "op": "reshape",
+      "inputs": [
+        "head_0_3_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "body_0_gradient",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "body_0_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "body_0_gradient"
+      ]
+    },
+    {
+      "name": "body_0_orientation",
+      "op": "conv",
+      "inputs": [
+        "body_0_signed_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "body_0_orientation"
+      ]
+    },
+    {
+      "name": "body_0_tolerant_edges",
+      "op": "maxpool",
+      "inputs": [
+        "body_0_oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "body_0_parts",
+      "op": "conv",
+      "inputs": [
+        "body_0_tolerant_edges"
+      ],
+      "out": 9,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_0_head_colour",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 3,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_0_part_margins",
+      "op": "conv",
+      "inputs": [
+        "body_0_parts"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_part_rectify",
+      "op": "relu",
+      "inputs": [
+        "body_0_part_margins"
+      ]
+    },
+    {
+      "name": "body_0_shape_vote",
+      "op": "conv",
+      "inputs": [
+        "body_0_part_rectify"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "body_0_head_colour"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_raw_vote",
+      "op": "add",
+      "inputs": [
+        "body_0_shape_vote",
+        "body_0_colour_vote"
+      ]
+    },
+    {
+      "name": "body_0_semantic_parts",
+      "op": "conv",
+      "inputs": [
+        "body_0_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_minimum_compare_1",
+      "op": "conv",
+      "inputs": [
+        "body_0_semantic_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_minimum_relu_1",
+      "op": "relu",
+      "inputs": [
+        "body_0_minimum_compare_1"
+      ]
+    },
+    {
+      "name": "body_0_first_minimum",
+      "op": "conv",
+      "inputs": [
+        "body_0_minimum_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_negative_legs",
+      "op": "conv",
+      "inputs": [
+        "body_0_semantic_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_minimum_compare_2",
+      "op": "add",
+      "inputs": [
+        "body_0_first_minimum",
+        "body_0_negative_legs"
+      ]
+    },
+    {
+      "name": "body_0_minimum_relu_2",
+      "op": "relu",
+      "inputs": [
+        "body_0_minimum_compare_2"
+      ]
+    },
+    {
+      "name": "body_0_minimum_subtract_2",
+      "op": "conv",
+      "inputs": [
+        "body_0_minimum_relu_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_weakest_part",
+      "op": "add",
+      "inputs": [
+        "body_0_first_minimum",
+        "body_0_minimum_subtract_2"
+      ]
+    },
+    {
+      "name": "body_0_negative_weakest",
+      "op": "conv",
+      "inputs": [
+        "body_0_weakest_part"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_conjunction_compare",
+      "op": "add",
+      "inputs": [
+        "body_0_raw_vote",
+        "body_0_negative_weakest"
+      ]
+    },
+    {
+      "name": "body_0_conjunction_relu",
+      "op": "relu",
+      "inputs": [
+        "body_0_conjunction_compare"
+      ]
+    },
+    {
+      "name": "body_0_conjunction_subtract",
+      "op": "conv",
+      "inputs": [
+        "body_0_conjunction_relu"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_0_vote",
+      "op": "add",
+      "inputs": [
+        "body_0_raw_vote",
+        "body_0_conjunction_subtract"
+      ]
+    },
+    {
+      "name": "body_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_0_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "body_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "body_0_max_axis"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_0_max",
+      "op": "reshape",
+      "inputs": [
+        "body_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "achromatic_0_light",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_regions",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_light"
+      ],
+      "out": 25,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 2,
+      "padding": 9
+    },
+    {
+      "name": "achromatic_0_region_rectify",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_regions"
+      ]
+    },
+    {
+      "name": "achromatic_0_requirements",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_region_rectify"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_compare_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_requirements"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_relu_0",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_min_compare_0"
+      ]
+    },
+    {
+      "name": "achromatic_0_min_value_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_relu_0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_compare_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_value_0"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_relu_1",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_min_compare_1"
+      ]
+    },
+    {
+      "name": "achromatic_0_min_value_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_compare_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_value_1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_relu_2",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_min_compare_2"
+      ]
+    },
+    {
+      "name": "achromatic_0_min_value_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_relu_2"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_compare_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_value_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_min_relu_3",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_min_compare_3"
+      ]
+    },
+    {
+      "name": "achromatic_0_min_value_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_relu_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_vote",
+      "op": "conv",
+      "inputs": [
+        "achromatic_0_min_value_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_0_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "achromatic_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_0_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_0_max",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "achromatic_0_negative_gate",
+      "op": "dense",
+      "inputs": [
+        "monochrome_gate"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_0_gate_difference",
+      "op": "add",
+      "inputs": [
+        "achromatic_0_max",
+        "achromatic_0_negative_gate"
+      ]
+    },
+    {
+      "name": "achromatic_0_gate_relu",
+      "op": "relu",
+      "inputs": [
+        "achromatic_0_gate_difference"
+      ]
+    },
+    {
+      "name": "achromatic_0_gate_subtract",
+      "op": "dense",
+      "inputs": [
+        "achromatic_0_gate_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_0_gated_vote",
+      "op": "add",
+      "inputs": [
+        "achromatic_0_max",
+        "achromatic_0_gate_subtract"
+      ]
+    },
+    {
+      "name": "achromatic_1_light",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_regions",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_light"
+      ],
+      "out": 25,
+      "kernel": [
+        27,
+        27
+      ],
+      "stride": 2,
+      "padding": 13
+    },
+    {
+      "name": "achromatic_1_region_rectify",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_regions"
+      ]
+    },
+    {
+      "name": "achromatic_1_requirements",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_region_rectify"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_compare_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_requirements"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_relu_0",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_min_compare_0"
+      ]
+    },
+    {
+      "name": "achromatic_1_min_value_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_relu_0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_compare_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_value_0"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_relu_1",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_min_compare_1"
+      ]
+    },
+    {
+      "name": "achromatic_1_min_value_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_compare_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_value_1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_relu_2",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_min_compare_2"
+      ]
+    },
+    {
+      "name": "achromatic_1_min_value_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_relu_2"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_compare_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_value_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_min_relu_3",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_min_compare_3"
+      ]
+    },
+    {
+      "name": "achromatic_1_min_value_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_relu_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_vote",
+      "op": "conv",
+      "inputs": [
+        "achromatic_1_min_value_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_1_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "achromatic_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_1_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_1_max",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "achromatic_1_negative_gate",
+      "op": "dense",
+      "inputs": [
+        "monochrome_gate"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_1_gate_difference",
+      "op": "add",
+      "inputs": [
+        "achromatic_1_max",
+        "achromatic_1_negative_gate"
+      ]
+    },
+    {
+      "name": "achromatic_1_gate_relu",
+      "op": "relu",
+      "inputs": [
+        "achromatic_1_gate_difference"
+      ]
+    },
+    {
+      "name": "achromatic_1_gate_subtract",
+      "op": "dense",
+      "inputs": [
+        "achromatic_1_gate_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_1_gated_vote",
+      "op": "add",
+      "inputs": [
+        "achromatic_1_max",
+        "achromatic_1_gate_subtract"
+      ]
+    },
+    {
+      "name": "achromatic_2_light",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_regions",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_light"
+      ],
+      "out": 25,
+      "kernel": [
+        41,
+        41
+      ],
+      "stride": 3,
+      "padding": 20
+    },
+    {
+      "name": "achromatic_2_region_rectify",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_regions"
+      ]
+    },
+    {
+      "name": "achromatic_2_requirements",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_region_rectify"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_compare_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_requirements"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_relu_0",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_min_compare_0"
+      ]
+    },
+    {
+      "name": "achromatic_2_min_value_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_relu_0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_compare_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_value_0"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_relu_1",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_min_compare_1"
+      ]
+    },
+    {
+      "name": "achromatic_2_min_value_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_compare_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_value_1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_relu_2",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_min_compare_2"
+      ]
+    },
+    {
+      "name": "achromatic_2_min_value_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_relu_2"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_compare_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_value_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_min_relu_3",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_min_compare_3"
+      ]
+    },
+    {
+      "name": "achromatic_2_min_value_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_relu_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_vote",
+      "op": "conv",
+      "inputs": [
+        "achromatic_2_min_value_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_2_vote"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "achromatic_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_2_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_2_max",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "achromatic_2_negative_gate",
+      "op": "dense",
+      "inputs": [
+        "monochrome_gate"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_2_gate_difference",
+      "op": "add",
+      "inputs": [
+        "achromatic_2_max",
+        "achromatic_2_negative_gate"
+      ]
+    },
+    {
+      "name": "achromatic_2_gate_relu",
+      "op": "relu",
+      "inputs": [
+        "achromatic_2_gate_difference"
+      ]
+    },
+    {
+      "name": "achromatic_2_gate_subtract",
+      "op": "dense",
+      "inputs": [
+        "achromatic_2_gate_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_2_gated_vote",
+      "op": "add",
+      "inputs": [
+        "achromatic_2_max",
+        "achromatic_2_gate_subtract"
+      ]
+    },
+    {
+      "name": "achromatic_3_light",
+      "op": "conv",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_regions",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_light"
+      ],
+      "out": 25,
+      "kernel": [
+        59,
+        59
+      ],
+      "stride": 3,
+      "padding": 29
+    },
+    {
+      "name": "achromatic_3_region_rectify",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_regions"
+      ]
+    },
+    {
+      "name": "achromatic_3_requirements",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_region_rectify"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_compare_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_requirements"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_relu_0",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_min_compare_0"
+      ]
+    },
+    {
+      "name": "achromatic_3_min_value_0",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_relu_0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_compare_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_value_0"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_relu_1",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_min_compare_1"
+      ]
+    },
+    {
+      "name": "achromatic_3_min_value_1",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_compare_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_value_1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_relu_2",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_min_compare_2"
+      ]
+    },
+    {
+      "name": "achromatic_3_min_value_2",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_relu_2"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_compare_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_value_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_min_relu_3",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_min_compare_3"
+      ]
+    },
+    {
+      "name": "achromatic_3_min_value_3",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_relu_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_vote",
+      "op": "conv",
+      "inputs": [
+        "achromatic_3_min_value_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "achromatic_3_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_3_vote"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "achromatic_3_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_3_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_3_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "achromatic_3_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "achromatic_3_max",
+      "op": "reshape",
+      "inputs": [
+        "achromatic_3_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "achromatic_3_negative_gate",
+      "op": "dense",
+      "inputs": [
+        "monochrome_gate"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_3_gate_difference",
+      "op": "add",
+      "inputs": [
+        "achromatic_3_max",
+        "achromatic_3_negative_gate"
+      ]
+    },
+    {
+      "name": "achromatic_3_gate_relu",
+      "op": "relu",
+      "inputs": [
+        "achromatic_3_gate_difference"
+      ]
+    },
+    {
+      "name": "achromatic_3_gate_subtract",
+      "op": "dense",
+      "inputs": [
+        "achromatic_3_gate_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "achromatic_3_gated_vote",
+      "op": "add",
+      "inputs": [
+        "achromatic_3_max",
+        "achromatic_3_gate_subtract"
+      ]
+    },
+    {
+      "name": "pyramid_1",
+      "op": "avgpool",
+      "inputs": [
+        "colour_and_light"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "head_1_0_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 30,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "head_1_0_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_1_0_measure"
+      ]
+    },
+    {
+      "name": "head_1_0_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_limit",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_limited",
+      "op": "relu",
+      "inputs": [
+        "head_1_0_limit"
+      ]
+    },
+    {
+      "name": "head_1_0_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_1_0_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_1_0_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_1_0_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_1_0_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_1_0_colour_vote",
+        "head_1_0_negative_structure"
+      ]
+    },
+    {
+      "name": "head_1_0_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_1_0_colour_excess"
+      ]
+    },
+    {
+      "name": "head_1_0_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_1_0_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_0_vote",
+      "op": "add",
+      "inputs": [
+        "head_1_0_colour_vote",
+        "head_1_0_structure_veto"
+      ]
+    },
+    {
+      "name": "head_1_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_0_vote"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "head_1_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_1_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_0_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_0_max",
+      "op": "reshape",
+      "inputs": [
+        "head_1_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_1_1_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 30,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "head_1_1_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_1_1_measure"
+      ]
+    },
+    {
+      "name": "head_1_1_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_limit",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_limited",
+      "op": "relu",
+      "inputs": [
+        "head_1_1_limit"
+      ]
+    },
+    {
+      "name": "head_1_1_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_1_1_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_1_1_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_1_1_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_1_1_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_1_1_colour_vote",
+        "head_1_1_negative_structure"
+      ]
+    },
+    {
+      "name": "head_1_1_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_1_1_colour_excess"
+      ]
+    },
+    {
+      "name": "head_1_1_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_1_1_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_1_vote",
+      "op": "add",
+      "inputs": [
+        "head_1_1_colour_vote",
+        "head_1_1_structure_veto"
+      ]
+    },
+    {
+      "name": "head_1_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_1_vote"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "head_1_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_1_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_1_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_1_max",
+      "op": "reshape",
+      "inputs": [
+        "head_1_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_1_2_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 30,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 2,
+      "padding": 9
+    },
+    {
+      "name": "head_1_2_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_1_2_measure"
+      ]
+    },
+    {
+      "name": "head_1_2_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_limit",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_limited",
+      "op": "relu",
+      "inputs": [
+        "head_1_2_limit"
+      ]
+    },
+    {
+      "name": "head_1_2_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_1_2_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_1_2_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_1_2_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_1_2_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_1_2_colour_vote",
+        "head_1_2_negative_structure"
+      ]
+    },
+    {
+      "name": "head_1_2_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_1_2_colour_excess"
+      ]
+    },
+    {
+      "name": "head_1_2_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_1_2_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_2_vote",
+      "op": "add",
+      "inputs": [
+        "head_1_2_colour_vote",
+        "head_1_2_structure_veto"
+      ]
+    },
+    {
+      "name": "head_1_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_2_vote"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "head_1_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_1_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_2_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_2_max",
+      "op": "reshape",
+      "inputs": [
+        "head_1_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_1_3_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 30,
+      "kernel": [
+        23,
+        23
+      ],
+      "stride": 2,
+      "padding": 11
+    },
+    {
+      "name": "head_1_3_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_1_3_measure"
+      ]
+    },
+    {
+      "name": "head_1_3_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_limit",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_limited",
+      "op": "relu",
+      "inputs": [
+        "head_1_3_limit"
+      ]
+    },
+    {
+      "name": "head_1_3_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_1_3_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_1_3_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_1_3_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_1_3_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_1_3_colour_vote",
+        "head_1_3_negative_structure"
+      ]
+    },
+    {
+      "name": "head_1_3_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_1_3_colour_excess"
+      ]
+    },
+    {
+      "name": "head_1_3_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_1_3_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_1_3_vote",
+      "op": "add",
+      "inputs": [
+        "head_1_3_colour_vote",
+        "head_1_3_structure_veto"
+      ]
+    },
+    {
+      "name": "head_1_3_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_3_vote"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "head_1_3_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_1_3_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_3_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_1_3_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_1_3_max",
+      "op": "reshape",
+      "inputs": [
+        "head_1_3_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "body_1_gradient",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "body_1_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "body_1_gradient"
+      ]
+    },
+    {
+      "name": "body_1_orientation",
+      "op": "conv",
+      "inputs": [
+        "body_1_signed_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "body_1_orientation"
+      ]
+    },
+    {
+      "name": "body_1_tolerant_edges",
+      "op": "maxpool",
+      "inputs": [
+        "body_1_oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "body_1_parts",
+      "op": "conv",
+      "inputs": [
+        "body_1_tolerant_edges"
+      ],
+      "out": 9,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_1_head_colour",
+      "op": "conv",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "out": 3,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_1_part_margins",
+      "op": "conv",
+      "inputs": [
+        "body_1_parts"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_part_rectify",
+      "op": "relu",
+      "inputs": [
+        "body_1_part_margins"
+      ]
+    },
+    {
+      "name": "body_1_shape_vote",
+      "op": "conv",
+      "inputs": [
+        "body_1_part_rectify"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "body_1_head_colour"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_raw_vote",
+      "op": "add",
+      "inputs": [
+        "body_1_shape_vote",
+        "body_1_colour_vote"
+      ]
+    },
+    {
+      "name": "body_1_semantic_parts",
+      "op": "conv",
+      "inputs": [
+        "body_1_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_minimum_compare_1",
+      "op": "conv",
+      "inputs": [
+        "body_1_semantic_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_minimum_relu_1",
+      "op": "relu",
+      "inputs": [
+        "body_1_minimum_compare_1"
+      ]
+    },
+    {
+      "name": "body_1_first_minimum",
+      "op": "conv",
+      "inputs": [
+        "body_1_minimum_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_negative_legs",
+      "op": "conv",
+      "inputs": [
+        "body_1_semantic_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_minimum_compare_2",
+      "op": "add",
+      "inputs": [
+        "body_1_first_minimum",
+        "body_1_negative_legs"
+      ]
+    },
+    {
+      "name": "body_1_minimum_relu_2",
+      "op": "relu",
+      "inputs": [
+        "body_1_minimum_compare_2"
+      ]
+    },
+    {
+      "name": "body_1_minimum_subtract_2",
+      "op": "conv",
+      "inputs": [
+        "body_1_minimum_relu_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_weakest_part",
+      "op": "add",
+      "inputs": [
+        "body_1_first_minimum",
+        "body_1_minimum_subtract_2"
+      ]
+    },
+    {
+      "name": "body_1_negative_weakest",
+      "op": "conv",
+      "inputs": [
+        "body_1_weakest_part"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_conjunction_compare",
+      "op": "add",
+      "inputs": [
+        "body_1_raw_vote",
+        "body_1_negative_weakest"
+      ]
+    },
+    {
+      "name": "body_1_conjunction_relu",
+      "op": "relu",
+      "inputs": [
+        "body_1_conjunction_compare"
+      ]
+    },
+    {
+      "name": "body_1_conjunction_subtract",
+      "op": "conv",
+      "inputs": [
+        "body_1_conjunction_relu"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_1_vote",
+      "op": "add",
+      "inputs": [
+        "body_1_raw_vote",
+        "body_1_conjunction_subtract"
+      ]
+    },
+    {
+      "name": "body_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_1_vote"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "body_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "body_1_max_axis"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_1_max",
+      "op": "reshape",
+      "inputs": [
+        "body_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "pyramid_2",
+      "op": "avgpool",
+      "inputs": [
+        "pyramid_1"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "head_2_0_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 30,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "head_2_0_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_2_0_measure"
+      ]
+    },
+    {
+      "name": "head_2_0_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_limit",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_limited",
+      "op": "relu",
+      "inputs": [
+        "head_2_0_limit"
+      ]
+    },
+    {
+      "name": "head_2_0_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_2_0_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_2_0_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_2_0_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_2_0_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_2_0_colour_vote",
+        "head_2_0_negative_structure"
+      ]
+    },
+    {
+      "name": "head_2_0_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_2_0_colour_excess"
+      ]
+    },
+    {
+      "name": "head_2_0_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_2_0_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_0_vote",
+      "op": "add",
+      "inputs": [
+        "head_2_0_colour_vote",
+        "head_2_0_structure_veto"
+      ]
+    },
+    {
+      "name": "head_2_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_0_vote"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "head_2_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_2_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_0_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_0_max",
+      "op": "reshape",
+      "inputs": [
+        "head_2_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_2_1_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 30,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "head_2_1_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_2_1_measure"
+      ]
+    },
+    {
+      "name": "head_2_1_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_limit",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_limited",
+      "op": "relu",
+      "inputs": [
+        "head_2_1_limit"
+      ]
+    },
+    {
+      "name": "head_2_1_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_2_1_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_2_1_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_2_1_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_2_1_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_2_1_colour_vote",
+        "head_2_1_negative_structure"
+      ]
+    },
+    {
+      "name": "head_2_1_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_2_1_colour_excess"
+      ]
+    },
+    {
+      "name": "head_2_1_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_2_1_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_1_vote",
+      "op": "add",
+      "inputs": [
+        "head_2_1_colour_vote",
+        "head_2_1_structure_veto"
+      ]
+    },
+    {
+      "name": "head_2_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_1_vote"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "head_2_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_2_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_1_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_1_max",
+      "op": "reshape",
+      "inputs": [
+        "head_2_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_2_2_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 30,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 2,
+      "padding": 9
+    },
+    {
+      "name": "head_2_2_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_2_2_measure"
+      ]
+    },
+    {
+      "name": "head_2_2_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_limit",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_limited",
+      "op": "relu",
+      "inputs": [
+        "head_2_2_limit"
+      ]
+    },
+    {
+      "name": "head_2_2_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_2_2_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_2_2_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_2_2_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_2_2_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_2_2_colour_vote",
+        "head_2_2_negative_structure"
+      ]
+    },
+    {
+      "name": "head_2_2_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_2_2_colour_excess"
+      ]
+    },
+    {
+      "name": "head_2_2_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_2_2_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_2_vote",
+      "op": "add",
+      "inputs": [
+        "head_2_2_colour_vote",
+        "head_2_2_structure_veto"
+      ]
+    },
+    {
+      "name": "head_2_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_2_vote"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "head_2_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_2_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_2_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_2_max",
+      "op": "reshape",
+      "inputs": [
+        "head_2_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_2_3_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 30,
+      "kernel": [
+        23,
+        23
+      ],
+      "stride": 2,
+      "padding": 11
+    },
+    {
+      "name": "head_2_3_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_2_3_measure"
+      ]
+    },
+    {
+      "name": "head_2_3_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_limit",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_limited",
+      "op": "relu",
+      "inputs": [
+        "head_2_3_limit"
+      ]
+    },
+    {
+      "name": "head_2_3_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_2_3_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_2_3_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_2_3_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_2_3_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_2_3_colour_vote",
+        "head_2_3_negative_structure"
+      ]
+    },
+    {
+      "name": "head_2_3_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_2_3_colour_excess"
+      ]
+    },
+    {
+      "name": "head_2_3_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_2_3_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_2_3_vote",
+      "op": "add",
+      "inputs": [
+        "head_2_3_colour_vote",
+        "head_2_3_structure_veto"
+      ]
+    },
+    {
+      "name": "head_2_3_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_3_vote"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "head_2_3_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_2_3_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_3_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_2_3_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_2_3_max",
+      "op": "reshape",
+      "inputs": [
+        "head_2_3_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "body_2_gradient",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "body_2_signed_edges",
+      "op": "relu",
+      "inputs": [
+        "body_2_gradient"
+      ]
+    },
+    {
+      "name": "body_2_orientation",
+      "op": "conv",
+      "inputs": [
+        "body_2_signed_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "body_2_orientation"
+      ]
+    },
+    {
+      "name": "body_2_tolerant_edges",
+      "op": "maxpool",
+      "inputs": [
+        "body_2_oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "body_2_parts",
+      "op": "conv",
+      "inputs": [
+        "body_2_tolerant_edges"
+      ],
+      "out": 9,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_2_head_colour",
+      "op": "conv",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "out": 3,
+      "kernel": [
+        21,
+        21
+      ],
+      "stride": 2,
+      "padding": 10
+    },
+    {
+      "name": "body_2_part_margins",
+      "op": "conv",
+      "inputs": [
+        "body_2_parts"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_part_rectify",
+      "op": "relu",
+      "inputs": [
+        "body_2_part_margins"
+      ]
+    },
+    {
+      "name": "body_2_shape_vote",
+      "op": "conv",
+      "inputs": [
+        "body_2_part_rectify"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "body_2_head_colour"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_raw_vote",
+      "op": "add",
+      "inputs": [
+        "body_2_shape_vote",
+        "body_2_colour_vote"
+      ]
+    },
+    {
+      "name": "body_2_semantic_parts",
+      "op": "conv",
+      "inputs": [
+        "body_2_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_minimum_compare_1",
+      "op": "conv",
+      "inputs": [
+        "body_2_semantic_parts"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_minimum_relu_1",
+      "op": "relu",
+      "inputs": [
+        "body_2_minimum_compare_1"
+      ]
+    },
+    {
+      "name": "body_2_first_minimum",
+      "op": "conv",
+      "inputs": [
+        "body_2_minimum_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_negative_legs",
+      "op": "conv",
+      "inputs": [
+        "body_2_semantic_parts"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_minimum_compare_2",
+      "op": "add",
+      "inputs": [
+        "body_2_first_minimum",
+        "body_2_negative_legs"
+      ]
+    },
+    {
+      "name": "body_2_minimum_relu_2",
+      "op": "relu",
+      "inputs": [
+        "body_2_minimum_compare_2"
+      ]
+    },
+    {
+      "name": "body_2_minimum_subtract_2",
+      "op": "conv",
+      "inputs": [
+        "body_2_minimum_relu_2"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_weakest_part",
+      "op": "add",
+      "inputs": [
+        "body_2_first_minimum",
+        "body_2_minimum_subtract_2"
+      ]
+    },
+    {
+      "name": "body_2_negative_weakest",
+      "op": "conv",
+      "inputs": [
+        "body_2_weakest_part"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_conjunction_compare",
+      "op": "add",
+      "inputs": [
+        "body_2_raw_vote",
+        "body_2_negative_weakest"
+      ]
+    },
+    {
+      "name": "body_2_conjunction_relu",
+      "op": "relu",
+      "inputs": [
+        "body_2_conjunction_compare"
+      ]
+    },
+    {
+      "name": "body_2_conjunction_subtract",
+      "op": "conv",
+      "inputs": [
+        "body_2_conjunction_relu"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_2_vote",
+      "op": "add",
+      "inputs": [
+        "body_2_raw_vote",
+        "body_2_conjunction_subtract"
+      ]
+    },
+    {
+      "name": "body_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_2_vote"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "body_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "body_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "body_2_max_axis"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body_2_max",
+      "op": "reshape",
+      "inputs": [
+        "body_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "pyramid_3",
+      "op": "avgpool",
+      "inputs": [
+        "pyramid_2"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "head_3_0_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_3"
+      ],
+      "out": 30,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "head_3_0_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_3_0_measure"
+      ]
+    },
+    {
+      "name": "head_3_0_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_limit",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_limited",
+      "op": "relu",
+      "inputs": [
+        "head_3_0_limit"
+      ]
+    },
+    {
+      "name": "head_3_0_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_3_0_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_3_0_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_3_0_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_3_0_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_3_0_colour_vote",
+        "head_3_0_negative_structure"
+      ]
+    },
+    {
+      "name": "head_3_0_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_3_0_colour_excess"
+      ]
+    },
+    {
+      "name": "head_3_0_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_3_0_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_0_vote",
+      "op": "add",
+      "inputs": [
+        "head_3_0_colour_vote",
+        "head_3_0_structure_veto"
+      ]
+    },
+    {
+      "name": "head_3_0_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_0_vote"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "head_3_0_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_3_0_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_0_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_0_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_0_max",
+      "op": "reshape",
+      "inputs": [
+        "head_3_0_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_3_1_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_3"
+      ],
+      "out": 30,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "head_3_1_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_3_1_measure"
+      ]
+    },
+    {
+      "name": "head_3_1_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_limit",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_limited",
+      "op": "relu",
+      "inputs": [
+        "head_3_1_limit"
+      ]
+    },
+    {
+      "name": "head_3_1_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_3_1_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_3_1_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_3_1_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_3_1_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_3_1_colour_vote",
+        "head_3_1_negative_structure"
+      ]
+    },
+    {
+      "name": "head_3_1_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_3_1_colour_excess"
+      ]
+    },
+    {
+      "name": "head_3_1_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_3_1_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_1_vote",
+      "op": "add",
+      "inputs": [
+        "head_3_1_colour_vote",
+        "head_3_1_structure_veto"
+      ]
+    },
+    {
+      "name": "head_3_1_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_1_vote"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "head_3_1_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_3_1_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_1_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_1_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_1_max",
+      "op": "reshape",
+      "inputs": [
+        "head_3_1_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_3_2_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_3"
+      ],
+      "out": 30,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 2,
+      "padding": 9
+    },
+    {
+      "name": "head_3_2_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_3_2_measure"
+      ]
+    },
+    {
+      "name": "head_3_2_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_limit",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_limited",
+      "op": "relu",
+      "inputs": [
+        "head_3_2_limit"
+      ]
+    },
+    {
+      "name": "head_3_2_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_3_2_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_3_2_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_3_2_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_3_2_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_3_2_colour_vote",
+        "head_3_2_negative_structure"
+      ]
+    },
+    {
+      "name": "head_3_2_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_3_2_colour_excess"
+      ]
+    },
+    {
+      "name": "head_3_2_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_3_2_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_2_vote",
+      "op": "add",
+      "inputs": [
+        "head_3_2_colour_vote",
+        "head_3_2_structure_veto"
+      ]
+    },
+    {
+      "name": "head_3_2_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_2_vote"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "head_3_2_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_3_2_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_2_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_2_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_2_max",
+      "op": "reshape",
+      "inputs": [
+        "head_3_2_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "head_3_3_measure",
+      "op": "conv",
+      "inputs": [
+        "pyramid_3"
+      ],
+      "out": 30,
+      "kernel": [
+        23,
+        23
+      ],
+      "stride": 2,
+      "padding": 11
+    },
+    {
+      "name": "head_3_3_rectify",
+      "op": "relu",
+      "inputs": [
+        "head_3_3_measure"
+      ]
+    },
+    {
+      "name": "head_3_3_evidence",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_rectify"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_limit",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_evidence"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_limited",
+      "op": "relu",
+      "inputs": [
+        "head_3_3_limit"
+      ]
+    },
+    {
+      "name": "head_3_3_colour_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_limited"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_structure_rules",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_limited"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_rule_compare_1",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_structure_rules"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_rule_relu_1",
+      "op": "relu",
+      "inputs": [
+        "head_3_3_rule_compare_1"
+      ]
+    },
+    {
+      "name": "head_3_3_rule_compare_2",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_rule_relu_1"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_rule_relu_2",
+      "op": "relu",
+      "inputs": [
+        "head_3_3_rule_compare_2"
+      ]
+    },
+    {
+      "name": "head_3_3_structure_vote",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_rule_relu_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_negative_structure",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_structure_vote"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_colour_excess",
+      "op": "add",
+      "inputs": [
+        "head_3_3_colour_vote",
+        "head_3_3_negative_structure"
+      ]
+    },
+    {
+      "name": "head_3_3_unconfirmed_colour",
+      "op": "relu",
+      "inputs": [
+        "head_3_3_colour_excess"
+      ]
+    },
+    {
+      "name": "head_3_3_structure_veto",
+      "op": "conv",
+      "inputs": [
+        "head_3_3_unconfirmed_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "head_3_3_vote",
+      "op": "add",
+      "inputs": [
+        "head_3_3_colour_vote",
+        "head_3_3_structure_veto"
+      ]
+    },
+    {
+      "name": "head_3_3_max_space",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_3_vote"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "head_3_3_max_axis",
+      "op": "reshape",
+      "inputs": [
+        "head_3_3_max_space"
+      ],
+      "shape": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_3_max_types",
+      "op": "maxpool",
+      "inputs": [
+        "head_3_3_max_axis"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "head_3_3_max",
+      "op": "reshape",
+      "inputs": [
+        "head_3_3_max_types"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "skin_area",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "excess_skin_area",
+      "op": "dense",
+      "inputs": [
+        "skin_area"
+      ],
+      "out": 1
+    },
+    {
+      "name": "area_penalty",
+      "op": "relu",
+      "inputs": [
+        "excess_skin_area"
+      ]
+    },
+    {
+      "name": "vote_axis_0",
+      "op": "dense",
+      "inputs": [
+        "head_0_0_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_1",
+      "op": "dense",
+      "inputs": [
+        "head_0_1_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_2",
+      "op": "dense",
+      "inputs": [
+        "head_0_2_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_3",
+      "op": "dense",
+      "inputs": [
+        "head_0_3_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_4",
+      "op": "dense",
+      "inputs": [
+        "body_0_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_5",
+      "op": "dense",
+      "inputs": [
+        "achromatic_0_gated_vote"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_6",
+      "op": "dense",
+      "inputs": [
+        "achromatic_1_gated_vote"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_7",
+      "op": "dense",
+      "inputs": [
+        "achromatic_2_gated_vote"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_8",
+      "op": "dense",
+      "inputs": [
+        "achromatic_3_gated_vote"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_9",
+      "op": "dense",
+      "inputs": [
+        "head_1_0_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_10",
+      "op": "dense",
+      "inputs": [
+        "head_1_1_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_11",
+      "op": "dense",
+      "inputs": [
+        "head_1_2_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_12",
+      "op": "dense",
+      "inputs": [
+        "head_1_3_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_13",
+      "op": "dense",
+      "inputs": [
+        "body_1_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_14",
+      "op": "dense",
+      "inputs": [
+        "head_2_0_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_15",
+      "op": "dense",
+      "inputs": [
+        "head_2_1_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_16",
+      "op": "dense",
+      "inputs": [
+        "head_2_2_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_17",
+      "op": "dense",
+      "inputs": [
+        "head_2_3_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_18",
+      "op": "dense",
+      "inputs": [
+        "body_2_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_19",
+      "op": "dense",
+      "inputs": [
+        "head_3_0_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_20",
+      "op": "dense",
+      "inputs": [
+        "head_3_1_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_21",
+      "op": "dense",
+      "inputs": [
+        "head_3_2_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "vote_axis_22",
+      "op": "dense",
+      "inputs": [
+        "head_3_3_max"
+      ],
+      "out": 23
+    },
+    {
+      "name": "all_votes",
+      "op": "add",
+      "inputs": [
+        "vote_axis_0",
+        "vote_axis_1",
+        "vote_axis_2",
+        "vote_axis_3",
+        "vote_axis_4",
+        "vote_axis_5",
+        "vote_axis_6",
+        "vote_axis_7",
+        "vote_axis_8",
+        "vote_axis_9",
+        "vote_axis_10",
+        "vote_axis_11",
+        "vote_axis_12",
+        "vote_axis_13",
+        "vote_axis_14",
+        "vote_axis_15",
+        "vote_axis_16",
+        "vote_axis_17",
+        "vote_axis_18",
+        "vote_axis_19",
+        "vote_axis_20",
+        "vote_axis_21",
+        "vote_axis_22"
+      ]
+    },
+    {
+      "name": "votes_axis",
+      "op": "reshape",
+      "inputs": [
+        "all_votes"
+      ],
+      "shape": [
+        1,
+        1,
+        23
+      ]
+    },
+    {
+      "name": "best_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "votes_axis"
+      ],
+      "size": [
+        1,
+        23
+      ],
+      "stride": [
+        1,
+        23
+      ]
+    },
+    {
+      "name": "presence_margin",
+      "op": "dense",
+      "inputs": [
+        "best_evidence"
+      ],
+      "out": 1
+    },
+    {
+      "name": "area_cost",
+      "op": "dense",
+      "inputs": [
+        "area_penalty"
+      ],
+      "out": 1
+    },
+    {
+      "name": "decision",
+      "op": "add",
+      "inputs": [
+        "presence_margin",
+        "area_cost"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "decision"
+      ],
+      "out": 2
+    }
+  ]
+}

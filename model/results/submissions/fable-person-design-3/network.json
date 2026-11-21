@@ -1,0 +1,277 @@
+{
+ "layers": [
+  {
+   "name": "v",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vr",
+   "op": "relu",
+   "inputs": [
+    "v"
+   ]
+  },
+  {
+   "name": "m",
+   "op": "conv",
+   "inputs": [
+    "vr"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mr",
+   "op": "relu",
+   "inputs": [
+    "m"
+   ]
+  },
+  {
+   "name": "pA",
+   "op": "avgpool",
+   "inputs": [
+    "mr"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "pB",
+   "op": "avgpool",
+   "inputs": [
+    "pA"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "pC",
+   "op": "avgpool",
+   "inputs": [
+    "pB"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bA",
+   "op": "conv",
+   "inputs": [
+    "pA"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "bAr",
+   "op": "relu",
+   "inputs": [
+    "bA"
+   ]
+  },
+  {
+   "name": "bAm",
+   "op": "maxpool",
+   "inputs": [
+    "bAr"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "dA",
+   "op": "dense",
+   "inputs": [
+    "bAm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "bB",
+   "op": "conv",
+   "inputs": [
+    "pB"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "bBr",
+   "op": "relu",
+   "inputs": [
+    "bB"
+   ]
+  },
+  {
+   "name": "bBm",
+   "op": "maxpool",
+   "inputs": [
+    "bBr"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "dB",
+   "op": "dense",
+   "inputs": [
+    "bBm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "bC",
+   "op": "conv",
+   "inputs": [
+    "pC"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "bCr",
+   "op": "relu",
+   "inputs": [
+    "bC"
+   ]
+  },
+  {
+   "name": "bCm",
+   "op": "maxpool",
+   "inputs": [
+    "bCr"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "dC",
+   "op": "dense",
+   "inputs": [
+    "bCm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "g",
+   "op": "avgpool",
+   "inputs": [
+    "pC"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "gc",
+   "op": "conv",
+   "inputs": [
+    "g"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gr",
+   "op": "relu",
+   "inputs": [
+    "gc"
+   ]
+  },
+  {
+   "name": "dG",
+   "op": "dense",
+   "inputs": [
+    "gr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "dA",
+    "dB",
+    "dC",
+    "dG"
+   ]
+  }
+ ]
+}

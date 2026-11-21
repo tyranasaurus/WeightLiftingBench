@@ -1,0 +1,487 @@
+{
+  "layers": [
+    {
+      "name": "deficit",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_deficit",
+      "op": "relu",
+      "inputs": [
+        "deficit"
+      ]
+    },
+    {
+      "name": "occupancy",
+      "op": "conv",
+      "inputs": [
+        "positive_deficit"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "padded_ink",
+      "op": "conv",
+      "inputs": [
+        "occupancy"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "dilate",
+      "op": "maxpool",
+      "inputs": [
+        "padded_ink"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "invert",
+      "op": "conv",
+      "inputs": [
+        "dilate"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "erode_inverse",
+      "op": "maxpool",
+      "inputs": [
+        "invert"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "repair",
+      "op": "conv",
+      "inputs": [
+        "erode_inverse"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "original_fraction",
+      "op": "conv",
+      "inputs": [
+        "occupancy"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "repaired_occupancy",
+      "op": "add",
+      "inputs": [
+        "original_fraction",
+        "repair"
+      ]
+    },
+    {
+      "name": "shape_grid",
+      "op": "avgpool",
+      "inputs": [
+        "repaired_occupancy"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_shape",
+      "op": "norm",
+      "inputs": [
+        "shape_grid"
+      ]
+    },
+    {
+      "name": "contour",
+      "op": "conv",
+      "inputs": [
+        "shape_grid"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "normalized_contour",
+      "op": "norm",
+      "inputs": [
+        "contour"
+      ]
+    },
+    {
+      "name": "tone_grid",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_tone",
+      "op": "norm",
+      "inputs": [
+        "tone_grid"
+      ]
+    },
+    {
+      "name": "individual_shapes",
+      "op": "dense",
+      "inputs": [
+        "normalized_shape"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "individual_contours",
+      "op": "dense",
+      "inputs": [
+        "normalized_contour"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "individual_surfaces",
+      "op": "dense",
+      "inputs": [
+        "normalized_tone"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "joint_match",
+      "op": "add",
+      "inputs": [
+        "individual_shapes",
+        "individual_contours",
+        "individual_surfaces"
+      ]
+    },
+    {
+      "name": "template_groups",
+      "op": "reshape",
+      "inputs": [
+        "joint_match"
+      ],
+      "shape": [
+        10,
+        4,
+        480
+      ]
+    },
+    {
+      "name": "best_in_group",
+      "op": "maxpool",
+      "inputs": [
+        "template_groups"
+      ],
+      "size": [
+        1,
+        480
+      ],
+      "stride": [
+        1,
+        480
+      ]
+    },
+    {
+      "name": "best_match",
+      "op": "maxpool",
+      "inputs": [
+        "best_in_group"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "match_support",
+      "op": "avgpool",
+      "inputs": [
+        "best_in_group"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "peak_vote",
+      "op": "dense",
+      "inputs": [
+        "best_match"
+      ],
+      "out": 10
+    },
+    {
+      "name": "support_vote",
+      "op": "dense",
+      "inputs": [
+        "match_support"
+      ],
+      "out": 10
+    },
+    {
+      "name": "contrast_input",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "front_panel_filters",
+      "op": "dense",
+      "inputs": [
+        "contrast_input"
+      ],
+      "out": 1080
+    },
+    {
+      "name": "panel_arrangement",
+      "op": "reshape",
+      "inputs": [
+        "front_panel_filters"
+      ],
+      "shape": [
+        1,
+        12,
+        90
+      ]
+    },
+    {
+      "name": "strongest_panel_edge",
+      "op": "maxpool",
+      "inputs": [
+        "panel_arrangement"
+      ],
+      "size": [
+        1,
+        90
+      ],
+      "stride": [
+        1,
+        90
+      ]
+    },
+    {
+      "name": "closure_levels",
+      "op": "dense",
+      "inputs": [
+        "strongest_panel_edge"
+      ],
+      "out": 3
+    },
+    {
+      "name": "closure_evidence",
+      "op": "relu",
+      "inputs": [
+        "closure_levels"
+      ]
+    },
+    {
+      "name": "construction_cues",
+      "op": "dense",
+      "inputs": [
+        "closure_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "foot_conditions",
+      "op": "dense",
+      "inputs": [
+        "repaired_occupancy"
+      ],
+      "out": 400
+    },
+    {
+      "name": "foot_shortfalls",
+      "op": "relu",
+      "inputs": [
+        "foot_conditions"
+      ]
+    },
+    {
+      "name": "foot_rule_groups",
+      "op": "reshape",
+      "inputs": [
+        "foot_shortfalls"
+      ],
+      "shape": [
+        1,
+        100,
+        4
+      ]
+    },
+    {
+      "name": "foot_shortfall_mean",
+      "op": "avgpool",
+      "inputs": [
+        "foot_rule_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "open_upper_contrast",
+      "op": "dense",
+      "inputs": [
+        "repaired_occupancy"
+      ],
+      "out": 100
+    },
+    {
+      "name": "foot_context",
+      "op": "dense",
+      "inputs": [
+        "foot_shortfall_mean"
+      ],
+      "out": 100
+    },
+    {
+      "name": "open_shoe_evidence",
+      "op": "add",
+      "inputs": [
+        "open_upper_contrast",
+        "foot_context"
+      ]
+    },
+    {
+      "name": "open_shoe_positive",
+      "op": "relu",
+      "inputs": [
+        "open_shoe_evidence"
+      ]
+    },
+    {
+      "name": "shoe_views",
+      "op": "reshape",
+      "inputs": [
+        "open_shoe_positive"
+      ],
+      "shape": [
+        1,
+        1,
+        100
+      ]
+    },
+    {
+      "name": "strongest_open_upper",
+      "op": "maxpool",
+      "inputs": [
+        "shoe_views"
+      ],
+      "size": [
+        1,
+        100
+      ],
+      "stride": [
+        1,
+        100
+      ]
+    },
+    {
+      "name": "strap_cue",
+      "op": "dense",
+      "inputs": [
+        "strongest_open_upper"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "peak_vote",
+        "support_vote",
+        "construction_cues",
+        "strap_cue"
+      ]
+    }
+  ]
+}

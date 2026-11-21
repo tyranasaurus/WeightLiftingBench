@@ -1,0 +1,91 @@
+{
+ "layers": [
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "conv",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 360,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "shift",
+   "op": "maxpool",
+   "inputs": [
+    "tm"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "shift"
+   ],
+   "shape": [
+    1,
+    10,
+    36
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

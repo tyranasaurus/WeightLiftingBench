@@ -1,0 +1,48 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 10,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "feat_relu",
+   "op": "relu",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "grid",
+   "op": "avgpool",
+   "inputs": [
+    "feat_relu"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "grid"
+   ],
+   "out": 10
+  }
+ ]
+}

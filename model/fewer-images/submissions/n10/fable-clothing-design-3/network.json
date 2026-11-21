@@ -1,0 +1,56 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "templates",
+   "op": "dense",
+   "inputs": [
+    "n0"
+   ],
+   "out": 30
+  },
+  {
+   "name": "group",
+   "op": "reshape",
+   "inputs": [
+    "templates"
+   ],
+   "shape": [
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "group"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

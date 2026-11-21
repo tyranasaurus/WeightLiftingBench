@@ -1,0 +1,3 @@
+The network clips high-intensity ink and uses a 3×3 max pool to give each stroke a small amount of position tolerance. Two dense layers score exact and nearby ink coverage while penalizing ink far from the candidate stroke. Each digit's logit is the maximum score over its 2,048 candidates.
+
+The candidates are drawn from hand-written pen paths on an abstract grid, interpolated with splines and varied by fixed-seed changes to size, slant, curvature, position, and stroke width. The dense weights are formulas of distance to those paths. The build program reads no files, and no training images or measurements from them were used to construct the weights.

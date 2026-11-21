@@ -1,0 +1,3 @@
+The network is a hand-designed normalized template bank. It computes luminance, colour-opponent, and Sobel features at two scales, then correlates them with analytic drawings of the 43 signs. A max over deterministic variations in scale, translation, rotation, aspect ratio, and stroke width provides nuisance tolerance.
+
+Every template is rendered in `build.py` from circles, triangles, polygons, strokes, and a conventional hand-written 5×7 digit alphabet. The build is data-free: no training images, image statistics, fitted parameters, or external files contribute to the weights.

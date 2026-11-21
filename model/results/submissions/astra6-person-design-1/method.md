@@ -1,0 +1,13 @@
+# Analytical person-presence network
+
+The network uses a four-level average-pooling image pyramid. Fixed BT.601 colour transforms and piecewise-linear inequalities form a soft skin-colour cue, while per-image luminance normalization supplies contrast-invariant structure. Pixel-integrated Gaussian masks describe generic compact heads, bilateral eyes, noses, hair, and wider shoulders; separate oriented-edge templates describe a head, torso, arms, and separated legs. Exact ReLU minimum/maximum circuits require agreement between parts, and a constant support channel prevents missing image pixels from masquerading as colour contrast. A second, symmetric frontal-face route is gated to near-monochrome images by channel differences. Spatial/scale maxima allow a person to occur anywhere, and a weak excess-skin-area penalty reduces responses to uniformly warm-coloured scenes.
+
+Every weight is generated in `build.py` from explicit colour formulas, Gaussian functions, generic capsule/trapezoid geometry, and manually chosen fuzzy-logic constants. No training images, image measurements, descriptors, labels, learned parameters, optimization, or external files enter that program. The training data were used only for viewing whole-image contact sheets and the explicitly logged checks through the supplied runner.
+
+The final network has 580 layers and 829,427 float32 weight entries, below the 120,000,000-entry limit. It outputs two scores in the requested order: no person, person. Evaluation-driven development was limited to the five authorized runner checks; there was no parameter search, fitted readout, or automatic selection among candidates.
+
+## Checks and limitations
+
+All five permitted checks are recorded in `checks.log`. Check 1 accidentally used an all-negative prefix and therefore did not estimate overall accuracy. Checks 2–4 used a fixed random 2,000-image sample to check the initial design, anatomical conjunctions, and the achromatic route respectively. Check 5 used a separate random 2,000-image sample, excluding all images from the preceding checks, and obtained **59.05% accuracy** (confusion matrix: `[[680, 303], [516, 501]]`, rows true class). No weights were changed after check 5. The final sample's normalized task score is 0.181; held-out accuracy and performance relative to either comparison baseline are unknown. This remains a limited handcrafted detector, particularly for small, occluded, rear-facing, and non-upright people.
+
+`check_network.py` reports a usable network with valid shapes and weights. The final `check_rebuild.py` run passed with maximum relative difference 0.0; `build.py` is 22,401 bytes and rebuilds without reading any data files.

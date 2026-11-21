@@ -1,0 +1,1114 @@
+{
+  "layers": [
+    {
+      "name": "two_pixel_bins",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_winsorize",
+      "op": "conv",
+      "inputs": [
+        "two_pixel_bins"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_001",
+      "op": "relu",
+      "inputs": [
+        "sky_winsorize"
+      ]
+    },
+    {
+      "name": "sky_reduce_0",
+      "op": "avgpool",
+      "inputs": [
+        "relu_001"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_reduce_1",
+      "op": "avgpool",
+      "inputs": [
+        "sky_reduce_0"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_reduce_2",
+      "op": "avgpool",
+      "inputs": [
+        "sky_reduce_1"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_reduce_3",
+      "op": "avgpool",
+      "inputs": [
+        "sky_reduce_2"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_reduce_4",
+      "op": "avgpool",
+      "inputs": [
+        "sky_reduce_3"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_reduce_5",
+      "op": "avgpool",
+      "inputs": [
+        "sky_reduce_4"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "local_intensity_and_colour",
+      "op": "conv",
+      "inputs": [
+        "two_pixel_bins"
+      ],
+      "out": 3,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "broadcast_sky_offset",
+      "op": "dense",
+      "inputs": [
+        "sky_reduce_5"
+      ],
+      "out": 12288
+    },
+    {
+      "name": "reshape_002",
+      "op": "reshape",
+      "inputs": [
+        "broadcast_sky_offset"
+      ],
+      "shape": [
+        3,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "sky_subtracted_planes",
+      "op": "add",
+      "inputs": [
+        "local_intensity_and_colour",
+        "reshape_002"
+      ]
+    },
+    {
+      "name": "conv_003",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted_planes"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_004",
+      "op": "relu",
+      "inputs": [
+        "conv_003"
+      ]
+    },
+    {
+      "name": "conv_005",
+      "op": "conv",
+      "inputs": [
+        "relu_004"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_006",
+      "op": "relu",
+      "inputs": [
+        "conv_005"
+      ]
+    },
+    {
+      "name": "conv_007",
+      "op": "conv",
+      "inputs": [
+        "relu_006"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relu_008",
+      "op": "relu",
+      "inputs": [
+        "conv_007"
+      ]
+    },
+    {
+      "name": "conv_009",
+      "op": "conv",
+      "inputs": [
+        "relu_006"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "conv_010",
+      "op": "conv",
+      "inputs": [
+        "relu_008"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "conv_011",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted_planes"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_and_core_maps",
+      "op": "add",
+      "inputs": [
+        "conv_009",
+        "conv_010",
+        "conv_011"
+      ]
+    },
+    {
+      "name": "extended_and_shape_maps",
+      "op": "conv",
+      "inputs": [
+        "relu_004"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "conv_012",
+      "op": "conv",
+      "inputs": [
+        "foreground_and_core_maps"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "conv_013",
+      "op": "conv",
+      "inputs": [
+        "extended_and_shape_maps"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "all_photometry_planes",
+      "op": "add",
+      "inputs": [
+        "conv_012",
+        "conv_013"
+      ]
+    },
+    {
+      "name": "analytic_photometry",
+      "op": "dense",
+      "inputs": [
+        "all_photometry_planes"
+      ],
+      "out": 1090
+    },
+    {
+      "name": "dense_014",
+      "op": "dense",
+      "inputs": [
+        "analytic_photometry"
+      ],
+      "out": 1094
+    },
+    {
+      "name": "dense_015",
+      "op": "dense",
+      "inputs": [
+        "analytic_photometry"
+      ],
+      "out": 308
+    },
+    {
+      "name": "relu_016",
+      "op": "relu",
+      "inputs": [
+        "dense_015"
+      ]
+    },
+    {
+      "name": "dense_017",
+      "op": "dense",
+      "inputs": [
+        "relu_016"
+      ],
+      "out": 1094
+    },
+    {
+      "name": "dense_018",
+      "op": "dense",
+      "inputs": [
+        "analytic_photometry"
+      ],
+      "out": 1700
+    },
+    {
+      "name": "reshape_019",
+      "op": "reshape",
+      "inputs": [
+        "dense_018"
+      ],
+      "shape": [
+        425,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_020",
+      "op": "norm",
+      "inputs": [
+        "reshape_019"
+      ]
+    },
+    {
+      "name": "dense_021",
+      "op": "dense",
+      "inputs": [
+        "norm_020"
+      ],
+      "out": 1094
+    },
+    {
+      "name": "add_022",
+      "op": "add",
+      "inputs": [
+        "dense_014",
+        "dense_017",
+        "dense_021"
+      ]
+    },
+    {
+      "name": "dense_023",
+      "op": "dense",
+      "inputs": [
+        "add_022"
+      ],
+      "out": 2599
+    },
+    {
+      "name": "dense_024",
+      "op": "dense",
+      "inputs": [
+        "add_022"
+      ],
+      "out": 2196
+    },
+    {
+      "name": "relu_025",
+      "op": "relu",
+      "inputs": [
+        "dense_024"
+      ]
+    },
+    {
+      "name": "dense_026",
+      "op": "dense",
+      "inputs": [
+        "relu_025"
+      ],
+      "out": 2599
+    },
+    {
+      "name": "dense_027",
+      "op": "dense",
+      "inputs": [
+        "add_022"
+      ],
+      "out": 160
+    },
+    {
+      "name": "reshape_028",
+      "op": "reshape",
+      "inputs": [
+        "dense_027"
+      ],
+      "shape": [
+        40,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_029",
+      "op": "norm",
+      "inputs": [
+        "reshape_028"
+      ]
+    },
+    {
+      "name": "dense_030",
+      "op": "dense",
+      "inputs": [
+        "norm_029"
+      ],
+      "out": 2599
+    },
+    {
+      "name": "add_031",
+      "op": "add",
+      "inputs": [
+        "dense_023",
+        "dense_026",
+        "dense_030"
+      ]
+    },
+    {
+      "name": "dense_032",
+      "op": "dense",
+      "inputs": [
+        "add_031"
+      ],
+      "out": 2456
+    },
+    {
+      "name": "dense_033",
+      "op": "dense",
+      "inputs": [
+        "add_031"
+      ],
+      "out": 557
+    },
+    {
+      "name": "relu_034",
+      "op": "relu",
+      "inputs": [
+        "dense_033"
+      ]
+    },
+    {
+      "name": "dense_035",
+      "op": "dense",
+      "inputs": [
+        "relu_034"
+      ],
+      "out": 2456
+    },
+    {
+      "name": "add_036",
+      "op": "add",
+      "inputs": [
+        "dense_032",
+        "dense_035"
+      ]
+    },
+    {
+      "name": "dense_037",
+      "op": "dense",
+      "inputs": [
+        "add_036"
+      ],
+      "out": 2078
+    },
+    {
+      "name": "dense_038",
+      "op": "dense",
+      "inputs": [
+        "add_036"
+      ],
+      "out": 393
+    },
+    {
+      "name": "relu_039",
+      "op": "relu",
+      "inputs": [
+        "dense_038"
+      ]
+    },
+    {
+      "name": "dense_040",
+      "op": "dense",
+      "inputs": [
+        "relu_039"
+      ],
+      "out": 2078
+    },
+    {
+      "name": "add_041",
+      "op": "add",
+      "inputs": [
+        "dense_037",
+        "dense_040"
+      ]
+    },
+    {
+      "name": "dense_042",
+      "op": "dense",
+      "inputs": [
+        "add_041"
+      ],
+      "out": 1822
+    },
+    {
+      "name": "dense_043",
+      "op": "dense",
+      "inputs": [
+        "add_041"
+      ],
+      "out": 124
+    },
+    {
+      "name": "relu_044",
+      "op": "relu",
+      "inputs": [
+        "dense_043"
+      ]
+    },
+    {
+      "name": "dense_045",
+      "op": "dense",
+      "inputs": [
+        "relu_044"
+      ],
+      "out": 1822
+    },
+    {
+      "name": "add_046",
+      "op": "add",
+      "inputs": [
+        "dense_042",
+        "dense_045"
+      ]
+    },
+    {
+      "name": "dense_047",
+      "op": "dense",
+      "inputs": [
+        "add_046"
+      ],
+      "out": 1751
+    },
+    {
+      "name": "dense_048",
+      "op": "dense",
+      "inputs": [
+        "add_046"
+      ],
+      "out": 6
+    },
+    {
+      "name": "relu_049",
+      "op": "relu",
+      "inputs": [
+        "dense_048"
+      ]
+    },
+    {
+      "name": "dense_050",
+      "op": "dense",
+      "inputs": [
+        "relu_049"
+      ],
+      "out": 1751
+    },
+    {
+      "name": "dense_051",
+      "op": "dense",
+      "inputs": [
+        "add_046"
+      ],
+      "out": 64
+    },
+    {
+      "name": "reshape_052",
+      "op": "reshape",
+      "inputs": [
+        "dense_051"
+      ],
+      "shape": [
+        16,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_053",
+      "op": "norm",
+      "inputs": [
+        "reshape_052"
+      ]
+    },
+    {
+      "name": "dense_054",
+      "op": "dense",
+      "inputs": [
+        "norm_053"
+      ],
+      "out": 1751
+    },
+    {
+      "name": "add_055",
+      "op": "add",
+      "inputs": [
+        "dense_047",
+        "dense_050",
+        "dense_054"
+      ]
+    },
+    {
+      "name": "dense_056",
+      "op": "dense",
+      "inputs": [
+        "add_055"
+      ],
+      "out": 934
+    },
+    {
+      "name": "dense_057",
+      "op": "dense",
+      "inputs": [
+        "add_055"
+      ],
+      "out": 899
+    },
+    {
+      "name": "relu_058",
+      "op": "relu",
+      "inputs": [
+        "dense_057"
+      ]
+    },
+    {
+      "name": "dense_059",
+      "op": "dense",
+      "inputs": [
+        "relu_058"
+      ],
+      "out": 934
+    },
+    {
+      "name": "dense_060",
+      "op": "dense",
+      "inputs": [
+        "add_055"
+      ],
+      "out": 4
+    },
+    {
+      "name": "reshape_061",
+      "op": "reshape",
+      "inputs": [
+        "dense_060"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_062",
+      "op": "norm",
+      "inputs": [
+        "reshape_061"
+      ]
+    },
+    {
+      "name": "dense_063",
+      "op": "dense",
+      "inputs": [
+        "norm_062"
+      ],
+      "out": 934
+    },
+    {
+      "name": "add_064",
+      "op": "add",
+      "inputs": [
+        "dense_056",
+        "dense_059",
+        "dense_063"
+      ]
+    },
+    {
+      "name": "dense_065",
+      "op": "dense",
+      "inputs": [
+        "add_064"
+      ],
+      "out": 4061
+    },
+    {
+      "name": "dense_066",
+      "op": "dense",
+      "inputs": [
+        "add_064"
+      ],
+      "out": 3144
+    },
+    {
+      "name": "relu_067",
+      "op": "relu",
+      "inputs": [
+        "dense_066"
+      ]
+    },
+    {
+      "name": "dense_068",
+      "op": "dense",
+      "inputs": [
+        "relu_067"
+      ],
+      "out": 4061
+    },
+    {
+      "name": "add_069",
+      "op": "add",
+      "inputs": [
+        "dense_065",
+        "dense_068"
+      ]
+    },
+    {
+      "name": "dense_070",
+      "op": "dense",
+      "inputs": [
+        "add_069"
+      ],
+      "out": 41
+    },
+    {
+      "name": "dense_071",
+      "op": "dense",
+      "inputs": [
+        "add_069"
+      ],
+      "out": 1
+    },
+    {
+      "name": "relu_072",
+      "op": "relu",
+      "inputs": [
+        "dense_071"
+      ]
+    },
+    {
+      "name": "dense_073",
+      "op": "dense",
+      "inputs": [
+        "relu_072"
+      ],
+      "out": 41
+    },
+    {
+      "name": "dense_074",
+      "op": "dense",
+      "inputs": [
+        "add_069"
+      ],
+      "out": 112
+    },
+    {
+      "name": "reshape_075",
+      "op": "reshape",
+      "inputs": [
+        "dense_074"
+      ],
+      "shape": [
+        28,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_076",
+      "op": "norm",
+      "inputs": [
+        "reshape_075"
+      ]
+    },
+    {
+      "name": "dense_077",
+      "op": "dense",
+      "inputs": [
+        "norm_076"
+      ],
+      "out": 41
+    },
+    {
+      "name": "add_078",
+      "op": "add",
+      "inputs": [
+        "dense_070",
+        "dense_073",
+        "dense_077"
+      ]
+    },
+    {
+      "name": "dense_079",
+      "op": "dense",
+      "inputs": [
+        "add_078"
+      ],
+      "out": 95
+    },
+    {
+      "name": "dense_080",
+      "op": "dense",
+      "inputs": [
+        "add_078"
+      ],
+      "out": 80
+    },
+    {
+      "name": "relu_081",
+      "op": "relu",
+      "inputs": [
+        "dense_080"
+      ]
+    },
+    {
+      "name": "dense_082",
+      "op": "dense",
+      "inputs": [
+        "relu_081"
+      ],
+      "out": 95
+    },
+    {
+      "name": "dense_083",
+      "op": "dense",
+      "inputs": [
+        "add_078"
+      ],
+      "out": 4
+    },
+    {
+      "name": "reshape_084",
+      "op": "reshape",
+      "inputs": [
+        "dense_083"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "norm_085",
+      "op": "norm",
+      "inputs": [
+        "reshape_084"
+      ]
+    },
+    {
+      "name": "dense_086",
+      "op": "dense",
+      "inputs": [
+        "norm_085"
+      ],
+      "out": 95
+    },
+    {
+      "name": "add_087",
+      "op": "add",
+      "inputs": [
+        "dense_079",
+        "dense_082",
+        "dense_086"
+      ]
+    },
+    {
+      "name": "dense_088",
+      "op": "dense",
+      "inputs": [
+        "add_087"
+      ],
+      "out": 104
+    },
+    {
+      "name": "dense_089",
+      "op": "dense",
+      "inputs": [
+        "add_087"
+      ],
+      "out": 16
+    },
+    {
+      "name": "relu_090",
+      "op": "relu",
+      "inputs": [
+        "dense_089"
+      ]
+    },
+    {
+      "name": "dense_091",
+      "op": "dense",
+      "inputs": [
+        "relu_090"
+      ],
+      "out": 104
+    },
+    {
+      "name": "add_092",
+      "op": "add",
+      "inputs": [
+        "dense_088",
+        "dense_091"
+      ]
+    },
+    {
+      "name": "dense_093",
+      "op": "dense",
+      "inputs": [
+        "add_092"
+      ],
+      "out": 107
+    },
+    {
+      "name": "dense_094",
+      "op": "dense",
+      "inputs": [
+        "add_092"
+      ],
+      "out": 16
+    },
+    {
+      "name": "relu_095",
+      "op": "relu",
+      "inputs": [
+        "dense_094"
+      ]
+    },
+    {
+      "name": "dense_096",
+      "op": "dense",
+      "inputs": [
+        "relu_095"
+      ],
+      "out": 107
+    },
+    {
+      "name": "add_097",
+      "op": "add",
+      "inputs": [
+        "dense_093",
+        "dense_096"
+      ]
+    },
+    {
+      "name": "dense_098",
+      "op": "dense",
+      "inputs": [
+        "add_097"
+      ],
+      "out": 136
+    },
+    {
+      "name": "dense_099",
+      "op": "dense",
+      "inputs": [
+        "add_097"
+      ],
+      "out": 32
+    },
+    {
+      "name": "relu_100",
+      "op": "relu",
+      "inputs": [
+        "dense_099"
+      ]
+    },
+    {
+      "name": "dense_101",
+      "op": "dense",
+      "inputs": [
+        "relu_100"
+      ],
+      "out": 136
+    },
+    {
+      "name": "add_102",
+      "op": "add",
+      "inputs": [
+        "dense_098",
+        "dense_101"
+      ]
+    },
+    {
+      "name": "dense_103",
+      "op": "dense",
+      "inputs": [
+        "add_102"
+      ],
+      "out": 152
+    },
+    {
+      "name": "dense_104",
+      "op": "dense",
+      "inputs": [
+        "add_102"
+      ],
+      "out": 16
+    },
+    {
+      "name": "relu_105",
+      "op": "relu",
+      "inputs": [
+        "dense_104"
+      ]
+    },
+    {
+      "name": "dense_106",
+      "op": "dense",
+      "inputs": [
+        "relu_105"
+      ],
+      "out": 152
+    },
+    {
+      "name": "add_107",
+      "op": "add",
+      "inputs": [
+        "dense_103",
+        "dense_106"
+      ]
+    },
+    {
+      "name": "galaxy_class_scores",
+      "op": "dense",
+      "inputs": [
+        "add_107"
+      ],
+      "out": 10
+    }
+  ]
+}

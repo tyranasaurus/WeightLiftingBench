@@ -1,0 +1,191 @@
+{
+ "layers": [
+  {
+   "name": "c0",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r0",
+   "op": "relu",
+   "inputs": [
+    "c0"
+   ]
+  },
+  {
+   "name": "rays",
+   "op": "dense",
+   "inputs": [
+    "r0"
+   ],
+   "out": 3920
+  },
+  {
+   "name": "rs",
+   "op": "reshape",
+   "inputs": [
+    "rays"
+   ],
+   "shape": [
+    5,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "f1",
+   "op": "conv",
+   "inputs": [
+    "rs"
+   ],
+   "out": 17,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "f2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "f2"
+   ]
+  },
+  {
+   "name": "pg",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 9,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 4,
+   "padding": 2
+  },
+  {
+   "name": "mp",
+   "op": "maxpool",
+   "inputs": [
+    "r2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "pc",
+   "op": "conv",
+   "inputs": [
+    "mp"
+   ],
+   "out": 11,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 4,
+   "padding": 3
+  },
+  {
+   "name": "dg",
+   "op": "dense",
+   "inputs": [
+    "pg"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "dc",
+   "op": "dense",
+   "inputs": [
+    "pc"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "sim",
+   "op": "add",
+   "inputs": [
+    "dg",
+    "dc"
+   ]
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "sim"
+   ],
+   "shape": [
+    10,
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

@@ -1,0 +1,178 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "dq",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 216
+  },
+  {
+   "name": "dq_r",
+   "op": "reshape",
+   "inputs": [
+    "dq"
+   ],
+   "shape": [
+    9,
+    1,
+    24
+   ]
+  },
+  {
+   "name": "dq_m",
+   "op": "maxpool",
+   "inputs": [
+    "dq_r"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "dd",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 24
+  },
+  {
+   "name": "dd_r",
+   "op": "reshape",
+   "inputs": [
+    "dd"
+   ],
+   "shape": [
+    2,
+    1,
+    12
+   ]
+  },
+  {
+   "name": "dd_m",
+   "op": "maxpool",
+   "inputs": [
+    "dd_r"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    12
+   ]
+  },
+  {
+   "name": "ds",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 9
+  },
+  {
+   "name": "eq",
+   "op": "dense",
+   "inputs": [
+    "dq_m"
+   ],
+   "out": 36
+  },
+  {
+   "name": "ed",
+   "op": "dense",
+   "inputs": [
+    "dd_m"
+   ],
+   "out": 36
+  },
+  {
+   "name": "es",
+   "op": "dense",
+   "inputs": [
+    "ds"
+   ],
+   "out": 36
+  },
+  {
+   "name": "cat",
+   "op": "add",
+   "inputs": [
+    "eq",
+    "ed",
+    "es"
+   ]
+  },
+  {
+   "name": "pairs",
+   "op": "reshape",
+   "inputs": [
+    "cat"
+   ],
+   "shape": [
+    9,
+    4,
+    1
+   ]
+  },
+  {
+   "name": "ratio",
+   "op": "norm",
+   "inputs": [
+    "pairs"
+   ]
+  },
+  {
+   "name": "hid",
+   "op": "dense",
+   "inputs": [
+    "ratio"
+   ],
+   "out": 26
+  },
+  {
+   "name": "hid_r",
+   "op": "relu",
+   "inputs": [
+    "hid"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "hid_r"
+   ],
+   "out": 10
+  }
+ ]
+}

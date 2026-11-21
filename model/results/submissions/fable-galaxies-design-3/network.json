@@ -1,0 +1,166 @@
+{
+ "layers": [
+  {
+   "name": "pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "pre_r",
+   "op": "relu",
+   "inputs": [
+    "pre"
+   ]
+  },
+  {
+   "name": "featp",
+   "op": "conv",
+   "inputs": [
+    "pre_r"
+   ],
+   "out": 80,
+   "kernel": [
+    128,
+    128
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "featp_g",
+   "op": "reshape",
+   "inputs": [
+    "featp"
+   ],
+   "shape": [
+    1,
+    5,
+    16
+   ]
+  },
+  {
+   "name": "amp_p",
+   "op": "maxpool",
+   "inputs": [
+    "featp_g"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "amp",
+   "op": "reshape",
+   "inputs": [
+    "amp_p"
+   ],
+   "shape": [
+    5
+   ]
+  },
+  {
+   "name": "feats",
+   "op": "conv",
+   "inputs": [
+    "pre_r"
+   ],
+   "out": 6,
+   "kernel": [
+    128,
+    128
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "va",
+   "op": "dense",
+   "inputs": [
+    "amp"
+   ],
+   "out": 54
+  },
+  {
+   "name": "vs",
+   "op": "dense",
+   "inputs": [
+    "feats"
+   ],
+   "out": 54
+  },
+  {
+   "name": "vsum",
+   "op": "add",
+   "inputs": [
+    "va",
+    "vs"
+   ]
+  },
+  {
+   "name": "vgrid",
+   "op": "reshape",
+   "inputs": [
+    "vsum"
+   ],
+   "shape": [
+    3,
+    1,
+    18
+   ]
+  },
+  {
+   "name": "vnorm",
+   "op": "norm",
+   "inputs": [
+    "vgrid"
+   ]
+  },
+  {
+   "name": "u",
+   "op": "reshape",
+   "inputs": [
+    "vnorm"
+   ],
+   "shape": [
+    54
+   ]
+  },
+  {
+   "name": "hid",
+   "op": "dense",
+   "inputs": [
+    "u"
+   ],
+   "out": 22
+  },
+  {
+   "name": "hid_r",
+   "op": "relu",
+   "inputs": [
+    "hid"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "hid_r"
+   ],
+   "out": 10
+  }
+ ]
+}

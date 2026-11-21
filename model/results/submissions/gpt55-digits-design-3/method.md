@@ -1,0 +1,5 @@
+The network is a fixed, data-free template matcher.  `build.py` draws synthetic handwritten digits from general geometric pen paths for each class (loops for 0/6/8/9, strokes for 1/4/7, and curved multi-stroke paths for 2/3/5), with hand-chosen random variations in slant, rotation, thickness, aspect ratio and centering.
+
+There are three matching branches: a normalized 28x28 correlation bank, a raw 28x28 L2-style bank, and a normalized 14x14 coarse bank.  Each branch takes the best matching synthetic template for every class, rescales those ten scores with fixed diagonal dense layers, adds the branches, and applies a small hand-set class prior to offset obvious template-matching biases toward simple strokes and looped digits.
+
+No training data, labels, fitted statistics, copied image patches, or learned parameters are read by `build.py`; all weights are generated from formulas and fixed constants in the program.

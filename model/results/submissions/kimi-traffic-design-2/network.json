@@ -1,0 +1,149 @@
+{
+  "layers": [
+    {
+      "name": "features",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "smooth",
+      "op": "avgpool",
+      "inputs": [
+        "features"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "standardize",
+      "op": "norm",
+      "inputs": [
+        "smooth"
+      ]
+    },
+    {
+      "name": "grey",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "grey_standardize",
+      "op": "norm",
+      "inputs": [
+        "grey"
+      ]
+    },
+    {
+      "name": "outer_match",
+      "op": "conv",
+      "inputs": [
+        "standardize"
+      ],
+      "out": 516,
+      "kernel": [
+        16,
+        16
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inner_match",
+      "op": "conv",
+      "inputs": [
+        "standardize"
+      ],
+      "out": 516,
+      "kernel": [
+        16,
+        16
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "fine_match",
+      "op": "conv",
+      "inputs": [
+        "grey_standardize"
+      ],
+      "out": 516,
+      "kernel": [
+        32,
+        32
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence",
+      "op": "add",
+      "inputs": [
+        "outer_match",
+        "inner_match",
+        "fine_match"
+      ]
+    },
+    {
+      "name": "class_variants",
+      "op": "reshape",
+      "inputs": [
+        "evidence"
+      ],
+      "shape": [
+        1,
+        1,
+        516
+      ]
+    },
+    {
+      "name": "best_variant",
+      "op": "maxpool",
+      "inputs": [
+        "class_variants"
+      ],
+      "size": [
+        1,
+        12
+      ],
+      "stride": [
+        1,
+        12
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_variant"
+      ],
+      "shape": [
+        43
+      ]
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 7,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "feat_relu",
+   "op": "relu",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "feat_local",
+   "op": "maxpool",
+   "inputs": [
+    "feat_relu"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "feat_pool",
+   "op": "avgpool",
+   "inputs": [
+    "feat_local"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "tmpl",
+   "op": "conv",
+   "inputs": [
+    "feat_pool"
+   ],
+   "out": 8000,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "shift_max",
+   "op": "maxpool",
+   "inputs": [
+    "tmpl"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "shift_max"
+   ],
+   "shape": [
+    1,
+    10,
+    800
+   ]
+  },
+  {
+   "name": "class_max",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    800
+   ],
+   "stride": [
+    1,
+    800
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "class_max"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

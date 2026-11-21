@@ -1,0 +1,358 @@
+[
+ {
+  "id": "w1",
+  "name": "trained-traffic",
+  "d": {
+   "summary": "This is an ordinary trained CNN (it looks like gradient descent training) that classifies a sign mainly by the symbol in the middle of the image: bars, diagonals, exclamation marks, arrows, digits. It checks that symbol against the sign's colour scheme (white on red for bans, white on blue for mandatory signs) and its outline shape (triangle up, triangle down, diamond, ring). Every layer is a ReLU and the biases are small, so all class scores grow roughly in proportion to image contrast. Dark images therefore get smaller scores but the same ranking, and a flat image of any brightness gets exactly the same default output.",
+   "stages": [
+    {
+     "name": "Layer 1: colour and edge filters (K1)",
+     "computes": "About 18 of the 32 5x5 filters do something useful. Some respond to colour contrasts: blue against red (filter 2), red against green and blue, i.e. a red detector (filters 7, 4, 10, 23), and green or blue against red (14, 17, 26). Others are light/dark edge detectors at various angles (for example 16 is a horizontal edge with bright below, 30 is a vertical edge, 0, 5, 6, 11, 25, 27, 29 are oblique edges). About 10 filters (8, 9, 13, 15, 18, 19, 20, 22, 24, 28) have small weights that are negative everywhere and nearly zero bias, so they never fire on any synthetic input: they are effectively dead."
+    },
+    {
+     "name": "Layer 2 and pool: local parts of colour and edges (K2)",
+     "computes": "Combines the layer 1 maps into 5x5 combinations of colour and edges at 24x24, then max pools to 12x12. On a flat image almost nothing fires (6 percent of units, all tiny), so this layer passes on contrast and structure, not overall brightness. 10 of its 32 channels never fired on my synthetic signs. I did not decode what the individual channels mean."
+    },
+    {
+     "name": "Layers 3 and 4 and pool: symbol and shape parts (K3, K4)",
+     "computes": "Two 3x3 convolutions build larger parts, then pool to a 4x4 grid of 64 channels. On a flat image every layer 4 unit is exactly zero. 18 of the 64 channels never fired on my test set. Which part each channel stands for (bar, ring, arrow tip) is not pinned down."
+    },
+    {
+     "name": "Hidden layer: 256 units over the 4x4 grid (W1)",
+     "computes": "The weights to the hidden units are spread fairly evenly over all 16 positions, slightly heavier in the centre. Most hidden units feed one or two classes positively. In the output layer (W2) 72 percent of weights are negative, so each class is supported by a few units and pushed down by many others."
+    },
+    {
+     "name": "What drives the decision: the centre symbol",
+     "computes": "Covering parts of the image with grey patches shows the score depends mostly on the central 12 to 16 pixels. For 'no entry' that is the horizontal bar; for 'general danger' it is the exclamation mark and the lower inner triangle; for 'end of all limits' it is the diagonal stripe; for 'yield' it is the upper wide part of the downward triangle. The outer border and background matter little."
+    },
+    {
+     "name": "Colour checks the symbol",
+     "computes": "The colour scheme decides the family of the sign. A white bar scores 52 for 'no entry' in a red disc, only 3.7 on grey, and loses 'no entry' entirely in a blue disc. A black bar in a red disc is not 'no entry' either. 'Ahead only' (white arrow on blue) is lost when red and blue are swapped. Triangular warning signs barely depend on colour: in greyscale or with red and blue swapped they are still 'danger' at 52 to 68. A white square with just an exclamation mark is still 'danger', so the inner pictogram does most of the work there."
+    }
+   ],
+   "decision": "Argmax of 43 linear scores read from the 256 hidden units. Each class gets positive weight from a few hidden units and negative weight from many. Because the network is all ReLU with small biases, every score scales roughly with image contrast. On dimmed copies of my synthetic signs the winning class stayed the same at 0.15 times brightness; at 0.05 times only 'yield' was lost. A flat image of any colour gives the same default scores, with 'speed limit 60' highest at about 0.",
+   "evidence": "1) Ran the network forward in numpy on simple drawn signs. Without tuning it picked the right class for no entry (+52), ahead only (+53), general danger (+73), yield (+29), priority road (+50), no vehicles (red ring with white centre, +27), end of all limits (+8), keep right (+72) and keep left (+41, from the mirrored drawing). A red ring with a black bar came out as no trucks or no passing. Turn arrows and roundabout were mostly not recognised in my rough drawings. Speed limits drawn with block digits: 50 and 80 were right, the others were confused, but my digits were crude. 2) Invariance tests: brightness scaled down to 0.15 kept the winner for all 7 signs. Mirroring left to right left symmetric signs unchanged but turned end of all limits into speed limit 30, and keep left and keep right swap under the mirror, so the direction of a diagonal or arrow is encoded. Moving the sign 4 to 5 pixels often broke the prediction, so the network relies on the sign being centred. 3) Colour tests: greyscale and red/blue swaps, plus a white bar in a red disc, on grey and in a blue disc (results above). 4) Occlusion maps with a grey 8x8 patch: most of the score drop comes from the centre. 5) Weight checks: about 10 first layer filters have small, all negative weights and never fired. On a flat input, layer 4 and the pooled 4x4 maps are entirely zero. W2 is 72 percent negative.",
+   "unknowns": "I could not decode what the individual channels in layers 2 to 4 or the hidden units stand for. I can describe their behaviour only from the input/output tests. How the network tells similar pictograms apart (the speed limit digits, the various warning pictograms, turn arrows, roundabout) remains unclear, because my drawn versions are crude and give mixed results. All tests use synthetic drawings, so the network may use other cues on real photos, such as background or particular colours. I did not check how each class depends on the red rim compared with the inner white area, beyond the few cases above.",
+   "confidence": "medium"
+  }
+ },
+ {
+  "id": "w2",
+  "name": "astra-letters",
+  "d": {
+   "summary": "The network is hand-engineered: it is not a generic trained convnet. It turns the photo into an 11x11 map of the hand's outline and shape. That map holds edge energy at 4 orientations, line or ridge energy at 4 orientations, and an inverted coarse brightness layout. It then scores the image against 768 stored, unit-norm template maps per letter, in effect nearest-neighbour matching by cosine similarity that tolerates a shift of one cell. Two template banks are scored and added, the second weighted 0.6. The first bank works on the globally normalised maps plus the brightness map. The second works on HOG-style block-normalised edge and line maps. The letter with the best average of its best matches wins.",
+   "stages": [
+    {
+     "name": "Global contrast normalisation",
+     "computes": "The whole image is z-scored (L1), so the overall brightness and contrast of the photo and background are removed."
+    },
+    {
+     "name": "Oriented edge energy (branch A, L2 to L11)",
+     "computes": "There are 8 derivative-of-Gaussian 5x5 filters: vertical, horizontal and two diagonal edges, each in both polarities. Each is rectified and paired with its opposite polarity, which gives polarity-free edge strength at 4 orientations. Each orientation then has 0.61 times its perpendicular orientation subtracted and is rectified, so it is suppressed where both orientations are present, as at corners and texture. Strong responses are softly capped (x minus 0.88*relu(x minus 0.86)) and averaged in 4x4 windows with stride 2, giving a 4x11x11 map."
+    },
+    {
+     "name": "Oriented line or ridge energy (branch B, L18 to L27)",
+     "computes": "The same pipeline runs with 8 second-derivative (bar) filters: thin bright or dark lines at 4 orientations, both polarities summed, which suits fingers and the gaps between fingers. It uses the same perpendicular opponency, a soft cap (threshold 0.68, slope 0.9) and the same pooling to 4x11x11."
+    },
+    {
+     "name": "Coarse brightness layout (L15 to L17)",
+     "computes": "A dense layer takes the negated mean of 4x4 pixel blocks at stride 2, an 11x11 'darkness' map. Some border cells get extra terms that compare the left and right image strips. The map is z-scored."
+    },
+    {
+     "name": "Normalisation of the feature maps",
+     "computes": "Path 1: the edge and line maps are each z-scored jointly over all 4 orientations and 121 cells (L13, L29). Stacked with the brightness map they make a 9x11x11 descriptor of roughly constant norm. Path 2 (L40 to L49): the same maps get HOG-style block normalisation. The 11x11 grid is cut into 3x3 blocks of up to 4x4 cells. Within each block all 4 orientations are mean-subtracted and divided by sqrt(var + 0.0576), using a trick that duplicates the values at plus and minus 0.24. The result is mapped back to 8x11x11."
+    },
+    {
+     "name": "Template matching bank 1 (L35 to L39)",
+     "computes": "There are 18432 = 24 letters x 768 template maps of size 9x11x11, all with exactly the same norm (0.734). Each is correlated with the descriptor at 3x3 offsets (shifts of plus or minus 1 cell, which is 2 pixels), and the best offset is kept. Because the input descriptor has nearly fixed norm, this works as a cosine similarity to stored exemplars."
+    },
+    {
+     "name": "Pooling of exemplar matches",
+     "computes": "Each letter's 768 templates fall into 4 groups of 192 that are statistically interchangeable (same channel weighting, same nearest-neighbour similarity across groups), so they look like random splits. The letter's score is the mean, over the 4 groups, of the best match in each group. This is a smoothed 'best few neighbours' score."
+    },
+    {
+     "name": "Template matching bank 2 (L53 to L58)",
+     "computes": "The same scheme runs on the 8-channel block-normalised edge and line maps, with 768 templates per letter, max over shift, max per group and mean of the 4 groups. The result is scaled by 0.6 (L58 is diagonal 0.6 with no cross-class terms)."
+    }
+   ],
+   "decision": "Class score = bank-1 exemplar similarity + 0.6 x bank-2 exemplar similarity. Each is the average over 4 template groups of the best cosine-like match, with a tolerance of one cell (about 2 pixels), between the image's map of orientation, line and brightness and that letter's stored templates. Nothing mixes the classes: the letter whose stored examples best match the hand's outline, finger lines and light/dark layout wins.",
+   "evidence": "Printed all the small layers. The first-layer filters are exact derivative-of-Gaussian (L2) and second-derivative or ridge (L18) kernels at 0, 45, 90 and 135 degrees, each in both signs. L4 and L20 are 0/1 matrices that sum the opposite polarities. L5 and L21 are identity minus 0.61 times the perpendicular orientation. L7/L9 and L23/L25 make a soft-clip pair. L31 to L33 and L50/L51 just stack channels, and L58 is a diagonal of 0.6. All biases are zero except the clipping thresholds.\n\nL15 rows each sum to minus 1: interior rows are a uniform minus 1/16 over a 4x4 pixel block, and border rows have extra plus and minus 0.007 strips. L40 and L43 are 0/1 and 0.5 selection matrices with biases of plus and minus 0.24. Decoded, they group the cells into 3x3 spatial blocks of up to 4x4 cells across all 4 orientations, which together with the norm gives per-block normalisation with epsilon 0.0576. L45/L48 are identical to L40/L43.\n\nAll 36864 templates have norm 0.7343. Random template pairs reach cosine 0.99, a sign of near-duplicate stored exemplars. Within a class the nearest-neighbour cosine is about 0.93, against 0.73 to another class. The 4 groups have identical channel-energy profiles: in bank 1 the brightness channel carries 43% of the energy and the vertical-edge channel 16%.\n\nA forward pass on hand-like synthetic drawings was consistent. A drawn L shape scored top as L, two raised fingers as W/V/B/U, and a blank image as S (a fist-like sign).",
+   "unknowns": "I could not tell what the 768 templates per letter are: stored feature maps of individual training images, their augmented variants, or cluster centres. The near-duplicate pairs point to exemplars, but I had no data to check against. I did not work out exactly what the border-cell terms in L15 are for; they look like an artifact of a surround or wrap-around construction. I also did not establish why the brightness channel is weighted up, or which image regions drive each letter's decision. Per-letter template content was not visualised in detail, so the evidence does not support statements like 'letter X is recognised by feature Y'.",
+   "confidence": "high"
+  },
+  "judge": {
+   "score": 4,
+   "recovered": "It got the overall approach right: hand-built 11x11 maps of edges, bars and brightness, matched against 24 x 768 unit-norm templates with a one-cell shift tolerance, a best-match per group of 192 averaged over 4 groups, and a second block-normalised bank added at 0.6. Stages it recovered: (1) a global z-score of the image; (2) polarity-free oriented edge energy at 4 orientations, with perpendicular suppression at exactly 0.61; (3) a soft cap above a knee (0.88 cut, which matches the true 12% slope), 4x4 stride-2 pooling to 11x11, and a per-image z-score over all orientations; (4) a bar/ridge branch with the same pipeline, knee 0.68 and slope cut 0.9 (matches the true 10%); (5) a negated 4x4 block-mean darkness map that is z-scored; (6) bank-1 matching of the 9-channel descriptor at 3x3 offsets with the best offset kept; (7) 4 groups of 192 per letter, max per group, mean of the groups; (8) normalisation over 3x3 regions of about 4x4 cells (mean subtraction, divide by spread with a floor), then bank-2 matching with the same pooling and weight 0.6. The decision rule, bank1 + 0.6 x bank2 with argmax and no class mixing, is exact.",
+   "missed": "It did not find what the templates are: 768 synthetic rendered hand drawings per letter. These are built from a palm/wrist/finger-tube model, with per-letter hand-written poses and 20 quasi-random pose and appearance parameters. It left this as an unknown. It saw the 'border-cell terms comparing left and right strips' in the brightness layer but did not read them as removal of a left-to-right lighting trend. It gave no exact channel weights for bank 1 (edges 0.48, bars 0.28, silhouette 0.48); it only noticed that brightness is weighted up. It gave none for bank 2 (edge 0.64, bar 0.36). It also missed that template edge maps blend the shaded image with the silhouette outline (0.74/0.26), and that the second template set is weighted towards places where the drawing has structure.",
+   "wrong": "It made no clear false claims. Its tentative guess that the templates are stored exemplars, such as training-image feature maps or augmented variants, is wrong: they are synthetic renders. The guess was hedged, though. Calling the groups 'statistically interchangeable random splits' is roughly consistent with the true 'each spread over pose space'. Saying the border terms look like a 'surround or wrap-around artifact' misreads what is really a lighting-trend correction.",
+   "note": "This is a strong reading. It recovered every computational stage, many exact constants, and the full decision rule from the weights alone. Its main gap is where the templates come from (synthetic hand drawings), which cannot really be inferred without the data. It also did not interpret the lighting-correction terms."
+  }
+ },
+ {
+  "id": "w3",
+  "name": "trained-person",
+  "d": {
+   "summary": "This is a trained MobileNet-style network. Its output is mostly a fight between two groups of final units. One is a large, redundant \"no person\" group, about 8 near-copies of the same unit. It fires strongly on plain, uniform images and most strongly in the top-left output cells. The other is a small, sparse \"person\" group that only switches on when there are mid-sized objects with structure, preferably dark, upright, head-body-legs silhouettes about a third of the image tall, placed off-centre. A person is predicted when enough such objects suppress the \"plain scene\" group and turn on the sparse person units. Everything synthetic I tried, including people-like figures on textured backgrounds, scores well toward \"no person\", so the network's notion of \"person\" depends on photo statistics I could not reproduce.",
+   "stages": [
+    {
+     "name": "First layer: colour-opponent and edge filters (stride 2, 8 filters)",
+     "computes": "Filter 0 is a strong green-versus-magenta colour opponent (R and B positive, G strongly negative). Filter 6 is red-minus-green with a vertical green gradient. Filter 1 is blue-versus-red/green with a horizontal top/bottom split. Filter 3 detects a thin dark vertical line on bright flanks, and filter 2 a diagonal luminance edge (dark top-left, bright bottom-right). Filters 4, 5 and 7 are weak, low-contrast mixtures."
+    },
+    {
+     "name": "Early depthwise/pointwise blocks (1 to 5, down to 12x12)",
+     "computes": "Every channel is in use in these layers. I did not decode them individually. They presumably combine the colour and edge maps into local texture and shape features."
+    },
+    {
+     "name": "Middle blocks (6 to 11, 6x6)",
+     "computes": "The representation gets progressively sparser: on a figure scene, the fraction of channels active anywhere falls from 97% to about 27 to 35%. The depthwise filters have large weights here (std about 2) and the pointwise weights are small. I could not pin down what these layers compute."
+    },
+    {
+     "name": "Block 12 and 13 at 3x3: 'plain scene' detector group",
+     "computes": "Final units 13, 34, 37, 43, 50, 189, 214 and 222 have nearly identical pointwise weights (row correlation 0.90) and all vote for 'no person' (weight difference about -0.6 to -0.8 each). On uniform images of any brightness they fire strongly, but only in the top-left output cells (for example unit 222's map is [[3.5, 2.5, 0], [0, 0, 0], [0, 0, 0]] on mid-gray), which looks like a positional or padding effect. Structured content anywhere except the centre cell suppresses them."
+    },
+    {
+     "name": "Block 13 at 3x3: sparse 'person' group",
+     "computes": "Units 143, 177, 200, 201, 207 and 239 are also near-copies of each other (row correlation 0.91) and vote for 'person' (+0.5 to +0.9). They are off on blank, noise and texture images and switch on in the middle and lower cells when several upright figures are present (unit 239 reaches about 2 in a crowd of four stick figures). Units 56, 73 and 95 are a third redundant group with positive weight that is almost always weakly on."
+    },
+    {
+     "name": "Pooling and linear readout",
+     "computes": "The 3x3 map is averaged, then a linear layer is applied. The biases are antisymmetric (+0.11 / -0.11), a 0.22 prior toward 'no person'. Only about 22 of the 256 final units were ever active on my synthetic inputs."
+    }
+   ],
+   "decision": "Person-minus-no-person margin = sum over units of (pooled activation x weight difference) - 0.22. In practice the margin is set by how strongly the redundant 'plain scene' group (8 copies, negative) is active, against the always-on positive group (56, 73, 95) and the sparse person group (239 and its copies). Blank or uniform images sit at about -3.3 to -6, so the network needs strong positive evidence to say 'person'. It says 'person' when mid-sized, structured, upright objects suppress the plain-scene group and activate the person units.",
+   "evidence": "All numbers are margins (person score minus no-person score) on synthetic inputs.\n\n1. Uniform colours, gratings, random noise and 1/f noise of any contrast all score between -3.3 and -6.4, so every plain or textured image is 'no person'. Sky-blue (-6.4) and pure red (-5.0) are the most negative. Skin-coloured patches and ovals are strongly negative (-4.1), so skin colour on its own is not person evidence.\n\n2. Dark stick figures (head, torso, two legs) on gray: one figure about 32 px tall scores +1.2 to +2.2 at most positions. It turns negative in the top row and in the centre column. Four such figures score +3.4. Taking the figure apart lowers the score: head only -2.3, body only -3.6, legs only -2.5, torso and legs -2.0. Turning the crowd upside down (+0.3), mirroring it (+0.2), or shrinking or enlarging it (scale 0.3: -0.9, scale 0.5: -2.0) cuts the score sharply. Bars plus heads score -0.85 and plain bars -4.5. Skin-coloured figures score -4.65, light figures on dark -1.7, dark figures on white +0.8.\n\n3. Over 40 random textured backgrounds per condition, with three objects of matched area, the mean margin is ordered upright figure > inverted figure > box > disk > nothing in 7 of 8 size and count settings. For example, at scale 0.6 with three objects: -2.47, -3.09, -3.51, -3.44 and -4.99.\n\n4. Unit contributions: the figure-driven gain comes almost entirely from suppressing the redundant 'plain scene' group. That suppression is about 1.6 times larger for figures than for matched boxes, plus a small turn-on of the sparse person units.\n\n5. A 32x32 noise patch in any non-centre cell of the 3x3 grid raises the margin from -3.3 to about -1.1 to -1.9. In the centre cell it lowers it to -4.6.\n\n6. A black-box search over 16x16 colour perturbations (a numerical stand-in for gradient ascent) reached a margin of +1.8 with tiny perturbations (luminance std 0.03). The two search runs found uncorrelated patterns, so the network is not robust to small perturbations and the search did not reveal a consistent feature.",
+   "unknowns": "I could not decode the middle blocks (6 to 11). I do not know what visual features the sparse person units encode beyond responding to grouped, upright figure-like shapes. I could not explain why the plain-scene group concentrates in the top-left cells; asymmetric padding is a guess. I also could not explain why the centre cell works against 'person'. One possible reading, which I could not test, is that a single object in the centre looks like an object-centred photo with no people. Real photos almost certainly activate many more of the 256 final units than my synthetic inputs did (only 22 were ever active), so the readout I describe may be incomplete. Since no synthetic image came anywhere near a confident 'person' except the hand-tuned crowd, the network's true person cues (faces, clothing, poses, context) remain unverified. The small-perturbation sensitivity also means the shape results are fragile.",
+   "confidence": "low"
+  }
+ },
+ {
+  "id": "w4",
+  "name": "astra-galaxies",
+  "d": {
+   "summary": "This network is not a learned black box. It is a hand-built feature pipeline written as layers, with exact round weights like 1, -1, 0.5 and pi/8, sparse wiring and copied blocks. It resamples the centred galaxy into a polar grid of 9 rings by 24 angles in brightness and in red-minus-blue colour. From that grid, plus two small image-space branches, it measures about 181 interpretable quantities: radial profile, colour gradient, angular Fourier harmonics m=1 to 5 per ring, twisted two-arm and three-arm spiral templates, 180-degree symmetry, isophote elongation and size, secondary brightness peaks and clumps. A layered rule cascade of soft thresholds and gates then turns these into the 10 class scores.",
+   "stages": [
+    {
+     "name": "Polar resampling (L1, L2)",
+     "computes": "The image is averaged to 64x64. 434 fixed masks then sample it at 9 radii (about 1 to 22 px at 64 scale, so about 2 to 45 px in the original, log-like spacing) and 24 angles 15 degrees apart, as smooth interpolated samples. 216 samples use luminance (0.35, 0.40, 0.25 channel weights), 216 use colour (channel 0 minus channel 2, i.e. z minus g, redness), and 2 are whole-image means of luminance and colour."
+    },
+    {
+     "name": "Sky subtraction and clipping (L3 to L5)",
+     "computes": "Each polar sample has the whole-image mean (a sky estimate) subtracted and is clipped between 0 and a ceiling tied to the mean of the two central rings. The colour samples are folded in as luminance plus 0.4 times colour. The result is a clean, background-free polar image of the galaxy."
+    },
+    {
+     "name": "Radial and harmonic descriptors (L191 to L194)",
+     "computes": "For each ring the network computes mean brightness, a colour term (redness of that ring), and the amplitudes of angular Fourier harmonics m=1 to 5. Each amplitude comes from 8 phase-rotated cosine templates passed through relu and summed with weight pi/8, which makes it rotation-invariant. Extra slots give m=2 amplitude pooled over ring pairs and ring ranges (overall elongation or bar strength) and overall m=4. Further slots are matched filters for m=2 and m=3 patterns whose phase rotates between adjacent rings by set amounts in both directions: two-armed and three-armed spiral templates of given pitch, symmetric in handedness."
+    },
+    {
+     "name": "Symmetry, arm and envelope features (L26 to L71, L101 to L189)",
+     "computes": "Pairwise minimum of each sample and the sample 180 degrees opposite, summed with radial weights, gives 180-degree symmetric flux (slots 168 to 171). Outward brightness increases between rings, relu(s[r+1] minus 0.87 s[r]), flag rings or arms (slots 163 and 164). Angular second-difference peak detectors require peaks at both theta and theta plus 180, giving a bisymmetric arm or bar score (slot 172). A ring-by-ring chain m_k = min(ring_k, 1.27 m_(k-1) + 0.008) builds a profile that may not rise steeply outward. Its m=1 lopsidedness and opposite-side differences give slots 178 to 180, which respond to clumpy or off-centre light."
+    },
+    {
+     "name": "Isophote shape (L31 to L50)",
+     "computes": "Four brightness levels are set as fractions of the central brightness. At 12 angles, the network soft-counts how far out the 180-degree-symmetrised profile stays above each level, which is an isophote radius per direction. It then takes the maximum radius difference between perpendicular directions (elongation per level, slots 105 to 108) and the maximum radius (size per level, slots 109 to 112). The deviation of each direction's radius from the mean of the others gives isophote irregularity (slots 165 to 167)."
+    },
+    {
+     "name": "Secondary peak detector (L6 to L25)",
+     "computes": "The image is reduced to 32x32 and blurred at two scales. Local-maximum strength is relu(min over 8 directions of centre minus neighbour) at 2 and 3 px. It is max-pooled over 4 annuli round the image centre (about r 0 to 3, 6 to 12, 14 to 23 and 24 to 33 px in the original), giving slots 91 to 98. It shows whether there is a distinct brightness peak, such as a second nucleus, at a given distance from the centre."
+    },
+    {
+     "name": "Clump and ridge branch (L72 to L100)",
+     "computes": "Luminance is blurred with three Gaussian-like 15x15 filters at stride 2. Ridge detectors (centre against the two neighbours 2 px away, in 4 orientations) and compact-excess maps (narrow blur minus 1.8 times medium blur, and the like) feed a 28x28 chain of iterated relu and negative skip layers. Its output is max-pooled over 5 annuli, giving slots 173 to 177, which fire for compact knots or blobs off the centre. I did not decode the iterated 28x28 chain in detail."
+    },
+    {
+     "name": "Rule cascade (L211 to L274)",
+     "computes": "About 1143 units threshold single features or small combinations. Ramp pairs relu(x minus a) minus relu(x minus b) make soft steps, and ladders of units with geometrically growing weights approximate smooth functions. They feed a narrowing stack of gate layers of 424, 186, 47, 14, 6, 5, 3 and 1 units, wired densely with skips and very large negative weights (down to -976) that act as AND or veto logic. The final layer adds per-class biases and a few gate outputs."
+    }
+   ],
+   "decision": "The highest class score wins. Scores are mostly a class bias plus gates. Smooth classes 2, 3 and 4 share penalties from 'not smooth' gates; among them round (bias 0.92) loses points as the elongation slots 106 and 107 and global m=2 amplitude rise, so rounder goes to class 2, mildly elongated to class 3, and class 4 (bias -0.1, no elongation penalty) wins only in a narrow band. Edge-on classes 8 and 9 start at -5.45 and are lifted by elongation ladders and thresholds, so very flat discs win. Classes 8 and 9 have identical wiring except one ramp pair (L221 units 184 and 185). Their margin is most sensitive to central-ring redness (slots 2 and 9), a central compact peak (slot 91) and isophote sizes (110 and 112), so a red, peaked centre means bulge. The spiral classes 5, 6 and 7 are all reduced by a 'disturbed or merger' gate (L263) and two L255 units. Barred (bias -6.9) is lifted strongly by global m=2 amplitude (slot 101) and bisymmetric terms. Tight (6) and loose (7) differ only by two L247 units (6 = 7 minus unit 3 plus unit 4), which depend on symmetric flux (168, 169) and the twisted-m2 spiral templates and ring harmonics (99, 131, 132, 39, 46). Merging (class 1) rises with secondary peak and clump slots (96, 97, 174, 175) and symmetric flux, and disturbed (class 0) rises with asymmetry and lopsidedness (99, 169, 172, 178, 180). A blank frame goes to disturbed.",
+   "evidence": "1) Weight statistics. Almost every layer has 2 to 20 distinct values (plus or minus 1, 0.5, 0.25, pi/8, pi/24, exact biases) and is extremely sparse. L5, L26 and L52 have exactly 2 nonzeros per row. This is a compiled program, not a gradient-trained net.\n2) Reshaping the L2 rows to images shows polar sampling masks: 9 rings by 24 angles of 15 degrees, each mask summing to 1 (luminance weights 0.35, 0.40, 0.25), plus colour masks (ch0 minus ch2) and 2 global means.\n3) Tracing L3 and L5 showed sky subtraction (minus the global mean) and clipping by the central-ring mean.\n4) Taking an FFT of the L192 templates showed per-ring cosine harmonics m=1 to 5 at 8 phases. Twisted slots pair ring r and ring r+1 with phase offsets of plus or minus 48, 121 and 180 degrees for m=2, and the analogous offsets for m=3.\n5) L26, L28, L29 and L51 to L55 pair angle theta with theta plus 12 steps (180 degrees) to form min(); L42 compares adjacent rings with a 0.87 factor; L60 and L61 are angular peak templates at theta and theta plus 180.\n6) The conv kernels in L8 and L14 are 2-tap differences of centre against neighbour in 8 directions, max-pooled then negated, which makes a local-maximum detector. The L20 and L23 masks are annuli at 4 radii. L74 is a 3-tap ridge filter in 4 orientations, and the L98 masks are 5 annuli.\n7) A full numpy forward pass on synthetic galaxies behaved as follows. Exponential discs swept from axis ratio 1 to 0.12 went round, then in-between (q 0.7 to 0.4), then edge-on without bulge (q 0.3 and below). Cigar never won outright. Two equal blobs separated by 16 px or more went to merging, while closer or unequal pairs and an off-centre star stayed round. Clumpy irregular images went to merging or disturbed, and a blank frame to disturbed. A thin edge-on disc went to edge-on; adding a bulge of growing size moved it to barred. Synthetic 2-arm spirals mostly went to barred and gave identical scores for mirrored handedness. A ring galaxy also went to barred. Large smooth discs (effective radius 25 px) drifted to the spiral and edge-on-with-bulge classes.\n8) Finite-difference sensitivity of class margins to the 181-slot feature vector identified the slots named in the decision field.\n9) Final-layer wiring: classes 8 and 9 differ by one ramp pair; classes 6 and 7 differ by two L247 units; the shared penalty structure groups classes 2, 3, 4 and 5, 6, 7.",
+   "unknowns": "I did not decode the internal logic of the rule cascade (L211 to L263), beyond the sensitivity checks and the final-layer wiring. That leaves open which thresholds define the 'disturbed or merger' gate and the 'not smooth' gates, and exactly what L247 units 3 and 4 test for tight against loose. My synthetic spirals did not separate tight from loose by pitch in a clean way, and most went to barred, so the real tight, loose and barred rules may depend on features my synthetic images do not reproduce, such as colour or arm contrast. The iterated 28x28 chain (L80 to L97) in the clump branch is only partly understood: I know its inputs and that it is pooled over annuli, not its exact propagation logic. I cannot say how well these hand-coded rules fit real images, because no real data was used.",
+   "confidence": "medium"
+  },
+  "judge": {
+   "score": 4,
+   "recovered": "Overall approach: a hand-built rule system that samples a polar grid, extracts interpretable features and scores classes with thresholded rules. Stage 1, polar photometry: 2x2 averaging, 9 rings by 24 directions, luminance plus a band0 minus band2 colour channel, smooth Gaussian-like spots. Stage 2: sky subtraction and clipping between 0 and a ceiling tied to the mean of the two central rings. Stage 3: per-ring mean, colour and m=1 to 5 harmonic amplitudes, 180-degree opposite-point (a)symmetry, and m=2 elongation pooled over ring ranges. Stage 4, isophotes: 4 levels as fractions of the central brightness, 12 directions, symmetrised so only light on both sides counts, max radius (major axis) and largest perpendicular difference (axis ratio), plus an irregularity/warp term. Stage 6, spiral: m=2 and m=3 patterns compared between adjacent rings at fixed phase rotations in both senses (pitch templates). Stage 7: outward rebrightening at 0.87, and the connected-light chain with 27 percent growth per ring (min(ring_k, 1.27 m_(k-1)+...)) with its lopsidedness and dipole. Stage 8 (first part): quarter-resolution, two-scale smoothing, local-max prominence over 8 neighbours at 2 and 3 cells, max over distance annuli. Decision: highest score wins. Smooth classes are penalised by 'not smooth' gates and the smooth subclass is chosen by elongation (round, in-between, cigar). The edge-on pair starts low, is lifted by elongation, and is split by red core, central peak and size (bulge evidence). Merger is driven by secondary peaks and disturbed by asymmetry and lopsidedness.",
+   "missed": "Stage 5, colour measures: core, disk and outer log colour ratios, with disk and outer colour taken from symmetric light. The reader only gives per-ring redness. The concentration measure from outer and inner major-axis radii. The ellipticity definition: 2-fold strength relative to the local radial slope. Stage 7's tails logic: rebrightening with no match on the opposite side, and continuing radial streams. Stage 8's finer half-resolution second-nucleus detector: it needs downward curvature everywhere, drops point sources, and requires a dip to the centre and a bridging envelope. The reader instead labels a 'clump and ridge branch' and leaves it partly undecoded. Family structure: one signed 'structured' score splits smooth from spiral, and the smooth classes are also penalised when the edge-on score is above about -0.1. Bar score: inner elongation beyond outer elongation, plus elongation localised to one band. The reader instead credits global m=2. Loose score: blue colour, low concentration, weak centre and 36 degree pitch, with tight versus loose decided by its sign. The reader says it could not decode what separates tight from loose.",
+   "wrong": "Sky estimate: the reader says it is a whole-image mean, but the truth measures it in a broad annulus near the frame edge. Colour handling: the reader says colour is folded in as luminance plus 0.4 times colour, but the truth says colour is carried alongside and clipped the same way. This may be a misreading. Bar: the reader attributes it mainly to global m=2 amplitude, but the truth uses inner elongation beyond outer elongation. Clump branch: the reader describes it as ridge and compact-excess knot detection, but in the truth it is a second-nucleus detector that rejects star-like point sources. The ridge part may partly match the stream detector instead. Feature count: the reader claims about 181 features, while the truth says about forty interpretable measurements. That is probably a slot count versus a concept count, so only a minor issue.",
+   "note": "The reading is strong. It recovers the polar sampling, clipping, harmonics, isophote, spiral-template, connected-chain and peak stages with exact constants (0.87, 1.27, 4 levels, 12 directions). It is weakest on the decision layer (the family split, bar, tight versus loose) and on the second-nucleus branch. The sky detail is a clear error. Score 4 is at the low end of the band."
+  }
+ },
+ {
+  "id": "w5",
+  "name": "trained-letters",
+  "d": {
+   "summary": "A standard two-stage CNN. Its first layer is a bank of mostly oriented 5x5 edge and bar detectors. Its second conv layer groups these into finger-width oriented-stripe detectors (vertical, horizontal, diagonal) that respond more or less regardless of polarity. The dense layers read where these oriented stripes sit, with the upper part of the image weighted most. The clearest rule I recovered: vertical, finger-like stripes in the upper half of the frame push toward the upright-finger letters (W, V, D, F, K, I, L, T). Horizontal stripes in the upper or left region push toward the sideways or downward letters (P, H, G, Q, X). How the remaining classes are told apart is spread across many mixed features, and I could not pin it down.",
+   "stages": [
+    {
+     "name": "conv1 oriented edge bank (30 filters, 5x5)",
+     "computes": "Most filters are zero-mean oriented edge or bar detectors. Many are vertical-edge filters (for example 5, 10, 15, 17, 19, 26), many horizontal or near-horizontal ones (2, 4, 6, 13, 16, 20, 25), and some diagonals (7, 9, 18, 29). A few are low-contrast or mostly negative-sum filters that act as darkness detectors (23, 24, 28). Because the filters are near zero-mean, flat brightness is largely ignored: blank images at levels 0 to 1 give almost identical scores."
+    },
+    {
+     "name": "maxpool 2x2",
+     "computes": "Gives local position tolerance at 12x12 resolution."
+    },
+    {
+     "name": "conv2 oriented stripe and contour detectors (15 channels, 3x3)",
+     "computes": "Probing with edges, bars and gratings sorts the channels by orientation. Channels 0, 4, 9, 11 and 14 prefer vertical structure: vertical bars and stripes about 6 px apart, roughly finger width at this scale. Channels 1, 3, 5, 10 and 12 prefer horizontal bars or stripes. Channels 6 and 13 prefer 45 degree structure and channel 8 prefers 135 degree. Several respond to both bright and dark bars, so they act as contour or stripe detectors more than polarity detectors. Some also fire on blobs and dots. Channel 7 never activated on any probe or on random images, so it is effectively unused here."
+    },
+    {
+     "name": "maxpool 2x2 to a 5x5 map",
+     "computes": "Gives a coarse 5x5 map of where each oriented-stripe feature is present, 375 features in all."
+    },
+    {
+     "name": "dense 375 to 128 to 50",
+     "computes": "Mixes the stripe map by position into class evidence. Averaged sensitivity is highest for the top row of the 5x5 map, about twice that of the bottom rows. So the upper part of the frame, where the fingers usually are, drives the decision most, while the bottom (wrist or sleeve) counts least. About 6 of the 128 and 4 of the 50 hidden units never fired on smooth random inputs. Beyond the orientation-by-region pattern below, what individual hidden units do was not decoded."
+    },
+    {
+     "name": "linear readout to 24 scores",
+     "computes": "Each class score is a signed sum of the 50 hidden units, and every class draws on all the conv2 channels. On average, vertical features in the top region push strongly up V, W, D, F, K, T, I and L, and push down H, P, Q and G. Horizontal features in the top region push strongly up P (the largest effect), H, X, T, Q and G, and push down N, V, L, R, W, D, S and M."
+    }
+   ],
+   "decision": "The prediction is the argmax of the 24 linear scores. In effect it mainly asks two things. Is the upper image full of vertical finger-like stripes? If so it leans to W, V, F, T, D, K or I, and W wins whenever three or more separated vertical fingers are present. Is there horizontal banding at the top or left? If so it leans to P, then H. For the remaining classes, finer distinctions such as fist letters (A, E, M, N, S, T), curved letters (C, O) and the other one- or two-finger letters come from distributed combinations I could not resolve.",
+   "evidence": "1. Printed all 30 conv1 kernels and fitted oriented gratings to them: almost all are oriented edges or bars, a few are dark detectors. Blank images at brightness 0 to 1 gave almost the same scores (W or U wins with small margins). A 15% contrast increase left 97 of 100 random predictions unchanged, but inverting the image left only 23 unchanged, so the network is not polarity invariant overall.\n2. Probed conv2 channels with step edges, bright and dark bars, gratings with periods 3 and 6, blobs and dots at 4 orientations. This gave a clean orientation grouping and showed channel 7 never fires.\n3. Averaged the active-path linear map from the pooled 5x5x15 features to the scores over 400 smooth random images. Sensitivity peaks in the top row, and the class-by-group signed table showed the vertical-top versus horizontal-top split.\n4. Checked that split directly. Vertical stripes in the top half only gave W 48, V 24, T 20, F 19. The same stripes in the bottom half only gave B and U. Horizontal stripes in the top half gave P 64, H 23. Horizontal stripes in the left half gave P 54, H 25.\n5. Drew bright hand silhouettes on a palm. Three or four separated vertical fingers gave W, strongly and stably under shifts of plus or minus 4 px. Two spread fingers gave W then V. A horizontal pointing hand gave T, P and H (dark version: P, K, Y). Most other drawn letters (B, D, I, L, Y, O, C, fist) were misread, for example fist read as O, and a dark ring read as O.\n6. Activation maximisation gave high-scoring textures that are not interpretable at 7x7.\n7. A finite-difference check confirmed the hand-written backprop roughly (-0.30 vs -0.35).",
+   "unknowns": "The 128- and 50-unit layers are not decoded, and I could not tell how classes within the same group are separated: fist letters A, E, M, N, S, T; U versus V versus R; D versus I versus L; G versus H; P versus Q; C versus O. The probes are synthetic and far from real photos: most drawn silhouettes were misclassified, so the class-level conclusions rest on the averaged gradients and stripe probes, not on realistic hands. I could not tell how the network handles background clutter or the hand being darker than the background, beyond the fact that inverting the image changes most predictions. Channel 7 might fire on real images I could not construct.",
+   "confidence": "medium"
+  }
+ },
+ {
+  "id": "w6",
+  "name": "astra-traffic",
+  "d": {
+   "summary": "This is a hand-built template-matching classifier: nothing in it looks learned. It turns the photo into a contrast-normalised luma channel plus two colour-opponent channels (red vs green/blue, yellow vs blue). It then scores each of the 43 classes by summing several kinds of template correlation: whole-sign colour and shape templates for 8 sign families, luma and edge silhouettes, glyph templates for the interior of round signs, digit templates for speed limits and pictogram templates for triangle interiors. Each class is scored under 5 sign-size hypotheses, and its final score is the best of the 5.",
+   "stages": [
+    {
+     "name": "Tone curve (L1 to L3)",
+     "computes": "Each of R, G and B separately goes through a fixed concave piecewise-linear curve made of 6 ReLU hinges at 0, 0.025, 0.065, 0.14, 0.29 and 0.55. Input 0.1 maps to 1.56, 0.5 to 3.0 and 1.0 to 3.7. This is roughly a log or gamma brightening, so dark images become usable."
+    },
+    {
+     "name": "Colour-opponent transform (L4 to L8)",
+     "computes": "A fixed 3x3 matrix gives luma Y = 0.26R + 0.47G + 0.27B, redness = R - 0.28G - 0.72B, and yellow-vs-blue = 0.2R + 0.8G - B. Luma is normalised per image to zero mean and unit variance. The two chroma channels are a mix of 0.38 x normalised and about 0.9 x raw chroma (L8)."
+    },
+    {
+     "name": "Geometric resampling",
+     "computes": "Three fixed resamplings of the image. L9 average-pools it to 16x16. L15 cuts the central 24x24 of the luma channel (pixels 4 to 27) and normalises it. L38 and L92 are fixed bilinear warps of the luma (4 taps per output pixel), each producing 50 16x16 patches of the sign interior: 5 scales x 10 positions. L38 uses square crops for round signs. L92 uses trapezoids that are narrow at the top and wide at the bottom, matching the inside of a warning triangle."
+    },
+    {
+     "name": "Sign family by colour and shape (L10 to L14, L23)",
+     "computes": "200 colour templates (14x14x3) slide over the 16x16 colour image, and the best match is taken over position. They form 8 families, which can be read straight off the templates: red ring with light centre, colourless ring (end-of signs), red upward triangle, red inverted triangle (yield), diamond with yellow centre (priority road), red octagon with STOP-like luma marks, red disc with white horizontal bar (no entry), blue disc. Each class receives its family's score, multiplied by 1.116."
+    },
+    {
+     "name": "Per-class whole-sign templates (L24/L28, L18/L22, L29 to L36)",
+     "computes": "Three branches per class. L24 holds 25 per-class colour templates on the 16x16 image. L18 matches 20x20 luma templates against the normalised 24x24 crop. L29 and L32 first apply 8 3x3 edge filters, then match 20x20 edge templates. In every branch the best match over position and variant is taken, separately for each of the 5 scale slots."
+    },
+    {
+     "name": "Interior glyph templates (L42 to L47, L96 to L107)",
+     "computes": "The round-sign crops are matched against 27 classes x 8 templates of dark-on-light glyphs (L42): speed digits '30' and '50', arrows, the 'end' slash and so on. The best match is taken over variant and over the 10 positions within each scale. The triangle crops are matched against 15 warning pictograms, 8 and 20 variants per class (L96 and L102). L102 adds a bias of -1.4."
+    },
+    {
+     "name": "Speed-limit digit discrimination (L48 to L79)",
+     "computes": "Further digit templates on the round-sign crops. They cover 8 speed limits (L48), the leading digit of 20 to 80 (L54 and L60, 6 classes each) and 100 vs 120 (L66 and L72). Their outputs are scaled and given negative biases. L79 then subtracts the mean over the 8 speed-limit classes (weights 0.875 own, -0.125 each other), so only relative digit evidence counts among 0, 1, 2, 3, 4, 5, 7 and 8."
+    },
+    {
+     "name": "Empty-interior detectors (L80 to L91)",
+     "computes": "Gradient energy (|dx| + |dy| from fixed 3x3 difference filters) is computed on the round-sign crops. A large central window, weighted -0.08, penalises 'no vehicles' (class 15). A small central window, weighted -0.28, penalises 'yield' (13). The least edgy crop is taken. These two classes also get constant biases, 1.65 for 15 and 1.35 for 13 (1.15 for 12), so they win when the interior is blank."
+    },
+    {
+     "name": "Evidence sum and scale max (L108 to L112)",
+     "computes": "For each class and each of 5 scale slots, all branch scores are added. The class score is the maximum over the 5 slots."
+    }
+   ],
+   "decision": "Each class score is a sum of correlations for that class: its family's colour and shape template, its own colour, luma and edge templates, its interior glyph template, and for speed limits a digit contrast against the other limits. The sum is taken separately for 5 assumed sign sizes, and the best size counts. The highest class score wins. 'No vehicles', 'yield' and 'priority road' carry constant biases instead of an interior-glyph term, and the first two are penalised by edge clutter in the centre.",
+   "evidence": "I printed every small weight matrix and found exact hand-set values. L1 is an identity per channel with hinge biases. The L3 slopes are 27.7, -13.0 and so on. L4 is a luma/opponent matrix. L15 is a 0/1 selection of the central 24x24 luma crop. L38 and L92 have exactly 4 nonzero weights per row, each row summing to 1; their patch centroids show square crops at 5 scales and trapezoid (triangle-interior) crops. The routing matrices L22, L23, L47, L53, L59 to L77, L87, L91, L101 and L107 hold only constants, and from them I mapped each template group to its class. L23 maps 8 families to classes: red ring covers 0 to 5, 7 to 10, 15 and 16; colourless ring covers 6, 32, 41 and 42; triangle covers 11 and 18 to 31; blue covers 33 to 40; and so on. L79 has 0.875/-0.125 rows over the 8 speed limits. Viewed as ASCII grids, the templates show ring, triangle, inverted triangle, diamond, octagon, bar and blue-disc shapes in the right colour channels, plus glyphs of '30', '50', arrows, digits and triangle pictograms. The forward-pass checks gave these top classes on drawn signs: empty red ring gives 15 (no vehicles); blue disc with up arrow gives 35 (ahead only); red disc with white bar gives 17 (no entry); triangle with '!' gives 18 (general danger); inverted triangle gives 13 (yield); yellow diamond gives 12 (priority road); white disc with diagonal bar gives 32 (end of all limits). A blank or black image falls back to the bias classes 15, 13 and 12. For each test, a per-branch breakdown showed the family, template, edge and glyph branches all adding to the winning class.",
+   "unknowns": "I did not look at all 1260, 1075 and 1075 per-class whole-sign templates, or at most of the glyph and digit variants. What exactly separates similar pictograms (for example bend left vs right, or children vs pedestrians) is inferred from the template layout, not tested with drawn pictograms. I could not confirm whether the 8, 20 and 36 variants per template are shifts, rotations or sizes. The exact roles of L54/L60 vs L66/L72 (first digit vs other digit) are read from a few template images only. My drawn octagon without letters scored stop only weakly, which suggests stop depends on the letter pattern. I tested no speed-limit digit discrimination directly.",
+   "confidence": "high"
+  },
+  "judge": {
+   "score": 4,
+   "recovered": "Overall approach: a hand-built multi-branch template matcher over all 43 classes. Each class's evidence is summed at each of 5 sign-size hypotheses, and the class score is the best size (the max over 5 slots). Stages recovered: (1) a piecewise-linear log-like tone curve on R, G and B, then three opponent channels (luma, red vs green/blue, yellow vs blue); (2) luma normalised per image, chroma a mix of normalised and raw, downsized to 16x16 by averaging; (3) matching 200 references for 8 sign-outline families, best taken over position, with the families correctly listed; (4) family score passed to each class, plus constant extra credit for no vehicles, yield and priority road; (5) per-class whole-sign colour templates on the 16x16 image; (6) the central 24x24 luma crop re-normalised and matched against per-class luma templates; (7) 8 directional edge maps matched against per-class edge templates; (8) unwarping the face into 50 16x16 canvases (5 scales x 10 positions), square for disks and trapezoid for the triangle interior; (9) face reading: 27 disk classes x 8 and 15 triangle classes, speed-limit numeral templates, and digit close-ups made relative to the mean over the 8 speed limits; (10) blankness tests from gradient energy in a large and a small central window, favouring no vehicles and yield, using the flattest crop; (11) summing per size, then the max over sizes.",
+   "missed": "That all references come from one procedural renderer of idealised sign drawings, and that the variants are stretches, slants and font styles. The reader explicitly could not tell whether they were shifts, rotations or sizes. That each triangle pictogram-part reference is built from 4 local blobs (top, bottom, lower left, lower right); the reader saw only a second set of triangle templates. That the face of the outline-family references is weighted down. That the central-symbol references are masked to the inside of the shape and emphasise fine detail. That each of the 8 edge maps is standardised. That the face is unwarped from absolute brightness that is not lighting-normalised, with the disk mapped at 0.7 times the radius and 2 stretches x 5 centre offsets. That the digit close-ups are small 9x9 patches covering either the distinguishing digit or the whole number.",
+   "wrong": "Nothing materially wrong. Two minor imprecisions. First, the unwarp is described as a warp of the luma, but the truth says absolute brightness, not the normalised luma. Second, L54/L60 and L66/L72 are framed as leading-digit and 100 vs 120 templates over 6 classes, where the truth describes them as 9x9 close-ups of the distinguishing digit or the whole number. Calling the blankness test a penalty on edge clutter plus constant biases is equivalent to the truth's low variation adding evidence.",
+   "note": "An unusually complete recovery. Every one of the 11 ground-truth stages appears with the right counts (200, 1075, 1260, 27x8, 15 triangle classes, 8 speed limits, 5 sizes, 50 canvases). The main gap is provenance: the reader never identified the procedural renderer, and it was unsure how the template variants differ."
+  }
+ },
+ {
+  "id": "w7",
+  "name": "trained-galaxies",
+  "d": {
+   "summary": "This is an ordinary trained CNN with dense, distributed features. In probes it acts as a morphology reader. It measures how elongated the central galaxy is, with any orientation giving the same answer (round, then in-between, then edge-on), checks for a central bulge on elongated shapes, and looks for arm or bar texture to pick among the spiral classes. It votes for these classes mostly from the 8x8 cells covering the central galaxy. Its behaviour depends heavily on the sky background level: it only gives sensible answers when the sky is about 0.09 to 0.12 on a 0 to 1 scale. On pure black input the edge-on-with-bulge score dominates absurdly (+39).",
+   "stages": [
+    {
+     "name": "Stage 1: colour, brightness and sky detectors (24 ch, 64x64)",
+     "computes": "The first-layer filters are large (std 1.35) and mixed. About 18 of the 24 have a positive bias and negative weight sums, so they fire on dark sky and switch off as pixels get brighter: in effect 'this is background' units. A handful (2, 8, 12, 14, 18, 21, 22) have negative bias and only fire on bright pixels. Several of these are oriented colour edge detectors (e.g. 0, 2, 8, 18, 22, 23 have strong diagonal gradients), some tuned to blue minus red or green minus red differences. On flat input of 0.3 or brighter, only the 7 bright units stay on."
+    },
+    {
+     "name": "Stages 2 to 3: shape and texture features (48 then 96 ch)",
+     "computes": "Dense mixing of the stage-1 maps that I could not break down unit by unit. Probes show the outputs become insensitive to orientation: an elongated blob gives nearly identical logits at 0, 30, 45, 60, 90 and 135 degrees. So these layers must combine the oriented edge detectors into elongation and texture measures that do not depend on angle."
+    },
+    {
+     "name": "Stage 4: class-relevant feature map (144 ch, 8x8)",
+     "computes": "About 85 to 105 of the 144 channels are active for every input, including empty sky, so the code is distributed. Each probe type moves its own set of channels. Round blobs raise channels 117, 72, 83, 37 and 18. Elongated blobs raise 25, 127, 108 and 139. Adding a bulge also raises 39, 12 and 77. Spiral arms raise 118, 124 and 31 and suppress 85 and 82. A bar raises 46, 12, 105, 52 and 103."
+    },
+    {
+     "name": "Spatial pooling",
+     "computes": "The 8x8 map is averaged. Class evidence maps (the per-cell projection onto W) show that for a galaxy almost all of the winning class's evidence comes from the central 5x5 cells covering the galaxy. On empty sky the cells carry small non-uniform values, partly edge-padding artefacts."
+    },
+    {
+     "name": "Linear readout",
+     "computes": "A linear readout W (144x10) with tiny biases. Class weight vectors are only weakly correlated. The strongest negative correlations are in-between vs edge-on without bulge (-0.39), round vs cigar (-0.34) and tight spiral vs edge-on with bulge (-0.34). Tight and loose spiral are the most positively correlated pair (+0.36), which fits them sharing arm-texture channels."
+    }
+   ],
+   "decision": "Highest score after a linear readout of the pooled stage-4 channels. These rules come from probes at sky level 0.11:\n- **Axis ratio comes first.** Near-circular smooth blobs (q 0.8 to 1) go to round; round wins more strongly the bigger the blob (+2.4 at radius 1 up to +8 at radius 16 or more). A narrow band around q of about 0.6 to 0.65 gives in-between, but only for medium or large blobs. Below q of about 0.45, the edge-on classes win.\n- **Bulge splits the edge-on classes.** A thin disk with no bulge, or a bulge of radius 1, gives edge-on without bulge. A central round bulge of radius 2 or more flips it to edge-on with bulge, and the margin grows with bulge size. Small elongated blobs (radius 5, q 0.4 to 0.75) also lean toward edge-on with bulge.\n- **Cigar never wins.** It rises toward its maximum at q of about 0.35 to 0.5 for small blobs, but it never won any probe.\n- **Spiral texture picks the spiral classes.** Tightly wound 2-arm spirals give tight spiral. 3 to 4 arms, or medium pitch, give loose spiral. Open 2-arm spirals, and any spiral with a central bar, give barred spiral. A bar with bulge but no arms is read as edge-on with bulge.\n- **Merging and disturbed are weak.** Two blobs 10 to 16 px apart, especially joined by a faint bridge, give merging, but only by a small margin. Disturbed is usually second or third for spiral or extended light but never won at the normal sky level.",
+   "evidence": "1) Weight statistics and printed first-layer 3x3 filters: mostly positive-bias, negative-sum background units plus a few negative-bias bright colour edge detectors.\n2) Uniform images from -3 to 255: logits are enormous away from 0 to 1. Pure black gives edge-on with bulge at +39 and spiral classes at -20 to -55. Sensible small logits appear only near 0.1 to 1, so I assumed 0 to 1 input with sky around 0.1.\n3) Sweeping the sky level from 0.07 to 0.3 with 10 synthetic galaxies: below 0.08 everything goes to edge-on with bulge. From 0.09 to 0.12 predictions are sensible. At 0.15 or more, spirals and edge-ons flip to disturbed or merging.\n4) At sky 0.11:\n- an axis-ratio sweep (q 1 to 0.05) traced round, then in-between, then edge-on;\n- the orientation sweep was invariant;\n- the bulge-size sweep flipped edge-on without bulge to edge-on with bulge at radius 2 or more;\n- size and amplitude sweeps strengthened round with size;\n- off-centre position weakened round;\n- pure single-colour blobs lost the round call.\n5) Spiral pitch, arm count and bar sweeps gave tight, loose and barred as described. Pair separation sweeps and a bridge gave a weak merging vote.\n6) Pooled-channel differences against empty sky for each probe type, and per-cell class evidence maps: evidence sits on the central galaxy cells.",
+   "unknowns": "- **Input scaling.** I never confirmed it. The network's sensitivity to sky level means my probes only reflect real behaviour if real sky pixels sit near 0.1 on a 0 to 1 scale; that is plausible for near-black JPEG skies but not verified.\n- **Middle layers.** I could not say what individual stage 2 to 4 units compute; the code is dense, with roughly 90 or more of 144 channels on for any input.\n- **Cigar and disturbed.** I found no synthetic input that makes cigar win, and none that makes disturbed win at normal sky levels, so what defines those classes is unknown.\n- **Tight vs loose.** They share most of their channels, and my crude log-spiral probes did not split them monotonically by pitch: tight won only at the tightest pitch and with 4 arms, while open 2-arm spirals went to barred.\n- **Merger signal.** The merging signal is weak, and how it uses colour, tidal features or neighbouring objects is unclear.\n- **Untested inputs.** I did not test realistic noise, PSF, field stars or large-galaxy (2x scale) images.",
+   "confidence": "medium"
+  }
+ },
+ {
+  "id": "w8",
+  "name": "astra-person",
+  "d": {
+   "summary": "This network works like a hand-built, multi-scale sliding-window person detector. It makes a greyscale image and a fuzzy skin-colour map, then runs several detector families over a pyramid of scales. Each family looks for a face or head with a different amount of context: a pixel-difference face template, skin-centred head windows, and larger windows with skin at the top and body below. For each family it pools the strongest response map into max, mean-of-local-max and fraction-above-threshold scores. A small head then adds these to a global term that rewards compact skin blobs and penalises long straight vertical or horizontal lines. The image is called 'person' when the total passes a fixed threshold.",
+   "stages": [
+    {
+     "name": "Colour channels",
+     "computes": "L1 is standard luma (0.299R+0.587G+0.114B). L4 to L7 build a fuzzy skin map at 48x48: 1 minus the sum of ReLU'd linear RGB constraints, covering 'reddish, R clearly above G, not too dark, not too saturated'. L8 is the global skin fraction. Other 1x1 layers make a luma plus warm-minus-blue chroma pair (0.55R+0.17G-0.72B) and red, blue, magenta and green colour-class detectors."
+    },
+    {
+     "name": "Image pyramid",
+     "computes": "Average pooling builds 96, 48, 24, 12 and 6 pixel versions of the grey image, the colour image and the skin map, so every detector runs at about 4 scales."
+    },
+    {
+     "name": "Family A: face template",
+     "computes": "13x13 banks on grey (55 plus 40 filters) at 4 scales. The filters are sparse pixel-pair differences, for example eye pixel versus the pixel below or above it, at symmetric left and right eye positions. They feed small ReLU MLPs and a 9x9 skin-map term centred on the window, then a max over 5 mixture components gives one map per scale. Synthetic faces with dark eyes score higher here than the same skin oval without eyes."
+    },
+    {
+     "name": "Families B, C, D: head plus context windows",
+     "computes": "B uses 11x11 windows on the skin map, grey, colour and oriented edges. C uses 15x15 windows and D uses 17x17 windows, both on luma and chroma, with a skin template placed at the top centre of the window, so a face or head sits at the top with room for shoulders and body below. Each has a small ReLU MLP and a max over 3 components. Fixed bias maps penalise the border row and column and favour the centre over the bottom edge. Grouping the window sizes into B, C and D comes from reading the network.json layer list."
+    },
+    {
+     "name": "Fused family",
+     "computes": "For each scale, 1x1 combinations of the A, B and C maps are summed and maxed over 3 components, making a fifth 'combined evidence' map family."
+    },
+    {
+     "name": "Per-family pooling",
+     "computes": "Each family's maps are max-pooled across scales and components into a 6x6 grid. Three numbers come out: the global max, the mean of the 3x3-block maxima, and the mean of a ReLU-thresholded copy (the fraction of strongly firing cells)."
+    },
+    {
+     "name": "Global colour and texture cues",
+     "computes": "(a) Mean of a centre-surround filter on the 24x24 skin map, which measures how much compact skin is present. (b) Global max of centre-surround blobs of saturated red, blue or magenta. (c) Mean response of 11x11 long straight vertical and horizontal line detectors, built on clipped Sobel orientation-energy maps. (d) A gated term combining global colour coverage with saturated blobs."
+    },
+    {
+     "name": "Head",
+     "computes": "Each of the 5 detector families gives a_k = about 0.8*max + 0.27*avg + 0.3*frac minus about 1. Their weighted sum with weights 0.25 to 1, plus a ReLU branch with weights about 0.85 to 0.98, gives a positive, piecewise-linear evidence score. One more linear term adds +1.35*skin blobs +0.1*saturated blob +0.28*colour gate -1.25*vertical lines -1.55*horizontal lines."
+    }
+   ],
+   "decision": "The class-0 logit is fixed at 0. The class-1 logit is the summed evidence score minus 0.06, so 'person' is predicted when the evidence passes 0.06. The evidence rises when any detector family has a strong local peak (face or head-and-body at any scale), when several locations fire, and when compact skin is present. It falls with many long straight horizontal or vertical lines.",
+   "evidence": "Weights checks: L1 is exact luma. L4 to L6 have round-number weights forming a skin-colour polytope with output relu(1 - sum of violations). The L18 and L25 13x13 filters have about 4% non-zero taps arranged as symmetric eye-row pixel comparisons. The skin templates in the 15x15 and 17x17 windows (L505, L746) sit at the top centre of the window, while the 9x9 skin template in the face family (L53) sits at the window centre. The dense layers fed by L8 have zero W and act only as fixed bias maps (a -0.56 border, centre favoured). The head weights are read directly: L859 pools each family as 0.8/0.27/0.3, and L860/L862/L864 sum with positive weights; the line features get -1.25 and -1.55. The oriented-edge branch is 8 Sobel kernels turned into opponent orientation energy and clipped at 1.\\n\\nSynthetic forward passes, as class-1 minus class-0 score:\\n* Blank grey, black or white: about -1.5.\\n* Sky and grass: -1.3.\\n* Grid of lines: -0.77.\\n* Skin oval alone: about 0.\\n* Cartoon face with eyes: +0.53 to +0.74. Without eyes: +0.33 to +0.57. The same face in greyscale: -0.85, because the skin-based families collapse.\\n* Full figure with head, skin arms, shirt and legs: +0.74 to +1.49.\\n* Head only: +0.10. Body and legs without head: -0.14. Legs only: -1.03.\\n* Figure with grey skin: +0.07. Dark-skinned figure: +1.30.\\n* Two people: +2.16.\\n* Grid plus face: +0.85, so the face overrides the line penalty.\\n* Upside-down figure: +0.47.\\n* Small figure at the left edge: -0.19 (border penalty).\\n* Random colour noise: +0.25 (false positive).",
+   "unknowns": "I did not decode the exact templates inside the 55-, 40-, 72- and 102-filter banks or what each mixture component means. 'Face', 'head and shoulders' and 'body' are inferred from window sizes, where the skin template sits, and part-ablation probes, not from reading every filter. I could not separate the roles of B, C and D cleanly: all of them peak near the head. Body context such as shirt and skin arms raises them, but I did not determine which specific shapes they reward. The exact colour ranges of the red, blue, magenta and green detectors and the gating in L703 to L723 were only partly traced. I did not test behaviour on real photos, including how often textures or skin-coloured objects such as wood, sand or food set it off.",
+   "confidence": "medium"
+  },
+  "judge": {
+   "score": 4,
+   "recovered": "Overall approach: a hand-built, multi-scale template detector with several person 'views', pooled per detector, plus scene clues and a fixed-threshold linear vote. Stage 1 (pyramids): luma plus averaged copies at about 4 scales, correct. Stage 2 (skin map): skin built at half resolution (48x48) as 1 minus the sum of ReLU'd RGB constraints (red above green, bright enough), clipped, then pooled down, correct. Stage 4 (face search): sparse brightness pixel-pair contrasts at symmetric eye positions, a skin-oval term, and a max over 5 components (the 5 face shapes) at 4 scales, correct in substance, and the dark-eyes probe confirms the eye-contrast logic. Stages 5 to 7 (head and figure searches): it recovered head-and-context windows with skin at the top centre, room for the body below, a max over 3 components (the 3 sizes), use of luma plus a warm-minus-blue chroma axis (the red-versus-blue axis), and border and location penalty maps. Stage 8 (agreement): it found the fused 'combined evidence' family that combines the face, head and figure maps per scale. Stage 9 (summary): a 6x6 grid with the max over scales, then global max, mean of block maxima (the quadrants) and a thresholded strong-area term, correct. Stage 10 (scene clues): compact skin spots via centre-surround, the max of saturated red, blue or magenta centre-surround blobs, long vertical and horizontal line detectors as penalties, and a gated colour-coverage times blob term. Stage 11 and decision: per-detector margin = weighted max, avg and frac minus an offset, detector weights 0.25 to 1, a ReLU bonus branch with weights about 0.85 to 0.98, scene term +skin +blob +gate -lines, class 0 fixed at 0, threshold 0.06, all correct.",
+   "missed": "Stage 3: the oriented-edge maps in 4 directions with 0.65x perpendicular suppression are only mentioned in passing ('oriented edges', 'Sobel orientation energy'). Face details: brows, nose, mouth, chin and hair checks, the asymmetry penalty, and the 2 tilted face shapes. Head-and-shoulders details: the hair cap, chest versus background contrast, garment colour versus background, the head, neck and shoulder outline edge templates with parallel offset edges subtracted, and the soft-minimum sector tests (skin isolated on all 4 sides, hair on 3 sides). The split between the standing-figure and clothed-figure detectors: head, torso and legs each contrasted with both sides, scored on the weaker side, the left/right background-difference penalty, arm and shoulder sections, long body-side edges. The reader admitted it could not separate B, C and D. Agreement mechanism: the truth is a sum minus part of the strongest score, which rewards co-firing; the reader did not identify the agreement rationale. Sports-scene clue: green or blue ground colour weighted toward the bottom rows. The reader saw the colour gate but not what it means.",
+   "wrong": "Nothing clearly wrong. Calling C and D 'head with shoulders and body below' blurs the standing-figure and clothed-figure detectors together, but it is roughly consistent with the truth. 'Fraction above threshold' is really the mean amount by which cells exceed the threshold, a minor mislabel. Describing the face filters as only 'eye pixel versus pixel below or above' undersells them: they cover many facial parts.",
+   "note": "A strong weights-only reading. It got the skeleton right end to end: inputs, skin map, multi-scale families with mixture maxes, pooling, scene clues, and the exact head structure and threshold. The gaps are in the semantics inside the head and figure templates and in what the gated colour term means (a sports field)."
+  }
+ }
+]

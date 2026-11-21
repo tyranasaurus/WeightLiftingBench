@@ -1,0 +1,2796 @@
+{
+  "layers": [
+    {
+      "name": "ink_threshold",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ink_positive",
+      "op": "relu",
+      "inputs": [
+        "ink_threshold"
+      ]
+    },
+    {
+      "name": "ink_excess",
+      "op": "conv",
+      "inputs": [
+        "ink_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ink_excess_positive",
+      "op": "relu",
+      "inputs": [
+        "ink_excess"
+      ]
+    },
+    {
+      "name": "ink_negative_excess",
+      "op": "conv",
+      "inputs": [
+        "ink_excess_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ink",
+      "op": "add",
+      "inputs": [
+        "ink_positive",
+        "ink_negative_excess"
+      ]
+    },
+    {
+      "name": "pad_1",
+      "op": "conv",
+      "inputs": [
+        "ink"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_1",
+      "op": "maxpool",
+      "inputs": [
+        "pad_1"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_2",
+      "op": "conv",
+      "inputs": [
+        "dilate_1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_2",
+      "op": "maxpool",
+      "inputs": [
+        "pad_2"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_3",
+      "op": "conv",
+      "inputs": [
+        "dilate_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_3",
+      "op": "maxpool",
+      "inputs": [
+        "pad_3"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_4",
+      "op": "conv",
+      "inputs": [
+        "dilate_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_4",
+      "op": "maxpool",
+      "inputs": [
+        "pad_4"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_5",
+      "op": "conv",
+      "inputs": [
+        "dilate_4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_5",
+      "op": "maxpool",
+      "inputs": [
+        "pad_5"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_6",
+      "op": "conv",
+      "inputs": [
+        "dilate_5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_6",
+      "op": "maxpool",
+      "inputs": [
+        "pad_6"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "pad_7",
+      "op": "conv",
+      "inputs": [
+        "dilate_6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilate_7",
+      "op": "maxpool",
+      "inputs": [
+        "pad_7"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "distance_term_0",
+      "op": "conv",
+      "inputs": [
+        "ink"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_1",
+      "op": "conv",
+      "inputs": [
+        "dilate_1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_2",
+      "op": "conv",
+      "inputs": [
+        "dilate_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_3",
+      "op": "conv",
+      "inputs": [
+        "dilate_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_4",
+      "op": "conv",
+      "inputs": [
+        "dilate_4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_5",
+      "op": "conv",
+      "inputs": [
+        "dilate_5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_6",
+      "op": "conv",
+      "inputs": [
+        "dilate_6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "distance_term_7",
+      "op": "conv",
+      "inputs": [
+        "dilate_7"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near_ink",
+      "op": "add",
+      "inputs": [
+        "distance_term_0",
+        "distance_term_1",
+        "distance_term_2",
+        "distance_term_3",
+        "distance_term_4",
+        "distance_term_5",
+        "distance_term_6",
+        "distance_term_7"
+      ]
+    },
+    {
+      "name": "free_affine",
+      "op": "conv",
+      "inputs": [
+        "ink"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "free",
+      "op": "relu",
+      "inputs": [
+        "free_affine"
+      ]
+    },
+    {
+      "name": "constant_one",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "frame_seed",
+      "op": "conv",
+      "inputs": [
+        "constant_one"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_00_pad",
+      "op": "conv",
+      "inputs": [
+        "frame_seed"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_00_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_00_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_00_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_00_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_00_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_00_neg"
+      ]
+    },
+    {
+      "name": "flood_00_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_00_diff"
+      ]
+    },
+    {
+      "name": "flood_00_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_00_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_00_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_00_ncut"
+      ]
+    },
+    {
+      "name": "flood_01_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_00_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_01_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_01_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_01_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_01_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_01_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_01_neg"
+      ]
+    },
+    {
+      "name": "flood_01_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_01_diff"
+      ]
+    },
+    {
+      "name": "flood_01_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_01_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_01_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_01_ncut"
+      ]
+    },
+    {
+      "name": "flood_02_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_01_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_02_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_02_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_02_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_02_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_02_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_02_neg"
+      ]
+    },
+    {
+      "name": "flood_02_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_02_diff"
+      ]
+    },
+    {
+      "name": "flood_02_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_02_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_02_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_02_ncut"
+      ]
+    },
+    {
+      "name": "flood_03_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_02_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_03_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_03_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_03_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_03_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_03_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_03_neg"
+      ]
+    },
+    {
+      "name": "flood_03_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_03_diff"
+      ]
+    },
+    {
+      "name": "flood_03_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_03_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_03_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_03_ncut"
+      ]
+    },
+    {
+      "name": "flood_04_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_03_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_04_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_04_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_04_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_04_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_04_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_04_neg"
+      ]
+    },
+    {
+      "name": "flood_04_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_04_diff"
+      ]
+    },
+    {
+      "name": "flood_04_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_04_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_04_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_04_ncut"
+      ]
+    },
+    {
+      "name": "flood_05_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_04_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_05_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_05_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_05_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_05_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_05_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_05_neg"
+      ]
+    },
+    {
+      "name": "flood_05_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_05_diff"
+      ]
+    },
+    {
+      "name": "flood_05_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_05_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_05_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_05_ncut"
+      ]
+    },
+    {
+      "name": "flood_06_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_05_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_06_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_06_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_06_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_06_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_06_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_06_neg"
+      ]
+    },
+    {
+      "name": "flood_06_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_06_diff"
+      ]
+    },
+    {
+      "name": "flood_06_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_06_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_06_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_06_ncut"
+      ]
+    },
+    {
+      "name": "flood_07_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_06_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_07_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_07_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_07_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_07_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_07_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_07_neg"
+      ]
+    },
+    {
+      "name": "flood_07_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_07_diff"
+      ]
+    },
+    {
+      "name": "flood_07_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_07_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_07_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_07_ncut"
+      ]
+    },
+    {
+      "name": "flood_08_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_07_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_08_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_08_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_08_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_08_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_08_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_08_neg"
+      ]
+    },
+    {
+      "name": "flood_08_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_08_diff"
+      ]
+    },
+    {
+      "name": "flood_08_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_08_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_08_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_08_ncut"
+      ]
+    },
+    {
+      "name": "flood_09_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_08_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_09_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_09_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_09_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_09_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_09_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_09_neg"
+      ]
+    },
+    {
+      "name": "flood_09_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_09_diff"
+      ]
+    },
+    {
+      "name": "flood_09_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_09_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_09_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_09_ncut"
+      ]
+    },
+    {
+      "name": "flood_10_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_09_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_10_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_10_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_10_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_10_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_10_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_10_neg"
+      ]
+    },
+    {
+      "name": "flood_10_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_10_diff"
+      ]
+    },
+    {
+      "name": "flood_10_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_10_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_10_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_10_ncut"
+      ]
+    },
+    {
+      "name": "flood_11_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_10_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_11_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_11_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_11_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_11_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_11_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_11_neg"
+      ]
+    },
+    {
+      "name": "flood_11_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_11_diff"
+      ]
+    },
+    {
+      "name": "flood_11_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_11_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_11_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_11_ncut"
+      ]
+    },
+    {
+      "name": "flood_12_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_11_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_12_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_12_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_12_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_12_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_12_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_12_neg"
+      ]
+    },
+    {
+      "name": "flood_12_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_12_diff"
+      ]
+    },
+    {
+      "name": "flood_12_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_12_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_12_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_12_ncut"
+      ]
+    },
+    {
+      "name": "flood_13_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_12_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_13_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_13_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_13_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_13_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_13_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_13_neg"
+      ]
+    },
+    {
+      "name": "flood_13_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_13_diff"
+      ]
+    },
+    {
+      "name": "flood_13_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_13_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_13_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_13_ncut"
+      ]
+    },
+    {
+      "name": "flood_14_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_13_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_14_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_14_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_14_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_14_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_14_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_14_neg"
+      ]
+    },
+    {
+      "name": "flood_14_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_14_diff"
+      ]
+    },
+    {
+      "name": "flood_14_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_14_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_14_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_14_ncut"
+      ]
+    },
+    {
+      "name": "flood_15_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_14_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_15_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_15_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_15_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_15_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_15_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_15_neg"
+      ]
+    },
+    {
+      "name": "flood_15_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_15_diff"
+      ]
+    },
+    {
+      "name": "flood_15_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_15_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_15_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_15_ncut"
+      ]
+    },
+    {
+      "name": "flood_16_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_15_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_16_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_16_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_16_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_16_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_16_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_16_neg"
+      ]
+    },
+    {
+      "name": "flood_16_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_16_diff"
+      ]
+    },
+    {
+      "name": "flood_16_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_16_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_16_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_16_ncut"
+      ]
+    },
+    {
+      "name": "flood_17_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_16_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_17_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_17_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_17_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_17_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_17_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_17_neg"
+      ]
+    },
+    {
+      "name": "flood_17_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_17_diff"
+      ]
+    },
+    {
+      "name": "flood_17_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_17_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_17_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_17_ncut"
+      ]
+    },
+    {
+      "name": "flood_18_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_17_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_18_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_18_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_18_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_18_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_18_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_18_neg"
+      ]
+    },
+    {
+      "name": "flood_18_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_18_diff"
+      ]
+    },
+    {
+      "name": "flood_18_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_18_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_18_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_18_ncut"
+      ]
+    },
+    {
+      "name": "flood_19_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_18_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_19_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_19_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_19_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_19_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_19_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_19_neg"
+      ]
+    },
+    {
+      "name": "flood_19_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_19_diff"
+      ]
+    },
+    {
+      "name": "flood_19_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_19_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_19_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_19_ncut"
+      ]
+    },
+    {
+      "name": "flood_20_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_19_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_20_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_20_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_20_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_20_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_20_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_20_neg"
+      ]
+    },
+    {
+      "name": "flood_20_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_20_diff"
+      ]
+    },
+    {
+      "name": "flood_20_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_20_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_20_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_20_ncut"
+      ]
+    },
+    {
+      "name": "flood_21_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_20_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_21_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_21_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_21_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_21_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_21_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_21_neg"
+      ]
+    },
+    {
+      "name": "flood_21_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_21_diff"
+      ]
+    },
+    {
+      "name": "flood_21_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_21_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_21_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_21_ncut"
+      ]
+    },
+    {
+      "name": "flood_22_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_21_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_22_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_22_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_22_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_22_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_22_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_22_neg"
+      ]
+    },
+    {
+      "name": "flood_22_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_22_diff"
+      ]
+    },
+    {
+      "name": "flood_22_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_22_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_22_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_22_ncut"
+      ]
+    },
+    {
+      "name": "flood_23_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_22_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_23_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_23_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_23_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_23_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_23_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_23_neg"
+      ]
+    },
+    {
+      "name": "flood_23_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_23_diff"
+      ]
+    },
+    {
+      "name": "flood_23_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_23_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_23_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_23_ncut"
+      ]
+    },
+    {
+      "name": "flood_24_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_23_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_24_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_24_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_24_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_24_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_24_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_24_neg"
+      ]
+    },
+    {
+      "name": "flood_24_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_24_diff"
+      ]
+    },
+    {
+      "name": "flood_24_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_24_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_24_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_24_ncut"
+      ]
+    },
+    {
+      "name": "flood_25_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_24_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_25_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_25_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_25_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_25_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_25_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_25_neg"
+      ]
+    },
+    {
+      "name": "flood_25_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_25_diff"
+      ]
+    },
+    {
+      "name": "flood_25_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_25_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_25_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_25_ncut"
+      ]
+    },
+    {
+      "name": "flood_26_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_25_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_26_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_26_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_26_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_26_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_26_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_26_neg"
+      ]
+    },
+    {
+      "name": "flood_26_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_26_diff"
+      ]
+    },
+    {
+      "name": "flood_26_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_26_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_26_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_26_ncut"
+      ]
+    },
+    {
+      "name": "flood_27_pad",
+      "op": "conv",
+      "inputs": [
+        "flood_26_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "flood_27_expand",
+      "op": "maxpool",
+      "inputs": [
+        "flood_27_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flood_27_neg",
+      "op": "conv",
+      "inputs": [
+        "flood_27_expand"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_27_diff",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_27_neg"
+      ]
+    },
+    {
+      "name": "flood_27_cut",
+      "op": "relu",
+      "inputs": [
+        "flood_27_diff"
+      ]
+    },
+    {
+      "name": "flood_27_ncut",
+      "op": "conv",
+      "inputs": [
+        "flood_27_cut"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flood_27_result",
+      "op": "add",
+      "inputs": [
+        "free",
+        "flood_27_ncut"
+      ]
+    },
+    {
+      "name": "negative_exterior",
+      "op": "conv",
+      "inputs": [
+        "flood_27_result"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "holes",
+      "op": "add",
+      "inputs": [
+        "free",
+        "negative_exterior"
+      ]
+    },
+    {
+      "name": "stroke_presence",
+      "op": "conv",
+      "inputs": [
+        "near_ink"
+      ],
+      "out": 25200,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "unexplained_ink",
+      "op": "conv",
+      "inputs": [
+        "ink"
+      ],
+      "out": 25200,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "negative_space",
+      "op": "conv",
+      "inputs": [
+        "holes"
+      ],
+      "out": 25200,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "template_scores",
+      "op": "add",
+      "inputs": [
+        "stroke_presence",
+        "unexplained_ink",
+        "negative_space"
+      ]
+    },
+    {
+      "name": "group_by_digit",
+      "op": "reshape",
+      "inputs": [
+        "template_scores"
+      ],
+      "shape": [
+        10,
+        2520,
+        9
+      ]
+    },
+    {
+      "name": "best_explanation",
+      "op": "maxpool",
+      "inputs": [
+        "group_by_digit"
+      ],
+      "size": [
+        2520,
+        9
+      ],
+      "stride": [
+        2520,
+        9
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_explanation"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

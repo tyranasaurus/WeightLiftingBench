@@ -1,0 +1,65 @@
+{
+  "layers": [
+    {
+      "name": "norm_image",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "color",
+      "op": "conv",
+      "inputs": [
+        "norm_image"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_r",
+      "op": "relu",
+      "inputs": [
+        "color"
+      ]
+    },
+    {
+      "name": "pool_c",
+      "op": "avgpool",
+      "inputs": [
+        "color_r"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "flat_c",
+      "op": "reshape",
+      "inputs": [
+        "pool_c"
+      ],
+      "shape": [
+        320
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "flat_c"
+      ],
+      "out": 43
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+ "layers": [
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "image"
+   ],
+   "shape": [
+    1,
+    96,
+    32
+   ]
+  },
+  {
+   "name": "gnorm",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "img",
+   "op": "reshape",
+   "inputs": [
+    "gnorm"
+   ],
+   "shape": [
+    3,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "img"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 5375
+  },
+  {
+   "name": "poses",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    43,
+    125
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "poses"
+   ],
+   "size": [
+    1,
+    125
+   ],
+   "stride": [
+    1,
+    125
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

@@ -1,0 +1,4093 @@
+{
+ "layers": [
+  {
+   "name": "two_pixel_colour",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "gamut_boundaries",
+   "op": "conv",
+   "inputs": [
+    "two_pixel_colour"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gamut_boundaries_pos",
+   "op": "relu",
+   "inputs": [
+    "gamut_boundaries"
+   ]
+  },
+  {
+   "name": "complexion",
+   "op": "conv",
+   "inputs": [
+    "gamut_boundaries_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "complexion_pos",
+   "op": "relu",
+   "inputs": [
+    "complexion"
+   ]
+  },
+  {
+   "name": "four_pixel_colour",
+   "op": "avgpool",
+   "inputs": [
+    "two_pixel_colour"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "four_pixel_skin",
+   "op": "avgpool",
+   "inputs": [
+    "complexion_pos"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "eight_pixel_colour",
+   "op": "avgpool",
+   "inputs": [
+    "four_pixel_colour"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "eight_pixel_skin",
+   "op": "avgpool",
+   "inputs": [
+    "four_pixel_skin"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luminance_fine",
+   "op": "conv",
+   "inputs": [
+    "two_pixel_colour"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "directed_edges_fine",
+   "op": "conv",
+   "inputs": [
+    "two_pixel_colour"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "directed_edges_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "directed_edges_fine"
+   ]
+  },
+  {
+   "name": "contrast_fine",
+   "op": "conv",
+   "inputs": [
+    "directed_edges_fine_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_fine",
+   "op": "conv",
+   "inputs": [
+    "contrast_fine"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "oriented_ramps_fine"
+   ]
+  },
+  {
+   "name": "oriented_contours_fine",
+   "op": "conv",
+   "inputs": [
+    "oriented_ramps_fine_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_colour_fine",
+   "op": "conv",
+   "inputs": [
+    "complexion_pos"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "hair_and_eyes_fine",
+   "op": "conv",
+   "inputs": [
+    "luminance_fine"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "oval_contour_fine",
+   "op": "conv",
+   "inputs": [
+    "oriented_contours_fine"
+   ],
+   "out": 12,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "colour_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "face_colour_fine"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "relief_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "hair_and_eyes_fine"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "boundary_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "oval_contour_fine"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "paired_part_deficits_fine",
+   "op": "conv",
+   "inputs": [
+    "luminance_fine"
+   ],
+   "out": 48,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 6
+  },
+  {
+   "name": "paired_part_deficits_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "paired_part_deficits_fine"
+   ]
+  },
+  {
+   "name": "bilateral_support_fine",
+   "op": "conv",
+   "inputs": [
+    "paired_part_deficits_fine_pos"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_rules_fine",
+   "op": "add",
+   "inputs": [
+    "colour_rule_fine",
+    "relief_rule_fine",
+    "boundary_rule_fine",
+    "bilateral_support_fine"
+   ]
+  },
+  {
+   "name": "head_fine_planes",
+   "op": "reshape",
+   "inputs": [
+    "head_rules_fine"
+   ],
+   "shape": [
+    1,
+    36,
+    576
+   ]
+  },
+  {
+   "name": "head_fine_best",
+   "op": "maxpool",
+   "inputs": [
+    "head_fine_planes"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "head_fine",
+   "op": "reshape",
+   "inputs": [
+    "head_fine_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_fine_excess",
+   "op": "conv",
+   "inputs": [
+    "head_fine"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_fine_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "f_fine_excess"
+   ]
+  },
+  {
+   "name": "f_fine_clip",
+   "op": "conv",
+   "inputs": [
+    "f_fine_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_fine_capped",
+   "op": "add",
+   "inputs": [
+    "head_fine",
+    "f_fine_clip"
+   ]
+  },
+  {
+   "name": "f_fine_reference",
+   "op": "avgpool",
+   "inputs": [
+    "f_fine_capped"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_fine_location",
+   "op": "dense",
+   "inputs": [
+    "f_fine_reference"
+   ],
+   "out": 576
+  },
+  {
+   "name": "f_fine_offset",
+   "op": "reshape",
+   "inputs": [
+    "f_fine_location"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_fine_map",
+   "op": "add",
+   "inputs": [
+    "f_fine_capped",
+    "f_fine_offset"
+   ]
+  },
+  {
+   "name": "f_fine_peak",
+   "op": "maxpool",
+   "inputs": [
+    "f_fine_map"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_fine_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "f_fine_map"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "f_fine_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "f_fine_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_fine_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "f_fine_tile_ramp"
+   ]
+  },
+  {
+   "name": "f_fine_multi",
+   "op": "avgpool",
+   "inputs": [
+    "f_fine_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "f_fine_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "f_fine_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_fine_group_vote",
+   "op": "conv",
+   "inputs": [
+    "f_fine_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_fine_detection",
+   "op": "add",
+   "inputs": [
+    "f_fine_peak_vote",
+    "f_fine_group_vote"
+   ]
+  },
+  {
+   "name": "figure_parts_fine",
+   "op": "conv",
+   "inputs": [
+    "oriented_contours_fine"
+   ],
+   "out": 24,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "figure_complexion_fine",
+   "op": "conv",
+   "inputs": [
+    "complexion_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "figure_flanks_fine",
+   "op": "conv",
+   "inputs": [
+    "luminance_fine"
+   ],
+   "out": 32,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "figure_flanks_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "figure_flanks_fine"
+   ]
+  },
+  {
+   "name": "flank_difference_fine",
+   "op": "conv",
+   "inputs": [
+    "figure_flanks_fine_pos"
+   ],
+   "out": 32,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flank_difference_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "flank_difference_fine"
+   ]
+  },
+  {
+   "name": "flank_mean_fine",
+   "op": "conv",
+   "inputs": [
+    "figure_flanks_fine_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flank_agreement_fine",
+   "op": "conv",
+   "inputs": [
+    "flank_difference_fine_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_fine",
+   "op": "add",
+   "inputs": [
+    "flank_mean_fine",
+    "flank_agreement_fine"
+   ]
+  },
+  {
+   "name": "garment_excess_fine",
+   "op": "conv",
+   "inputs": [
+    "garment_fine"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_excess_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "garment_excess_fine"
+   ]
+  },
+  {
+   "name": "garment_clip_fine",
+   "op": "conv",
+   "inputs": [
+    "garment_excess_fine_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_capped_fine",
+   "op": "add",
+   "inputs": [
+    "garment_fine",
+    "garment_clip_fine"
+   ]
+  },
+  {
+   "name": "body_shape_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "figure_parts_fine"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_colour_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "figure_complexion_fine"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_shirt_rule_fine",
+   "op": "conv",
+   "inputs": [
+    "garment_capped_fine"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure_rules_fine",
+   "op": "add",
+   "inputs": [
+    "body_shape_rule_fine",
+    "body_colour_rule_fine",
+    "body_shirt_rule_fine"
+   ]
+  },
+  {
+   "name": "figure_fine_planes",
+   "op": "reshape",
+   "inputs": [
+    "figure_rules_fine"
+   ],
+   "shape": [
+    1,
+    16,
+    576
+   ]
+  },
+  {
+   "name": "figure_fine_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure_fine_planes"
+   ],
+   "size": [
+    16,
+    1
+   ],
+   "stride": [
+    16,
+    1
+   ]
+  },
+  {
+   "name": "figure_fine",
+   "op": "reshape",
+   "inputs": [
+    "figure_fine_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_fine_excess",
+   "op": "conv",
+   "inputs": [
+    "figure_fine"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_fine_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "b_fine_excess"
+   ]
+  },
+  {
+   "name": "b_fine_clip",
+   "op": "conv",
+   "inputs": [
+    "b_fine_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_fine_capped",
+   "op": "add",
+   "inputs": [
+    "figure_fine",
+    "b_fine_clip"
+   ]
+  },
+  {
+   "name": "b_fine_reference",
+   "op": "avgpool",
+   "inputs": [
+    "b_fine_capped"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_fine_location",
+   "op": "dense",
+   "inputs": [
+    "b_fine_reference"
+   ],
+   "out": 576
+  },
+  {
+   "name": "b_fine_offset",
+   "op": "reshape",
+   "inputs": [
+    "b_fine_location"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_fine_map",
+   "op": "add",
+   "inputs": [
+    "b_fine_capped",
+    "b_fine_offset"
+   ]
+  },
+  {
+   "name": "b_fine_peak",
+   "op": "maxpool",
+   "inputs": [
+    "b_fine_map"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_fine_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "b_fine_map"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "b_fine_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "b_fine_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_fine_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "b_fine_tile_ramp"
+   ]
+  },
+  {
+   "name": "b_fine_multi",
+   "op": "avgpool",
+   "inputs": [
+    "b_fine_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "b_fine_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "b_fine_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_fine_group_vote",
+   "op": "conv",
+   "inputs": [
+    "b_fine_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_fine_detection",
+   "op": "add",
+   "inputs": [
+    "b_fine_peak_vote",
+    "b_fine_group_vote"
+   ]
+  },
+  {
+   "name": "local_landmark_contrast_fine",
+   "op": "conv",
+   "inputs": [
+    "luminance_fine"
+   ],
+   "out": 60,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "landmark_complexion_fine",
+   "op": "conv",
+   "inputs": [
+    "complexion_pos"
+   ],
+   "out": 12,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "landmark_hinges_fine",
+   "op": "conv",
+   "inputs": [
+    "local_landmark_contrast_fine"
+   ],
+   "out": 120,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_hinges_fine_pos",
+   "op": "relu",
+   "inputs": [
+    "landmark_hinges_fine"
+   ]
+  },
+  {
+   "name": "landmark_vote_fine",
+   "op": "conv",
+   "inputs": [
+    "local_landmark_contrast_fine"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "missing_landmarks_fine",
+   "op": "conv",
+   "inputs": [
+    "landmark_hinges_fine_pos"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_colour_vote_fine",
+   "op": "conv",
+   "inputs": [
+    "landmark_complexion_fine"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "constellation_fine",
+   "op": "add",
+   "inputs": [
+    "landmark_vote_fine",
+    "missing_landmarks_fine",
+    "landmark_colour_vote_fine"
+   ]
+  },
+  {
+   "name": "aligned_face_fine_planes",
+   "op": "reshape",
+   "inputs": [
+    "constellation_fine"
+   ],
+   "shape": [
+    1,
+    12,
+    576
+   ]
+  },
+  {
+   "name": "aligned_face_fine_best",
+   "op": "maxpool",
+   "inputs": [
+    "aligned_face_fine_planes"
+   ],
+   "size": [
+    12,
+    1
+   ],
+   "stride": [
+    12,
+    1
+   ]
+  },
+  {
+   "name": "aligned_face_fine",
+   "op": "reshape",
+   "inputs": [
+    "aligned_face_fine_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmarks_fine_excess",
+   "op": "conv",
+   "inputs": [
+    "aligned_face_fine"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_fine_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "landmarks_fine_excess"
+   ]
+  },
+  {
+   "name": "landmarks_fine_clip",
+   "op": "conv",
+   "inputs": [
+    "landmarks_fine_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_fine_capped",
+   "op": "add",
+   "inputs": [
+    "aligned_face_fine",
+    "landmarks_fine_clip"
+   ]
+  },
+  {
+   "name": "landmarks_fine_reference",
+   "op": "avgpool",
+   "inputs": [
+    "landmarks_fine_capped"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmarks_fine_location",
+   "op": "dense",
+   "inputs": [
+    "landmarks_fine_reference"
+   ],
+   "out": 576
+  },
+  {
+   "name": "landmarks_fine_offset",
+   "op": "reshape",
+   "inputs": [
+    "landmarks_fine_location"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmarks_fine_map",
+   "op": "add",
+   "inputs": [
+    "landmarks_fine_capped",
+    "landmarks_fine_offset"
+   ]
+  },
+  {
+   "name": "landmarks_fine_peak",
+   "op": "maxpool",
+   "inputs": [
+    "landmarks_fine_map"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "landmarks_fine_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "landmarks_fine_map"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "landmarks_fine_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "landmarks_fine_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_fine_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "landmarks_fine_tile_ramp"
+   ]
+  },
+  {
+   "name": "landmarks_fine_multi",
+   "op": "avgpool",
+   "inputs": [
+    "landmarks_fine_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "landmarks_fine_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "landmarks_fine_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_fine_group_vote",
+   "op": "conv",
+   "inputs": [
+    "landmarks_fine_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_fine_detection",
+   "op": "add",
+   "inputs": [
+    "landmarks_fine_peak_vote",
+    "landmarks_fine_group_vote"
+   ]
+  },
+  {
+   "name": "luminance_mid",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_colour"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "directed_edges_mid",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_colour"
+   ],
+   "out": 24,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "directed_edges_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "directed_edges_mid"
+   ]
+  },
+  {
+   "name": "contrast_mid",
+   "op": "conv",
+   "inputs": [
+    "directed_edges_mid_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_mid",
+   "op": "conv",
+   "inputs": [
+    "contrast_mid"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "oriented_ramps_mid"
+   ]
+  },
+  {
+   "name": "oriented_contours_mid",
+   "op": "conv",
+   "inputs": [
+    "oriented_ramps_mid_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_colour_mid",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_skin"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "hair_and_eyes_mid",
+   "op": "conv",
+   "inputs": [
+    "luminance_mid"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "oval_contour_mid",
+   "op": "conv",
+   "inputs": [
+    "oriented_contours_mid"
+   ],
+   "out": 12,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "colour_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "face_colour_mid"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "relief_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "hair_and_eyes_mid"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "boundary_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "oval_contour_mid"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "paired_part_deficits_mid",
+   "op": "conv",
+   "inputs": [
+    "luminance_mid"
+   ],
+   "out": 48,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "paired_part_deficits_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "paired_part_deficits_mid"
+   ]
+  },
+  {
+   "name": "bilateral_support_mid",
+   "op": "conv",
+   "inputs": [
+    "paired_part_deficits_mid_pos"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_rules_mid",
+   "op": "add",
+   "inputs": [
+    "colour_rule_mid",
+    "relief_rule_mid",
+    "boundary_rule_mid",
+    "bilateral_support_mid"
+   ]
+  },
+  {
+   "name": "head_mid_planes",
+   "op": "reshape",
+   "inputs": [
+    "head_rules_mid"
+   ],
+   "shape": [
+    1,
+    36,
+    576
+   ]
+  },
+  {
+   "name": "head_mid_best",
+   "op": "maxpool",
+   "inputs": [
+    "head_mid_planes"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "head_mid",
+   "op": "reshape",
+   "inputs": [
+    "head_mid_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_mid_excess",
+   "op": "conv",
+   "inputs": [
+    "head_mid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_mid_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "f_mid_excess"
+   ]
+  },
+  {
+   "name": "f_mid_clip",
+   "op": "conv",
+   "inputs": [
+    "f_mid_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_mid_capped",
+   "op": "add",
+   "inputs": [
+    "head_mid",
+    "f_mid_clip"
+   ]
+  },
+  {
+   "name": "f_mid_reference",
+   "op": "avgpool",
+   "inputs": [
+    "f_mid_capped"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_mid_location",
+   "op": "dense",
+   "inputs": [
+    "f_mid_reference"
+   ],
+   "out": 576
+  },
+  {
+   "name": "f_mid_offset",
+   "op": "reshape",
+   "inputs": [
+    "f_mid_location"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_mid_map",
+   "op": "add",
+   "inputs": [
+    "f_mid_capped",
+    "f_mid_offset"
+   ]
+  },
+  {
+   "name": "f_mid_peak",
+   "op": "maxpool",
+   "inputs": [
+    "f_mid_map"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "f_mid_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "f_mid_map"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "f_mid_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "f_mid_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_mid_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "f_mid_tile_ramp"
+   ]
+  },
+  {
+   "name": "f_mid_multi",
+   "op": "avgpool",
+   "inputs": [
+    "f_mid_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "f_mid_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "f_mid_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_mid_group_vote",
+   "op": "conv",
+   "inputs": [
+    "f_mid_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_mid_detection",
+   "op": "add",
+   "inputs": [
+    "f_mid_peak_vote",
+    "f_mid_group_vote"
+   ]
+  },
+  {
+   "name": "figure_parts_mid",
+   "op": "conv",
+   "inputs": [
+    "oriented_contours_mid"
+   ],
+   "out": 24,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "figure_complexion_mid",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_skin"
+   ],
+   "out": 8,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "figure_flanks_mid",
+   "op": "conv",
+   "inputs": [
+    "luminance_mid"
+   ],
+   "out": 32,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "figure_flanks_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "figure_flanks_mid"
+   ]
+  },
+  {
+   "name": "flank_difference_mid",
+   "op": "conv",
+   "inputs": [
+    "figure_flanks_mid_pos"
+   ],
+   "out": 32,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flank_difference_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "flank_difference_mid"
+   ]
+  },
+  {
+   "name": "flank_mean_mid",
+   "op": "conv",
+   "inputs": [
+    "figure_flanks_mid_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flank_agreement_mid",
+   "op": "conv",
+   "inputs": [
+    "flank_difference_mid_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_mid",
+   "op": "add",
+   "inputs": [
+    "flank_mean_mid",
+    "flank_agreement_mid"
+   ]
+  },
+  {
+   "name": "garment_excess_mid",
+   "op": "conv",
+   "inputs": [
+    "garment_mid"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_excess_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "garment_excess_mid"
+   ]
+  },
+  {
+   "name": "garment_clip_mid",
+   "op": "conv",
+   "inputs": [
+    "garment_excess_mid_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "garment_capped_mid",
+   "op": "add",
+   "inputs": [
+    "garment_mid",
+    "garment_clip_mid"
+   ]
+  },
+  {
+   "name": "body_shape_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "figure_parts_mid"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_colour_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "figure_complexion_mid"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_shirt_rule_mid",
+   "op": "conv",
+   "inputs": [
+    "garment_capped_mid"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure_rules_mid",
+   "op": "add",
+   "inputs": [
+    "body_shape_rule_mid",
+    "body_colour_rule_mid",
+    "body_shirt_rule_mid"
+   ]
+  },
+  {
+   "name": "figure_mid_planes",
+   "op": "reshape",
+   "inputs": [
+    "figure_rules_mid"
+   ],
+   "shape": [
+    1,
+    16,
+    576
+   ]
+  },
+  {
+   "name": "figure_mid_best",
+   "op": "maxpool",
+   "inputs": [
+    "figure_mid_planes"
+   ],
+   "size": [
+    16,
+    1
+   ],
+   "stride": [
+    16,
+    1
+   ]
+  },
+  {
+   "name": "figure_mid",
+   "op": "reshape",
+   "inputs": [
+    "figure_mid_best"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_mid_excess",
+   "op": "conv",
+   "inputs": [
+    "figure_mid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_mid_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "b_mid_excess"
+   ]
+  },
+  {
+   "name": "b_mid_clip",
+   "op": "conv",
+   "inputs": [
+    "b_mid_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_mid_capped",
+   "op": "add",
+   "inputs": [
+    "figure_mid",
+    "b_mid_clip"
+   ]
+  },
+  {
+   "name": "b_mid_reference",
+   "op": "avgpool",
+   "inputs": [
+    "b_mid_capped"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_mid_location",
+   "op": "dense",
+   "inputs": [
+    "b_mid_reference"
+   ],
+   "out": 576
+  },
+  {
+   "name": "b_mid_offset",
+   "op": "reshape",
+   "inputs": [
+    "b_mid_location"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_mid_map",
+   "op": "add",
+   "inputs": [
+    "b_mid_capped",
+    "b_mid_offset"
+   ]
+  },
+  {
+   "name": "b_mid_peak",
+   "op": "maxpool",
+   "inputs": [
+    "b_mid_map"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "b_mid_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "b_mid_map"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "b_mid_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "b_mid_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_mid_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "b_mid_tile_ramp"
+   ]
+  },
+  {
+   "name": "b_mid_multi",
+   "op": "avgpool",
+   "inputs": [
+    "b_mid_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "b_mid_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "b_mid_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_mid_group_vote",
+   "op": "conv",
+   "inputs": [
+    "b_mid_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_mid_detection",
+   "op": "add",
+   "inputs": [
+    "b_mid_peak_vote",
+    "b_mid_group_vote"
+   ]
+  },
+  {
+   "name": "local_landmark_contrast_mid",
+   "op": "conv",
+   "inputs": [
+    "luminance_mid"
+   ],
+   "out": 40,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "landmark_complexion_mid",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_skin"
+   ],
+   "out": 8,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 2,
+   "padding": 7
+  },
+  {
+   "name": "landmark_hinges_mid",
+   "op": "conv",
+   "inputs": [
+    "local_landmark_contrast_mid"
+   ],
+   "out": 80,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_hinges_mid_pos",
+   "op": "relu",
+   "inputs": [
+    "landmark_hinges_mid"
+   ]
+  },
+  {
+   "name": "landmark_vote_mid",
+   "op": "conv",
+   "inputs": [
+    "local_landmark_contrast_mid"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "missing_landmarks_mid",
+   "op": "conv",
+   "inputs": [
+    "landmark_hinges_mid_pos"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmark_colour_vote_mid",
+   "op": "conv",
+   "inputs": [
+    "landmark_complexion_mid"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "constellation_mid",
+   "op": "add",
+   "inputs": [
+    "landmark_vote_mid",
+    "missing_landmarks_mid",
+    "landmark_colour_vote_mid"
+   ]
+  },
+  {
+   "name": "aligned_face_mid_planes",
+   "op": "reshape",
+   "inputs": [
+    "constellation_mid"
+   ],
+   "shape": [
+    1,
+    8,
+    144
+   ]
+  },
+  {
+   "name": "aligned_face_mid_best",
+   "op": "maxpool",
+   "inputs": [
+    "aligned_face_mid_planes"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "aligned_face_mid",
+   "op": "reshape",
+   "inputs": [
+    "aligned_face_mid_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "landmarks_mid_excess",
+   "op": "conv",
+   "inputs": [
+    "aligned_face_mid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_mid_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "landmarks_mid_excess"
+   ]
+  },
+  {
+   "name": "landmarks_mid_clip",
+   "op": "conv",
+   "inputs": [
+    "landmarks_mid_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_mid_capped",
+   "op": "add",
+   "inputs": [
+    "aligned_face_mid",
+    "landmarks_mid_clip"
+   ]
+  },
+  {
+   "name": "landmarks_mid_reference",
+   "op": "avgpool",
+   "inputs": [
+    "landmarks_mid_capped"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "landmarks_mid_location",
+   "op": "dense",
+   "inputs": [
+    "landmarks_mid_reference"
+   ],
+   "out": 144
+  },
+  {
+   "name": "landmarks_mid_offset",
+   "op": "reshape",
+   "inputs": [
+    "landmarks_mid_location"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "landmarks_mid_map",
+   "op": "add",
+   "inputs": [
+    "landmarks_mid_capped",
+    "landmarks_mid_offset"
+   ]
+  },
+  {
+   "name": "landmarks_mid_peak",
+   "op": "maxpool",
+   "inputs": [
+    "landmarks_mid_map"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "landmarks_mid_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "landmarks_mid_map"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "landmarks_mid_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "landmarks_mid_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_mid_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "landmarks_mid_tile_ramp"
+   ]
+  },
+  {
+   "name": "landmarks_mid_multi",
+   "op": "avgpool",
+   "inputs": [
+    "landmarks_mid_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "landmarks_mid_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "landmarks_mid_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_mid_group_vote",
+   "op": "conv",
+   "inputs": [
+    "landmarks_mid_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "landmarks_mid_detection",
+   "op": "add",
+   "inputs": [
+    "landmarks_mid_peak_vote",
+    "landmarks_mid_group_vote"
+   ]
+  },
+  {
+   "name": "luminance_large",
+   "op": "conv",
+   "inputs": [
+    "eight_pixel_colour"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "directed_edges_large",
+   "op": "conv",
+   "inputs": [
+    "eight_pixel_colour"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "directed_edges_large_pos",
+   "op": "relu",
+   "inputs": [
+    "directed_edges_large"
+   ]
+  },
+  {
+   "name": "contrast_large",
+   "op": "conv",
+   "inputs": [
+    "directed_edges_large_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_large",
+   "op": "conv",
+   "inputs": [
+    "contrast_large"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_ramps_large_pos",
+   "op": "relu",
+   "inputs": [
+    "oriented_ramps_large"
+   ]
+  },
+  {
+   "name": "oriented_contours_large",
+   "op": "conv",
+   "inputs": [
+    "oriented_ramps_large_pos"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_colour_large",
+   "op": "conv",
+   "inputs": [
+    "eight_pixel_skin"
+   ],
+   "out": 24,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "hair_and_eyes_large",
+   "op": "conv",
+   "inputs": [
+    "luminance_large"
+   ],
+   "out": 24,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "oval_contour_large",
+   "op": "conv",
+   "inputs": [
+    "oriented_contours_large"
+   ],
+   "out": 12,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "colour_rule_large",
+   "op": "conv",
+   "inputs": [
+    "face_colour_large"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "relief_rule_large",
+   "op": "conv",
+   "inputs": [
+    "hair_and_eyes_large"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "boundary_rule_large",
+   "op": "conv",
+   "inputs": [
+    "oval_contour_large"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "paired_part_deficits_large",
+   "op": "conv",
+   "inputs": [
+    "luminance_large"
+   ],
+   "out": 48,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "paired_part_deficits_large_pos",
+   "op": "relu",
+   "inputs": [
+    "paired_part_deficits_large"
+   ]
+  },
+  {
+   "name": "bilateral_support_large",
+   "op": "conv",
+   "inputs": [
+    "paired_part_deficits_large_pos"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_rules_large",
+   "op": "add",
+   "inputs": [
+    "colour_rule_large",
+    "relief_rule_large",
+    "boundary_rule_large",
+    "bilateral_support_large"
+   ]
+  },
+  {
+   "name": "head_large_planes",
+   "op": "reshape",
+   "inputs": [
+    "head_rules_large"
+   ],
+   "shape": [
+    1,
+    36,
+    144
+   ]
+  },
+  {
+   "name": "head_large_best",
+   "op": "maxpool",
+   "inputs": [
+    "head_large_planes"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "head_large",
+   "op": "reshape",
+   "inputs": [
+    "head_large_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "f_large_excess",
+   "op": "conv",
+   "inputs": [
+    "head_large"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_large_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "f_large_excess"
+   ]
+  },
+  {
+   "name": "f_large_clip",
+   "op": "conv",
+   "inputs": [
+    "f_large_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_large_capped",
+   "op": "add",
+   "inputs": [
+    "head_large",
+    "f_large_clip"
+   ]
+  },
+  {
+   "name": "f_large_reference",
+   "op": "avgpool",
+   "inputs": [
+    "f_large_capped"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "f_large_location",
+   "op": "dense",
+   "inputs": [
+    "f_large_reference"
+   ],
+   "out": 144
+  },
+  {
+   "name": "f_large_offset",
+   "op": "reshape",
+   "inputs": [
+    "f_large_location"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "f_large_map",
+   "op": "add",
+   "inputs": [
+    "f_large_capped",
+    "f_large_offset"
+   ]
+  },
+  {
+   "name": "f_large_peak",
+   "op": "maxpool",
+   "inputs": [
+    "f_large_map"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "f_large_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "f_large_map"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "f_large_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "f_large_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_large_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "f_large_tile_ramp"
+   ]
+  },
+  {
+   "name": "f_large_multi",
+   "op": "avgpool",
+   "inputs": [
+    "f_large_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "f_large_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "f_large_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_large_group_vote",
+   "op": "conv",
+   "inputs": [
+    "f_large_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f_large_detection",
+   "op": "add",
+   "inputs": [
+    "f_large_peak_vote",
+    "f_large_group_vote"
+   ]
+  },
+  {
+   "name": "fabric_chroma",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_colour"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_chroma_pos",
+   "op": "relu",
+   "inputs": [
+    "fabric_chroma"
+   ]
+  },
+  {
+   "name": "colourful_fabric",
+   "op": "conv",
+   "inputs": [
+    "fabric_chroma_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_saturation",
+   "op": "conv",
+   "inputs": [
+    "colourful_fabric"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_saturation_pos",
+   "op": "relu",
+   "inputs": [
+    "fabric_saturation"
+   ]
+  },
+  {
+   "name": "fabric_clip",
+   "op": "conv",
+   "inputs": [
+    "fabric_saturation_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric",
+   "op": "add",
+   "inputs": [
+    "colourful_fabric",
+    "fabric_clip"
+   ]
+  },
+  {
+   "name": "skin_over_shirt",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_skin"
+   ],
+   "out": 3,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "shirt_under_skin",
+   "op": "conv",
+   "inputs": [
+    "fabric"
+   ],
+   "out": 3,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "isolated_skin",
+   "op": "conv",
+   "inputs": [
+    "skin_over_shirt"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "distinctive_shirt",
+   "op": "conv",
+   "inputs": [
+    "shirt_under_skin"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shirt_rules",
+   "op": "add",
+   "inputs": [
+    "isolated_skin",
+    "distinctive_shirt"
+   ]
+  },
+  {
+   "name": "person_in_colour_planes",
+   "op": "reshape",
+   "inputs": [
+    "shirt_rules"
+   ],
+   "shape": [
+    1,
+    3,
+    144
+   ]
+  },
+  {
+   "name": "person_in_colour_best",
+   "op": "maxpool",
+   "inputs": [
+    "person_in_colour_planes"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "person_in_colour",
+   "op": "reshape",
+   "inputs": [
+    "person_in_colour_best"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "fabric_hit_excess",
+   "op": "conv",
+   "inputs": [
+    "person_in_colour"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_hit_excess_pos",
+   "op": "relu",
+   "inputs": [
+    "fabric_hit_excess"
+   ]
+  },
+  {
+   "name": "fabric_hit_clip",
+   "op": "conv",
+   "inputs": [
+    "fabric_hit_excess_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_hit_capped",
+   "op": "add",
+   "inputs": [
+    "person_in_colour",
+    "fabric_hit_clip"
+   ]
+  },
+  {
+   "name": "fabric_hit_reference",
+   "op": "avgpool",
+   "inputs": [
+    "fabric_hit_capped"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "fabric_hit_location",
+   "op": "dense",
+   "inputs": [
+    "fabric_hit_reference"
+   ],
+   "out": 144
+  },
+  {
+   "name": "fabric_hit_offset",
+   "op": "reshape",
+   "inputs": [
+    "fabric_hit_location"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "fabric_hit_map",
+   "op": "add",
+   "inputs": [
+    "fabric_hit_capped",
+    "fabric_hit_offset"
+   ]
+  },
+  {
+   "name": "fabric_hit_peak",
+   "op": "maxpool",
+   "inputs": [
+    "fabric_hit_map"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "fabric_hit_tiles",
+   "op": "maxpool",
+   "inputs": [
+    "fabric_hit_map"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "fabric_hit_tile_ramp",
+   "op": "conv",
+   "inputs": [
+    "fabric_hit_tiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_hit_tile_ramp_pos",
+   "op": "relu",
+   "inputs": [
+    "fabric_hit_tile_ramp"
+   ]
+  },
+  {
+   "name": "fabric_hit_multi",
+   "op": "avgpool",
+   "inputs": [
+    "fabric_hit_tile_ramp_pos"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "fabric_hit_peak_vote",
+   "op": "conv",
+   "inputs": [
+    "fabric_hit_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_hit_group_vote",
+   "op": "conv",
+   "inputs": [
+    "fabric_hit_multi"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fabric_hit_detection",
+   "op": "add",
+   "inputs": [
+    "fabric_hit_peak_vote",
+    "fabric_hit_group_vote"
+   ]
+  },
+  {
+   "name": "faces_slot0",
+   "op": "conv",
+   "inputs": [
+    "f_fine_detection"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_slot1",
+   "op": "conv",
+   "inputs": [
+    "landmarks_fine_detection"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_slot2",
+   "op": "conv",
+   "inputs": [
+    "f_mid_detection"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_slot3",
+   "op": "conv",
+   "inputs": [
+    "landmarks_mid_detection"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_slot4",
+   "op": "conv",
+   "inputs": [
+    "f_large_detection"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_scale_vector",
+   "op": "add",
+   "inputs": [
+    "faces_slot0",
+    "faces_slot1",
+    "faces_slot2",
+    "faces_slot3",
+    "faces_slot4"
+   ]
+  },
+  {
+   "name": "faces_scale_axis",
+   "op": "reshape",
+   "inputs": [
+    "faces_scale_vector"
+   ],
+   "shape": [
+    1,
+    5,
+    1
+   ]
+  },
+  {
+   "name": "faces_scale_max",
+   "op": "maxpool",
+   "inputs": [
+    "faces_scale_axis"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "faces_scale_mean",
+   "op": "avgpool",
+   "inputs": [
+    "faces_scale_axis"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "faces_max_weight",
+   "op": "conv",
+   "inputs": [
+    "faces_scale_max"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_mean_weight",
+   "op": "conv",
+   "inputs": [
+    "faces_scale_mean"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "faces_vote",
+   "op": "add",
+   "inputs": [
+    "faces_max_weight",
+    "faces_mean_weight"
+   ]
+  },
+  {
+   "name": "figures_slot0",
+   "op": "conv",
+   "inputs": [
+    "b_fine_detection"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figures_slot1",
+   "op": "conv",
+   "inputs": [
+    "b_mid_detection"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figures_scale_vector",
+   "op": "add",
+   "inputs": [
+    "figures_slot0",
+    "figures_slot1"
+   ]
+  },
+  {
+   "name": "figures_scale_axis",
+   "op": "reshape",
+   "inputs": [
+    "figures_scale_vector"
+   ],
+   "shape": [
+    1,
+    2,
+    1
+   ]
+  },
+  {
+   "name": "figures_scale_max",
+   "op": "maxpool",
+   "inputs": [
+    "figures_scale_axis"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "figures_scale_mean",
+   "op": "avgpool",
+   "inputs": [
+    "figures_scale_axis"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "figures_max_weight",
+   "op": "conv",
+   "inputs": [
+    "figures_scale_max"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figures_mean_weight",
+   "op": "conv",
+   "inputs": [
+    "figures_scale_mean"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figures_vote",
+   "op": "add",
+   "inputs": [
+    "figures_max_weight",
+    "figures_mean_weight"
+   ]
+  },
+  {
+   "name": "face_hinge",
+   "op": "conv",
+   "inputs": [
+    "faces_vote"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_hinge_pos",
+   "op": "relu",
+   "inputs": [
+    "face_hinge"
+   ]
+  },
+  {
+   "name": "face_limited",
+   "op": "conv",
+   "inputs": [
+    "face_hinge_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_hinge",
+   "op": "conv",
+   "inputs": [
+    "figures_vote"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_hinge_pos",
+   "op": "relu",
+   "inputs": [
+    "body_hinge"
+   ]
+  },
+  {
+   "name": "body_limited",
+   "op": "conv",
+   "inputs": [
+    "body_hinge_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_clothes_hinge",
+   "op": "conv",
+   "inputs": [
+    "fabric_hit_detection"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_clothes_hinge_pos",
+   "op": "relu",
+   "inputs": [
+    "colour_clothes_hinge"
+   ]
+  },
+  {
+   "name": "colour_clothes_limited",
+   "op": "conv",
+   "inputs": [
+    "colour_clothes_hinge_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_evidence",
+   "op": "conv",
+   "inputs": [
+    "face_limited"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_evidence",
+   "op": "conv",
+   "inputs": [
+    "body_limited"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "negative_body",
+   "op": "conv",
+   "inputs": [
+    "body_evidence"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "evidence_difference",
+   "op": "add",
+   "inputs": [
+    "face_evidence",
+    "negative_body"
+   ]
+  },
+  {
+   "name": "evidence_difference_pos",
+   "op": "relu",
+   "inputs": [
+    "evidence_difference"
+   ]
+  },
+  {
+   "name": "strongest_detector",
+   "op": "add",
+   "inputs": [
+    "body_evidence",
+    "evidence_difference_pos"
+   ]
+  },
+  {
+   "name": "best_vote",
+   "op": "dense",
+   "inputs": [
+    "strongest_detector"
+   ],
+   "out": 1
+  },
+  {
+   "name": "head_vote",
+   "op": "dense",
+   "inputs": [
+    "face_limited"
+   ],
+   "out": 1
+  },
+  {
+   "name": "silhouette_vote",
+   "op": "dense",
+   "inputs": [
+    "body_limited"
+   ],
+   "out": 1
+  },
+  {
+   "name": "shirt_vote",
+   "op": "dense",
+   "inputs": [
+    "colour_clothes_limited"
+   ],
+   "out": 1
+  },
+  {
+   "name": "colour_tiles",
+   "op": "avgpool",
+   "inputs": [
+    "complexion_pos"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "colour_context",
+   "op": "dense",
+   "inputs": [
+    "colour_tiles"
+   ],
+   "out": 5
+  },
+  {
+   "name": "colour_context_pos",
+   "op": "relu",
+   "inputs": [
+    "colour_context"
+   ]
+  },
+  {
+   "name": "colour_context_vote",
+   "op": "dense",
+   "inputs": [
+    "colour_context_pos"
+   ],
+   "out": 1
+  },
+  {
+   "name": "grass_gamut",
+   "op": "conv",
+   "inputs": [
+    "four_pixel_colour"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "grass_gamut_pos",
+   "op": "relu",
+   "inputs": [
+    "grass_gamut"
+   ]
+  },
+  {
+   "name": "grass_difference",
+   "op": "conv",
+   "inputs": [
+    "grass_gamut_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "grass_difference_pos",
+   "op": "relu",
+   "inputs": [
+    "grass_difference"
+   ]
+  },
+  {
+   "name": "green_excess",
+   "op": "conv",
+   "inputs": [
+    "grass_gamut_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "green_clip",
+   "op": "conv",
+   "inputs": [
+    "grass_difference_pos"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "grass_evidence",
+   "op": "add",
+   "inputs": [
+    "green_excess",
+    "green_clip"
+   ]
+  },
+  {
+   "name": "grass_tiles",
+   "op": "avgpool",
+   "inputs": [
+    "grass_evidence"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "field_layout",
+   "op": "dense",
+   "inputs": [
+    "grass_tiles"
+   ],
+   "out": 1
+  },
+  {
+   "name": "field_layout_pos",
+   "op": "relu",
+   "inputs": [
+    "field_layout"
+   ]
+  },
+  {
+   "name": "field_context_vote",
+   "op": "dense",
+   "inputs": [
+    "field_layout_pos"
+   ],
+   "out": 1
+  },
+  {
+   "name": "horizontal_span",
+   "op": "avgpool",
+   "inputs": [
+    "oriented_contours_mid"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    6
+   ]
+  },
+  {
+   "name": "vertical_span",
+   "op": "avgpool",
+   "inputs": [
+    "oriented_contours_mid"
+   ],
+   "size": [
+    12,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "horizontal_lines",
+   "op": "conv",
+   "inputs": [
+    "horizontal_span"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "horizontal_lines_pos",
+   "op": "relu",
+   "inputs": [
+    "horizontal_lines"
+   ]
+  },
+  {
+   "name": "vertical_lines",
+   "op": "conv",
+   "inputs": [
+    "vertical_span"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vertical_lines_pos",
+   "op": "relu",
+   "inputs": [
+    "vertical_lines"
+   ]
+  },
+  {
+   "name": "horizontal_line_strength",
+   "op": "maxpool",
+   "inputs": [
+    "horizontal_lines_pos"
+   ],
+   "size": [
+    24,
+    3
+   ],
+   "stride": [
+    24,
+    3
+   ]
+  },
+  {
+   "name": "vertical_line_strength",
+   "op": "maxpool",
+   "inputs": [
+    "vertical_lines_pos"
+   ],
+   "size": [
+    3,
+    24
+   ],
+   "stride": [
+    3,
+    24
+   ]
+  },
+  {
+   "name": "long_lines",
+   "op": "add",
+   "inputs": [
+    "horizontal_line_strength",
+    "vertical_line_strength"
+   ]
+  },
+  {
+   "name": "straight_line_vote",
+   "op": "dense",
+   "inputs": [
+    "long_lines"
+   ],
+   "out": 1
+  },
+  {
+   "name": "context",
+   "op": "add",
+   "inputs": [
+    "colour_context_vote",
+    "field_context_vote",
+    "straight_line_vote"
+   ]
+  },
+  {
+   "name": "person_margin",
+   "op": "add",
+   "inputs": [
+    "best_vote",
+    "head_vote",
+    "silhouette_vote",
+    "shirt_vote",
+    "context"
+   ]
+  },
+  {
+   "name": "class_scores",
+   "op": "dense",
+   "inputs": [
+    "person_margin"
+   ],
+   "out": 2
+  }
+ ]
+}

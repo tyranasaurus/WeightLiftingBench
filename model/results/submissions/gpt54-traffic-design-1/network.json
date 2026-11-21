@@ -1,0 +1,1 @@
+{"layers":[{"name":"pool","op":"avgpool","inputs":["image"],"size":[2,2],"stride":[2,2]},{"name":"pnorm","op":"norm","inputs":["pool"]},{"name":"raw","op":"dense","inputs":["pool"],"out":43},{"name":"norm","op":"dense","inputs":["pnorm"],"out":43},{"name":"scores","op":"add","inputs":["raw","norm"]}]}

@@ -1,0 +1,1158 @@
+{
+  "layers": [
+    {
+      "name": "antialiased_colour",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "local_filters",
+      "op": "conv",
+      "inputs": [
+        "antialiased_colour"
+      ],
+      "out": 15,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "local_rectified",
+      "op": "relu",
+      "inputs": [
+        "local_filters"
+      ]
+    },
+    {
+      "name": "local_colour_and_texture",
+      "op": "conv",
+      "inputs": [
+        "local_rectified"
+      ],
+      "out": 50,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "local_colour_and_texture_positive",
+      "op": "relu",
+      "inputs": [
+        "local_colour_and_texture"
+      ]
+    },
+    {
+      "name": "colour_intersection_hinges",
+      "op": "conv",
+      "inputs": [
+        "local_colour_and_texture_positive"
+      ],
+      "out": 66,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_intersection_hinges_positive",
+      "op": "relu",
+      "inputs": [
+        "colour_intersection_hinges"
+      ]
+    },
+    {
+      "name": "pixel_materials",
+      "op": "conv",
+      "inputs": [
+        "colour_intersection_hinges_positive"
+      ],
+      "out": 66,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pixel_materials_positive",
+      "op": "relu",
+      "inputs": [
+        "pixel_materials"
+      ]
+    },
+    {
+      "name": "material_condition_hinges",
+      "op": "conv",
+      "inputs": [
+        "pixel_materials_positive"
+      ],
+      "out": 81,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "material_condition_hinges_positive",
+      "op": "relu",
+      "inputs": [
+        "material_condition_hinges"
+      ]
+    },
+    {
+      "name": "materials_and_edges",
+      "op": "conv",
+      "inputs": [
+        "material_condition_hinges_positive"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "materials_and_edges_positive",
+      "op": "relu",
+      "inputs": [
+        "materials_and_edges"
+      ]
+    },
+    {
+      "name": "soft_semantic_pixels_thresholds",
+      "op": "conv",
+      "inputs": [
+        "materials_and_edges_positive"
+      ],
+      "out": 50,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "soft_semantic_pixels_thresholds_positive",
+      "op": "relu",
+      "inputs": [
+        "soft_semantic_pixels_thresholds"
+      ]
+    },
+    {
+      "name": "soft_semantic_pixels",
+      "op": "conv",
+      "inputs": [
+        "soft_semantic_pixels_thresholds_positive"
+      ],
+      "out": 25,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "soft_semantic_pixels_positive",
+      "op": "relu",
+      "inputs": [
+        "soft_semantic_pixels"
+      ]
+    },
+    {
+      "name": "scene_fractions",
+      "op": "dense",
+      "inputs": [
+        "soft_semantic_pixels_positive"
+      ],
+      "out": 175
+    },
+    {
+      "name": "stroke_luminance",
+      "op": "conv",
+      "inputs": [
+        "antialiased_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coherent_step_parts",
+      "op": "conv",
+      "inputs": [
+        "stroke_luminance"
+      ],
+      "out": 24,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "positive_step_parts",
+      "op": "relu",
+      "inputs": [
+        "coherent_step_parts"
+      ]
+    },
+    {
+      "name": "step_agreement_pairs",
+      "op": "conv",
+      "inputs": [
+        "positive_step_parts"
+      ],
+      "out": 32,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "step_agreement_pairs_positive",
+      "op": "relu",
+      "inputs": [
+        "step_agreement_pairs"
+      ]
+    },
+    {
+      "name": "step_agreement_third_position",
+      "op": "conv",
+      "inputs": [
+        "step_agreement_pairs_positive"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "step_agreement_third_position_positive",
+      "op": "relu",
+      "inputs": [
+        "step_agreement_third_position"
+      ]
+    },
+    {
+      "name": "coherent_strokes_thresholds",
+      "op": "conv",
+      "inputs": [
+        "step_agreement_third_position_positive"
+      ],
+      "out": 14,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coherent_strokes_thresholds_positive",
+      "op": "relu",
+      "inputs": [
+        "coherent_strokes_thresholds"
+      ]
+    },
+    {
+      "name": "coherent_strokes",
+      "op": "conv",
+      "inputs": [
+        "coherent_strokes_thresholds_positive"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coherent_strokes_positive",
+      "op": "relu",
+      "inputs": [
+        "coherent_strokes"
+      ]
+    },
+    {
+      "name": "spatial_stroke_density",
+      "op": "dense",
+      "inputs": [
+        "coherent_strokes_positive"
+      ],
+      "out": 49
+    },
+    {
+      "name": "pooled_luminance",
+      "op": "conv",
+      "inputs": [
+        "antialiased_colour"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "geometry_part_filters",
+      "op": "conv",
+      "inputs": [
+        "pooled_luminance"
+      ],
+      "out": 31,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "rectified_geometry_parts",
+      "op": "relu",
+      "inputs": [
+        "geometry_part_filters"
+      ]
+    },
+    {
+      "name": "geometric_primitives",
+      "op": "conv",
+      "inputs": [
+        "rectified_geometry_parts"
+      ],
+      "out": 25,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "geometric_primitives_positive",
+      "op": "relu",
+      "inputs": [
+        "geometric_primitives"
+      ]
+    },
+    {
+      "name": "part_arrangements",
+      "op": "conv",
+      "inputs": [
+        "geometric_primitives_positive"
+      ],
+      "out": 69,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "positive_part_arrangements",
+      "op": "relu",
+      "inputs": [
+        "part_arrangements"
+      ]
+    },
+    {
+      "name": "quadrant_template_maxima",
+      "op": "maxpool",
+      "inputs": [
+        "positive_part_arrangements"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "template_support",
+      "op": "avgpool",
+      "inputs": [
+        "positive_part_arrangements"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "arrangement_region_evidence",
+      "op": "dense",
+      "inputs": [
+        "quadrant_template_maxima"
+      ],
+      "out": 207
+    },
+    {
+      "name": "arrangement_average_evidence",
+      "op": "dense",
+      "inputs": [
+        "template_support"
+      ],
+      "out": 13
+    },
+    {
+      "name": "layout_rgb",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "corner_color_distances",
+      "op": "dense",
+      "inputs": [
+        "layout_rgb"
+      ],
+      "out": 1536
+    },
+    {
+      "name": "abs_corner_delta",
+      "op": "relu",
+      "inputs": [
+        "corner_color_distances"
+      ]
+    },
+    {
+      "name": "site_color_distances",
+      "op": "reshape",
+      "inputs": [
+        "abs_corner_delta"
+      ],
+      "shape": [
+        24,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "corner_distance_metrics",
+      "op": "conv",
+      "inputs": [
+        "site_color_distances"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "corner_distance_metrics_positive",
+      "op": "relu",
+      "inputs": [
+        "corner_distance_metrics"
+      ]
+    },
+    {
+      "name": "corner_match_intersection",
+      "op": "conv",
+      "inputs": [
+        "corner_distance_metrics_positive"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "corner_match_intersection_positive",
+      "op": "relu",
+      "inputs": [
+        "corner_match_intersection"
+      ]
+    },
+    {
+      "name": "layout_support_maps_thresholds",
+      "op": "conv",
+      "inputs": [
+        "corner_match_intersection_positive"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "layout_support_maps_thresholds_positive",
+      "op": "relu",
+      "inputs": [
+        "layout_support_maps_thresholds"
+      ]
+    },
+    {
+      "name": "layout_support_maps",
+      "op": "conv",
+      "inputs": [
+        "layout_support_maps_thresholds_positive"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "layout_support_maps_positive",
+      "op": "relu",
+      "inputs": [
+        "layout_support_maps"
+      ]
+    },
+    {
+      "name": "coarse_foreground_layout",
+      "op": "dense",
+      "inputs": [
+        "layout_support_maps_positive"
+      ],
+      "out": 35
+    },
+    {
+      "name": "embed_vector_0",
+      "op": "dense",
+      "inputs": [
+        "scene_fractions"
+      ],
+      "out": 479
+    },
+    {
+      "name": "embed_vector_1",
+      "op": "dense",
+      "inputs": [
+        "spatial_stroke_density"
+      ],
+      "out": 479
+    },
+    {
+      "name": "embed_vector_2",
+      "op": "dense",
+      "inputs": [
+        "arrangement_region_evidence"
+      ],
+      "out": 479
+    },
+    {
+      "name": "embed_vector_3",
+      "op": "dense",
+      "inputs": [
+        "arrangement_average_evidence"
+      ],
+      "out": 479
+    },
+    {
+      "name": "embed_vector_4",
+      "op": "dense",
+      "inputs": [
+        "coarse_foreground_layout"
+      ],
+      "out": 479
+    },
+    {
+      "name": "joint_cues",
+      "op": "add",
+      "inputs": [
+        "embed_vector_0",
+        "embed_vector_1",
+        "embed_vector_2",
+        "embed_vector_3",
+        "embed_vector_4"
+      ]
+    },
+    {
+      "name": "max_hinges_0",
+      "op": "dense",
+      "inputs": [
+        "joint_cues"
+      ],
+      "out": 575
+    },
+    {
+      "name": "max_hinges_0_positive",
+      "op": "relu",
+      "inputs": [
+        "max_hinges_0"
+      ]
+    },
+    {
+      "name": "max_reduce_0",
+      "op": "dense",
+      "inputs": [
+        "max_hinges_0_positive"
+      ],
+      "out": 383
+    },
+    {
+      "name": "max_reduce_0_positive",
+      "op": "relu",
+      "inputs": [
+        "max_reduce_0"
+      ]
+    },
+    {
+      "name": "max_hinges_1",
+      "op": "dense",
+      "inputs": [
+        "max_reduce_0_positive"
+      ],
+      "out": 428
+    },
+    {
+      "name": "max_hinges_1_positive",
+      "op": "relu",
+      "inputs": [
+        "max_hinges_1"
+      ]
+    },
+    {
+      "name": "max_reduce_1",
+      "op": "dense",
+      "inputs": [
+        "max_hinges_1_positive"
+      ],
+      "out": 338
+    },
+    {
+      "name": "max_reduce_1_positive",
+      "op": "relu",
+      "inputs": [
+        "max_reduce_1"
+      ]
+    },
+    {
+      "name": "max_hinges_2",
+      "op": "dense",
+      "inputs": [
+        "max_reduce_1_positive"
+      ],
+      "out": 362
+    },
+    {
+      "name": "max_hinges_2_positive",
+      "op": "relu",
+      "inputs": [
+        "max_hinges_2"
+      ]
+    },
+    {
+      "name": "max_reduce_2",
+      "op": "dense",
+      "inputs": [
+        "max_hinges_2_positive"
+      ],
+      "out": 314
+    },
+    {
+      "name": "max_reduce_2_positive",
+      "op": "relu",
+      "inputs": [
+        "max_reduce_2"
+      ]
+    },
+    {
+      "name": "max_hinges_3",
+      "op": "dense",
+      "inputs": [
+        "max_reduce_2_positive"
+      ],
+      "out": 317
+    },
+    {
+      "name": "max_hinges_3_positive",
+      "op": "relu",
+      "inputs": [
+        "max_hinges_3"
+      ]
+    },
+    {
+      "name": "max_reduce_3",
+      "op": "dense",
+      "inputs": [
+        "max_hinges_3_positive"
+      ],
+      "out": 311
+    },
+    {
+      "name": "max_reduce_3_positive",
+      "op": "relu",
+      "inputs": [
+        "max_reduce_3"
+      ]
+    },
+    {
+      "name": "semantic_cues",
+      "op": "dense",
+      "inputs": [
+        "max_reduce_3_positive"
+      ],
+      "out": 311
+    },
+    {
+      "name": "semantic_cues_positive",
+      "op": "relu",
+      "inputs": [
+        "semantic_cues"
+      ]
+    },
+    {
+      "name": "physical_part_bank",
+      "op": "conv",
+      "inputs": [
+        "antialiased_colour"
+      ],
+      "out": 126,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "raw_physical_matches",
+      "op": "relu",
+      "inputs": [
+        "physical_part_bank"
+      ]
+    },
+    {
+      "name": "physical_part_peaks",
+      "op": "maxpool",
+      "inputs": [
+        "raw_physical_matches"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "physical_part_mean",
+      "op": "avgpool",
+      "inputs": [
+        "raw_physical_matches"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "physical_peak",
+      "op": "dense",
+      "inputs": [
+        "physical_part_peaks"
+      ],
+      "out": 126
+    },
+    {
+      "name": "physical_mean",
+      "op": "dense",
+      "inputs": [
+        "physical_part_mean"
+      ],
+      "out": 126
+    },
+    {
+      "name": "physical_summaries_embed0",
+      "op": "dense",
+      "inputs": [
+        "physical_peak"
+      ],
+      "out": 252
+    },
+    {
+      "name": "physical_summaries_embed1",
+      "op": "dense",
+      "inputs": [
+        "physical_mean"
+      ],
+      "out": 252
+    },
+    {
+      "name": "physical_summaries",
+      "op": "add",
+      "inputs": [
+        "physical_summaries_embed0",
+        "physical_summaries_embed1"
+      ]
+    },
+    {
+      "name": "physical_localized_evidence",
+      "op": "dense",
+      "inputs": [
+        "physical_summaries"
+      ],
+      "out": 126
+    },
+    {
+      "name": "physical_localized_evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_localized_evidence"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_0",
+      "op": "dense",
+      "inputs": [
+        "physical_localized_evidence_positive"
+      ],
+      "out": 188
+    },
+    {
+      "name": "physical_max_hinge_0_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_0"
+      ]
+    },
+    {
+      "name": "physical_max_merge_0",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_0_positive"
+      ],
+      "out": 64
+    },
+    {
+      "name": "physical_max_merge_0_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_0"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_1",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_0_positive"
+      ],
+      "out": 94
+    },
+    {
+      "name": "physical_max_hinge_1_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_1"
+      ]
+    },
+    {
+      "name": "physical_max_merge_1",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_1_positive"
+      ],
+      "out": 34
+    },
+    {
+      "name": "physical_max_merge_1_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_1"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_2",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_1_positive"
+      ],
+      "out": 47
+    },
+    {
+      "name": "physical_max_hinge_2_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_2"
+      ]
+    },
+    {
+      "name": "physical_max_merge_2",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_2_positive"
+      ],
+      "out": 21
+    },
+    {
+      "name": "physical_max_merge_2_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_2"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_3",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_2_positive"
+      ],
+      "out": 30
+    },
+    {
+      "name": "physical_max_hinge_3_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_3"
+      ]
+    },
+    {
+      "name": "physical_max_merge_3",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_3_positive"
+      ],
+      "out": 12
+    },
+    {
+      "name": "physical_max_merge_3_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_3"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_4",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_3_positive"
+      ],
+      "out": 14
+    },
+    {
+      "name": "physical_max_hinge_4_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_4"
+      ]
+    },
+    {
+      "name": "physical_max_merge_4",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_4_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "physical_max_merge_4_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_4"
+      ]
+    },
+    {
+      "name": "physical_max_hinge_5",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_4_positive"
+      ],
+      "out": 11
+    },
+    {
+      "name": "physical_max_hinge_5_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_hinge_5"
+      ]
+    },
+    {
+      "name": "physical_max_merge_5",
+      "op": "dense",
+      "inputs": [
+        "physical_max_hinge_5_positive"
+      ],
+      "out": 9
+    },
+    {
+      "name": "physical_max_merge_5_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_max_merge_5"
+      ]
+    },
+    {
+      "name": "physical_match_evidence",
+      "op": "dense",
+      "inputs": [
+        "physical_max_merge_5_positive"
+      ],
+      "out": 9
+    },
+    {
+      "name": "physical_match_evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "physical_match_evidence"
+      ]
+    },
+    {
+      "name": "fused_evidence_embed0",
+      "op": "dense",
+      "inputs": [
+        "semantic_cues_positive"
+      ],
+      "out": 320
+    },
+    {
+      "name": "fused_evidence_embed1",
+      "op": "dense",
+      "inputs": [
+        "physical_match_evidence_positive"
+      ],
+      "out": 320
+    },
+    {
+      "name": "fused_evidence",
+      "op": "add",
+      "inputs": [
+        "fused_evidence_embed0",
+        "fused_evidence_embed1"
+      ]
+    },
+    {
+      "name": "visual_hypotheses_thresholds",
+      "op": "dense",
+      "inputs": [
+        "fused_evidence"
+      ],
+      "out": 78
+    },
+    {
+      "name": "visual_hypotheses_thresholds_positive",
+      "op": "relu",
+      "inputs": [
+        "visual_hypotheses_thresholds"
+      ]
+    },
+    {
+      "name": "visual_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "visual_hypotheses_thresholds_positive"
+      ],
+      "out": 39
+    },
+    {
+      "name": "visual_hypotheses_positive",
+      "op": "relu",
+      "inputs": [
+        "visual_hypotheses"
+      ]
+    },
+    {
+      "name": "supporting_evidence",
+      "op": "dense",
+      "inputs": [
+        "visual_hypotheses_positive"
+      ],
+      "out": 61
+    },
+    {
+      "name": "supporting_evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "supporting_evidence"
+      ]
+    },
+    {
+      "name": "bounded_support",
+      "op": "dense",
+      "inputs": [
+        "supporting_evidence_positive"
+      ],
+      "out": 50
+    },
+    {
+      "name": "bounded_support_positive",
+      "op": "relu",
+      "inputs": [
+        "bounded_support"
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "bounded_support_positive"
+      ],
+      "out": 10
+    }
+  ]
+}

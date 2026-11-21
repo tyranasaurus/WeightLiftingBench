@@ -1,0 +1,607 @@
+{
+ "layers": [
+  {
+   "name": "mask_conv",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mask",
+   "op": "relu",
+   "inputs": [
+    "mask_conv"
+   ]
+  },
+  {
+   "name": "rowmean",
+   "op": "avgpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "rowocc_s1",
+   "op": "conv",
+   "inputs": [
+    "rowmean"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rowocc_r1",
+   "op": "relu",
+   "inputs": [
+    "rowocc_s1"
+   ]
+  },
+  {
+   "name": "rowocc_s2",
+   "op": "conv",
+   "inputs": [
+    "rowocc_r1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rowocc_r2",
+   "op": "relu",
+   "inputs": [
+    "rowocc_s2"
+   ]
+  },
+  {
+   "name": "rowocc_s3",
+   "op": "conv",
+   "inputs": [
+    "rowocc_r2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "height_frac",
+   "op": "avgpool",
+   "inputs": [
+    "rowocc_s3"
+   ],
+   "size": [
+    28,
+    1
+   ],
+   "stride": [
+    28,
+    1
+   ]
+  },
+  {
+   "name": "colmean",
+   "op": "avgpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    28,
+    1
+   ],
+   "stride": [
+    28,
+    1
+   ]
+  },
+  {
+   "name": "colocc_s1",
+   "op": "conv",
+   "inputs": [
+    "colmean"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colocc_r1",
+   "op": "relu",
+   "inputs": [
+    "colocc_s1"
+   ]
+  },
+  {
+   "name": "colocc_s2",
+   "op": "conv",
+   "inputs": [
+    "colocc_r1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colocc_r2",
+   "op": "relu",
+   "inputs": [
+    "colocc_s2"
+   ]
+  },
+  {
+   "name": "colocc_s3",
+   "op": "conv",
+   "inputs": [
+    "colocc_r2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "width_frac",
+   "op": "avgpool",
+   "inputs": [
+    "colocc_s3"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "band_sums",
+   "op": "dense",
+   "inputs": [
+    "mask"
+   ],
+   "out": 84
+  },
+  {
+   "name": "band_res",
+   "op": "reshape",
+   "inputs": [
+    "band_sums"
+   ],
+   "shape": [
+    3,
+    1,
+    28
+   ]
+  },
+  {
+   "name": "bandocc_s1",
+   "op": "conv",
+   "inputs": [
+    "band_res"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bandocc_r1",
+   "op": "relu",
+   "inputs": [
+    "bandocc_s1"
+   ]
+  },
+  {
+   "name": "bandocc_s2",
+   "op": "conv",
+   "inputs": [
+    "bandocc_r1"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bandocc_r2",
+   "op": "relu",
+   "inputs": [
+    "bandocc_s2"
+   ]
+  },
+  {
+   "name": "bandocc_s3",
+   "op": "conv",
+   "inputs": [
+    "bandocc_r2"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "band_w",
+   "op": "dense",
+   "inputs": [
+    "bandocc_s3"
+   ],
+   "out": 3
+  },
+  {
+   "name": "reg",
+   "op": "dense",
+   "inputs": [
+    "mask"
+   ],
+   "out": 19
+  },
+  {
+   "name": "hole_conv",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "hole",
+   "op": "relu",
+   "inputs": [
+    "hole_conv"
+   ]
+  },
+  {
+   "name": "open_conv",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "open",
+   "op": "relu",
+   "inputs": [
+    "open_conv"
+   ]
+  },
+  {
+   "name": "tex_conv",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "tex",
+   "op": "relu",
+   "inputs": [
+    "tex_conv"
+   ]
+  },
+  {
+   "name": "hole_top",
+   "op": "maxpool",
+   "inputs": [
+    "hole"
+   ],
+   "size": [
+    10,
+    20
+   ],
+   "stride": [
+    10,
+    20
+   ]
+  },
+  {
+   "name": "handle_hole",
+   "op": "dense",
+   "inputs": [
+    "hole_top"
+   ],
+   "out": 1
+  },
+  {
+   "name": "hole_allp",
+   "op": "maxpool",
+   "inputs": [
+    "hole"
+   ],
+   "size": [
+    28,
+    28
+   ],
+   "stride": [
+    28,
+    28
+   ]
+  },
+  {
+   "name": "hole_all",
+   "op": "reshape",
+   "inputs": [
+    "hole_allp"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "open_maxp",
+   "op": "maxpool",
+   "inputs": [
+    "open"
+   ],
+   "size": [
+    21,
+    18
+   ],
+   "stride": [
+    21,
+    18
+   ]
+  },
+  {
+   "name": "opening",
+   "op": "reshape",
+   "inputs": [
+    "open_maxp"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "tex_feat",
+   "op": "dense",
+   "inputs": [
+    "tex"
+   ],
+   "out": 1
+  },
+  {
+   "name": "wf_res",
+   "op": "reshape",
+   "inputs": [
+    "width_frac"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "hf_res",
+   "op": "reshape",
+   "inputs": [
+    "height_frac"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "ext_wf",
+   "op": "dense",
+   "inputs": [
+    "wf_res"
+   ],
+   "out": 5
+  },
+  {
+   "name": "ext_hf",
+   "op": "dense",
+   "inputs": [
+    "hf_res"
+   ],
+   "out": 5
+  },
+  {
+   "name": "ext_bw",
+   "op": "dense",
+   "inputs": [
+    "band_w"
+   ],
+   "out": 5
+  },
+  {
+   "name": "ext",
+   "op": "add",
+   "inputs": [
+    "ext_wf",
+    "ext_hf",
+    "ext_bw"
+   ]
+  },
+  {
+   "name": "det_hh",
+   "op": "dense",
+   "inputs": [
+    "handle_hole"
+   ],
+   "out": 4
+  },
+  {
+   "name": "det_ha",
+   "op": "dense",
+   "inputs": [
+    "hole_all"
+   ],
+   "out": 4
+  },
+  {
+   "name": "det_o",
+   "op": "dense",
+   "inputs": [
+    "opening"
+   ],
+   "out": 4
+  },
+  {
+   "name": "det_t",
+   "op": "dense",
+   "inputs": [
+    "tex_feat"
+   ],
+   "out": 4
+  },
+  {
+   "name": "det",
+   "op": "add",
+   "inputs": [
+    "det_hh",
+    "det_ha",
+    "det_o",
+    "det_t"
+   ]
+  },
+  {
+   "name": "F_reg",
+   "op": "dense",
+   "inputs": [
+    "reg"
+   ],
+   "out": 28
+  },
+  {
+   "name": "F_ext",
+   "op": "dense",
+   "inputs": [
+    "ext"
+   ],
+   "out": 28
+  },
+  {
+   "name": "F_det",
+   "op": "dense",
+   "inputs": [
+    "det"
+   ],
+   "out": 28
+  },
+  {
+   "name": "F",
+   "op": "add",
+   "inputs": [
+    "F_reg",
+    "F_ext",
+    "F_det"
+   ]
+  },
+  {
+   "name": "s1",
+   "op": "dense",
+   "inputs": [
+    "F"
+   ],
+   "out": 12
+  },
+  {
+   "name": "s1r",
+   "op": "relu",
+   "inputs": [
+    "s1"
+   ]
+  },
+  {
+   "name": "s1cap_c1",
+   "op": "dense",
+   "inputs": [
+    "s1r"
+   ],
+   "out": 12
+  },
+  {
+   "name": "s1cap_r",
+   "op": "relu",
+   "inputs": [
+    "s1cap_c1"
+   ]
+  },
+  {
+   "name": "s1cap_c2",
+   "op": "dense",
+   "inputs": [
+    "s1cap_r"
+   ],
+   "out": 12
+  },
+  {
+   "name": "readout",
+   "op": "dense",
+   "inputs": [
+    "s1cap_c2"
+   ],
+   "out": 10
+  }
+ ]
+}

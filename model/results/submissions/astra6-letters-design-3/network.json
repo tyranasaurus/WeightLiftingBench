@@ -1,0 +1,263 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "positive_derivatives",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "orientation_bins",
+      "op": "conv",
+      "inputs": [
+        "positive_derivatives"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "orientation_bins"
+      ]
+    },
+    {
+      "name": "edge_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "oriented_edges"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "edge_lattice",
+      "op": "avgpool",
+      "inputs": [
+        "edge_tolerance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_normalization",
+      "op": "norm",
+      "inputs": [
+        "edge_lattice"
+      ]
+    },
+    {
+      "name": "fine_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "oriented_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "fine_lattice",
+      "op": "avgpool",
+      "inputs": [
+        "fine_unsigned_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "fine_normalization",
+      "op": "norm",
+      "inputs": [
+        "fine_lattice"
+      ]
+    },
+    {
+      "name": "dark_ridges",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 4,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "ridge_activation",
+      "op": "relu",
+      "inputs": [
+        "dark_ridges"
+      ]
+    },
+    {
+      "name": "ridge_lattice",
+      "op": "avgpool",
+      "inputs": [
+        "ridge_activation"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ridge_normalization",
+      "op": "norm",
+      "inputs": [
+        "ridge_lattice"
+      ]
+    },
+    {
+      "name": "silhouette_lattice",
+      "op": "avgpool",
+      "inputs": [
+        "contrast"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "contour_agreement",
+      "op": "dense",
+      "inputs": [
+        "edge_normalization"
+      ],
+      "out": 36864
+    },
+    {
+      "name": "fine_agreement",
+      "op": "dense",
+      "inputs": [
+        "fine_normalization"
+      ],
+      "out": 36864
+    },
+    {
+      "name": "ridge_agreement",
+      "op": "dense",
+      "inputs": [
+        "ridge_normalization"
+      ],
+      "out": 36864
+    },
+    {
+      "name": "silhouette_agreement",
+      "op": "dense",
+      "inputs": [
+        "silhouette_lattice"
+      ],
+      "out": 36864
+    },
+    {
+      "name": "pose_agreement",
+      "op": "add",
+      "inputs": [
+        "contour_agreement",
+        "fine_agreement",
+        "ridge_agreement",
+        "silhouette_agreement"
+      ]
+    },
+    {
+      "name": "class_pose_table",
+      "op": "reshape",
+      "inputs": [
+        "pose_agreement"
+      ],
+      "shape": [
+        24,
+        1,
+        1536
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "class_pose_table"
+      ],
+      "size": [
+        1,
+        1536
+      ],
+      "stride": [
+        1,
+        1536
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

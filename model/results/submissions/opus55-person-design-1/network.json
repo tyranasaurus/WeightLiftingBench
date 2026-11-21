@@ -1,0 +1,486 @@
+{
+ "layers": [
+  {
+   "name": "rgb2",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "colour_viol",
+   "op": "conv",
+   "inputs": [
+    "rgb2"
+   ],
+   "out": 30,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_viol_r",
+   "op": "relu",
+   "inputs": [
+    "colour_viol"
+   ]
+  },
+  {
+   "name": "colour",
+   "op": "conv",
+   "inputs": [
+    "colour_viol_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_r",
+   "op": "relu",
+   "inputs": [
+    "colour"
+   ]
+  },
+  {
+   "name": "mem_avg",
+   "op": "avgpool",
+   "inputs": [
+    "colour_r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "cell",
+   "op": "avgpool",
+   "inputs": [
+    "colour_r"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cell_net",
+   "op": "conv",
+   "inputs": [
+    "cell"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cell_net_r",
+   "op": "relu",
+   "inputs": [
+    "cell_net"
+   ]
+  },
+  {
+   "name": "net_skin_avg",
+   "op": "avgpool",
+   "inputs": [
+    "cell_net_r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "cells4",
+   "op": "avgpool",
+   "inputs": [
+    "colour_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "cells4_compact",
+   "op": "conv",
+   "inputs": [
+    "cells4"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "cells4_compact_r",
+   "op": "relu",
+   "inputs": [
+    "cells4_compact"
+   ]
+  },
+  {
+   "name": "cells4_avg",
+   "op": "avgpool",
+   "inputs": [
+    "cells4_compact_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "cells8",
+   "op": "avgpool",
+   "inputs": [
+    "colour_r"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cells8_compact",
+   "op": "conv",
+   "inputs": [
+    "cells8"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "cells8_compact_r",
+   "op": "relu",
+   "inputs": [
+    "cells8_compact"
+   ]
+  },
+  {
+   "name": "cells8_avg",
+   "op": "avgpool",
+   "inputs": [
+    "cells8_compact_r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "cells16",
+   "op": "avgpool",
+   "inputs": [
+    "colour_r"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "cells16_compact",
+   "op": "conv",
+   "inputs": [
+    "cells16"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "cells16_compact_r",
+   "op": "relu",
+   "inputs": [
+    "cells16_compact"
+   ]
+  },
+  {
+   "name": "cells16_avg",
+   "op": "avgpool",
+   "inputs": [
+    "cells16_compact_r"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "snow_viol",
+   "op": "conv",
+   "inputs": [
+    "rgb2"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "snow_viol_r",
+   "op": "relu",
+   "inputs": [
+    "snow_viol"
+   ]
+  },
+  {
+   "name": "snow",
+   "op": "conv",
+   "inputs": [
+    "snow_viol_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "snow_r",
+   "op": "relu",
+   "inputs": [
+    "snow"
+   ]
+  },
+  {
+   "name": "snow_quarters",
+   "op": "avgpool",
+   "inputs": [
+    "snow_r"
+   ],
+   "size": [
+    12,
+    48
+   ],
+   "stride": [
+    12,
+    48
+   ]
+  },
+  {
+   "name": "cdiff",
+   "op": "conv",
+   "inputs": [
+    "rgb2"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cdiff_r",
+   "op": "relu",
+   "inputs": [
+    "cdiff"
+   ]
+  },
+  {
+   "name": "cdiff_sum",
+   "op": "conv",
+   "inputs": [
+    "cdiff_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cdiff_max",
+   "op": "maxpool",
+   "inputs": [
+    "cdiff_sum"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "ev_local",
+   "op": "dense",
+   "inputs": [
+    "net_skin_avg"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_compact0",
+   "op": "dense",
+   "inputs": [
+    "cells4_avg"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_compact1",
+   "op": "dense",
+   "inputs": [
+    "cells8_avg"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_compact2",
+   "op": "dense",
+   "inputs": [
+    "cells16_avg"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_frac",
+   "op": "dense",
+   "inputs": [
+    "mem_avg"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_gray",
+   "op": "dense",
+   "inputs": [
+    "cdiff_max"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_snow",
+   "op": "dense",
+   "inputs": [
+    "snow_quarters"
+   ],
+   "out": 9
+  },
+  {
+   "name": "ev_sum",
+   "op": "add",
+   "inputs": [
+    "ev_local",
+    "ev_compact0",
+    "ev_compact1",
+    "ev_compact2",
+    "ev_frac",
+    "ev_gray",
+    "ev_snow"
+   ]
+  },
+  {
+   "name": "evidence",
+   "op": "relu",
+   "inputs": [
+    "ev_sum"
+   ]
+  },
+  {
+   "name": "ev_combine",
+   "op": "dense",
+   "inputs": [
+    "evidence"
+   ],
+   "out": 7
+  },
+  {
+   "name": "evidence2",
+   "op": "relu",
+   "inputs": [
+    "ev_combine"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "evidence2"
+   ],
+   "out": 2
+  }
+ ]
+}

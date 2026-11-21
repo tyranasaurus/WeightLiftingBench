@@ -1,0 +1,5 @@
+# Method
+
+This is a fully hand-designed, data-free network. It converts standardized luminance into eight unsigned derivative-of-Gaussian orientation maps, pools these into HOG-like cells, and scans them with analytic silhouettes assembled from ellipses, tapered torsos, and limb capsules at multiple scales and poses. A second branch constructs piecewise-linear skin-colour memberships in RGB opponent coordinates and combines them with generic oval-face, eye-pair, hair-band, mouth, and head/shoulder templates. Global maxima of the body and face banks are fused by a fixed linear rule.
+
+All weights are generated from formulas and general shape/colour knowledge in `build.py`; no image pixels, patches, descriptors, fitted statistics, optimization, gradient descent, or learned parameters are used. The supplied images were used only for visual inspection and the allowed end-to-end checks.

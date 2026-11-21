@@ -1,0 +1,165 @@
+{
+ "layers": [
+  {
+   "name": "p",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "p"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "fp",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 96
+  },
+  {
+   "name": "fpr",
+   "op": "reshape",
+   "inputs": [
+    "fp"
+   ],
+   "shape": [
+    1,
+    6,
+    16
+   ]
+  },
+  {
+   "name": "fpm",
+   "op": "maxpool",
+   "inputs": [
+    "fpr"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "fs",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 8
+  },
+  {
+   "name": "ga",
+   "op": "dense",
+   "inputs": [
+    "fpm"
+   ],
+   "out": 36
+  },
+  {
+   "name": "gb",
+   "op": "dense",
+   "inputs": [
+    "fs"
+   ],
+   "out": 36
+  },
+  {
+   "name": "g",
+   "op": "add",
+   "inputs": [
+    "ga",
+    "gb"
+   ]
+  },
+  {
+   "name": "gr",
+   "op": "reshape",
+   "inputs": [
+    "g"
+   ],
+   "shape": [
+    9,
+    4,
+    1
+   ]
+  },
+  {
+   "name": "gn",
+   "op": "norm",
+   "inputs": [
+    "gr"
+   ]
+  },
+  {
+   "name": "ha",
+   "op": "dense",
+   "inputs": [
+    "gn"
+   ],
+   "out": 28
+  },
+  {
+   "name": "hb",
+   "op": "dense",
+   "inputs": [
+    "fs"
+   ],
+   "out": 28
+  },
+  {
+   "name": "h",
+   "op": "add",
+   "inputs": [
+    "ha",
+    "hb"
+   ]
+  },
+  {
+   "name": "hr",
+   "op": "relu",
+   "inputs": [
+    "h"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "hr"
+   ],
+   "out": 10
+  }
+ ]
+}

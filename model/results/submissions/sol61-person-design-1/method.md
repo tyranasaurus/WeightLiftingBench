@@ -1,0 +1,9 @@
+# Method
+
+This is a fixed analytical network, not a trained model. Its weights are generated entirely by formulas and hand-written constants in `build.py`; the builder reads no files and uses no image-derived statistics, stored examples, pretrained parameters, or optimization.
+
+The input is antialiased to 48 by 48. Piecewise-linear RGB inequalities produce soft skin-colour channels, and normalized luminance passes through Sobel derivative filters. At five scales, formula-generated elliptical heads, paired eye bands, shoulders, and capsule-built body silhouettes test combinations of skin contrast, facial contrast, and oriented contours. ReLU deficit gates implement fuzzy conjunctions of these tests. Constant validity channels penalize templates extending beyond the image. Positive geometric evidence is capped per scale, then combined with a softer whole-image branch measuring bounded skin occupancy, a pink-versus-yellow colour distinction, and local skin contrast. The final output contains two scores, ordered no person and person.
+
+All colours, geometry, and thresholds were chosen manually from general knowledge. Training photos were viewed as contact sheets, and only array shapes, class counts, and the five permitted checker accuracy/confusion summaries were inspected. No training-image feature statistics were computed for constructing weights, and no readout was fitted. The permitted checks informed qualitative revisions to the hand-written design; the submitted files are the fifth version.
+
+The final permitted check on a fixed random 2,000-image training subset achieved 49.45% accuracy (144 true negatives, 857 false positives, 154 false negatives, and 845 true positives). This is not evidence of useful classification performance or of beating either comparison system. No held-out evaluation was available, and no further network evaluations were performed after the fifth check.

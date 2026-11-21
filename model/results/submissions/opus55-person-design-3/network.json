@@ -1,0 +1,739 @@
+{
+ "layers": [
+  {
+   "name": "col1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 30,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col1r",
+   "op": "relu",
+   "inputs": [
+    "col1"
+   ]
+  },
+  {
+   "name": "uv",
+   "op": "conv",
+   "inputs": [
+    "col1r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "uvr",
+   "op": "relu",
+   "inputs": [
+    "uv"
+   ]
+  },
+  {
+   "name": "uvmean",
+   "op": "avgpool",
+   "inputs": [
+    "uvr"
+   ],
+   "size": [
+    96,
+    96
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "col2",
+   "op": "conv",
+   "inputs": [
+    "col1r"
+   ],
+   "out": 46,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "wb",
+   "op": "dense",
+   "inputs": [
+    "uvmean"
+   ],
+   "out": 423936
+  },
+  {
+   "name": "wbmap",
+   "op": "reshape",
+   "inputs": [
+    "wb"
+   ],
+   "shape": [
+    46,
+    96,
+    96
+   ]
+  },
+  {
+   "name": "col2wb",
+   "op": "add",
+   "inputs": [
+    "col2",
+    "wbmap"
+   ]
+  },
+  {
+   "name": "col2r",
+   "op": "relu",
+   "inputs": [
+    "col2wb"
+   ]
+  },
+  {
+   "name": "col3",
+   "op": "conv",
+   "inputs": [
+    "col2r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "base0",
+   "op": "relu",
+   "inputs": [
+    "col3"
+   ]
+  },
+  {
+   "name": "col4",
+   "op": "conv",
+   "inputs": [
+    "base0"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "base",
+   "op": "relu",
+   "inputs": [
+    "col4"
+   ]
+  },
+  {
+   "name": "cell6",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "tpl6",
+   "op": "conv",
+   "inputs": [
+    "cell6"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl6r",
+   "op": "relu",
+   "inputs": [
+    "tpl6"
+   ]
+  },
+  {
+   "name": "head6",
+   "op": "conv",
+   "inputs": [
+    "tpl6r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head6r",
+   "op": "relu",
+   "inputs": [
+    "head6"
+   ]
+  },
+  {
+   "name": "hmean6",
+   "op": "avgpool",
+   "inputs": [
+    "head6r"
+   ],
+   "size": [
+    31,
+    31
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt6",
+   "op": "dense",
+   "inputs": [
+    "hmean6"
+   ],
+   "out": 18
+  },
+  {
+   "name": "cell8",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "tpl8",
+   "op": "conv",
+   "inputs": [
+    "cell8"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl8r",
+   "op": "relu",
+   "inputs": [
+    "tpl8"
+   ]
+  },
+  {
+   "name": "head8",
+   "op": "conv",
+   "inputs": [
+    "tpl8r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8r",
+   "op": "relu",
+   "inputs": [
+    "head8"
+   ]
+  },
+  {
+   "name": "hmean8",
+   "op": "avgpool",
+   "inputs": [
+    "head8r"
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt8",
+   "op": "dense",
+   "inputs": [
+    "hmean8"
+   ],
+   "out": 18
+  },
+  {
+   "name": "cell12",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "tpl12",
+   "op": "conv",
+   "inputs": [
+    "cell12"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl12r",
+   "op": "relu",
+   "inputs": [
+    "tpl12"
+   ]
+  },
+  {
+   "name": "head12",
+   "op": "conv",
+   "inputs": [
+    "tpl12r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head12r",
+   "op": "relu",
+   "inputs": [
+    "head12"
+   ]
+  },
+  {
+   "name": "hmean12",
+   "op": "avgpool",
+   "inputs": [
+    "head12r"
+   ],
+   "size": [
+    15,
+    15
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt12",
+   "op": "dense",
+   "inputs": [
+    "hmean12"
+   ],
+   "out": 18
+  },
+  {
+   "name": "cell16",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    16,
+    16
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "tpl16",
+   "op": "conv",
+   "inputs": [
+    "cell16"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl16r",
+   "op": "relu",
+   "inputs": [
+    "tpl16"
+   ]
+  },
+  {
+   "name": "head16",
+   "op": "conv",
+   "inputs": [
+    "tpl16r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16r",
+   "op": "relu",
+   "inputs": [
+    "head16"
+   ]
+  },
+  {
+   "name": "hmean16",
+   "op": "avgpool",
+   "inputs": [
+    "head16r"
+   ],
+   "size": [
+    11,
+    11
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt16",
+   "op": "dense",
+   "inputs": [
+    "hmean16"
+   ],
+   "out": 18
+  },
+  {
+   "name": "cell24",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "tpl24",
+   "op": "conv",
+   "inputs": [
+    "cell24"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl24r",
+   "op": "relu",
+   "inputs": [
+    "tpl24"
+   ]
+  },
+  {
+   "name": "head24",
+   "op": "conv",
+   "inputs": [
+    "tpl24r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24r",
+   "op": "relu",
+   "inputs": [
+    "head24"
+   ]
+  },
+  {
+   "name": "hmean24",
+   "op": "avgpool",
+   "inputs": [
+    "head24r"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt24",
+   "op": "dense",
+   "inputs": [
+    "hmean24"
+   ],
+   "out": 18
+  },
+  {
+   "name": "cell32",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    32,
+    32
+   ],
+   "stride": [
+    16,
+    16
+   ]
+  },
+  {
+   "name": "tpl32",
+   "op": "conv",
+   "inputs": [
+    "cell32"
+   ],
+   "out": 14,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tpl32r",
+   "op": "relu",
+   "inputs": [
+    "tpl32"
+   ]
+  },
+  {
+   "name": "head32",
+   "op": "conv",
+   "inputs": [
+    "tpl32r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head32r",
+   "op": "relu",
+   "inputs": [
+    "head32"
+   ]
+  },
+  {
+   "name": "hmean32",
+   "op": "avgpool",
+   "inputs": [
+    "head32r"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vcnt32",
+   "op": "dense",
+   "inputs": [
+    "hmean32"
+   ],
+   "out": 18
+  },
+  {
+   "name": "gmean",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    96,
+    96
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "gmax",
+   "op": "maxpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    96,
+    96
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vmean",
+   "op": "dense",
+   "inputs": [
+    "gmean"
+   ],
+   "out": 18
+  },
+  {
+   "name": "vmax",
+   "op": "dense",
+   "inputs": [
+    "gmax"
+   ],
+   "out": 18
+  },
+  {
+   "name": "lowpart",
+   "op": "avgpool",
+   "inputs": [
+    "base"
+   ],
+   "size": [
+    64,
+    96
+   ],
+   "stride": [
+    32,
+    1
+   ]
+  },
+  {
+   "name": "vlow",
+   "op": "dense",
+   "inputs": [
+    "lowpart"
+   ],
+   "out": 18
+  },
+  {
+   "name": "feat",
+   "op": "add",
+   "inputs": [
+    "vcnt6",
+    "vcnt8",
+    "vcnt12",
+    "vcnt16",
+    "vcnt24",
+    "vcnt32",
+    "vmean",
+    "vmax",
+    "vlow"
+   ]
+  },
+  {
+   "name": "hid",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 14
+  },
+  {
+   "name": "hidr",
+   "op": "relu",
+   "inputs": [
+    "hid"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "hidr"
+   ],
+   "out": 2
+  }
+ ]
+}

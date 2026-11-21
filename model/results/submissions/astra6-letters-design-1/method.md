@@ -1,0 +1,7 @@
+# Hand-designed ASL network
+
+The network uses analytic Gaussian-derivative filters, rectified orientation competition, bounded edge responses, spatial pooling, and contrast normalization. Its dense layers compare those responses with 24 hand-authored anatomical models built from palm ellipses, finger capsules, thumb–finger openings, and joint creases; a weaker, polarity-independent silhouette branch provides complementary evidence. A fixed grid covers scale, rotation, translation, oblique-view width, articulation variation, and handedness, and max pooling selects a pose score for each class in the requested A–Y order (excluding J and Z).
+
+All 20,062,407 float32 weight entries are generated deterministically by `build.py` from mathematical formulas and general ASL articulation descriptions; the builder reads no data or other files. There is no optimization, fitted readout, class averaging, clustering, or storage of photographs or their features. Training images were used only for permitted visual inspection and the five official labeled checks; revisions addressed geometric modeling and orientation assumptions, without extracting image coordinates or measurements.
+
+The fifth and final check obtained 28.33% accuracy on all 27,455 official training images. This is a training-set diagnostic, not an estimate verified on the unseen test set, and does not demonstrate that the model beats either comparison method. The final network contains 25,920 synthetic pose hypotheses and outputs 24 class scores.

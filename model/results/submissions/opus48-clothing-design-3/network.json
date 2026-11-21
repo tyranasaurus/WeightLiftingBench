@@ -1,0 +1,90 @@
+{
+  "layers": [
+    {
+      "name": "feat",
+      "op": "dense",
+      "inputs": [
+        "image"
+      ],
+      "out": 11
+    },
+    {
+      "name": "vpre",
+      "op": "dense",
+      "inputs": [
+        "feat"
+      ],
+      "out": 41
+    },
+    {
+      "name": "viol",
+      "op": "relu",
+      "inputs": [
+        "vpre"
+      ]
+    },
+    {
+      "name": "smain",
+      "op": "dense",
+      "inputs": [
+        "viol"
+      ],
+      "out": 10
+    },
+    {
+      "name": "fdiff",
+      "op": "dense",
+      "inputs": [
+        "image"
+      ],
+      "out": 784
+    },
+    {
+      "name": "fdr",
+      "op": "relu",
+      "inputs": [
+        "fdiff"
+      ]
+    },
+    {
+      "name": "aviolp",
+      "op": "dense",
+      "inputs": [
+        "fdr"
+      ],
+      "out": 2
+    },
+    {
+      "name": "aviol",
+      "op": "relu",
+      "inputs": [
+        "aviolp"
+      ]
+    },
+    {
+      "name": "sasym",
+      "op": "dense",
+      "inputs": [
+        "aviol"
+      ],
+      "out": 10
+    },
+    {
+      "name": "sproto",
+      "op": "dense",
+      "inputs": [
+        "feat"
+      ],
+      "out": 10
+    },
+    {
+      "name": "out",
+      "op": "add",
+      "inputs": [
+        "smain",
+        "sasym",
+        "sproto"
+      ]
+    }
+  ]
+}

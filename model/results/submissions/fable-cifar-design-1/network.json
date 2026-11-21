@@ -1,0 +1,121 @@
+{
+ "layers": [
+  {
+   "name": "ca",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 28,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ra",
+   "op": "relu",
+   "inputs": [
+    "ca"
+   ]
+  },
+  {
+   "name": "cb",
+   "op": "conv",
+   "inputs": [
+    "ra"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rb",
+   "op": "relu",
+   "inputs": [
+    "cb"
+   ]
+  },
+  {
+   "name": "pc",
+   "op": "avgpool",
+   "inputs": [
+    "rb"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "dc",
+   "op": "dense",
+   "inputs": [
+    "pc"
+   ],
+   "out": 10
+  },
+  {
+   "name": "ce",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "re",
+   "op": "relu",
+   "inputs": [
+    "ce"
+   ]
+  },
+  {
+   "name": "pe",
+   "op": "avgpool",
+   "inputs": [
+    "re"
+   ],
+   "size": [
+    10,
+    10
+   ],
+   "stride": [
+    10,
+    10
+   ]
+  },
+  {
+   "name": "de",
+   "op": "dense",
+   "inputs": [
+    "pe"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "dc",
+    "de"
+   ]
+  }
+ ]
+}

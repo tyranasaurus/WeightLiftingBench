@@ -1,0 +1,475 @@
+{
+  "layers": [
+    {
+      "name": "micro_derivatives",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 14,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "micro_abs_halves",
+      "op": "relu",
+      "inputs": [
+        "micro_derivatives"
+      ]
+    },
+    {
+      "name": "micro_cells",
+      "op": "avgpool",
+      "inputs": [
+        "micro_abs_halves"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "rgb_cells",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "coarse_derivatives",
+      "op": "conv",
+      "inputs": [
+        "rgb_cells"
+      ],
+      "out": 25,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "embed_micro_cells",
+      "op": "conv",
+      "inputs": [
+        "micro_cells"
+      ],
+      "out": 25,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "mixed_derivatives",
+      "op": "add",
+      "inputs": [
+        "coarse_derivatives",
+        "embed_micro_cells"
+      ]
+    },
+    {
+      "name": "contrast_and_palette_affine",
+      "op": "conv",
+      "inputs": [
+        "mixed_derivatives"
+      ],
+      "out": 74,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_and_palette_hinges",
+      "op": "relu",
+      "inputs": [
+        "contrast_and_palette_affine"
+      ]
+    },
+    {
+      "name": "contrast_and_palette",
+      "op": "conv",
+      "inputs": [
+        "contrast_and_palette_hinges"
+      ],
+      "out": 33,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "object_and_scene_fields_affine",
+      "op": "conv",
+      "inputs": [
+        "contrast_and_palette"
+      ],
+      "out": 65,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "object_and_scene_fields_hinges",
+      "op": "relu",
+      "inputs": [
+        "object_and_scene_fields_affine"
+      ]
+    },
+    {
+      "name": "object_and_scene_fields",
+      "op": "conv",
+      "inputs": [
+        "object_and_scene_fields_hinges"
+      ],
+      "out": 31,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "regional_scene_means",
+      "op": "dense",
+      "inputs": [
+        "object_and_scene_fields"
+      ],
+      "out": 84
+    },
+    {
+      "name": "shape_input_planes",
+      "op": "conv",
+      "inputs": [
+        "object_and_scene_fields"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "deformable_stencil_bank",
+      "op": "dense",
+      "inputs": [
+        "shape_input_planes"
+      ],
+      "out": 3000
+    },
+    {
+      "name": "deformations_by_pose",
+      "op": "reshape",
+      "inputs": [
+        "deformable_stencil_bank"
+      ],
+      "shape": [
+        1,
+        50,
+        60
+      ]
+    },
+    {
+      "name": "best_deformation_per_pose",
+      "op": "maxpool",
+      "inputs": [
+        "deformations_by_pose"
+      ],
+      "size": [
+        1,
+        60
+      ],
+      "stride": [
+        1,
+        60
+      ]
+    },
+    {
+      "name": "poses_by_class",
+      "op": "reshape",
+      "inputs": [
+        "best_deformation_per_pose"
+      ],
+      "shape": [
+        1,
+        10,
+        5
+      ]
+    },
+    {
+      "name": "best_pose_per_class",
+      "op": "maxpool",
+      "inputs": [
+        "poses_by_class"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "mean_pose_per_class",
+      "op": "avgpool",
+      "inputs": [
+        "poses_by_class"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "part_input_planes",
+      "op": "conv",
+      "inputs": [
+        "object_and_scene_fields"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "spatial_part_tests",
+      "op": "dense",
+      "inputs": [
+        "part_input_planes"
+      ],
+      "out": 1458
+    },
+    {
+      "name": "local_part_triplets",
+      "op": "reshape",
+      "inputs": [
+        "spatial_part_tests"
+      ],
+      "shape": [
+        3,
+        6,
+        81
+      ]
+    },
+    {
+      "name": "form_part_pairs_affine",
+      "op": "conv",
+      "inputs": [
+        "local_part_triplets"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "form_part_pairs_hinges",
+      "op": "relu",
+      "inputs": [
+        "form_part_pairs_affine"
+      ]
+    },
+    {
+      "name": "form_part_pairs",
+      "op": "conv",
+      "inputs": [
+        "form_part_pairs_hinges"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "require_all_parts_affine",
+      "op": "conv",
+      "inputs": [
+        "form_part_pairs"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "require_all_parts_hinges",
+      "op": "relu",
+      "inputs": [
+        "require_all_parts_affine"
+      ]
+    },
+    {
+      "name": "require_all_parts",
+      "op": "conv",
+      "inputs": [
+        "require_all_parts_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "best_local_part_joint_match",
+      "op": "maxpool",
+      "inputs": [
+        "require_all_parts"
+      ],
+      "size": [
+        1,
+        81
+      ],
+      "stride": [
+        1,
+        81
+      ]
+    },
+    {
+      "name": "embed_scene_summary",
+      "op": "dense",
+      "inputs": [
+        "regional_scene_means"
+      ],
+      "out": 100
+    },
+    {
+      "name": "embed_best_pose",
+      "op": "dense",
+      "inputs": [
+        "best_pose_per_class"
+      ],
+      "out": 100
+    },
+    {
+      "name": "embed_pose_support",
+      "op": "dense",
+      "inputs": [
+        "mean_pose_per_class"
+      ],
+      "out": 100
+    },
+    {
+      "name": "embed_part_relations",
+      "op": "dense",
+      "inputs": [
+        "best_local_part_joint_match"
+      ],
+      "out": 100
+    },
+    {
+      "name": "combined_object_evidence",
+      "op": "add",
+      "inputs": [
+        "embed_scene_summary",
+        "embed_best_pose",
+        "embed_pose_support",
+        "embed_part_relations"
+      ]
+    },
+    {
+      "name": "scene_and_pose_evidence_affine",
+      "op": "dense",
+      "inputs": [
+        "combined_object_evidence"
+      ],
+      "out": 88
+    },
+    {
+      "name": "scene_and_pose_evidence_hinges",
+      "op": "relu",
+      "inputs": [
+        "scene_and_pose_evidence_affine"
+      ]
+    },
+    {
+      "name": "scene_and_pose_evidence",
+      "op": "dense",
+      "inputs": [
+        "scene_and_pose_evidence_hinges"
+      ],
+      "out": 44
+    },
+    {
+      "name": "combine_soft_priors_affine",
+      "op": "dense",
+      "inputs": [
+        "scene_and_pose_evidence"
+      ],
+      "out": 107
+    },
+    {
+      "name": "combine_soft_priors_hinges",
+      "op": "relu",
+      "inputs": [
+        "combine_soft_priors_affine"
+      ]
+    },
+    {
+      "name": "combine_soft_priors",
+      "op": "dense",
+      "inputs": [
+        "combine_soft_priors_hinges"
+      ],
+      "out": 51
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "combine_soft_priors"
+      ],
+      "out": 10
+    }
+  ]
+}

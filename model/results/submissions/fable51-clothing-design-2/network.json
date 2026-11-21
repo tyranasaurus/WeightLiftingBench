@@ -1,0 +1,234 @@
+{
+ "layers": [
+  {
+   "name": "pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pre_r",
+   "op": "relu",
+   "inputs": [
+    "pre"
+   ]
+  },
+  {
+   "name": "maps",
+   "op": "conv",
+   "inputs": [
+    "pre_r"
+   ],
+   "out": 21,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "maps_r",
+   "op": "relu",
+   "inputs": [
+    "maps"
+   ]
+  },
+  {
+   "name": "maps2",
+   "op": "conv",
+   "inputs": [
+    "maps_r"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "maps2_r",
+   "op": "relu",
+   "inputs": [
+    "maps2"
+   ]
+  },
+  {
+   "name": "maps3",
+   "op": "conv",
+   "inputs": [
+    "maps2_r"
+   ],
+   "out": 15,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "maps3_r",
+   "op": "relu",
+   "inputs": [
+    "maps3"
+   ]
+  },
+  {
+   "name": "prof",
+   "op": "dense",
+   "inputs": [
+    "maps3_r"
+   ],
+   "out": 244
+  },
+  {
+   "name": "prof_r",
+   "op": "relu",
+   "inputs": [
+    "prof"
+   ]
+  },
+  {
+   "name": "prof2",
+   "op": "dense",
+   "inputs": [
+    "prof_r"
+   ],
+   "out": 300
+  },
+  {
+   "name": "prof2_r",
+   "op": "relu",
+   "inputs": [
+    "prof2"
+   ]
+  },
+  {
+   "name": "meas",
+   "op": "dense",
+   "inputs": [
+    "prof2_r"
+   ],
+   "out": 78
+  },
+  {
+   "name": "meas_p",
+   "op": "reshape",
+   "inputs": [
+    "meas"
+   ],
+   "shape": [
+    39,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "bits",
+   "op": "norm",
+   "inputs": [
+    "meas_p"
+   ]
+  },
+  {
+   "name": "bits_v",
+   "op": "reshape",
+   "inputs": [
+    "bits"
+   ],
+   "shape": [
+    78
+   ]
+  },
+  {
+   "name": "rules",
+   "op": "dense",
+   "inputs": [
+    "bits_v"
+   ],
+   "out": 360
+  },
+  {
+   "name": "rules_p",
+   "op": "reshape",
+   "inputs": [
+    "rules"
+   ],
+   "shape": [
+    180,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "votes",
+   "op": "norm",
+   "inputs": [
+    "rules_p"
+   ]
+  },
+  {
+   "name": "votes_v",
+   "op": "reshape",
+   "inputs": [
+    "votes"
+   ],
+   "shape": [
+    1,
+    180,
+    2
+   ]
+  },
+  {
+   "name": "pool",
+   "op": "avgpool",
+   "inputs": [
+    "votes_v"
+   ],
+   "size": [
+    18,
+    1
+   ],
+   "stride": [
+    18,
+    1
+   ]
+  },
+  {
+   "name": "first",
+   "op": "maxpool",
+   "inputs": [
+    "pool"
+   ],
+   "size": [
+    1,
+    1
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "first"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

@@ -1,0 +1,115 @@
+{
+ "layers": [
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "image"
+   ],
+   "shape": [
+    1,
+    96,
+    32
+   ]
+  },
+  {
+   "name": "gn",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "imgn",
+   "op": "reshape",
+   "inputs": [
+    "gn"
+   ],
+   "shape": [
+    3,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "imgn"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tm",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 774,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "pmax",
+   "op": "maxpool",
+   "inputs": [
+    "tm"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "grp",
+   "op": "reshape",
+   "inputs": [
+    "pmax"
+   ],
+   "shape": [
+    1,
+    43,
+    18
+   ]
+  },
+  {
+   "name": "vmax",
+   "op": "maxpool",
+   "inputs": [
+    "grp"
+   ],
+   "size": [
+    1,
+    18
+   ],
+   "stride": [
+    1,
+    18
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "vmax"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

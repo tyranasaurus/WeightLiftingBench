@@ -1,0 +1,3 @@
+The network pools the input into 2 × 2 cells at three foreground intensity scales and normalizes each scale spatially. A dense layer scores correlations with 1,600 procedural shape variants per class, and max pooling selects the best match in each class.
+
+The variants come from hand-written polygon and curve models of clothing and accessories, with fixed-seed variation in proportions, placement, and shading. The same feature formulas are applied to these invented shapes to produce the dense weights. The builder reads no data; no training examples, labels, or statistics enter the weights. A single labeled check was used to assess the finished network, not to select weights.

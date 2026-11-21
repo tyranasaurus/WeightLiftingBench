@@ -1,0 +1,3 @@
+The network soft-clips ink intensity and average-pools to a 14 × 14 grid. Two dense branches compare the pooled ink and a locally max-pooled version against hand-authored digit shapes: one rewards stroke overlap and penalizes stray ink, while the other tolerates small stroke displacements. The highest template score in each digit family becomes that digit's output score.
+
+The templates come from spline-interpolated pen paths specified on an abstract grid. A fixed seed varies aspect ratio, slant, curvature, placement, and stroke width before rasterization. No training images, labels, or statistics are used to generate the weights; the official training data was used only for two checks.

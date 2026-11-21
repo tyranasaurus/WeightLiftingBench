@@ -1,0 +1,1609 @@
+{
+  "layers": [
+    {
+      "name": "soft_ink",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 2,
+      "padding": 2
+    },
+    {
+      "name": "ink_contrast",
+      "op": "norm",
+      "inputs": [
+        "soft_ink"
+      ]
+    },
+    {
+      "name": "oriented_edges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "edge_polarity",
+      "op": "relu",
+      "inputs": [
+        "oriented_edges"
+      ]
+    },
+    {
+      "name": "edge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "edge_polarity"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "edge_vector",
+      "op": "reshape",
+      "inputs": [
+        "edge_cells"
+      ],
+      "shape": [
+        1,
+        8,
+        49
+      ]
+    },
+    {
+      "name": "edge_contrast",
+      "op": "norm",
+      "inputs": [
+        "edge_vector"
+      ]
+    },
+    {
+      "name": "tangent_strength",
+      "op": "conv",
+      "inputs": [
+        "edge_cells"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "tangent_selected",
+      "op": "relu",
+      "inputs": [
+        "tangent_strength"
+      ]
+    },
+    {
+      "name": "tangent_comp",
+      "op": "conv",
+      "inputs": [
+        "tangent_selected"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "tangent_vector",
+      "op": "reshape",
+      "inputs": [
+        "tangent_comp"
+      ],
+      "shape": [
+        1,
+        4,
+        49
+      ]
+    },
+    {
+      "name": "tangent_contrast",
+      "op": "norm",
+      "inputs": [
+        "tangent_vector"
+      ]
+    },
+    {
+      "name": "pack_ink_contrast",
+      "op": "dense",
+      "inputs": [
+        "ink_contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "pack_edge_contrast",
+      "op": "dense",
+      "inputs": [
+        "edge_contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "pack_tangent_contrast",
+      "op": "dense",
+      "inputs": [
+        "tangent_contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "drawing_descriptor",
+      "op": "add",
+      "inputs": [
+        "pack_ink_contrast",
+        "pack_edge_contrast",
+        "pack_tangent_contrast"
+      ]
+    },
+    {
+      "name": "select_upper",
+      "op": "dense",
+      "inputs": [
+        "drawing_descriptor"
+      ],
+      "out": 560
+    },
+    {
+      "name": "model_upper",
+      "op": "dense",
+      "inputs": [
+        "select_upper"
+      ],
+      "out": 40960
+    },
+    {
+      "name": "upper_order",
+      "op": "reshape",
+      "inputs": [
+        "model_upper"
+      ],
+      "shape": [
+        10,
+        4,
+        1024
+      ]
+    },
+    {
+      "name": "upper_best",
+      "op": "maxpool",
+      "inputs": [
+        "upper_order"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "upper_mean",
+      "op": "avgpool",
+      "inputs": [
+        "upper_best"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "upper_vote",
+      "op": "reshape",
+      "inputs": [
+        "upper_mean"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "select_lower",
+      "op": "dense",
+      "inputs": [
+        "drawing_descriptor"
+      ],
+      "out": 560
+    },
+    {
+      "name": "model_lower",
+      "op": "dense",
+      "inputs": [
+        "select_lower"
+      ],
+      "out": 40960
+    },
+    {
+      "name": "lower_order",
+      "op": "reshape",
+      "inputs": [
+        "model_lower"
+      ],
+      "shape": [
+        10,
+        4,
+        1024
+      ]
+    },
+    {
+      "name": "lower_best",
+      "op": "maxpool",
+      "inputs": [
+        "lower_order"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "lower_mean",
+      "op": "avgpool",
+      "inputs": [
+        "lower_best"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "lower_vote",
+      "op": "reshape",
+      "inputs": [
+        "lower_mean"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "same_drawing",
+      "op": "add",
+      "inputs": [
+        "model_upper",
+        "model_lower"
+      ]
+    },
+    {
+      "name": "whole_order",
+      "op": "reshape",
+      "inputs": [
+        "same_drawing"
+      ],
+      "shape": [
+        10,
+        4,
+        1024
+      ]
+    },
+    {
+      "name": "whole_best",
+      "op": "maxpool",
+      "inputs": [
+        "whole_order"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "whole_mean",
+      "op": "avgpool",
+      "inputs": [
+        "whole_best"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "whole_vote",
+      "op": "reshape",
+      "inputs": [
+        "whole_mean"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "part_match",
+      "op": "add",
+      "inputs": [
+        "upper_vote",
+        "lower_vote"
+      ]
+    },
+    {
+      "name": "part_vote",
+      "op": "dense",
+      "inputs": [
+        "part_match"
+      ],
+      "out": 10
+    },
+    {
+      "name": "whole_vote_scaled",
+      "op": "dense",
+      "inputs": [
+        "whole_vote"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shape_vote",
+      "op": "add",
+      "inputs": [
+        "part_vote",
+        "whole_vote_scaled"
+      ]
+    },
+    {
+      "name": "clear_paper",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "paper_positive",
+      "op": "relu",
+      "inputs": [
+        "clear_paper"
+      ]
+    },
+    {
+      "name": "paper_complement",
+      "op": "conv",
+      "inputs": [
+        "paper_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ink_barrier",
+      "op": "relu",
+      "inputs": [
+        "paper_complement"
+      ]
+    },
+    {
+      "name": "unit",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "boundary_test",
+      "op": "conv",
+      "inputs": [
+        "unit"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "boundary",
+      "op": "relu",
+      "inputs": [
+        "boundary_test"
+      ]
+    },
+    {
+      "name": "pad_0",
+      "op": "conv",
+      "inputs": [
+        "boundary"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_0",
+      "op": "maxpool",
+      "inputs": [
+        "pad_0"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "inv_seed",
+      "op": "conv",
+      "inputs": [
+        "grow_0"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "no_seed",
+      "op": "relu",
+      "inputs": [
+        "inv_seed"
+      ]
+    },
+    {
+      "name": "seed",
+      "op": "conv",
+      "inputs": [
+        "no_seed"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "minus_barrier",
+      "op": "conv",
+      "inputs": [
+        "ink_barrier"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "admit_0",
+      "op": "add",
+      "inputs": [
+        "seed",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_0",
+      "op": "relu",
+      "inputs": [
+        "admit_0"
+      ]
+    },
+    {
+      "name": "pad_1",
+      "op": "conv",
+      "inputs": [
+        "reached_0"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_1",
+      "op": "maxpool",
+      "inputs": [
+        "pad_1"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_1",
+      "op": "add",
+      "inputs": [
+        "grow_1",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_1",
+      "op": "relu",
+      "inputs": [
+        "admit_1"
+      ]
+    },
+    {
+      "name": "pad_2",
+      "op": "conv",
+      "inputs": [
+        "reached_1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_2",
+      "op": "maxpool",
+      "inputs": [
+        "pad_2"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_2",
+      "op": "add",
+      "inputs": [
+        "grow_2",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_2",
+      "op": "relu",
+      "inputs": [
+        "admit_2"
+      ]
+    },
+    {
+      "name": "pad_3",
+      "op": "conv",
+      "inputs": [
+        "reached_2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_3",
+      "op": "maxpool",
+      "inputs": [
+        "pad_3"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_3",
+      "op": "add",
+      "inputs": [
+        "grow_3",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_3",
+      "op": "relu",
+      "inputs": [
+        "admit_3"
+      ]
+    },
+    {
+      "name": "pad_4",
+      "op": "conv",
+      "inputs": [
+        "reached_3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_4",
+      "op": "maxpool",
+      "inputs": [
+        "pad_4"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_4",
+      "op": "add",
+      "inputs": [
+        "grow_4",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_4",
+      "op": "relu",
+      "inputs": [
+        "admit_4"
+      ]
+    },
+    {
+      "name": "pad_5",
+      "op": "conv",
+      "inputs": [
+        "reached_4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_5",
+      "op": "maxpool",
+      "inputs": [
+        "pad_5"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_5",
+      "op": "add",
+      "inputs": [
+        "grow_5",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_5",
+      "op": "relu",
+      "inputs": [
+        "admit_5"
+      ]
+    },
+    {
+      "name": "pad_6",
+      "op": "conv",
+      "inputs": [
+        "reached_5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_6",
+      "op": "maxpool",
+      "inputs": [
+        "pad_6"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_6",
+      "op": "add",
+      "inputs": [
+        "grow_6",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_6",
+      "op": "relu",
+      "inputs": [
+        "admit_6"
+      ]
+    },
+    {
+      "name": "pad_7",
+      "op": "conv",
+      "inputs": [
+        "reached_6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_7",
+      "op": "maxpool",
+      "inputs": [
+        "pad_7"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_7",
+      "op": "add",
+      "inputs": [
+        "grow_7",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_7",
+      "op": "relu",
+      "inputs": [
+        "admit_7"
+      ]
+    },
+    {
+      "name": "pad_8",
+      "op": "conv",
+      "inputs": [
+        "reached_7"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_8",
+      "op": "maxpool",
+      "inputs": [
+        "pad_8"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_8",
+      "op": "add",
+      "inputs": [
+        "grow_8",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_8",
+      "op": "relu",
+      "inputs": [
+        "admit_8"
+      ]
+    },
+    {
+      "name": "pad_9",
+      "op": "conv",
+      "inputs": [
+        "reached_8"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_9",
+      "op": "maxpool",
+      "inputs": [
+        "pad_9"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_9",
+      "op": "add",
+      "inputs": [
+        "grow_9",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_9",
+      "op": "relu",
+      "inputs": [
+        "admit_9"
+      ]
+    },
+    {
+      "name": "pad_10",
+      "op": "conv",
+      "inputs": [
+        "reached_9"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_10",
+      "op": "maxpool",
+      "inputs": [
+        "pad_10"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_10",
+      "op": "add",
+      "inputs": [
+        "grow_10",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_10",
+      "op": "relu",
+      "inputs": [
+        "admit_10"
+      ]
+    },
+    {
+      "name": "pad_11",
+      "op": "conv",
+      "inputs": [
+        "reached_10"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_11",
+      "op": "maxpool",
+      "inputs": [
+        "pad_11"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_11",
+      "op": "add",
+      "inputs": [
+        "grow_11",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_11",
+      "op": "relu",
+      "inputs": [
+        "admit_11"
+      ]
+    },
+    {
+      "name": "pad_12",
+      "op": "conv",
+      "inputs": [
+        "reached_11"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_12",
+      "op": "maxpool",
+      "inputs": [
+        "pad_12"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_12",
+      "op": "add",
+      "inputs": [
+        "grow_12",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_12",
+      "op": "relu",
+      "inputs": [
+        "admit_12"
+      ]
+    },
+    {
+      "name": "pad_13",
+      "op": "conv",
+      "inputs": [
+        "reached_12"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_13",
+      "op": "maxpool",
+      "inputs": [
+        "pad_13"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_13",
+      "op": "add",
+      "inputs": [
+        "grow_13",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_13",
+      "op": "relu",
+      "inputs": [
+        "admit_13"
+      ]
+    },
+    {
+      "name": "pad_14",
+      "op": "conv",
+      "inputs": [
+        "reached_13"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_14",
+      "op": "maxpool",
+      "inputs": [
+        "pad_14"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_14",
+      "op": "add",
+      "inputs": [
+        "grow_14",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_14",
+      "op": "relu",
+      "inputs": [
+        "admit_14"
+      ]
+    },
+    {
+      "name": "pad_15",
+      "op": "conv",
+      "inputs": [
+        "reached_14"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_15",
+      "op": "maxpool",
+      "inputs": [
+        "pad_15"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_15",
+      "op": "add",
+      "inputs": [
+        "grow_15",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_15",
+      "op": "relu",
+      "inputs": [
+        "admit_15"
+      ]
+    },
+    {
+      "name": "pad_16",
+      "op": "conv",
+      "inputs": [
+        "reached_15"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_16",
+      "op": "maxpool",
+      "inputs": [
+        "pad_16"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_16",
+      "op": "add",
+      "inputs": [
+        "grow_16",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_16",
+      "op": "relu",
+      "inputs": [
+        "admit_16"
+      ]
+    },
+    {
+      "name": "pad_17",
+      "op": "conv",
+      "inputs": [
+        "reached_16"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_17",
+      "op": "maxpool",
+      "inputs": [
+        "pad_17"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_17",
+      "op": "add",
+      "inputs": [
+        "grow_17",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_17",
+      "op": "relu",
+      "inputs": [
+        "admit_17"
+      ]
+    },
+    {
+      "name": "pad_18",
+      "op": "conv",
+      "inputs": [
+        "reached_17"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_18",
+      "op": "maxpool",
+      "inputs": [
+        "pad_18"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_18",
+      "op": "add",
+      "inputs": [
+        "grow_18",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_18",
+      "op": "relu",
+      "inputs": [
+        "admit_18"
+      ]
+    },
+    {
+      "name": "pad_19",
+      "op": "conv",
+      "inputs": [
+        "reached_18"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grow_19",
+      "op": "maxpool",
+      "inputs": [
+        "pad_19"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "admit_19",
+      "op": "add",
+      "inputs": [
+        "grow_19",
+        "minus_barrier"
+      ]
+    },
+    {
+      "name": "reached_19",
+      "op": "relu",
+      "inputs": [
+        "admit_19"
+      ]
+    },
+    {
+      "name": "free",
+      "op": "conv",
+      "inputs": [
+        "ink_barrier"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "not_reached",
+      "op": "conv",
+      "inputs": [
+        "reached_19"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "enclosure_difference",
+      "op": "add",
+      "inputs": [
+        "free",
+        "not_reached"
+      ]
+    },
+    {
+      "name": "counters",
+      "op": "relu",
+      "inputs": [
+        "enclosure_difference"
+      ]
+    },
+    {
+      "name": "counter_area",
+      "op": "dense",
+      "inputs": [
+        "counters"
+      ],
+      "out": 4
+    },
+    {
+      "name": "area_hinges",
+      "op": "dense",
+      "inputs": [
+        "counter_area"
+      ],
+      "out": 8
+    },
+    {
+      "name": "area_active",
+      "op": "relu",
+      "inputs": [
+        "area_hinges"
+      ]
+    },
+    {
+      "name": "area_vote",
+      "op": "dense",
+      "inputs": [
+        "area_active"
+      ],
+      "out": 10
+    },
+    {
+      "name": "counter_scale",
+      "op": "avgpool",
+      "inputs": [
+        "counters"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "paired_x",
+      "op": "maxpool",
+      "inputs": [
+        "counter_scale"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "paired_y",
+      "op": "maxpool",
+      "inputs": [
+        "counter_scale"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "square_vertex",
+      "op": "maxpool",
+      "inputs": [
+        "counter_scale"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "sum_counter_scale",
+      "op": "dense",
+      "inputs": [
+        "counter_scale"
+      ],
+      "out": 1
+    },
+    {
+      "name": "sum_paired_x",
+      "op": "dense",
+      "inputs": [
+        "paired_x"
+      ],
+      "out": 1
+    },
+    {
+      "name": "sum_paired_y",
+      "op": "dense",
+      "inputs": [
+        "paired_y"
+      ],
+      "out": 1
+    },
+    {
+      "name": "sum_square_vertex",
+      "op": "dense",
+      "inputs": [
+        "square_vertex"
+      ],
+      "out": 1
+    },
+    {
+      "name": "counter_number",
+      "op": "add",
+      "inputs": [
+        "sum_counter_scale",
+        "sum_paired_x",
+        "sum_paired_y",
+        "sum_square_vertex"
+      ]
+    },
+    {
+      "name": "double_counter_gate",
+      "op": "dense",
+      "inputs": [
+        "counter_number"
+      ],
+      "out": 2
+    },
+    {
+      "name": "double_counter_pos",
+      "op": "relu",
+      "inputs": [
+        "double_counter_gate"
+      ]
+    },
+    {
+      "name": "number_vote",
+      "op": "dense",
+      "inputs": [
+        "double_counter_pos"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "shape_vote",
+        "area_vote",
+        "number_vote"
+      ]
+    }
+  ]
+}

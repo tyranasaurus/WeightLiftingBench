@@ -1,0 +1,48 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 10,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "avgpool",
+   "inputs": [
+    "r1"
+   ],
+   "size": [
+    10,
+    10
+   ],
+   "stride": [
+    10,
+    10
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "p1"
+   ],
+   "out": 10
+  }
+ ]
+}

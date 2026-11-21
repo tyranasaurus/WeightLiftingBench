@@ -1,0 +1,217 @@
+{
+ "layers": [
+  {
+   "name": "viol",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "violr",
+   "op": "relu",
+   "inputs": [
+    "viol"
+   ]
+  },
+  {
+   "name": "skinp",
+   "op": "conv",
+   "inputs": [
+    "violr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin",
+   "op": "relu",
+   "inputs": [
+    "skinp"
+   ]
+  },
+  {
+   "name": "skin2",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "skin4",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "blobS",
+   "op": "conv",
+   "inputs": [
+    "skin"
+   ],
+   "out": 1,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "blobSr",
+   "op": "relu",
+   "inputs": [
+    "blobS"
+   ]
+  },
+  {
+   "name": "blobA",
+   "op": "conv",
+   "inputs": [
+    "skin2"
+   ],
+   "out": 2,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "blobAr",
+   "op": "relu",
+   "inputs": [
+    "blobA"
+   ]
+  },
+  {
+   "name": "blobB",
+   "op": "conv",
+   "inputs": [
+    "skin4"
+   ],
+   "out": 3,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 1,
+   "padding": 9
+  },
+  {
+   "name": "blobBr",
+   "op": "relu",
+   "inputs": [
+    "blobB"
+   ]
+  },
+  {
+   "name": "maxS",
+   "op": "maxpool",
+   "inputs": [
+    "blobSr"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "maxA",
+   "op": "maxpool",
+   "inputs": [
+    "blobAr"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "maxB",
+   "op": "maxpool",
+   "inputs": [
+    "blobBr"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "dS",
+   "op": "dense",
+   "inputs": [
+    "maxS"
+   ],
+   "out": 2
+  },
+  {
+   "name": "dA",
+   "op": "dense",
+   "inputs": [
+    "maxA"
+   ],
+   "out": 2
+  },
+  {
+   "name": "dB",
+   "op": "dense",
+   "inputs": [
+    "maxB"
+   ],
+   "out": 2
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "dS",
+    "dA",
+    "dB"
+   ]
+  }
+ ]
+}

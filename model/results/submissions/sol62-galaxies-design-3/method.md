@@ -1,0 +1,3 @@
+The network subtracts a clipped estimate of the sky in each band, then forms luminance and red–blue colour maps. A bank of Gaussian apertures measures concentration, colour gradients, and the coherence of galaxy shape across scales. Compensated log-spiral filters, radial ridge detectors, and angular harmonics help distinguish arms, bars, and smooth isophotes; a separate branch looks for a secondary nucleus with a dip between it and the centre. A fixed readout combines these cues into ten morphology scores.
+
+All weights come from analytic filters, general morphology rules, or the arithmetic that implements those rules. `build.py` reads no data and uses no learned parameters or image templates.

@@ -1,0 +1,4317 @@
+{
+ "layers": [
+  {
+   "name": "bin2",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "photometric_psf",
+   "op": "conv",
+   "inputs": [
+    "bin2"
+   ],
+   "kernel": [
+    5,
+    5
+   ],
+   "out": 1,
+   "padding": 2,
+   "stride": 1
+  },
+  {
+   "name": "isophotes",
+   "op": "conv",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 2
+  },
+  {
+   "name": "positive_light",
+   "op": "relu",
+   "inputs": [
+    "isophotes"
+   ]
+  },
+  {
+   "name": "bin4",
+   "op": "avgpool",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "curvature105",
+   "op": "conv",
+   "inputs": [
+    "bin4"
+   ],
+   "kernel": [
+    7,
+    7
+   ],
+   "out": 4,
+   "padding": 3
+  },
+  {
+   "name": "hess_grid105",
+   "op": "reshape",
+   "inputs": [
+    "curvature105"
+   ],
+   "shape": [
+    1,
+    4,
+    1024
+   ]
+  },
+  {
+   "name": "least_curved105",
+   "op": "maxpool",
+   "inputs": [
+    "hess_grid105"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "peak_grid105",
+   "op": "reshape",
+   "inputs": [
+    "least_curved105"
+   ],
+   "shape": [
+    1,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "negcurv105",
+   "op": "conv",
+   "inputs": [
+    "peak_grid105"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "convex_cores105",
+   "op": "relu",
+   "inputs": [
+    "negcurv105"
+   ]
+  },
+  {
+   "name": "core_threshold105",
+   "op": "conv",
+   "inputs": [
+    "convex_cores105"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "conspicuous105",
+   "op": "relu",
+   "inputs": [
+    "core_threshold105"
+   ]
+  },
+  {
+   "name": "curvature185",
+   "op": "conv",
+   "inputs": [
+    "bin4"
+   ],
+   "kernel": [
+    13,
+    13
+   ],
+   "out": 4,
+   "padding": 6
+  },
+  {
+   "name": "hess_grid185",
+   "op": "reshape",
+   "inputs": [
+    "curvature185"
+   ],
+   "shape": [
+    1,
+    4,
+    1024
+   ]
+  },
+  {
+   "name": "least_curved185",
+   "op": "maxpool",
+   "inputs": [
+    "hess_grid185"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "peak_grid185",
+   "op": "reshape",
+   "inputs": [
+    "least_curved185"
+   ],
+   "shape": [
+    1,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "negcurv185",
+   "op": "conv",
+   "inputs": [
+    "peak_grid185"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "convex_cores185",
+   "op": "relu",
+   "inputs": [
+    "negcurv185"
+   ]
+  },
+  {
+   "name": "core_threshold185",
+   "op": "conv",
+   "inputs": [
+    "convex_cores185"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "conspicuous185",
+   "op": "relu",
+   "inputs": [
+    "core_threshold185"
+   ]
+  },
+  {
+   "name": "log_polar_photometry",
+   "op": "dense",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "out": 336
+  },
+  {
+   "name": "polar_map",
+   "op": "reshape",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "shape": [
+    1,
+    14,
+    24
+   ]
+  },
+  {
+   "name": "sector_thresholds0",
+   "op": "conv",
+   "inputs": [
+    "polar_map"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 2
+  },
+  {
+   "name": "sector_hinges0",
+   "op": "relu",
+   "inputs": [
+    "sector_thresholds0"
+   ]
+  },
+  {
+   "name": "bright_sectors0",
+   "op": "conv",
+   "inputs": [
+    "sector_hinges0"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "sector_thresholds1",
+   "op": "conv",
+   "inputs": [
+    "polar_map"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 2
+  },
+  {
+   "name": "sector_hinges1",
+   "op": "relu",
+   "inputs": [
+    "sector_thresholds1"
+   ]
+  },
+  {
+   "name": "bright_sectors1",
+   "op": "conv",
+   "inputs": [
+    "sector_hinges1"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "sector_thresholds2",
+   "op": "conv",
+   "inputs": [
+    "polar_map"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 2
+  },
+  {
+   "name": "sector_hinges2",
+   "op": "relu",
+   "inputs": [
+    "sector_thresholds2"
+   ]
+  },
+  {
+   "name": "bright_sectors2",
+   "op": "conv",
+   "inputs": [
+    "sector_hinges2"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1
+  },
+  {
+   "name": "outward_diff2",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 240
+  },
+  {
+   "name": "outward_rise2",
+   "op": "relu",
+   "inputs": [
+    "outward_diff2"
+   ]
+  },
+  {
+   "name": "rise_difference2",
+   "op": "dense",
+   "inputs": [
+    "outward_rise2"
+   ],
+   "out": 120
+  },
+  {
+   "name": "unpaired_rise2",
+   "op": "relu",
+   "inputs": [
+    "rise_difference2"
+   ]
+  },
+  {
+   "name": "first_side2",
+   "op": "dense",
+   "inputs": [
+    "outward_rise2"
+   ],
+   "out": 120
+  },
+  {
+   "name": "remove_unpaired2",
+   "op": "dense",
+   "inputs": [
+    "unpaired_rise2"
+   ],
+   "out": 120
+  },
+  {
+   "name": "paired_rise2",
+   "op": "add",
+   "inputs": [
+    "first_side2",
+    "remove_unpaired2"
+   ]
+  },
+  {
+   "name": "rise_maptwo2",
+   "op": "reshape",
+   "inputs": [
+    "paired_rise2"
+   ],
+   "shape": [
+    1,
+    10,
+    12
+   ]
+  },
+  {
+   "name": "max_armtwo2",
+   "op": "maxpool",
+   "inputs": [
+    "rise_maptwo2"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    12
+   ]
+  },
+  {
+   "name": "arm_coherencetwo2",
+   "op": "avgpool",
+   "inputs": [
+    "max_armtwo2"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "arm_strengthtwo2",
+   "op": "maxpool",
+   "inputs": [
+    "arm_coherencetwo2"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "rise_mapone2",
+   "op": "reshape",
+   "inputs": [
+    "outward_rise2"
+   ],
+   "shape": [
+    1,
+    10,
+    24
+   ]
+  },
+  {
+   "name": "max_armone2",
+   "op": "maxpool",
+   "inputs": [
+    "rise_mapone2"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "arm_coherenceone2",
+   "op": "avgpool",
+   "inputs": [
+    "max_armone2"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "arm_strengthone2",
+   "op": "maxpool",
+   "inputs": [
+    "arm_coherenceone2"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "outward_diff4",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 192
+  },
+  {
+   "name": "outward_rise4",
+   "op": "relu",
+   "inputs": [
+    "outward_diff4"
+   ]
+  },
+  {
+   "name": "rise_difference4",
+   "op": "dense",
+   "inputs": [
+    "outward_rise4"
+   ],
+   "out": 96
+  },
+  {
+   "name": "unpaired_rise4",
+   "op": "relu",
+   "inputs": [
+    "rise_difference4"
+   ]
+  },
+  {
+   "name": "first_side4",
+   "op": "dense",
+   "inputs": [
+    "outward_rise4"
+   ],
+   "out": 96
+  },
+  {
+   "name": "remove_unpaired4",
+   "op": "dense",
+   "inputs": [
+    "unpaired_rise4"
+   ],
+   "out": 96
+  },
+  {
+   "name": "paired_rise4",
+   "op": "add",
+   "inputs": [
+    "first_side4",
+    "remove_unpaired4"
+   ]
+  },
+  {
+   "name": "rise_maptwo4",
+   "op": "reshape",
+   "inputs": [
+    "paired_rise4"
+   ],
+   "shape": [
+    1,
+    8,
+    12
+   ]
+  },
+  {
+   "name": "max_armtwo4",
+   "op": "maxpool",
+   "inputs": [
+    "rise_maptwo4"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    12
+   ]
+  },
+  {
+   "name": "arm_coherencetwo4",
+   "op": "avgpool",
+   "inputs": [
+    "max_armtwo4"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "arm_strengthtwo4",
+   "op": "maxpool",
+   "inputs": [
+    "arm_coherencetwo4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "rise_mapone4",
+   "op": "reshape",
+   "inputs": [
+    "outward_rise4"
+   ],
+   "shape": [
+    1,
+    8,
+    24
+   ]
+  },
+  {
+   "name": "max_armone4",
+   "op": "maxpool",
+   "inputs": [
+    "rise_mapone4"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "arm_coherenceone4",
+   "op": "avgpool",
+   "inputs": [
+    "max_armone4"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "arm_strengthone4",
+   "op": "maxpool",
+   "inputs": [
+    "arm_coherenceone4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "polar_stabilizer",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 1008
+  },
+  {
+   "name": "ring_channels",
+   "op": "reshape",
+   "inputs": [
+    "polar_stabilizer"
+   ],
+   "shape": [
+    14,
+    3,
+    24
+   ]
+  },
+  {
+   "name": "whiten_each_ring",
+   "op": "norm",
+   "inputs": [
+    "ring_channels"
+   ]
+  },
+  {
+   "name": "spiral_quadrature2",
+   "op": "dense",
+   "inputs": [
+    "whiten_each_ring"
+   ],
+   "out": 720
+  },
+  {
+   "name": "spiral_modes2",
+   "op": "reshape",
+   "inputs": [
+    "spiral_quadrature2"
+   ],
+   "shape": [
+    5,
+    18,
+    8
+   ]
+  },
+  {
+   "name": "spiral_power2",
+   "op": "maxpool",
+   "inputs": [
+    "spiral_modes2"
+   ],
+   "size": [
+    18,
+    8
+   ],
+   "stride": [
+    18,
+    8
+   ]
+  },
+  {
+   "name": "spiral_quadrature3",
+   "op": "dense",
+   "inputs": [
+    "whiten_each_ring"
+   ],
+   "out": 720
+  },
+  {
+   "name": "spiral_modes3",
+   "op": "reshape",
+   "inputs": [
+    "spiral_quadrature3"
+   ],
+   "shape": [
+    5,
+    18,
+    8
+   ]
+  },
+  {
+   "name": "spiral_power3",
+   "op": "maxpool",
+   "inputs": [
+    "spiral_modes3"
+   ],
+   "size": [
+    18,
+    8
+   ],
+   "stride": [
+    18,
+    8
+   ]
+  },
+  {
+   "name": "surrounding_sky",
+   "op": "dense",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "out": 1
+  },
+  {
+   "name": "subtract_sky",
+   "op": "dense",
+   "inputs": [
+    "surrounding_sky"
+   ],
+   "out": 4096
+  },
+  {
+   "name": "sky_grid",
+   "op": "reshape",
+   "inputs": [
+    "subtract_sky"
+   ],
+   "shape": [
+    1,
+    64,
+    64
+   ]
+  },
+  {
+   "name": "sky_subtracted",
+   "op": "add",
+   "inputs": [
+    "photometric_psf",
+    "sky_grid"
+   ]
+  },
+  {
+   "name": "sky_isophote_levels",
+   "op": "conv",
+   "inputs": [
+    "sky_subtracted"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 6
+  },
+  {
+   "name": "sky_isophote_hinges",
+   "op": "relu",
+   "inputs": [
+    "sky_isophote_levels"
+   ]
+  },
+  {
+   "name": "sky_corrected_occupancy",
+   "op": "conv",
+   "inputs": [
+    "sky_isophote_hinges"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 3
+  },
+  {
+   "name": "central_photometry",
+   "op": "dense",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "out": 1600
+  },
+  {
+   "name": "ellipse_samples",
+   "op": "dense",
+   "inputs": [
+    "central_photometry"
+   ],
+   "out": 9792
+  },
+  {
+   "name": "all_ellipses",
+   "op": "reshape",
+   "inputs": [
+    "ellipse_samples"
+   ],
+   "shape": [
+    51,
+    12,
+    16
+   ]
+  },
+  {
+   "name": "elliptical_photometry_grid",
+   "op": "reshape",
+   "inputs": [
+    "ellipse_samples"
+   ],
+   "shape": [
+    16,
+    51,
+    12
+   ]
+  },
+  {
+   "name": "decompose_ellipses",
+   "op": "conv",
+   "inputs": [
+    "elliptical_photometry_grid"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 48
+  },
+  {
+   "name": "ellipse_residuals",
+   "op": "relu",
+   "inputs": [
+    "decompose_ellipses"
+   ]
+  },
+  {
+   "name": "angular_deviations",
+   "op": "conv",
+   "inputs": [
+    "ellipse_residuals"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 3
+  },
+  {
+   "name": "model_errors_inner",
+   "op": "dense",
+   "inputs": [
+    "angular_deviations"
+   ],
+   "out": 153
+  },
+  {
+   "name": "neg_err_inner0",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_inner0",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_inner0"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_inner0",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_inner0"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_inner1",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_inner1",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_inner1"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_inner1",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_inner1"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_inner2",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_inner2",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_inner2"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_inner2",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_inner2"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "select_innerthin",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_innerthin",
+   "op": "reshape",
+   "inputs": [
+    "select_innerthin"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_innerthin",
+   "op": "maxpool",
+   "inputs": [
+    "models_innerthin"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_innerintermediate",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_innerintermediate",
+   "op": "reshape",
+   "inputs": [
+    "select_innerintermediate"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_innerintermediate",
+   "op": "maxpool",
+   "inputs": [
+    "models_innerintermediate"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_innerround",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 11
+  },
+  {
+   "name": "models_innerround",
+   "op": "reshape",
+   "inputs": [
+    "select_innerround"
+   ],
+   "shape": [
+    1,
+    1,
+    11
+   ]
+  },
+  {
+   "name": "opt_innerround",
+   "op": "maxpool",
+   "inputs": [
+    "models_innerround"
+   ],
+   "size": [
+    1,
+    11
+   ],
+   "stride": [
+    1,
+    11
+   ]
+  },
+  {
+   "name": "select_innerflat",
+   "op": "dense",
+   "inputs": [
+    "model_errors_inner"
+   ],
+   "out": 30
+  },
+  {
+   "name": "models_innerflat",
+   "op": "reshape",
+   "inputs": [
+    "select_innerflat"
+   ],
+   "shape": [
+    1,
+    1,
+    30
+   ]
+  },
+  {
+   "name": "opt_innerflat",
+   "op": "maxpool",
+   "inputs": [
+    "models_innerflat"
+   ],
+   "size": [
+    1,
+    30
+   ],
+   "stride": [
+    1,
+    30
+   ]
+  },
+  {
+   "name": "model_errors_middle",
+   "op": "dense",
+   "inputs": [
+    "angular_deviations"
+   ],
+   "out": 153
+  },
+  {
+   "name": "neg_err_middle0",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_middle0",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_middle0"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_middle0",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_middle0"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_middle1",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_middle1",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_middle1"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_middle1",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_middle1"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_middle2",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_middle2",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_middle2"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_middle2",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_middle2"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "select_middlethin",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_middlethin",
+   "op": "reshape",
+   "inputs": [
+    "select_middlethin"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_middlethin",
+   "op": "maxpool",
+   "inputs": [
+    "models_middlethin"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_middleintermediate",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_middleintermediate",
+   "op": "reshape",
+   "inputs": [
+    "select_middleintermediate"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_middleintermediate",
+   "op": "maxpool",
+   "inputs": [
+    "models_middleintermediate"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_middleround",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 11
+  },
+  {
+   "name": "models_middleround",
+   "op": "reshape",
+   "inputs": [
+    "select_middleround"
+   ],
+   "shape": [
+    1,
+    1,
+    11
+   ]
+  },
+  {
+   "name": "opt_middleround",
+   "op": "maxpool",
+   "inputs": [
+    "models_middleround"
+   ],
+   "size": [
+    1,
+    11
+   ],
+   "stride": [
+    1,
+    11
+   ]
+  },
+  {
+   "name": "select_middleflat",
+   "op": "dense",
+   "inputs": [
+    "model_errors_middle"
+   ],
+   "out": 30
+  },
+  {
+   "name": "models_middleflat",
+   "op": "reshape",
+   "inputs": [
+    "select_middleflat"
+   ],
+   "shape": [
+    1,
+    1,
+    30
+   ]
+  },
+  {
+   "name": "opt_middleflat",
+   "op": "maxpool",
+   "inputs": [
+    "models_middleflat"
+   ],
+   "size": [
+    1,
+    30
+   ],
+   "stride": [
+    1,
+    30
+   ]
+  },
+  {
+   "name": "model_errors_outer",
+   "op": "dense",
+   "inputs": [
+    "angular_deviations"
+   ],
+   "out": 153
+  },
+  {
+   "name": "neg_err_outer0",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_outer0",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_outer0"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_outer0",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_outer0"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_outer1",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_outer1",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_outer1"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_outer1",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_outer1"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_outer2",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_outer2",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_outer2"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_outer2",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_outer2"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "select_outerthin",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_outerthin",
+   "op": "reshape",
+   "inputs": [
+    "select_outerthin"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_outerthin",
+   "op": "maxpool",
+   "inputs": [
+    "models_outerthin"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_outerintermediate",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_outerintermediate",
+   "op": "reshape",
+   "inputs": [
+    "select_outerintermediate"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_outerintermediate",
+   "op": "maxpool",
+   "inputs": [
+    "models_outerintermediate"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_outerround",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 11
+  },
+  {
+   "name": "models_outerround",
+   "op": "reshape",
+   "inputs": [
+    "select_outerround"
+   ],
+   "shape": [
+    1,
+    1,
+    11
+   ]
+  },
+  {
+   "name": "opt_outerround",
+   "op": "maxpool",
+   "inputs": [
+    "models_outerround"
+   ],
+   "size": [
+    1,
+    11
+   ],
+   "stride": [
+    1,
+    11
+   ]
+  },
+  {
+   "name": "select_outerflat",
+   "op": "dense",
+   "inputs": [
+    "model_errors_outer"
+   ],
+   "out": 30
+  },
+  {
+   "name": "models_outerflat",
+   "op": "reshape",
+   "inputs": [
+    "select_outerflat"
+   ],
+   "shape": [
+    1,
+    1,
+    30
+   ]
+  },
+  {
+   "name": "opt_outerflat",
+   "op": "maxpool",
+   "inputs": [
+    "models_outerflat"
+   ],
+   "size": [
+    1,
+    30
+   ],
+   "stride": [
+    1,
+    30
+   ]
+  },
+  {
+   "name": "model_errors_body",
+   "op": "dense",
+   "inputs": [
+    "angular_deviations"
+   ],
+   "out": 153
+  },
+  {
+   "name": "neg_err_body0",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_body0",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_body0"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_body0",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_body0"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_body1",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_body1",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_body1"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_body1",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_body1"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "neg_err_body2",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 51
+  },
+  {
+   "name": "model_grid_body2",
+   "op": "reshape",
+   "inputs": [
+    "neg_err_body2"
+   ],
+   "shape": [
+    1,
+    1,
+    51
+   ]
+  },
+  {
+   "name": "opt_model_body2",
+   "op": "maxpool",
+   "inputs": [
+    "model_grid_body2"
+   ],
+   "size": [
+    1,
+    51
+   ],
+   "stride": [
+    1,
+    51
+   ]
+  },
+  {
+   "name": "select_bodythin",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_bodythin",
+   "op": "reshape",
+   "inputs": [
+    "select_bodythin"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_bodythin",
+   "op": "maxpool",
+   "inputs": [
+    "models_bodythin"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_bodyintermediate",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 20
+  },
+  {
+   "name": "models_bodyintermediate",
+   "op": "reshape",
+   "inputs": [
+    "select_bodyintermediate"
+   ],
+   "shape": [
+    1,
+    1,
+    20
+   ]
+  },
+  {
+   "name": "opt_bodyintermediate",
+   "op": "maxpool",
+   "inputs": [
+    "models_bodyintermediate"
+   ],
+   "size": [
+    1,
+    20
+   ],
+   "stride": [
+    1,
+    20
+   ]
+  },
+  {
+   "name": "select_bodyround",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 11
+  },
+  {
+   "name": "models_bodyround",
+   "op": "reshape",
+   "inputs": [
+    "select_bodyround"
+   ],
+   "shape": [
+    1,
+    1,
+    11
+   ]
+  },
+  {
+   "name": "opt_bodyround",
+   "op": "maxpool",
+   "inputs": [
+    "models_bodyround"
+   ],
+   "size": [
+    1,
+    11
+   ],
+   "stride": [
+    1,
+    11
+   ]
+  },
+  {
+   "name": "select_bodyflat",
+   "op": "dense",
+   "inputs": [
+    "model_errors_body"
+   ],
+   "out": 30
+  },
+  {
+   "name": "models_bodyflat",
+   "op": "reshape",
+   "inputs": [
+    "select_bodyflat"
+   ],
+   "shape": [
+    1,
+    1,
+    30
+   ]
+  },
+  {
+   "name": "opt_bodyflat",
+   "op": "maxpool",
+   "inputs": [
+    "models_bodyflat"
+   ],
+   "size": [
+    1,
+    30
+   ],
+   "stride": [
+    1,
+    30
+   ]
+  },
+  {
+   "name": "central_model_grid",
+   "op": "dense",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "out": 576
+  },
+  {
+   "name": "bandpass_window",
+   "op": "dense",
+   "inputs": [
+    "central_model_grid"
+   ],
+   "out": 576
+  },
+  {
+   "name": "bandpass_field",
+   "op": "reshape",
+   "inputs": [
+    "bandpass_window"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "bandpass_normalization",
+   "op": "norm",
+   "inputs": [
+    "bandpass_field"
+   ]
+  },
+  {
+   "name": "broadband_window",
+   "op": "dense",
+   "inputs": [
+    "central_model_grid"
+   ],
+   "out": 576
+  },
+  {
+   "name": "broadband_field",
+   "op": "reshape",
+   "inputs": [
+    "broadband_window"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "broadband_normalization",
+   "op": "norm",
+   "inputs": [
+    "broadband_field"
+   ]
+  },
+  {
+   "name": "template_plain",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 108
+  },
+  {
+   "name": "views_plain",
+   "op": "reshape",
+   "inputs": [
+    "template_plain"
+   ],
+   "shape": [
+    1,
+    1,
+    108
+   ]
+  },
+  {
+   "name": "match_plain",
+   "op": "maxpool",
+   "inputs": [
+    "views_plain"
+   ],
+   "size": [
+    1,
+    108
+   ],
+   "stride": [
+    1,
+    108
+   ]
+  },
+  {
+   "name": "template_bar",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 720
+  },
+  {
+   "name": "views_bar",
+   "op": "reshape",
+   "inputs": [
+    "template_bar"
+   ],
+   "shape": [
+    1,
+    1,
+    720
+   ]
+  },
+  {
+   "name": "match_bar",
+   "op": "maxpool",
+   "inputs": [
+    "views_bar"
+   ],
+   "size": [
+    1,
+    720
+   ],
+   "stride": [
+    1,
+    720
+   ]
+  },
+  {
+   "name": "template_tight",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 1440
+  },
+  {
+   "name": "views_tight",
+   "op": "reshape",
+   "inputs": [
+    "template_tight"
+   ],
+   "shape": [
+    1,
+    1,
+    1440
+   ]
+  },
+  {
+   "name": "match_tight",
+   "op": "maxpool",
+   "inputs": [
+    "views_tight"
+   ],
+   "size": [
+    1,
+    1440
+   ],
+   "stride": [
+    1,
+    1440
+   ]
+  },
+  {
+   "name": "template_loose",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 1440
+  },
+  {
+   "name": "views_loose",
+   "op": "reshape",
+   "inputs": [
+    "template_loose"
+   ],
+   "shape": [
+    1,
+    1,
+    1440
+   ]
+  },
+  {
+   "name": "match_loose",
+   "op": "maxpool",
+   "inputs": [
+    "views_loose"
+   ],
+   "size": [
+    1,
+    1440
+   ],
+   "stride": [
+    1,
+    1440
+   ]
+  },
+  {
+   "name": "template_smooth",
+   "op": "dense",
+   "inputs": [
+    "broadband_normalization"
+   ],
+   "out": 810
+  },
+  {
+   "name": "views_smooth",
+   "op": "reshape",
+   "inputs": [
+    "template_smooth"
+   ],
+   "shape": [
+    1,
+    1,
+    810
+   ]
+  },
+  {
+   "name": "match_smooth",
+   "op": "maxpool",
+   "inputs": [
+    "views_smooth"
+   ],
+   "size": [
+    1,
+    810
+   ],
+   "stride": [
+    1,
+    810
+   ]
+  },
+  {
+   "name": "template_line",
+   "op": "dense",
+   "inputs": [
+    "broadband_normalization"
+   ],
+   "out": 240
+  },
+  {
+   "name": "views_line",
+   "op": "reshape",
+   "inputs": [
+    "template_line"
+   ],
+   "shape": [
+    1,
+    1,
+    240
+   ]
+  },
+  {
+   "name": "match_line",
+   "op": "maxpool",
+   "inputs": [
+    "views_line"
+   ],
+   "size": [
+    1,
+    240
+   ],
+   "stride": [
+    1,
+    240
+   ]
+  },
+  {
+   "name": "template_bulging",
+   "op": "dense",
+   "inputs": [
+    "broadband_normalization"
+   ],
+   "out": 480
+  },
+  {
+   "name": "views_bulging",
+   "op": "reshape",
+   "inputs": [
+    "template_bulging"
+   ],
+   "shape": [
+    1,
+    1,
+    480
+   ]
+  },
+  {
+   "name": "match_bulging",
+   "op": "maxpool",
+   "inputs": [
+    "views_bulging"
+   ],
+   "size": [
+    1,
+    480
+   ],
+   "stride": [
+    1,
+    480
+   ]
+  },
+  {
+   "name": "template_single_nucleus",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 104
+  },
+  {
+   "name": "views_single_nucleus",
+   "op": "reshape",
+   "inputs": [
+    "template_single_nucleus"
+   ],
+   "shape": [
+    1,
+    1,
+    104
+   ]
+  },
+  {
+   "name": "match_single_nucleus",
+   "op": "maxpool",
+   "inputs": [
+    "views_single_nucleus"
+   ],
+   "size": [
+    1,
+    104
+   ],
+   "stride": [
+    1,
+    104
+   ]
+  },
+  {
+   "name": "template_double_nucleus",
+   "op": "dense",
+   "inputs": [
+    "bandpass_normalization"
+   ],
+   "out": 640
+  },
+  {
+   "name": "views_double_nucleus",
+   "op": "reshape",
+   "inputs": [
+    "template_double_nucleus"
+   ],
+   "shape": [
+    1,
+    1,
+    640
+   ]
+  },
+  {
+   "name": "match_double_nucleus",
+   "op": "maxpool",
+   "inputs": [
+    "views_double_nucleus"
+   ],
+   "size": [
+    1,
+    640
+   ],
+   "stride": [
+    1,
+    640
+   ]
+  },
+  {
+   "name": "radial_curvature2",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 240
+  },
+  {
+   "name": "radial_ridges2",
+   "op": "relu",
+   "inputs": [
+    "radial_curvature2"
+   ]
+  },
+  {
+   "name": "ridge_field2",
+   "op": "reshape",
+   "inputs": [
+    "radial_ridges2"
+   ],
+   "shape": [
+    1,
+    10,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_ringspeak2",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_field2"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_annulipeak2",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_in_ringspeak2"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "visible_ridgepeak2",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_in_annulipeak2"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "ridge_in_ringsarea2",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_field2"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_annuliarea2",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_in_ringsarea2"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "visible_ridgearea2",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_in_annuliarea2"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "radial_curvature3",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 192
+  },
+  {
+   "name": "radial_ridges3",
+   "op": "relu",
+   "inputs": [
+    "radial_curvature3"
+   ]
+  },
+  {
+   "name": "ridge_field3",
+   "op": "reshape",
+   "inputs": [
+    "radial_ridges3"
+   ],
+   "shape": [
+    1,
+    8,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_ringspeak3",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_field3"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_annulipeak3",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_in_ringspeak3"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "visible_ridgepeak3",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_in_annulipeak3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "ridge_in_ringsarea3",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_field3"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "ridge_in_annuliarea3",
+   "op": "avgpool",
+   "inputs": [
+    "ridge_in_ringsarea3"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "visible_ridgearea3",
+   "op": "maxpool",
+   "inputs": [
+    "ridge_in_annuliarea3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "photometry_near",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 96
+  },
+  {
+   "name": "peaks_near",
+   "op": "reshape",
+   "inputs": [
+    "photometry_near"
+   ],
+   "shape": [
+    1,
+    1,
+    96
+   ]
+  },
+  {
+   "name": "brightest_near",
+   "op": "maxpool",
+   "inputs": [
+    "peaks_near"
+   ],
+   "size": [
+    1,
+    96
+   ],
+   "stride": [
+    1,
+    96
+   ]
+  },
+  {
+   "name": "photometry_far",
+   "op": "dense",
+   "inputs": [
+    "log_polar_photometry"
+   ],
+   "out": 120
+  },
+  {
+   "name": "peaks_far",
+   "op": "reshape",
+   "inputs": [
+    "photometry_far"
+   ],
+   "shape": [
+    1,
+    1,
+    120
+   ]
+  },
+  {
+   "name": "brightest_far",
+   "op": "maxpool",
+   "inputs": [
+    "peaks_far"
+   ],
+   "size": [
+    1,
+    120
+   ],
+   "stride": [
+    1,
+    120
+   ]
+  },
+  {
+   "name": "aperture_bank0",
+   "op": "dense",
+   "inputs": [
+    "positive_light"
+   ],
+   "out": 116
+  },
+  {
+   "name": "slots0",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank0"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank1",
+   "op": "dense",
+   "inputs": [
+    "bin2"
+   ],
+   "out": 34
+  },
+  {
+   "name": "slots1",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank1"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank2",
+   "op": "dense",
+   "inputs": [
+    "convex_cores105"
+   ],
+   "out": 3
+  },
+  {
+   "name": "slots2",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank2"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank3",
+   "op": "dense",
+   "inputs": [
+    "conspicuous105"
+   ],
+   "out": 2
+  },
+  {
+   "name": "slots3",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank3"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank4",
+   "op": "dense",
+   "inputs": [
+    "convex_cores185"
+   ],
+   "out": 3
+  },
+  {
+   "name": "slots4",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank4"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank5",
+   "op": "dense",
+   "inputs": [
+    "conspicuous185"
+   ],
+   "out": 2
+  },
+  {
+   "name": "slots5",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank5"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank6",
+   "op": "dense",
+   "inputs": [
+    "bright_sectors0"
+   ],
+   "out": 3
+  },
+  {
+   "name": "slots6",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank6"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank7",
+   "op": "dense",
+   "inputs": [
+    "bright_sectors1"
+   ],
+   "out": 3
+  },
+  {
+   "name": "slots7",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank7"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank8",
+   "op": "dense",
+   "inputs": [
+    "bright_sectors2"
+   ],
+   "out": 3
+  },
+  {
+   "name": "slots8",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank8"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank9",
+   "op": "dense",
+   "inputs": [
+    "arm_strengthtwo2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots9",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank9"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank10",
+   "op": "dense",
+   "inputs": [
+    "arm_strengthone2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots10",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank10"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank11",
+   "op": "dense",
+   "inputs": [
+    "arm_strengthtwo4"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots11",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank11"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank12",
+   "op": "dense",
+   "inputs": [
+    "arm_strengthone4"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots12",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank12"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank13",
+   "op": "dense",
+   "inputs": [
+    "spiral_power2"
+   ],
+   "out": 5
+  },
+  {
+   "name": "slots13",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank13"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank14",
+   "op": "dense",
+   "inputs": [
+    "spiral_power3"
+   ],
+   "out": 5
+  },
+  {
+   "name": "slots14",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank14"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank15",
+   "op": "dense",
+   "inputs": [
+    "sky_corrected_occupancy"
+   ],
+   "out": 24
+  },
+  {
+   "name": "slots15",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank15"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank16",
+   "op": "dense",
+   "inputs": [
+    "opt_model_inner0"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots16",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank16"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank17",
+   "op": "dense",
+   "inputs": [
+    "opt_model_inner1"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots17",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank17"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank18",
+   "op": "dense",
+   "inputs": [
+    "opt_model_inner2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots18",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank18"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank19",
+   "op": "dense",
+   "inputs": [
+    "opt_innerthin"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots19",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank19"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank20",
+   "op": "dense",
+   "inputs": [
+    "opt_innerintermediate"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots20",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank20"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank21",
+   "op": "dense",
+   "inputs": [
+    "opt_innerround"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots21",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank21"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank22",
+   "op": "dense",
+   "inputs": [
+    "opt_innerflat"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots22",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank22"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank23",
+   "op": "dense",
+   "inputs": [
+    "opt_model_middle0"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots23",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank23"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank24",
+   "op": "dense",
+   "inputs": [
+    "opt_model_middle1"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots24",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank24"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank25",
+   "op": "dense",
+   "inputs": [
+    "opt_model_middle2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots25",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank25"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank26",
+   "op": "dense",
+   "inputs": [
+    "opt_middlethin"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots26",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank26"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank27",
+   "op": "dense",
+   "inputs": [
+    "opt_middleintermediate"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots27",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank27"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank28",
+   "op": "dense",
+   "inputs": [
+    "opt_middleround"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots28",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank28"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank29",
+   "op": "dense",
+   "inputs": [
+    "opt_middleflat"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots29",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank29"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank30",
+   "op": "dense",
+   "inputs": [
+    "opt_model_outer0"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots30",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank30"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank31",
+   "op": "dense",
+   "inputs": [
+    "opt_model_outer1"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots31",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank31"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank32",
+   "op": "dense",
+   "inputs": [
+    "opt_model_outer2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots32",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank32"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank33",
+   "op": "dense",
+   "inputs": [
+    "opt_outerthin"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots33",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank33"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank34",
+   "op": "dense",
+   "inputs": [
+    "opt_outerintermediate"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots34",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank34"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank35",
+   "op": "dense",
+   "inputs": [
+    "opt_outerround"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots35",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank35"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank36",
+   "op": "dense",
+   "inputs": [
+    "opt_outerflat"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots36",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank36"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank37",
+   "op": "dense",
+   "inputs": [
+    "opt_model_body0"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots37",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank37"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank38",
+   "op": "dense",
+   "inputs": [
+    "opt_model_body1"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots38",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank38"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank39",
+   "op": "dense",
+   "inputs": [
+    "opt_model_body2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots39",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank39"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank40",
+   "op": "dense",
+   "inputs": [
+    "opt_bodythin"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots40",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank40"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank41",
+   "op": "dense",
+   "inputs": [
+    "opt_bodyintermediate"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots41",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank41"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank42",
+   "op": "dense",
+   "inputs": [
+    "opt_bodyround"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots42",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank42"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank43",
+   "op": "dense",
+   "inputs": [
+    "opt_bodyflat"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots43",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank43"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank44",
+   "op": "dense",
+   "inputs": [
+    "match_plain"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots44",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank44"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank45",
+   "op": "dense",
+   "inputs": [
+    "match_bar"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots45",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank45"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank46",
+   "op": "dense",
+   "inputs": [
+    "match_tight"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots46",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank46"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank47",
+   "op": "dense",
+   "inputs": [
+    "match_loose"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots47",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank47"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank48",
+   "op": "dense",
+   "inputs": [
+    "match_smooth"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots48",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank48"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank49",
+   "op": "dense",
+   "inputs": [
+    "match_line"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots49",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank49"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank50",
+   "op": "dense",
+   "inputs": [
+    "match_bulging"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots50",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank50"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank51",
+   "op": "dense",
+   "inputs": [
+    "match_single_nucleus"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots51",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank51"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank52",
+   "op": "dense",
+   "inputs": [
+    "match_double_nucleus"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots52",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank52"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank53",
+   "op": "dense",
+   "inputs": [
+    "sky_subtracted"
+   ],
+   "out": 9
+  },
+  {
+   "name": "slots53",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank53"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank54",
+   "op": "dense",
+   "inputs": [
+    "visible_ridgepeak2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots54",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank54"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank55",
+   "op": "dense",
+   "inputs": [
+    "visible_ridgearea2"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots55",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank55"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank56",
+   "op": "dense",
+   "inputs": [
+    "visible_ridgepeak3"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots56",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank56"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank57",
+   "op": "dense",
+   "inputs": [
+    "visible_ridgearea3"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots57",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank57"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank58",
+   "op": "dense",
+   "inputs": [
+    "brightest_near"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots58",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank58"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank59",
+   "op": "dense",
+   "inputs": [
+    "brightest_far"
+   ],
+   "out": 1
+  },
+  {
+   "name": "slots59",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank59"
+   ],
+   "out": 261
+  },
+  {
+   "name": "aperture_bank60",
+   "op": "dense",
+   "inputs": [
+    "photometric_psf"
+   ],
+   "out": 2
+  },
+  {
+   "name": "slots60",
+   "op": "dense",
+   "inputs": [
+    "aperture_bank60"
+   ],
+   "out": 261
+  },
+  {
+   "name": "measurements",
+   "op": "add",
+   "inputs": [
+    "slots0",
+    "slots1",
+    "slots2",
+    "slots3",
+    "slots4",
+    "slots5",
+    "slots6",
+    "slots7",
+    "slots8",
+    "slots9",
+    "slots10",
+    "slots11",
+    "slots12",
+    "slots13",
+    "slots14",
+    "slots15",
+    "slots16",
+    "slots17",
+    "slots18",
+    "slots19",
+    "slots20",
+    "slots21",
+    "slots22",
+    "slots23",
+    "slots24",
+    "slots25",
+    "slots26",
+    "slots27",
+    "slots28",
+    "slots29",
+    "slots30",
+    "slots31",
+    "slots32",
+    "slots33",
+    "slots34",
+    "slots35",
+    "slots36",
+    "slots37",
+    "slots38",
+    "slots39",
+    "slots40",
+    "slots41",
+    "slots42",
+    "slots43",
+    "slots44",
+    "slots45",
+    "slots46",
+    "slots47",
+    "slots48",
+    "slots49",
+    "slots50",
+    "slots51",
+    "slots52",
+    "slots53",
+    "slots54",
+    "slots55",
+    "slots56",
+    "slots57",
+    "slots58",
+    "slots59",
+    "slots60"
+   ]
+  },
+  {
+   "name": "morphology_1_L0",
+   "op": "dense",
+   "inputs": [
+    "measurements"
+   ],
+   "out": 1330
+  },
+  {
+   "name": "morphology_relu1",
+   "op": "relu",
+   "inputs": [
+    "morphology_1_L0"
+   ]
+  },
+  {
+   "name": "morphology_2_L0",
+   "op": "dense",
+   "inputs": [
+    "measurements"
+   ],
+   "out": 2442
+  },
+  {
+   "name": "morphology_2_L1",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu1"
+   ],
+   "out": 2442
+  },
+  {
+   "name": "morphology_2_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_2_L0",
+    "morphology_2_L1"
+   ]
+  },
+  {
+   "name": "morphology_relu2",
+   "op": "relu",
+   "inputs": [
+    "morphology_2_sum"
+   ]
+  },
+  {
+   "name": "morphology_3_L0",
+   "op": "dense",
+   "inputs": [
+    "measurements"
+   ],
+   "out": 3546
+  },
+  {
+   "name": "morphology_3_L1",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu1"
+   ],
+   "out": 3546
+  },
+  {
+   "name": "morphology_3_L2",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu2"
+   ],
+   "out": 3546
+  },
+  {
+   "name": "morphology_3_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_3_L0",
+    "morphology_3_L1",
+    "morphology_3_L2"
+   ]
+  },
+  {
+   "name": "morphology_relu3",
+   "op": "relu",
+   "inputs": [
+    "morphology_3_sum"
+   ]
+  },
+  {
+   "name": "morphology_4_L0",
+   "op": "dense",
+   "inputs": [
+    "measurements"
+   ],
+   "out": 5411
+  },
+  {
+   "name": "morphology_4_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 5411
+  },
+  {
+   "name": "morphology_4_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_4_L0",
+    "morphology_4_L3"
+   ]
+  },
+  {
+   "name": "morphology_relu4",
+   "op": "relu",
+   "inputs": [
+    "morphology_4_sum"
+   ]
+  },
+  {
+   "name": "morphology_5_L0",
+   "op": "dense",
+   "inputs": [
+    "measurements"
+   ],
+   "out": 663
+  },
+  {
+   "name": "morphology_5_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 663
+  },
+  {
+   "name": "morphology_5_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 663
+  },
+  {
+   "name": "morphology_5_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_5_L0",
+    "morphology_5_L3",
+    "morphology_5_L4"
+   ]
+  },
+  {
+   "name": "morphology_relu5",
+   "op": "relu",
+   "inputs": [
+    "morphology_5_sum"
+   ]
+  },
+  {
+   "name": "morphology_6_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 98
+  },
+  {
+   "name": "morphology_6_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 98
+  },
+  {
+   "name": "morphology_6_L5",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu5"
+   ],
+   "out": 98
+  },
+  {
+   "name": "morphology_6_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_6_L3",
+    "morphology_6_L4",
+    "morphology_6_L5"
+   ]
+  },
+  {
+   "name": "morphology_relu6",
+   "op": "relu",
+   "inputs": [
+    "morphology_6_sum"
+   ]
+  },
+  {
+   "name": "morphology_7_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 72
+  },
+  {
+   "name": "morphology_7_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 72
+  },
+  {
+   "name": "morphology_7_L5",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu5"
+   ],
+   "out": 72
+  },
+  {
+   "name": "morphology_7_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 72
+  },
+  {
+   "name": "morphology_7_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_7_L3",
+    "morphology_7_L4",
+    "morphology_7_L5",
+    "morphology_7_L6"
+   ]
+  },
+  {
+   "name": "morphology_relu7",
+   "op": "relu",
+   "inputs": [
+    "morphology_7_sum"
+   ]
+  },
+  {
+   "name": "morphology_8_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 395
+  },
+  {
+   "name": "morphology_8_L5",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu5"
+   ],
+   "out": 395
+  },
+  {
+   "name": "morphology_8_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 395
+  },
+  {
+   "name": "morphology_8_L7",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu7"
+   ],
+   "out": 395
+  },
+  {
+   "name": "morphology_8_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_8_L3",
+    "morphology_8_L5",
+    "morphology_8_L6",
+    "morphology_8_L7"
+   ]
+  },
+  {
+   "name": "morphology_relu8",
+   "op": "relu",
+   "inputs": [
+    "morphology_8_sum"
+   ]
+  },
+  {
+   "name": "morphology_9_L2",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_L5",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu5"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_L7",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu7"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_L8",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu8"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_9_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_9_L2",
+    "morphology_9_L4",
+    "morphology_9_L5",
+    "morphology_9_L6",
+    "morphology_9_L7",
+    "morphology_9_L8"
+   ]
+  },
+  {
+   "name": "morphology_relu9",
+   "op": "relu",
+   "inputs": [
+    "morphology_9_sum"
+   ]
+  },
+  {
+   "name": "morphology_10_L1",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu1"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L2",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu2"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L7",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu7"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L8",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu8"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_L9",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu9"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_10_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_10_L1",
+    "morphology_10_L2",
+    "morphology_10_L3",
+    "morphology_10_L4",
+    "morphology_10_L6",
+    "morphology_10_L7",
+    "morphology_10_L8",
+    "morphology_10_L9"
+   ]
+  },
+  {
+   "name": "morphology_relu10",
+   "op": "relu",
+   "inputs": [
+    "morphology_10_sum"
+   ]
+  },
+  {
+   "name": "morphology_11_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 25
+  },
+  {
+   "name": "morphology_11_L7",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu7"
+   ],
+   "out": 25
+  },
+  {
+   "name": "morphology_11_L8",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu8"
+   ],
+   "out": 25
+  },
+  {
+   "name": "morphology_11_L10",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu10"
+   ],
+   "out": 25
+  },
+  {
+   "name": "morphology_11_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_11_L6",
+    "morphology_11_L7",
+    "morphology_11_L8",
+    "morphology_11_L10"
+   ]
+  },
+  {
+   "name": "morphology_relu11",
+   "op": "relu",
+   "inputs": [
+    "morphology_11_sum"
+   ]
+  },
+  {
+   "name": "morphology_12_L1",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu1"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_12_L2",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu2"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_12_L11",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu11"
+   ],
+   "out": 2
+  },
+  {
+   "name": "morphology_12_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_12_L1",
+    "morphology_12_L2",
+    "morphology_12_L11"
+   ]
+  },
+  {
+   "name": "morphology_relu12",
+   "op": "relu",
+   "inputs": [
+    "morphology_12_sum"
+   ]
+  },
+  {
+   "name": "morphology_out_L1",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu1"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L2",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L3",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu3"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L4",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu4"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L5",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu5"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L6",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu6"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L7",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu7"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L8",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu8"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L9",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu9"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L10",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu10"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L11",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu11"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_L12",
+   "op": "dense",
+   "inputs": [
+    "morphology_relu12"
+   ],
+   "out": 10
+  },
+  {
+   "name": "morphology_out_sum",
+   "op": "add",
+   "inputs": [
+    "morphology_out_L1",
+    "morphology_out_L2",
+    "morphology_out_L3",
+    "morphology_out_L4",
+    "morphology_out_L5",
+    "morphology_out_L6",
+    "morphology_out_L7",
+    "morphology_out_L8",
+    "morphology_out_L9",
+    "morphology_out_L10",
+    "morphology_out_L11",
+    "morphology_out_L12"
+   ]
+  }
+ ]
+}

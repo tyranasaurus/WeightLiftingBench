@@ -1,0 +1,180 @@
+{
+ "layers": [
+  {
+   "name": "pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    2,
+    2
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "lin",
+   "op": "dense",
+   "inputs": [
+    "pre"
+   ],
+   "out": 17
+  },
+  {
+   "name": "proj",
+   "op": "dense",
+   "inputs": [
+    "pre"
+   ],
+   "out": 128
+  },
+  {
+   "name": "projr",
+   "op": "reshape",
+   "inputs": [
+    "proj"
+   ],
+   "shape": [
+    1,
+    8,
+    16
+   ]
+  },
+  {
+   "name": "projm",
+   "op": "maxpool",
+   "inputs": [
+    "projr"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "ra",
+   "op": "dense",
+   "inputs": [
+    "lin"
+   ],
+   "out": 80
+  },
+  {
+   "name": "rb",
+   "op": "dense",
+   "inputs": [
+    "projm"
+   ],
+   "out": 80
+  },
+  {
+   "name": "rsum",
+   "op": "add",
+   "inputs": [
+    "ra",
+    "rb"
+   ]
+  },
+  {
+   "name": "rres",
+   "op": "reshape",
+   "inputs": [
+    "rsum"
+   ],
+   "shape": [
+    20,
+    2,
+    2
+   ]
+  },
+  {
+   "name": "rn",
+   "op": "norm",
+   "inputs": [
+    "rres"
+   ]
+  },
+  {
+   "name": "hn",
+   "op": "dense",
+   "inputs": [
+    "rn"
+   ],
+   "out": 408
+  },
+  {
+   "name": "hc",
+   "op": "dense",
+   "inputs": [
+    "lin"
+   ],
+   "out": 408
+  },
+  {
+   "name": "hsum",
+   "op": "add",
+   "inputs": [
+    "hn",
+    "hc"
+   ]
+  },
+  {
+   "name": "hrelu",
+   "op": "relu",
+   "inputs": [
+    "hsum"
+   ]
+  },
+  {
+   "name": "sc",
+   "op": "dense",
+   "inputs": [
+    "hrelu"
+   ],
+   "out": 40
+  },
+  {
+   "name": "scr",
+   "op": "reshape",
+   "inputs": [
+    "sc"
+   ],
+   "shape": [
+    1,
+    4,
+    10
+   ]
+  },
+  {
+   "name": "scm",
+   "op": "maxpool",
+   "inputs": [
+    "scr"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "scm"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

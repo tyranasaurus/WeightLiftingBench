@@ -1,0 +1,5 @@
+I used a hand-built template-matching network. A 3x3 Gaussian-like blur is applied first, then the image is normalized and compared against many handwritten-digit templates that I wrote from general knowledge as stroke paths and loops, rendered inside the 28x28 frame.
+
+There are three template banks at different scales: full 28x28 detail, 14x14 average-pooled, and 7x7 average-pooled. Each bank contains multiple hand-specified styles for every digit together with fixed slant, width, height, and stroke-thickness variations; each rendered template is normalized by itself alone before being written into dense-layer weights. Within each class the network takes the maximum template match, then it adds the three scale-specific class scores with fixed hand-chosen weights.
+
+No training, fitting, regression, class averaging, or statistics from the training set were used to set weights. I only inspected sample training images to understand common digit shapes, and I used the allowed five logged checks to verify that the handcrafted architecture behaved sensibly.

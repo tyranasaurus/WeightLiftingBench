@@ -1,0 +1,252 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "n1",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "pix",
+   "op": "conv",
+   "inputs": [
+    "n1"
+   ],
+   "out": 1728,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "pol",
+   "op": "conv",
+   "inputs": [
+    "n1"
+   ],
+   "out": 2,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "polr",
+   "op": "relu",
+   "inputs": [
+    "pol"
+   ]
+  },
+  {
+   "name": "gate",
+   "op": "conv",
+   "inputs": [
+    "polr"
+   ],
+   "out": 1728,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "filt",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 80,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "filtr",
+   "op": "relu",
+   "inputs": [
+    "filt"
+   ]
+  },
+  {
+   "name": "mix",
+   "op": "conv",
+   "inputs": [
+    "filtr"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "local",
+   "op": "maxpool",
+   "inputs": [
+    "mix"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "cells",
+   "op": "avgpool",
+   "inputs": [
+    "local"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "cells"
+   ],
+   "shape": [
+    1,
+    36,
+    144
+   ]
+  },
+  {
+   "name": "n2",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "back",
+   "op": "reshape",
+   "inputs": [
+    "n2"
+   ],
+   "shape": [
+    36,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "str",
+   "op": "conv",
+   "inputs": [
+    "back"
+   ],
+   "out": 1728,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "score",
+   "op": "add",
+   "inputs": [
+    "pix",
+    "str",
+    "gate"
+   ]
+  },
+  {
+   "name": "best_shift",
+   "op": "maxpool",
+   "inputs": [
+    "score"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "best_shift"
+   ],
+   "shape": [
+    24,
+    72,
+    1
+   ]
+  },
+  {
+   "name": "best_template",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    72,
+    1
+   ],
+   "stride": [
+    72,
+    1
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "best_template"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

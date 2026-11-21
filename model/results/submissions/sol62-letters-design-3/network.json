@@ -1,0 +1,106 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_edges",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "positive_edges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "local_edges",
+      "op": "maxpool",
+      "inputs": [
+        "unsigned_edges"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "contour_matches",
+      "op": "dense",
+      "inputs": [
+        "local_edges"
+      ],
+      "out": 17280
+    },
+    {
+      "name": "by_letter",
+      "op": "reshape",
+      "inputs": [
+        "contour_matches"
+      ],
+      "shape": [
+        1,
+        24,
+        720
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "by_letter"
+      ],
+      "size": [
+        1,
+        720
+      ],
+      "stride": [
+        1,
+        720
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

@@ -1,0 +1,376 @@
+{
+ "layers": [
+  {
+   "name": "col1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 45,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col1r",
+   "op": "relu",
+   "inputs": [
+    "col1"
+   ]
+  },
+  {
+   "name": "col2",
+   "op": "conv",
+   "inputs": [
+    "col1r"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col2r",
+   "op": "relu",
+   "inputs": [
+    "col2"
+   ]
+  },
+  {
+   "name": "col3",
+   "op": "conv",
+   "inputs": [
+    "col2r"
+   ],
+   "out": 11,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col3r",
+   "op": "relu",
+   "inputs": [
+    "col3"
+   ]
+  },
+  {
+   "name": "colA",
+   "op": "dense",
+   "inputs": [
+    "col3r"
+   ],
+   "out": 28
+  },
+  {
+   "name": "lum",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lumn",
+   "op": "norm",
+   "inputs": [
+    "lum"
+   ]
+  },
+  {
+   "name": "texa",
+   "op": "conv",
+   "inputs": [
+    "lum"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "texar",
+   "op": "relu",
+   "inputs": [
+    "texa"
+   ]
+  },
+  {
+   "name": "sm",
+   "op": "conv",
+   "inputs": [
+    "texar"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "smr",
+   "op": "relu",
+   "inputs": [
+    "sm"
+   ]
+  },
+  {
+   "name": "smA",
+   "op": "dense",
+   "inputs": [
+    "smr"
+   ],
+   "out": 28
+  },
+  {
+   "name": "texn",
+   "op": "conv",
+   "inputs": [
+    "lumn"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "texnr",
+   "op": "relu",
+   "inputs": [
+    "texn"
+   ]
+  },
+  {
+   "name": "texnA",
+   "op": "dense",
+   "inputs": [
+    "texnr"
+   ],
+   "out": 28
+  },
+  {
+   "name": "hz",
+   "op": "dense",
+   "inputs": [
+    "lumn"
+   ],
+   "out": 52
+  },
+  {
+   "name": "hzr",
+   "op": "relu",
+   "inputs": [
+    "hz"
+   ]
+  },
+  {
+   "name": "hzs",
+   "op": "reshape",
+   "inputs": [
+    "hzr"
+   ],
+   "shape": [
+    1,
+    52,
+    1
+   ]
+  },
+  {
+   "name": "hzm",
+   "op": "maxpool",
+   "inputs": [
+    "hzs"
+   ],
+   "size": [
+    52,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "hzA",
+   "op": "dense",
+   "inputs": [
+    "hzm"
+   ],
+   "out": 28
+  },
+  {
+   "name": "cells",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "fs",
+   "op": "dense",
+   "inputs": [
+    "cells"
+   ],
+   "out": 180
+  },
+  {
+   "name": "fsr",
+   "op": "relu",
+   "inputs": [
+    "fs"
+   ]
+  },
+  {
+   "name": "fsA",
+   "op": "dense",
+   "inputs": [
+    "fsr"
+   ],
+   "out": 28
+  },
+  {
+   "name": "fmb",
+   "op": "dense",
+   "inputs": [
+    "cells"
+   ],
+   "out": 3072
+  },
+  {
+   "name": "fmr",
+   "op": "reshape",
+   "inputs": [
+    "fmb"
+   ],
+   "shape": [
+    3,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "dev",
+   "op": "add",
+   "inputs": [
+    "image",
+    "fmr"
+   ]
+  },
+  {
+   "name": "devc",
+   "op": "conv",
+   "inputs": [
+    "dev"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "devr",
+   "op": "relu",
+   "inputs": [
+    "devc"
+   ]
+  },
+  {
+   "name": "msk",
+   "op": "conv",
+   "inputs": [
+    "devr"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mskr",
+   "op": "relu",
+   "inputs": [
+    "msk"
+   ]
+  },
+  {
+   "name": "mskA",
+   "op": "dense",
+   "inputs": [
+    "mskr"
+   ],
+   "out": 28
+  },
+  {
+   "name": "A",
+   "op": "add",
+   "inputs": [
+    "colA",
+    "smA",
+    "texnA",
+    "hzA",
+    "fsA",
+    "mskA"
+   ]
+  },
+  {
+   "name": "B",
+   "op": "dense",
+   "inputs": [
+    "A"
+   ],
+   "out": 154
+  },
+  {
+   "name": "Br",
+   "op": "relu",
+   "inputs": [
+    "B"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "Br"
+   ],
+   "out": 10
+  }
+ ]
+}

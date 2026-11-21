@@ -1,0 +1,483 @@
+{
+ "layers": [
+  {
+   "name": "viol",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "viol_r",
+   "op": "relu",
+   "inputs": [
+    "viol"
+   ]
+  },
+  {
+   "name": "skin",
+   "op": "conv",
+   "inputs": [
+    "viol_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin_r",
+   "op": "relu",
+   "inputs": [
+    "skin"
+   ]
+  },
+  {
+   "name": "b1",
+   "op": "conv",
+   "inputs": [
+    "skin_r"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 2,
+   "padding": 4
+  },
+  {
+   "name": "b1_r",
+   "op": "relu",
+   "inputs": [
+    "b1"
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "conv",
+   "inputs": [
+    "b1_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1_r",
+   "op": "relu",
+   "inputs": [
+    "r1"
+   ]
+  },
+  {
+   "name": "m1",
+   "op": "maxpool",
+   "inputs": [
+    "r1_r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "p2",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "b2",
+   "op": "conv",
+   "inputs": [
+    "p2"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "b2_r",
+   "op": "relu",
+   "inputs": [
+    "b2"
+   ]
+  },
+  {
+   "name": "r2",
+   "op": "conv",
+   "inputs": [
+    "b2_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2_r",
+   "op": "relu",
+   "inputs": [
+    "r2"
+   ]
+  },
+  {
+   "name": "m2",
+   "op": "maxpool",
+   "inputs": [
+    "r2_r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "p3",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "b3",
+   "op": "conv",
+   "inputs": [
+    "p3"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "b3_r",
+   "op": "relu",
+   "inputs": [
+    "b3"
+   ]
+  },
+  {
+   "name": "r3",
+   "op": "conv",
+   "inputs": [
+    "b3_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r3_r",
+   "op": "relu",
+   "inputs": [
+    "r3"
+   ]
+  },
+  {
+   "name": "m3",
+   "op": "maxpool",
+   "inputs": [
+    "r3_r"
+   ],
+   "size": [
+    32,
+    32
+   ],
+   "stride": [
+    32,
+    32
+   ]
+  },
+  {
+   "name": "p4",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "b4",
+   "op": "conv",
+   "inputs": [
+    "p4"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "b4_r",
+   "op": "relu",
+   "inputs": [
+    "b4"
+   ]
+  },
+  {
+   "name": "r4",
+   "op": "conv",
+   "inputs": [
+    "b4_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r4_r",
+   "op": "relu",
+   "inputs": [
+    "r4"
+   ]
+  },
+  {
+   "name": "m4",
+   "op": "maxpool",
+   "inputs": [
+    "r4_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "p6",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "b6",
+   "op": "conv",
+   "inputs": [
+    "p6"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "b6_r",
+   "op": "relu",
+   "inputs": [
+    "b6"
+   ]
+  },
+  {
+   "name": "r6",
+   "op": "conv",
+   "inputs": [
+    "b6_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r6_r",
+   "op": "relu",
+   "inputs": [
+    "r6"
+   ]
+  },
+  {
+   "name": "m6",
+   "op": "maxpool",
+   "inputs": [
+    "r6_r"
+   ],
+   "size": [
+    16,
+    16
+   ],
+   "stride": [
+    16,
+    16
+   ]
+  },
+  {
+   "name": "p8",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "b8",
+   "op": "conv",
+   "inputs": [
+    "p8"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "b8_r",
+   "op": "relu",
+   "inputs": [
+    "b8"
+   ]
+  },
+  {
+   "name": "r8",
+   "op": "conv",
+   "inputs": [
+    "b8_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r8_r",
+   "op": "relu",
+   "inputs": [
+    "r8"
+   ]
+  },
+  {
+   "name": "m8",
+   "op": "maxpool",
+   "inputs": [
+    "r8_r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "votes",
+   "op": "add",
+   "inputs": [
+    "m1",
+    "m2",
+    "m3",
+    "m4",
+    "m6",
+    "m8"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "votes"
+   ],
+   "out": 2
+  }
+ ]
+}

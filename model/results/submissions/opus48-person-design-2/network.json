@@ -1,0 +1,120 @@
+{
+  "layers": [
+    {
+      "name": "det",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "detr",
+      "op": "relu",
+      "inputs": [
+        "det"
+      ]
+    },
+    {
+      "name": "detp",
+      "op": "maxpool",
+      "inputs": [
+        "detr"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "detf",
+      "op": "reshape",
+      "inputs": [
+        "detp"
+      ],
+      "shape": [
+        512
+      ]
+    },
+    {
+      "name": "scoreDetail",
+      "op": "dense",
+      "inputs": [
+        "detf"
+      ],
+      "out": 2
+    },
+    {
+      "name": "col",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colr",
+      "op": "relu",
+      "inputs": [
+        "col"
+      ]
+    },
+    {
+      "name": "colp",
+      "op": "avgpool",
+      "inputs": [
+        "colr"
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "stride": [
+        96,
+        96
+      ]
+    },
+    {
+      "name": "colf",
+      "op": "reshape",
+      "inputs": [
+        "colp"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "scoreCol",
+      "op": "dense",
+      "inputs": [
+        "colf"
+      ],
+      "out": 2
+    },
+    {
+      "name": "out",
+      "op": "add",
+      "inputs": [
+        "scoreDetail",
+        "scoreCol"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+{
+ "layers": [
+  {
+   "name": "pre1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pre1r",
+   "op": "relu",
+   "inputs": [
+    "pre1"
+   ]
+  },
+  {
+   "name": "mask",
+   "op": "conv",
+   "inputs": [
+    "pre1r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "sil",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "edge",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edger",
+   "op": "relu",
+   "inputs": [
+    "edge"
+   ]
+  },
+  {
+   "name": "edgep",
+   "op": "maxpool",
+   "inputs": [
+    "edger"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "edgef",
+   "op": "reshape",
+   "inputs": [
+    "edgep"
+   ],
+   "shape": [
+    1,
+    104,
+    13
+   ]
+  },
+  {
+   "name": "edg",
+   "op": "norm",
+   "inputs": [
+    "edgef"
+   ]
+  },
+  {
+   "name": "tsil",
+   "op": "dense",
+   "inputs": [
+    "sil"
+   ],
+   "out": 50000
+  },
+  {
+   "name": "tedg",
+   "op": "dense",
+   "inputs": [
+    "edg"
+   ],
+   "out": 50000
+  },
+  {
+   "name": "tsum",
+   "op": "add",
+   "inputs": [
+    "tsil",
+    "tedg"
+   ]
+  },
+  {
+   "name": "tgrid",
+   "op": "reshape",
+   "inputs": [
+    "tsum"
+   ],
+   "shape": [
+    1,
+    10,
+    5000
+   ]
+  },
+  {
+   "name": "tbest",
+   "op": "maxpool",
+   "inputs": [
+    "tgrid"
+   ],
+   "size": [
+    1,
+    5000
+   ],
+   "stride": [
+    1,
+    5000
+   ]
+  },
+  {
+   "name": "tcls",
+   "op": "reshape",
+   "inputs": [
+    "tbest"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "tv",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "tvr",
+   "op": "relu",
+   "inputs": [
+    "tv"
+   ]
+  },
+  {
+   "name": "rtv",
+   "op": "dense",
+   "inputs": [
+    "tvr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "rar",
+   "op": "dense",
+   "inputs": [
+    "mask"
+   ],
+   "out": 2
+  },
+  {
+   "name": "rsum",
+   "op": "add",
+   "inputs": [
+    "rtv",
+    "rar"
+   ]
+  },
+  {
+   "name": "rsumr",
+   "op": "relu",
+   "inputs": [
+    "rsum"
+   ]
+  },
+  {
+   "name": "rule",
+   "op": "dense",
+   "inputs": [
+    "rsumr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "z",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "vl",
+   "op": "conv",
+   "inputs": [
+    "z"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "vlr",
+   "op": "relu",
+   "inputs": [
+    "vl"
+   ]
+  },
+  {
+   "name": "vlm",
+   "op": "maxpool",
+   "inputs": [
+    "vlr"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "lin",
+   "op": "dense",
+   "inputs": [
+    "vlm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "linr",
+   "op": "relu",
+   "inputs": [
+    "lin"
+   ]
+  },
+  {
+   "name": "lrule",
+   "op": "dense",
+   "inputs": [
+    "linr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "tcls",
+    "rule",
+    "lrule"
+   ]
+  }
+ ]
+}

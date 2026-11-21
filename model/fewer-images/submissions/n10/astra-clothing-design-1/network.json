@@ -1,0 +1,1146 @@
+{
+  "layers": [
+    {
+      "name": "soft_foreground_hinges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_hinges",
+      "op": "relu",
+      "inputs": [
+        "soft_foreground_hinges"
+      ]
+    },
+    {
+      "name": "foreground",
+      "op": "conv",
+      "inputs": [
+        "positive_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "neighbourhood",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "shape_cells",
+      "op": "avgpool",
+      "inputs": [
+        "neighbourhood"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_shape",
+      "op": "norm",
+      "inputs": [
+        "shape_cells"
+      ]
+    },
+    {
+      "name": "tone_cells",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_tone",
+      "op": "norm",
+      "inputs": [
+        "tone_cells"
+      ]
+    },
+    {
+      "name": "shape_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalized_shape"
+      ],
+      "out": 15360
+    },
+    {
+      "name": "tone_correlations",
+      "op": "dense",
+      "inputs": [
+        "normalized_tone"
+      ],
+      "out": 15360
+    },
+    {
+      "name": "individual_matches",
+      "op": "add",
+      "inputs": [
+        "shape_correlations",
+        "tone_correlations"
+      ]
+    },
+    {
+      "name": "class_and_views",
+      "op": "reshape",
+      "inputs": [
+        "individual_matches"
+      ],
+      "shape": [
+        10,
+        6,
+        256
+      ]
+    },
+    {
+      "name": "best_view",
+      "op": "maxpool",
+      "inputs": [
+        "class_and_views"
+      ],
+      "size": [
+        1,
+        256
+      ],
+      "stride": [
+        1,
+        256
+      ]
+    },
+    {
+      "name": "typical_best_view",
+      "op": "avgpool",
+      "inputs": [
+        "best_view"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "silhouette_evidence",
+      "op": "reshape",
+      "inputs": [
+        "typical_best_view"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "detail_filters",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 90
+    },
+    {
+      "name": "positive_details",
+      "op": "relu",
+      "inputs": [
+        "detail_filters"
+      ]
+    },
+    {
+      "name": "arrange_details",
+      "op": "dense",
+      "inputs": [
+        "positive_details"
+      ],
+      "out": 243
+    },
+    {
+      "name": "detail_groups",
+      "op": "reshape",
+      "inputs": [
+        "arrange_details"
+      ],
+      "shape": [
+        9,
+        1,
+        27
+      ]
+    },
+    {
+      "name": "strongest_detail",
+      "op": "maxpool",
+      "inputs": [
+        "detail_groups"
+      ],
+      "size": [
+        1,
+        27
+      ],
+      "stride": [
+        1,
+        27
+      ]
+    },
+    {
+      "name": "limit_detail",
+      "op": "dense",
+      "inputs": [
+        "strongest_detail"
+      ],
+      "out": 18
+    },
+    {
+      "name": "detail_hinges",
+      "op": "relu",
+      "inputs": [
+        "limit_detail"
+      ]
+    },
+    {
+      "name": "garment_details",
+      "op": "dense",
+      "inputs": [
+        "detail_hinges"
+      ],
+      "out": 10
+    },
+    {
+      "name": "bounded_dark_spots",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 264
+    },
+    {
+      "name": "open_cells",
+      "op": "relu",
+      "inputs": [
+        "bounded_dark_spots"
+      ]
+    },
+    {
+      "name": "openwork_evidence",
+      "op": "dense",
+      "inputs": [
+        "open_cells"
+      ],
+      "out": 10
+    },
+    {
+      "name": "local_front_edges",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 192
+    },
+    {
+      "name": "unsigned_front_contrasts",
+      "op": "relu",
+      "inputs": [
+        "local_front_edges"
+      ]
+    },
+    {
+      "name": "fastening_continuity",
+      "op": "dense",
+      "inputs": [
+        "unsigned_front_contrasts"
+      ],
+      "out": 12
+    },
+    {
+      "name": "fastening_paths",
+      "op": "reshape",
+      "inputs": [
+        "fastening_continuity"
+      ],
+      "shape": [
+        1,
+        1,
+        12
+      ]
+    },
+    {
+      "name": "best_fastening",
+      "op": "maxpool",
+      "inputs": [
+        "fastening_paths"
+      ],
+      "size": [
+        1,
+        12
+      ],
+      "stride": [
+        1,
+        12
+      ]
+    },
+    {
+      "name": "fastening_amplitude",
+      "op": "dense",
+      "inputs": [
+        "best_fastening"
+      ],
+      "out": 2
+    },
+    {
+      "name": "fastening_test",
+      "op": "relu",
+      "inputs": [
+        "fastening_amplitude"
+      ]
+    },
+    {
+      "name": "fastening_evidence",
+      "op": "dense",
+      "inputs": [
+        "fastening_test"
+      ],
+      "out": 10
+    },
+    {
+      "name": "proud_collar",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 27
+    },
+    {
+      "name": "collar_scales",
+      "op": "reshape",
+      "inputs": [
+        "proud_collar"
+      ],
+      "shape": [
+        1,
+        3,
+        9
+      ]
+    },
+    {
+      "name": "shoulder_spacings",
+      "op": "avgpool",
+      "inputs": [
+        "collar_scales"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "collar_center",
+      "op": "maxpool",
+      "inputs": [
+        "shoulder_spacings"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "raised_neck",
+      "op": "dense",
+      "inputs": [
+        "collar_center"
+      ],
+      "out": 2
+    },
+    {
+      "name": "collar_votes",
+      "op": "relu",
+      "inputs": [
+        "raised_neck"
+      ]
+    },
+    {
+      "name": "collar_evidence",
+      "op": "dense",
+      "inputs": [
+        "collar_votes"
+      ],
+      "out": 10
+    },
+    {
+      "name": "occupied_rows",
+      "op": "maxpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        1,
+        28
+      ],
+      "stride": [
+        1,
+        28
+      ]
+    },
+    {
+      "name": "occupied_columns",
+      "op": "maxpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        28,
+        1
+      ],
+      "stride": [
+        28,
+        1
+      ]
+    },
+    {
+      "name": "material_in_shoe_sections",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 3
+    },
+    {
+      "name": "projected_height",
+      "op": "dense",
+      "inputs": [
+        "occupied_rows"
+      ],
+      "out": 3
+    },
+    {
+      "name": "depth_fraction",
+      "op": "dense",
+      "inputs": [
+        "material_in_shoe_sections"
+      ],
+      "out": 3
+    },
+    {
+      "name": "open_space",
+      "op": "add",
+      "inputs": [
+        "projected_height",
+        "depth_fraction"
+      ]
+    },
+    {
+      "name": "open_profile",
+      "op": "relu",
+      "inputs": [
+        "open_space"
+      ]
+    },
+    {
+      "name": "shoe_width_test",
+      "op": "dense",
+      "inputs": [
+        "occupied_columns"
+      ],
+      "out": 3
+    },
+    {
+      "name": "not_wide",
+      "op": "dense",
+      "inputs": [
+        "shoe_width_test"
+      ],
+      "out": 3
+    },
+    {
+      "name": "narrow_item",
+      "op": "relu",
+      "inputs": [
+        "not_wide"
+      ]
+    },
+    {
+      "name": "suppress_vertical_profiles",
+      "op": "dense",
+      "inputs": [
+        "narrow_item"
+      ],
+      "out": 3
+    },
+    {
+      "name": "horizontal_profile",
+      "op": "add",
+      "inputs": [
+        "open_profile",
+        "suppress_vertical_profiles"
+      ]
+    },
+    {
+      "name": "open_wide_profile",
+      "op": "relu",
+      "inputs": [
+        "horizontal_profile"
+      ]
+    },
+    {
+      "name": "open_profile_evidence",
+      "op": "dense",
+      "inputs": [
+        "open_wide_profile"
+      ],
+      "out": 10
+    },
+    {
+      "name": "leg_separation_tests",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 9
+    },
+    {
+      "name": "leg_scales",
+      "op": "reshape",
+      "inputs": [
+        "leg_separation_tests"
+      ],
+      "shape": [
+        1,
+        1,
+        9
+      ]
+    },
+    {
+      "name": "leg_valley",
+      "op": "maxpool",
+      "inputs": [
+        "leg_scales"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "no_bifurcation",
+      "op": "dense",
+      "inputs": [
+        "leg_valley"
+      ],
+      "out": 1
+    },
+    {
+      "name": "weak_leg_valley",
+      "op": "relu",
+      "inputs": [
+        "no_bifurcation"
+      ]
+    },
+    {
+      "name": "skirt_or_trousers",
+      "op": "dense",
+      "inputs": [
+        "weak_leg_valley"
+      ],
+      "out": 10
+    },
+    {
+      "name": "curved_shirttail",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 9
+    },
+    {
+      "name": "tail_scales",
+      "op": "reshape",
+      "inputs": [
+        "curved_shirttail"
+      ],
+      "shape": [
+        1,
+        1,
+        9
+      ]
+    },
+    {
+      "name": "round_hem",
+      "op": "maxpool",
+      "inputs": [
+        "tail_scales"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "nonstraight_hem",
+      "op": "dense",
+      "inputs": [
+        "round_hem"
+      ],
+      "out": 1
+    },
+    {
+      "name": "tail_test",
+      "op": "relu",
+      "inputs": [
+        "nonstraight_hem"
+      ]
+    },
+    {
+      "name": "tail_evidence",
+      "op": "dense",
+      "inputs": [
+        "tail_test"
+      ],
+      "out": 10
+    },
+    {
+      "name": "fabric_differences",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "oriented_variation",
+      "op": "relu",
+      "inputs": [
+        "fabric_differences"
+      ]
+    },
+    {
+      "name": "local_weave",
+      "op": "conv",
+      "inputs": [
+        "oriented_variation"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "quietest_region",
+      "op": "dense",
+      "inputs": [
+        "local_weave"
+      ],
+      "out": 4
+    },
+    {
+      "name": "weave_regions",
+      "op": "reshape",
+      "inputs": [
+        "quietest_region"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "texture_consensus",
+      "op": "maxpool",
+      "inputs": [
+        "weave_regions"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "pattern_strength",
+      "op": "dense",
+      "inputs": [
+        "texture_consensus"
+      ],
+      "out": 2
+    },
+    {
+      "name": "pattern_present",
+      "op": "relu",
+      "inputs": [
+        "pattern_strength"
+      ]
+    },
+    {
+      "name": "pattern_evidence",
+      "op": "dense",
+      "inputs": [
+        "pattern_present"
+      ],
+      "out": 10
+    },
+    {
+      "name": "paired_point_filters",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 48
+    },
+    {
+      "name": "collar_points",
+      "op": "relu",
+      "inputs": [
+        "paired_point_filters"
+      ]
+    },
+    {
+      "name": "collar_point_scales",
+      "op": "reshape",
+      "inputs": [
+        "collar_points"
+      ],
+      "shape": [
+        1,
+        1,
+        48
+      ]
+    },
+    {
+      "name": "folded_collar",
+      "op": "maxpool",
+      "inputs": [
+        "collar_point_scales"
+      ],
+      "size": [
+        1,
+        48
+      ],
+      "stride": [
+        1,
+        48
+      ]
+    },
+    {
+      "name": "clip_collar_points",
+      "op": "dense",
+      "inputs": [
+        "folded_collar"
+      ],
+      "out": 2
+    },
+    {
+      "name": "collar_point_limit",
+      "op": "relu",
+      "inputs": [
+        "clip_collar_points"
+      ]
+    },
+    {
+      "name": "pointed_collar_evidence",
+      "op": "dense",
+      "inputs": [
+        "collar_point_limit"
+      ],
+      "out": 10
+    },
+    {
+      "name": "instep_filters",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 108
+    },
+    {
+      "name": "lace_contrasts",
+      "op": "relu",
+      "inputs": [
+        "instep_filters"
+      ]
+    },
+    {
+      "name": "lacing_deck",
+      "op": "dense",
+      "inputs": [
+        "lace_contrasts"
+      ],
+      "out": 18
+    },
+    {
+      "name": "instep_locations",
+      "op": "reshape",
+      "inputs": [
+        "lacing_deck"
+      ],
+      "shape": [
+        1,
+        1,
+        18
+      ]
+    },
+    {
+      "name": "best_lace_deck",
+      "op": "maxpool",
+      "inputs": [
+        "instep_locations"
+      ],
+      "size": [
+        1,
+        18
+      ],
+      "stride": [
+        1,
+        18
+      ]
+    },
+    {
+      "name": "lacing_evidence",
+      "op": "dense",
+      "inputs": [
+        "best_lace_deck"
+      ],
+      "out": 10
+    },
+    {
+      "name": "outline_and_leg_evidence",
+      "op": "add",
+      "inputs": [
+        "silhouette_evidence",
+        "skirt_or_trousers"
+      ]
+    },
+    {
+      "name": "interior_evidence",
+      "op": "add",
+      "inputs": [
+        "garment_details",
+        "fastening_evidence",
+        "collar_evidence",
+        "tail_evidence",
+        "pattern_evidence",
+        "pointed_collar_evidence"
+      ]
+    },
+    {
+      "name": "interior_vote",
+      "op": "dense",
+      "inputs": [
+        "interior_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "upper_item_choices",
+      "op": "add",
+      "inputs": [
+        "outline_and_leg_evidence",
+        "interior_vote"
+      ]
+    },
+    {
+      "name": "footwear_choices",
+      "op": "add",
+      "inputs": [
+        "outline_and_leg_evidence",
+        "open_profile_evidence",
+        "openwork_evidence",
+        "lacing_evidence"
+      ]
+    },
+    {
+      "name": "long_sleeved_outline_confidence_select",
+      "op": "dense",
+      "inputs": [
+        "outline_and_leg_evidence"
+      ],
+      "out": 3
+    },
+    {
+      "name": "long_sleeved_outline_confidence_channels",
+      "op": "reshape",
+      "inputs": [
+        "long_sleeved_outline_confidence_select"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "long_sleeved_outline_confidence",
+      "op": "maxpool",
+      "inputs": [
+        "long_sleeved_outline_confidence_channels"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "long_sleeved_detail_winner_select",
+      "op": "dense",
+      "inputs": [
+        "upper_item_choices"
+      ],
+      "out": 3
+    },
+    {
+      "name": "long_sleeved_detail_winner_channels",
+      "op": "reshape",
+      "inputs": [
+        "long_sleeved_detail_winner_select"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "long_sleeved_detail_winner",
+      "op": "maxpool",
+      "inputs": [
+        "long_sleeved_detail_winner_channels"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "long_sleeved_family_anchor",
+      "op": "dense",
+      "inputs": [
+        "long_sleeved_outline_confidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "long_sleeved_reference",
+      "op": "dense",
+      "inputs": [
+        "long_sleeved_detail_winner"
+      ],
+      "out": 10
+    },
+    {
+      "name": "long_sleeved_mask",
+      "op": "dense",
+      "inputs": [
+        "upper_item_choices"
+      ],
+      "out": 10
+    },
+    {
+      "name": "long_sleeved_scores",
+      "op": "add",
+      "inputs": [
+        "long_sleeved_family_anchor",
+        "long_sleeved_reference",
+        "long_sleeved_mask"
+      ]
+    },
+    {
+      "name": "shoe_outline_confidence_select",
+      "op": "dense",
+      "inputs": [
+        "outline_and_leg_evidence"
+      ],
+      "out": 3
+    },
+    {
+      "name": "shoe_outline_confidence_channels",
+      "op": "reshape",
+      "inputs": [
+        "shoe_outline_confidence_select"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "shoe_outline_confidence",
+      "op": "maxpool",
+      "inputs": [
+        "shoe_outline_confidence_channels"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "shoe_detail_winner_select",
+      "op": "dense",
+      "inputs": [
+        "footwear_choices"
+      ],
+      "out": 3
+    },
+    {
+      "name": "shoe_detail_winner_channels",
+      "op": "reshape",
+      "inputs": [
+        "shoe_detail_winner_select"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "shoe_detail_winner",
+      "op": "maxpool",
+      "inputs": [
+        "shoe_detail_winner_channels"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "shoe_family_anchor",
+      "op": "dense",
+      "inputs": [
+        "shoe_outline_confidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shoe_reference",
+      "op": "dense",
+      "inputs": [
+        "shoe_detail_winner"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shoe_mask",
+      "op": "dense",
+      "inputs": [
+        "footwear_choices"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shoe_scores",
+      "op": "add",
+      "inputs": [
+        "shoe_family_anchor",
+        "shoe_reference",
+        "shoe_mask"
+      ]
+    },
+    {
+      "name": "other_outlines",
+      "op": "dense",
+      "inputs": [
+        "outline_and_leg_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "long_sleeved_scores",
+        "shoe_scores",
+        "other_outlines"
+      ]
+    }
+  ]
+}

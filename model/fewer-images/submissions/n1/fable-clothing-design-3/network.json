@@ -1,0 +1,493 @@
+{
+ "layers": [
+  {
+   "name": "ramp",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ramp_relu",
+   "op": "relu",
+   "inputs": [
+    "ramp"
+   ]
+  },
+  {
+   "name": "inv",
+   "op": "conv",
+   "inputs": [
+    "ramp_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inv_relu",
+   "op": "relu",
+   "inputs": [
+    "inv"
+   ]
+  },
+  {
+   "name": "mask",
+   "op": "conv",
+   "inputs": [
+    "inv_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "blur_norm",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "sides_flat",
+   "op": "dense",
+   "inputs": [
+    "mask"
+   ],
+   "out": 3136
+  },
+  {
+   "name": "sides",
+   "op": "reshape",
+   "inputs": [
+    "sides_flat"
+   ],
+   "shape": [
+    4,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "sides_inv",
+   "op": "conv",
+   "inputs": [
+    "sides"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sides_lack",
+   "op": "relu",
+   "inputs": [
+    "sides_inv"
+   ]
+  },
+  {
+   "name": "enc",
+   "op": "conv",
+   "inputs": [
+    "sides_lack"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "enclosed",
+   "op": "relu",
+   "inputs": [
+    "enc"
+   ]
+  },
+  {
+   "name": "enclosed_neg",
+   "op": "conv",
+   "inputs": [
+    "enclosed"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mask_extra",
+   "op": "add",
+   "inputs": [
+    "mask",
+    "enclosed_neg"
+   ]
+  },
+  {
+   "name": "mask_extra_relu",
+   "op": "relu",
+   "inputs": [
+    "mask_extra"
+   ]
+  },
+  {
+   "name": "filled",
+   "op": "add",
+   "inputs": [
+    "enclosed",
+    "mask_extra_relu"
+   ]
+  },
+  {
+   "name": "fblur",
+   "op": "conv",
+   "inputs": [
+    "filled"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "fpool",
+   "op": "avgpool",
+   "inputs": [
+    "fblur"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "fill_norm",
+   "op": "norm",
+   "inputs": [
+    "fpool"
+   ]
+  },
+  {
+   "name": "bramp",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bramp_relu",
+   "op": "relu",
+   "inputs": [
+    "bramp"
+   ]
+  },
+  {
+   "name": "binv",
+   "op": "conv",
+   "inputs": [
+    "bramp_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "binv_relu",
+   "op": "relu",
+   "inputs": [
+    "binv"
+   ]
+  },
+  {
+   "name": "bright",
+   "op": "conv",
+   "inputs": [
+    "binv_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bblur",
+   "op": "conv",
+   "inputs": [
+    "bright"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "bpool",
+   "op": "avgpool",
+   "inputs": [
+    "bblur"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bright_norm",
+   "op": "norm",
+   "inputs": [
+    "bpool"
+   ]
+  },
+  {
+   "name": "templates_raw",
+   "op": "dense",
+   "inputs": [
+    "blur_norm"
+   ],
+   "out": 98400
+  },
+  {
+   "name": "templates_fill",
+   "op": "dense",
+   "inputs": [
+    "fill_norm"
+   ],
+   "out": 98400
+  },
+  {
+   "name": "templates_bright",
+   "op": "dense",
+   "inputs": [
+    "bright_norm"
+   ],
+   "out": 98400
+  },
+  {
+   "name": "templates",
+   "op": "add",
+   "inputs": [
+    "templates_raw",
+    "templates_fill",
+    "templates_bright"
+   ]
+  },
+  {
+   "name": "bank",
+   "op": "reshape",
+   "inputs": [
+    "templates"
+   ],
+   "shape": [
+    1,
+    160,
+    615
+   ]
+  },
+  {
+   "name": "group_max",
+   "op": "maxpool",
+   "inputs": [
+    "bank"
+   ],
+   "size": [
+    1,
+    615
+   ],
+   "stride": [
+    1,
+    615
+   ]
+  },
+  {
+   "name": "groups",
+   "op": "reshape",
+   "inputs": [
+    "group_max"
+   ],
+   "shape": [
+    1,
+    10,
+    16
+   ]
+  },
+  {
+   "name": "class_mean",
+   "op": "avgpool",
+   "inputs": [
+    "groups"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "class_mean"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "cl",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 120
+  },
+  {
+   "name": "cl_abs",
+   "op": "relu",
+   "inputs": [
+    "cl"
+   ]
+  },
+  {
+   "name": "cl_pick",
+   "op": "dense",
+   "inputs": [
+    "cl_abs"
+   ],
+   "out": 42
+  },
+  {
+   "name": "cl_relu",
+   "op": "relu",
+   "inputs": [
+    "cl_pick"
+   ]
+  },
+  {
+   "name": "cl_row",
+   "op": "reshape",
+   "inputs": [
+    "cl_relu"
+   ],
+   "shape": [
+    1,
+    1,
+    42
+   ]
+  },
+  {
+   "name": "cl_max",
+   "op": "maxpool",
+   "inputs": [
+    "cl_row"
+   ],
+   "size": [
+    1,
+    42
+   ],
+   "stride": [
+    1,
+    42
+   ]
+  },
+  {
+   "name": "cl_cap",
+   "op": "dense",
+   "inputs": [
+    "cl_max"
+   ],
+   "out": 1
+  },
+  {
+   "name": "cl_cap_relu",
+   "op": "relu",
+   "inputs": [
+    "cl_cap"
+   ]
+  },
+  {
+   "name": "cl_bonus",
+   "op": "dense",
+   "inputs": [
+    "cl_cap_relu"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "scores",
+    "cl_bonus"
+   ]
+  }
+ ]
+}

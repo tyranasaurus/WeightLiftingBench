@@ -1,0 +1,867 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "absolute_ramps",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "absolute_positive",
+      "op": "relu",
+      "inputs": [
+        "absolute_ramps"
+      ]
+    },
+    {
+      "name": "absolute_mask",
+      "op": "conv",
+      "inputs": [
+        "absolute_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_ramps",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_positive",
+      "op": "relu",
+      "inputs": [
+        "relative_ramps"
+      ]
+    },
+    {
+      "name": "relative_mask",
+      "op": "conv",
+      "inputs": [
+        "relative_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "absolute_share",
+      "op": "conv",
+      "inputs": [
+        "absolute_mask"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_share",
+      "op": "conv",
+      "inputs": [
+        "relative_mask"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground",
+      "op": "add",
+      "inputs": [
+        "absolute_share",
+        "relative_share"
+      ]
+    },
+    {
+      "name": "foreground_pad",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dilated",
+      "op": "maxpool",
+      "inputs": [
+        "foreground_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "complement_pad",
+      "op": "conv",
+      "inputs": [
+        "dilated"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "outside_dilated",
+      "op": "maxpool",
+      "inputs": [
+        "complement_pad"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "closed_share",
+      "op": "conv",
+      "inputs": [
+        "outside_dilated"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "original_share",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shape_mask",
+      "op": "add",
+      "inputs": [
+        "closed_share",
+        "original_share"
+      ]
+    },
+    {
+      "name": "coarse_shape",
+      "op": "avgpool",
+      "inputs": [
+        "shape_mask"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "shape_contrast",
+      "op": "norm",
+      "inputs": [
+        "coarse_shape"
+      ]
+    },
+    {
+      "name": "open_shape",
+      "op": "avgpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "open_contrast",
+      "op": "norm",
+      "inputs": [
+        "open_shape"
+      ]
+    },
+    {
+      "name": "geometric_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "shape_contrast"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "hypotheses_by_class",
+      "op": "reshape",
+      "inputs": [
+        "geometric_hypotheses"
+      ],
+      "shape": [
+        10,
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "best_geometric_match",
+      "op": "maxpool",
+      "inputs": [
+        "hypotheses_by_class"
+      ],
+      "size": [
+        2048,
+        1
+      ],
+      "stride": [
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "closed_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_geometric_match"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "open_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "open_contrast"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "open_by_class",
+      "op": "reshape",
+      "inputs": [
+        "open_hypotheses"
+      ],
+      "shape": [
+        10,
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "best_open_match",
+      "op": "maxpool",
+      "inputs": [
+        "open_by_class"
+      ],
+      "size": [
+        2048,
+        1
+      ],
+      "stride": [
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "open_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_open_match"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "closed_vote",
+      "op": "dense",
+      "inputs": [
+        "closed_scores"
+      ],
+      "out": 10
+    },
+    {
+      "name": "open_vote",
+      "op": "dense",
+      "inputs": [
+        "open_scores"
+      ],
+      "out": 10
+    },
+    {
+      "name": "geometric_scores",
+      "op": "add",
+      "inputs": [
+        "closed_vote",
+        "open_vote"
+      ]
+    },
+    {
+      "name": "front_line_contrasts",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 20
+    },
+    {
+      "name": "front_line_magnitudes",
+      "op": "relu",
+      "inputs": [
+        "front_line_contrasts"
+      ]
+    },
+    {
+      "name": "front_lines_by_position",
+      "op": "reshape",
+      "inputs": [
+        "front_line_magnitudes"
+      ],
+      "shape": [
+        5,
+        2,
+        2
+      ]
+    },
+    {
+      "name": "front_line_absolute",
+      "op": "maxpool",
+      "inputs": [
+        "front_lines_by_position"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "front_line_persistence",
+      "op": "avgpool",
+      "inputs": [
+        "front_line_absolute"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "line_features",
+      "op": "reshape",
+      "inputs": [
+        "front_line_persistence"
+      ],
+      "shape": [
+        5
+      ]
+    },
+    {
+      "name": "central_line_values",
+      "op": "dense",
+      "inputs": [
+        "line_features"
+      ],
+      "out": 3
+    },
+    {
+      "name": "central_line_stack",
+      "op": "reshape",
+      "inputs": [
+        "central_line_values"
+      ],
+      "shape": [
+        1,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "strongest_center_line",
+      "op": "maxpool",
+      "inputs": [
+        "central_line_stack"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "side_line_baseline",
+      "op": "dense",
+      "inputs": [
+        "line_features"
+      ],
+      "out": 1
+    },
+    {
+      "name": "central_line_scalar",
+      "op": "reshape",
+      "inputs": [
+        "strongest_center_line"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "front_opening_contrast",
+      "op": "add",
+      "inputs": [
+        "central_line_scalar",
+        "side_line_baseline"
+      ]
+    },
+    {
+      "name": "front_opening",
+      "op": "relu",
+      "inputs": [
+        "front_opening_contrast"
+      ]
+    },
+    {
+      "name": "front_opening_ramps",
+      "op": "dense",
+      "inputs": [
+        "front_opening"
+      ],
+      "out": 2
+    },
+    {
+      "name": "front_opening_ramp_positive",
+      "op": "relu",
+      "inputs": [
+        "front_opening_ramps"
+      ]
+    },
+    {
+      "name": "bounded_front_opening",
+      "op": "dense",
+      "inputs": [
+        "front_opening_ramp_positive"
+      ],
+      "out": 1
+    },
+    {
+      "name": "construction_vote",
+      "op": "dense",
+      "inputs": [
+        "bounded_front_opening"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shoe_hypotheses",
+      "op": "dense",
+      "inputs": [
+        "geometric_scores"
+      ],
+      "out": 3
+    },
+    {
+      "name": "shoe_hypothesis_stack",
+      "op": "reshape",
+      "inputs": [
+        "shoe_hypotheses"
+      ],
+      "shape": [
+        1,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "shoe_family_match",
+      "op": "maxpool",
+      "inputs": [
+        "shoe_hypothesis_stack"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "shoe_family_vote",
+      "op": "dense",
+      "inputs": [
+        "shoe_family_match"
+      ],
+      "out": 10
+    },
+    {
+      "name": "foreground_area",
+      "op": "dense",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1
+    },
+    {
+      "name": "occupied_rows",
+      "op": "maxpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        1,
+        28
+      ],
+      "stride": [
+        1,
+        28
+      ]
+    },
+    {
+      "name": "occupied_height",
+      "op": "avgpool",
+      "inputs": [
+        "occupied_rows"
+      ],
+      "size": [
+        28,
+        1
+      ],
+      "stride": [
+        28,
+        1
+      ]
+    },
+    {
+      "name": "height_features",
+      "op": "dense",
+      "inputs": [
+        "occupied_height"
+      ],
+      "out": 3
+    },
+    {
+      "name": "area_features",
+      "op": "dense",
+      "inputs": [
+        "foreground_area"
+      ],
+      "out": 3
+    },
+    {
+      "name": "enclosure_measures",
+      "op": "add",
+      "inputs": [
+        "height_features",
+        "area_features"
+      ]
+    },
+    {
+      "name": "enclosure_tests",
+      "op": "dense",
+      "inputs": [
+        "enclosure_measures"
+      ],
+      "out": 4
+    },
+    {
+      "name": "enclosure_evidence",
+      "op": "relu",
+      "inputs": [
+        "enclosure_tests"
+      ]
+    },
+    {
+      "name": "footwear_structure_vote",
+      "op": "dense",
+      "inputs": [
+        "enclosure_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "envelope_pad",
+      "op": "conv",
+      "inputs": [
+        "foreground"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 27
+    },
+    {
+      "name": "vertical_envelopes",
+      "op": "maxpool",
+      "inputs": [
+        "envelope_pad"
+      ],
+      "size": [
+        28,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "foreground_above",
+      "op": "dense",
+      "inputs": [
+        "vertical_envelopes"
+      ],
+      "out": 784
+    },
+    {
+      "name": "negative_foreground_below",
+      "op": "dense",
+      "inputs": [
+        "vertical_envelopes"
+      ],
+      "out": 784
+    },
+    {
+      "name": "envelope_difference",
+      "op": "add",
+      "inputs": [
+        "foreground_above",
+        "negative_foreground_below"
+      ]
+    },
+    {
+      "name": "positive_envelope_difference",
+      "op": "relu",
+      "inputs": [
+        "envelope_difference"
+      ]
+    },
+    {
+      "name": "upper_envelope_area",
+      "op": "dense",
+      "inputs": [
+        "foreground_above"
+      ],
+      "out": 1
+    },
+    {
+      "name": "envelope_excess",
+      "op": "dense",
+      "inputs": [
+        "positive_envelope_difference"
+      ],
+      "out": 1
+    },
+    {
+      "name": "negative_foreground_area",
+      "op": "dense",
+      "inputs": [
+        "foreground_area"
+      ],
+      "out": 1
+    },
+    {
+      "name": "vertical_open_area",
+      "op": "add",
+      "inputs": [
+        "upper_envelope_area",
+        "envelope_excess",
+        "negative_foreground_area"
+      ]
+    },
+    {
+      "name": "open_space_thresholds",
+      "op": "dense",
+      "inputs": [
+        "vertical_open_area"
+      ],
+      "out": 2
+    },
+    {
+      "name": "open_space_evidence",
+      "op": "relu",
+      "inputs": [
+        "open_space_thresholds"
+      ]
+    },
+    {
+      "name": "open_space_vote",
+      "op": "dense",
+      "inputs": [
+        "open_space_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "garment_structure_tests",
+      "op": "dense",
+      "inputs": [
+        "shape_mask"
+      ],
+      "out": 2
+    },
+    {
+      "name": "garment_structure",
+      "op": "relu",
+      "inputs": [
+        "garment_structure_tests"
+      ]
+    },
+    {
+      "name": "garment_structure_vote",
+      "op": "dense",
+      "inputs": [
+        "garment_structure"
+      ],
+      "out": 10
+    },
+    {
+      "name": "fabric_differences",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "fabric_edges",
+      "op": "relu",
+      "inputs": [
+        "fabric_differences"
+      ]
+    },
+    {
+      "name": "fabric_texture",
+      "op": "dense",
+      "inputs": [
+        "fabric_edges"
+      ],
+      "out": 1
+    },
+    {
+      "name": "fabric_texture_positive",
+      "op": "relu",
+      "inputs": [
+        "fabric_texture"
+      ]
+    },
+    {
+      "name": "fabric_vote",
+      "op": "dense",
+      "inputs": [
+        "fabric_texture_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "class_conventions",
+      "op": "dense",
+      "inputs": [
+        "geometric_scores"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "class_conventions",
+        "construction_vote",
+        "shoe_family_vote",
+        "footwear_structure_vote",
+        "garment_structure_vote",
+        "fabric_vote",
+        "open_space_vote"
+      ]
+    }
+  ]
+}

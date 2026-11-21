@@ -1,0 +1,358 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "g",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 12,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gr",
+   "op": "relu",
+   "inputs": [
+    "g"
+   ]
+  },
+  {
+   "name": "e",
+   "op": "conv",
+   "inputs": [
+    "gr"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "er",
+   "op": "relu",
+   "inputs": [
+    "e"
+   ]
+  },
+  {
+   "name": "c",
+   "op": "conv",
+   "inputs": [
+    "er"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cr",
+   "op": "relu",
+   "inputs": [
+    "c"
+   ]
+  },
+  {
+   "name": "cn",
+   "op": "conv",
+   "inputs": [
+    "cr"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m",
+   "op": "add",
+   "inputs": [
+    "er",
+    "cn"
+   ]
+  },
+  {
+   "name": "pf",
+   "op": "conv",
+   "inputs": [
+    "m"
+   ],
+   "out": 6,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "wf",
+   "op": "dense",
+   "inputs": [
+    "pf"
+   ],
+   "out": 864
+  },
+  {
+   "name": "sf",
+   "op": "reshape",
+   "inputs": [
+    "wf"
+   ],
+   "shape": [
+    1,
+    72,
+    12
+   ]
+  },
+  {
+   "name": "zf",
+   "op": "norm",
+   "inputs": [
+    "sf"
+   ]
+  },
+  {
+   "name": "pc",
+   "op": "conv",
+   "inputs": [
+    "m"
+   ],
+   "out": 6,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 4,
+   "padding": 4
+  },
+  {
+   "name": "wc",
+   "op": "dense",
+   "inputs": [
+    "pc"
+   ],
+   "out": 216
+  },
+  {
+   "name": "sc",
+   "op": "reshape",
+   "inputs": [
+    "wc"
+   ],
+   "shape": [
+    1,
+    36,
+    6
+   ]
+  },
+  {
+   "name": "zc",
+   "op": "norm",
+   "inputs": [
+    "sc"
+   ]
+  },
+  {
+   "name": "pe",
+   "op": "conv",
+   "inputs": [
+    "m"
+   ],
+   "out": 1,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "we",
+   "op": "dense",
+   "inputs": [
+    "pe"
+   ],
+   "out": 144
+  },
+  {
+   "name": "se",
+   "op": "reshape",
+   "inputs": [
+    "we"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "ze",
+   "op": "norm",
+   "inputs": [
+    "se"
+   ]
+  },
+  {
+   "name": "a_f",
+   "op": "dense",
+   "inputs": [
+    "zf"
+   ],
+   "out": 48000
+  },
+  {
+   "name": "a_c",
+   "op": "dense",
+   "inputs": [
+    "zc"
+   ],
+   "out": 48000
+  },
+  {
+   "name": "a",
+   "op": "add",
+   "inputs": [
+    "a_f",
+    "a_c"
+   ]
+  },
+  {
+   "name": "a_r",
+   "op": "reshape",
+   "inputs": [
+    "a"
+   ],
+   "shape": [
+    1,
+    24,
+    2000
+   ]
+  },
+  {
+   "name": "a_best",
+   "op": "maxpool",
+   "inputs": [
+    "a_r"
+   ],
+   "size": [
+    1,
+    2000
+   ],
+   "stride": [
+    1,
+    2000
+   ]
+  },
+  {
+   "name": "a_s",
+   "op": "reshape",
+   "inputs": [
+    "a_best"
+   ],
+   "shape": [
+    24
+   ]
+  },
+  {
+   "name": "b_f",
+   "op": "dense",
+   "inputs": [
+    "zf"
+   ],
+   "out": 48000
+  },
+  {
+   "name": "b_c",
+   "op": "dense",
+   "inputs": [
+    "zc"
+   ],
+   "out": 48000
+  },
+  {
+   "name": "b_e",
+   "op": "dense",
+   "inputs": [
+    "ze"
+   ],
+   "out": 48000
+  },
+  {
+   "name": "b",
+   "op": "add",
+   "inputs": [
+    "b_f",
+    "b_c",
+    "b_e"
+   ]
+  },
+  {
+   "name": "b_r",
+   "op": "reshape",
+   "inputs": [
+    "b"
+   ],
+   "shape": [
+    1,
+    24,
+    2000
+   ]
+  },
+  {
+   "name": "b_best",
+   "op": "maxpool",
+   "inputs": [
+    "b_r"
+   ],
+   "size": [
+    1,
+    2000
+   ],
+   "stride": [
+    1,
+    2000
+   ]
+  },
+  {
+   "name": "b_s",
+   "op": "reshape",
+   "inputs": [
+    "b_best"
+   ],
+   "shape": [
+    24
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "a_s",
+    "b_s"
+   ]
+  }
+ ]
+}

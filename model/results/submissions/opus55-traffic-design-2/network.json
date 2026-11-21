@@ -1,0 +1,114 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "frame",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 1806,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "content",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 1806,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "content_local",
+   "op": "maxpool",
+   "inputs": [
+    "content"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "both",
+   "op": "add",
+   "inputs": [
+    "frame",
+    "content_local"
+   ]
+  },
+  {
+   "name": "mshift",
+   "op": "maxpool",
+   "inputs": [
+    "both"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "mshift"
+   ],
+   "shape": [
+    43,
+    42,
+    1
+   ]
+  },
+  {
+   "name": "mvar",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    42,
+    1
+   ],
+   "stride": [
+    42,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "mvar"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

@@ -1,0 +1,2275 @@
+{
+ "layers": [
+  {
+   "name": "line_filters",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 12,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "line_evidence",
+   "op": "relu",
+   "inputs": [
+    "line_filters"
+   ]
+  },
+  {
+   "name": "line_cells",
+   "op": "avgpool",
+   "inputs": [
+    "line_evidence"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "line_soft_threshold",
+   "op": "conv",
+   "inputs": [
+    "line_cells"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess",
+   "op": "relu",
+   "inputs": [
+    "line_soft_threshold"
+   ]
+  },
+  {
+   "name": "line_trim",
+   "op": "conv",
+   "inputs": [
+    "excess"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "line_compress",
+   "op": "add",
+   "inputs": [
+    "line_cells",
+    "line_trim"
+   ]
+  },
+  {
+   "name": "line_vector_flat",
+   "op": "reshape",
+   "inputs": [
+    "line_compress"
+   ],
+   "shape": [
+    1,
+    1,
+    972
+   ]
+  },
+  {
+   "name": "line_vector",
+   "op": "norm",
+   "inputs": [
+    "line_vector_flat"
+   ]
+  },
+  {
+   "name": "ink_cells",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ink_vector_flat",
+   "op": "reshape",
+   "inputs": [
+    "ink_cells"
+   ],
+   "shape": [
+    1,
+    1,
+    169
+   ]
+  },
+  {
+   "name": "ink_vector",
+   "op": "norm",
+   "inputs": [
+    "ink_vector_flat"
+   ]
+  },
+  {
+   "name": "coarse_ink",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sightlines",
+   "op": "dense",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "out": 1764
+  },
+  {
+   "name": "ray_planes",
+   "op": "reshape",
+   "inputs": [
+    "sightlines"
+   ],
+   "shape": [
+    9,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "ray_cap",
+   "op": "conv",
+   "inputs": [
+    "ray_planes"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ray_excess",
+   "op": "relu",
+   "inputs": [
+    "ray_cap"
+   ]
+  },
+  {
+   "name": "ray_clip",
+   "op": "conv",
+   "inputs": [
+    "ray_excess"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blocked_rays",
+   "op": "add",
+   "inputs": [
+    "ray_planes",
+    "ray_clip"
+   ]
+  },
+  {
+   "name": "bay_tests",
+   "op": "conv",
+   "inputs": [
+    "blocked_rays"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bays",
+   "op": "relu",
+   "inputs": [
+    "bay_tests"
+   ]
+  },
+  {
+   "name": "bay_cells",
+   "op": "avgpool",
+   "inputs": [
+    "bays"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bay_vector_flat",
+   "op": "reshape",
+   "inputs": [
+    "bay_cells"
+   ],
+   "shape": [
+    1,
+    1,
+    490
+   ]
+  },
+  {
+   "name": "bay_vector",
+   "op": "norm",
+   "inputs": [
+    "bay_vector_flat"
+   ]
+  },
+  {
+   "name": "negative_ink",
+   "op": "conv",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "interior_seed",
+   "op": "conv",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rim0",
+   "op": "conv",
+   "inputs": [
+    "interior_seed"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach0",
+   "op": "maxpool",
+   "inputs": [
+    "rim0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth0",
+   "op": "conv",
+   "inputs": [
+    "reach0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth0",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth0"
+   ]
+  },
+  {
+   "name": "gap0",
+   "op": "relu",
+   "inputs": [
+    "excess_depth0"
+   ]
+  },
+  {
+   "name": "constraint0",
+   "op": "conv",
+   "inputs": [
+    "gap0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit0",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint0"
+   ]
+  },
+  {
+   "name": "rim1",
+   "op": "conv",
+   "inputs": [
+    "visit0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach1",
+   "op": "maxpool",
+   "inputs": [
+    "rim1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth1",
+   "op": "conv",
+   "inputs": [
+    "reach1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth1",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth1"
+   ]
+  },
+  {
+   "name": "gap1",
+   "op": "relu",
+   "inputs": [
+    "excess_depth1"
+   ]
+  },
+  {
+   "name": "constraint1",
+   "op": "conv",
+   "inputs": [
+    "gap1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit1",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint1"
+   ]
+  },
+  {
+   "name": "rim2",
+   "op": "conv",
+   "inputs": [
+    "visit1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach2",
+   "op": "maxpool",
+   "inputs": [
+    "rim2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth2",
+   "op": "conv",
+   "inputs": [
+    "reach2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth2",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth2"
+   ]
+  },
+  {
+   "name": "gap2",
+   "op": "relu",
+   "inputs": [
+    "excess_depth2"
+   ]
+  },
+  {
+   "name": "constraint2",
+   "op": "conv",
+   "inputs": [
+    "gap2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit2",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint2"
+   ]
+  },
+  {
+   "name": "rim3",
+   "op": "conv",
+   "inputs": [
+    "visit2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach3",
+   "op": "maxpool",
+   "inputs": [
+    "rim3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth3",
+   "op": "conv",
+   "inputs": [
+    "reach3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth3",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth3"
+   ]
+  },
+  {
+   "name": "gap3",
+   "op": "relu",
+   "inputs": [
+    "excess_depth3"
+   ]
+  },
+  {
+   "name": "constraint3",
+   "op": "conv",
+   "inputs": [
+    "gap3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit3",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint3"
+   ]
+  },
+  {
+   "name": "rim4",
+   "op": "conv",
+   "inputs": [
+    "visit3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach4",
+   "op": "maxpool",
+   "inputs": [
+    "rim4"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth4",
+   "op": "conv",
+   "inputs": [
+    "reach4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth4",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth4"
+   ]
+  },
+  {
+   "name": "gap4",
+   "op": "relu",
+   "inputs": [
+    "excess_depth4"
+   ]
+  },
+  {
+   "name": "constraint4",
+   "op": "conv",
+   "inputs": [
+    "gap4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit4",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint4"
+   ]
+  },
+  {
+   "name": "rim5",
+   "op": "conv",
+   "inputs": [
+    "visit4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach5",
+   "op": "maxpool",
+   "inputs": [
+    "rim5"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth5",
+   "op": "conv",
+   "inputs": [
+    "reach5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth5",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth5"
+   ]
+  },
+  {
+   "name": "gap5",
+   "op": "relu",
+   "inputs": [
+    "excess_depth5"
+   ]
+  },
+  {
+   "name": "constraint5",
+   "op": "conv",
+   "inputs": [
+    "gap5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit5",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint5"
+   ]
+  },
+  {
+   "name": "rim6",
+   "op": "conv",
+   "inputs": [
+    "visit5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach6",
+   "op": "maxpool",
+   "inputs": [
+    "rim6"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth6",
+   "op": "conv",
+   "inputs": [
+    "reach6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth6",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth6"
+   ]
+  },
+  {
+   "name": "gap6",
+   "op": "relu",
+   "inputs": [
+    "excess_depth6"
+   ]
+  },
+  {
+   "name": "constraint6",
+   "op": "conv",
+   "inputs": [
+    "gap6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit6",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint6"
+   ]
+  },
+  {
+   "name": "rim7",
+   "op": "conv",
+   "inputs": [
+    "visit6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach7",
+   "op": "maxpool",
+   "inputs": [
+    "rim7"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth7",
+   "op": "conv",
+   "inputs": [
+    "reach7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth7",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth7"
+   ]
+  },
+  {
+   "name": "gap7",
+   "op": "relu",
+   "inputs": [
+    "excess_depth7"
+   ]
+  },
+  {
+   "name": "constraint7",
+   "op": "conv",
+   "inputs": [
+    "gap7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit7",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint7"
+   ]
+  },
+  {
+   "name": "rim8",
+   "op": "conv",
+   "inputs": [
+    "visit7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach8",
+   "op": "maxpool",
+   "inputs": [
+    "rim8"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth8",
+   "op": "conv",
+   "inputs": [
+    "reach8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth8",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth8"
+   ]
+  },
+  {
+   "name": "gap8",
+   "op": "relu",
+   "inputs": [
+    "excess_depth8"
+   ]
+  },
+  {
+   "name": "constraint8",
+   "op": "conv",
+   "inputs": [
+    "gap8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit8",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint8"
+   ]
+  },
+  {
+   "name": "rim9",
+   "op": "conv",
+   "inputs": [
+    "visit8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach9",
+   "op": "maxpool",
+   "inputs": [
+    "rim9"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth9",
+   "op": "conv",
+   "inputs": [
+    "reach9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth9",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth9"
+   ]
+  },
+  {
+   "name": "gap9",
+   "op": "relu",
+   "inputs": [
+    "excess_depth9"
+   ]
+  },
+  {
+   "name": "constraint9",
+   "op": "conv",
+   "inputs": [
+    "gap9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit9",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint9"
+   ]
+  },
+  {
+   "name": "rim10",
+   "op": "conv",
+   "inputs": [
+    "visit9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach10",
+   "op": "maxpool",
+   "inputs": [
+    "rim10"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth10",
+   "op": "conv",
+   "inputs": [
+    "reach10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth10",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth10"
+   ]
+  },
+  {
+   "name": "gap10",
+   "op": "relu",
+   "inputs": [
+    "excess_depth10"
+   ]
+  },
+  {
+   "name": "constraint10",
+   "op": "conv",
+   "inputs": [
+    "gap10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit10",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint10"
+   ]
+  },
+  {
+   "name": "rim11",
+   "op": "conv",
+   "inputs": [
+    "visit10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach11",
+   "op": "maxpool",
+   "inputs": [
+    "rim11"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth11",
+   "op": "conv",
+   "inputs": [
+    "reach11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth11",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth11"
+   ]
+  },
+  {
+   "name": "gap11",
+   "op": "relu",
+   "inputs": [
+    "excess_depth11"
+   ]
+  },
+  {
+   "name": "constraint11",
+   "op": "conv",
+   "inputs": [
+    "gap11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit11",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint11"
+   ]
+  },
+  {
+   "name": "rim12",
+   "op": "conv",
+   "inputs": [
+    "visit11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach12",
+   "op": "maxpool",
+   "inputs": [
+    "rim12"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth12",
+   "op": "conv",
+   "inputs": [
+    "reach12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth12",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth12"
+   ]
+  },
+  {
+   "name": "gap12",
+   "op": "relu",
+   "inputs": [
+    "excess_depth12"
+   ]
+  },
+  {
+   "name": "constraint12",
+   "op": "conv",
+   "inputs": [
+    "gap12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit12",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint12"
+   ]
+  },
+  {
+   "name": "rim13",
+   "op": "conv",
+   "inputs": [
+    "visit12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach13",
+   "op": "maxpool",
+   "inputs": [
+    "rim13"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth13",
+   "op": "conv",
+   "inputs": [
+    "reach13"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth13",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth13"
+   ]
+  },
+  {
+   "name": "gap13",
+   "op": "relu",
+   "inputs": [
+    "excess_depth13"
+   ]
+  },
+  {
+   "name": "constraint13",
+   "op": "conv",
+   "inputs": [
+    "gap13"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit13",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint13"
+   ]
+  },
+  {
+   "name": "rim14",
+   "op": "conv",
+   "inputs": [
+    "visit13"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach14",
+   "op": "maxpool",
+   "inputs": [
+    "rim14"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth14",
+   "op": "conv",
+   "inputs": [
+    "reach14"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth14",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth14"
+   ]
+  },
+  {
+   "name": "gap14",
+   "op": "relu",
+   "inputs": [
+    "excess_depth14"
+   ]
+  },
+  {
+   "name": "constraint14",
+   "op": "conv",
+   "inputs": [
+    "gap14"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit14",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint14"
+   ]
+  },
+  {
+   "name": "rim15",
+   "op": "conv",
+   "inputs": [
+    "visit14"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach15",
+   "op": "maxpool",
+   "inputs": [
+    "rim15"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "depth15",
+   "op": "conv",
+   "inputs": [
+    "reach15"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "excess_depth15",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "depth15"
+   ]
+  },
+  {
+   "name": "gap15",
+   "op": "relu",
+   "inputs": [
+    "excess_depth15"
+   ]
+  },
+  {
+   "name": "constraint15",
+   "op": "conv",
+   "inputs": [
+    "gap15"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "visit15",
+   "op": "add",
+   "inputs": [
+    "negative_ink",
+    "constraint15"
+   ]
+  },
+  {
+   "name": "enclosed_cells",
+   "op": "avgpool",
+   "inputs": [
+    "gap15"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "enclosed_bands",
+   "op": "maxpool",
+   "inputs": [
+    "gap15"
+   ],
+   "size": [
+    6,
+    14
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "end_detectors",
+   "op": "conv",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "out": 16,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "end_evidence",
+   "op": "relu",
+   "inputs": [
+    "end_detectors"
+   ]
+  },
+  {
+   "name": "end_scales_first",
+   "op": "reshape",
+   "inputs": [
+    "end_evidence"
+   ],
+   "shape": [
+    1,
+    2,
+    1568
+   ]
+  },
+  {
+   "name": "end_scales_join",
+   "op": "maxpool",
+   "inputs": [
+    "end_scales_first"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "oriented_ends",
+   "op": "reshape",
+   "inputs": [
+    "end_scales_join"
+   ],
+   "shape": [
+    8,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "end_cells",
+   "op": "maxpool",
+   "inputs": [
+    "oriented_ends"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "enclosed_rows",
+   "op": "maxpool",
+   "inputs": [
+    "gap15"
+   ],
+   "size": [
+    1,
+    14
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "broadcast_rows",
+   "op": "dense",
+   "inputs": [
+    "enclosed_rows"
+   ],
+   "out": 196
+  },
+  {
+   "name": "rows_over_plane",
+   "op": "reshape",
+   "inputs": [
+    "broadcast_rows"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "soft_border_pad",
+   "op": "conv",
+   "inputs": [
+    "rows_over_plane"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "near_enclosure",
+   "op": "maxpool",
+   "inputs": [
+    "soft_border_pad"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "discount_nearby",
+   "op": "conv",
+   "inputs": [
+    "near_enclosure"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink_beyond_enclosure",
+   "op": "add",
+   "inputs": [
+    "coarse_ink",
+    "discount_nearby"
+   ]
+  },
+  {
+   "name": "protruding_ink",
+   "op": "relu",
+   "inputs": [
+    "ink_beyond_enclosure"
+   ]
+  },
+  {
+   "name": "extension_cells",
+   "op": "avgpool",
+   "inputs": [
+    "protruding_ink"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "line_match",
+   "op": "dense",
+   "inputs": [
+    "line_vector"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "ink_match",
+   "op": "dense",
+   "inputs": [
+    "ink_vector"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "bay_match",
+   "op": "dense",
+   "inputs": [
+    "bay_vector"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "loop_area_match",
+   "op": "dense",
+   "inputs": [
+    "enclosed_cells"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "loop_band_match",
+   "op": "dense",
+   "inputs": [
+    "enclosed_bands"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "end_match",
+   "op": "dense",
+   "inputs": [
+    "end_cells"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "extension_match",
+   "op": "dense",
+   "inputs": [
+    "extension_cells"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "writing_agreement",
+   "op": "add",
+   "inputs": [
+    "line_match",
+    "ink_match",
+    "bay_match",
+    "loop_area_match",
+    "loop_band_match",
+    "end_match",
+    "extension_match"
+   ]
+  },
+  {
+   "name": "alternative_shapes",
+   "op": "reshape",
+   "inputs": [
+    "writing_agreement"
+   ],
+   "shape": [
+    10,
+    4,
+    1024
+   ]
+  },
+  {
+   "name": "best_shapes",
+   "op": "maxpool",
+   "inputs": [
+    "alternative_shapes"
+   ],
+   "size": [
+    1,
+    1024
+   ],
+   "stride": [
+    1,
+    1024
+   ]
+  },
+  {
+   "name": "typical_best",
+   "op": "avgpool",
+   "inputs": [
+    "best_shapes"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "closest_shape",
+   "op": "maxpool",
+   "inputs": [
+    "best_shapes"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "consensus",
+   "op": "add",
+   "inputs": [
+    "typical_best",
+    "closest_shape"
+   ]
+  },
+  {
+   "name": "cap_oriented_rows",
+   "op": "reshape",
+   "inputs": [
+    "line_compress"
+   ],
+   "shape": [
+    108,
+    1,
+    9
+   ]
+  },
+  {
+   "name": "cap_oriented_slice",
+   "op": "conv",
+   "inputs": [
+    "cap_oriented_rows"
+   ],
+   "out": 72,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cap_oriented_unit_flat",
+   "op": "reshape",
+   "inputs": [
+    "cap_oriented_slice"
+   ],
+   "shape": [
+    1,
+    1,
+    648
+   ]
+  },
+  {
+   "name": "cap_oriented_unit",
+   "op": "norm",
+   "inputs": [
+    "cap_oriented_unit_flat"
+   ]
+  },
+  {
+   "name": "cap_concave_rows",
+   "op": "reshape",
+   "inputs": [
+    "bay_cells"
+   ],
+   "shape": [
+    70,
+    1,
+    7
+   ]
+  },
+  {
+   "name": "cap_concave_slice",
+   "op": "conv",
+   "inputs": [
+    "cap_concave_rows"
+   ],
+   "out": 40,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cap_concave_unit_flat",
+   "op": "reshape",
+   "inputs": [
+    "cap_concave_slice"
+   ],
+   "shape": [
+    1,
+    1,
+    280
+   ]
+  },
+  {
+   "name": "cap_concave_unit",
+   "op": "norm",
+   "inputs": [
+    "cap_concave_unit_flat"
+   ]
+  },
+  {
+   "name": "foot_oriented_rows",
+   "op": "reshape",
+   "inputs": [
+    "line_compress"
+   ],
+   "shape": [
+    108,
+    1,
+    9
+   ]
+  },
+  {
+   "name": "foot_oriented_slice",
+   "op": "conv",
+   "inputs": [
+    "foot_oriented_rows"
+   ],
+   "out": 72,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "foot_oriented_unit_flat",
+   "op": "reshape",
+   "inputs": [
+    "foot_oriented_slice"
+   ],
+   "shape": [
+    1,
+    1,
+    648
+   ]
+  },
+  {
+   "name": "foot_oriented_unit",
+   "op": "norm",
+   "inputs": [
+    "foot_oriented_unit_flat"
+   ]
+  },
+  {
+   "name": "foot_concave_rows",
+   "op": "reshape",
+   "inputs": [
+    "bay_cells"
+   ],
+   "shape": [
+    70,
+    1,
+    7
+   ]
+  },
+  {
+   "name": "foot_concave_slice",
+   "op": "conv",
+   "inputs": [
+    "foot_concave_rows"
+   ],
+   "out": 40,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "foot_concave_unit_flat",
+   "op": "reshape",
+   "inputs": [
+    "foot_concave_slice"
+   ],
+   "shape": [
+    1,
+    1,
+    280
+   ]
+  },
+  {
+   "name": "foot_concave_unit",
+   "op": "norm",
+   "inputs": [
+    "foot_concave_unit_flat"
+   ]
+  },
+  {
+   "name": "cap_oriented_compare",
+   "op": "dense",
+   "inputs": [
+    "cap_oriented_unit"
+   ],
+   "out": 23040
+  },
+  {
+   "name": "cap_concave_compare",
+   "op": "dense",
+   "inputs": [
+    "cap_concave_unit"
+   ],
+   "out": 23040
+  },
+  {
+   "name": "foot_oriented_compare",
+   "op": "dense",
+   "inputs": [
+    "foot_oriented_unit"
+   ],
+   "out": 23040
+  },
+  {
+   "name": "foot_concave_compare",
+   "op": "dense",
+   "inputs": [
+    "foot_concave_unit"
+   ],
+   "out": 23040
+  },
+  {
+   "name": "cap_agreement",
+   "op": "add",
+   "inputs": [
+    "cap_oriented_compare",
+    "cap_concave_compare"
+   ]
+  },
+  {
+   "name": "cap_by_regime",
+   "op": "reshape",
+   "inputs": [
+    "cap_agreement"
+   ],
+   "shape": [
+    10,
+    9,
+    256
+   ]
+  },
+  {
+   "name": "cap_best",
+   "op": "maxpool",
+   "inputs": [
+    "cap_by_regime"
+   ],
+   "size": [
+    1,
+    256
+   ],
+   "stride": [
+    1,
+    256
+   ]
+  },
+  {
+   "name": "foot_agreement",
+   "op": "add",
+   "inputs": [
+    "foot_oriented_compare",
+    "foot_concave_compare"
+   ]
+  },
+  {
+   "name": "foot_by_regime",
+   "op": "reshape",
+   "inputs": [
+    "foot_agreement"
+   ],
+   "shape": [
+    10,
+    9,
+    256
+   ]
+  },
+  {
+   "name": "foot_best",
+   "op": "maxpool",
+   "inputs": [
+    "foot_by_regime"
+   ],
+   "size": [
+    1,
+    256
+   ],
+   "stride": [
+    1,
+    256
+   ]
+  },
+  {
+   "name": "compatible_parts",
+   "op": "add",
+   "inputs": [
+    "cap_best",
+    "foot_best"
+   ]
+  },
+  {
+   "name": "best_compatible_pair",
+   "op": "maxpool",
+   "inputs": [
+    "compatible_parts"
+   ],
+   "size": [
+    9,
+    1
+   ],
+   "stride": [
+    9,
+    1
+   ]
+  },
+  {
+   "name": "whole_vote",
+   "op": "conv",
+   "inputs": [
+    "consensus"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "parts_vote",
+   "op": "conv",
+   "inputs": [
+    "best_compatible_pair"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint_decision",
+   "op": "add",
+   "inputs": [
+    "whole_vote",
+    "parts_vote"
+   ]
+  },
+  {
+   "name": "digit_scores",
+   "op": "reshape",
+   "inputs": [
+    "joint_decision"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

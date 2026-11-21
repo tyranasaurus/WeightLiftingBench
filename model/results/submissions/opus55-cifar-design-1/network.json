@@ -1,0 +1,316 @@
+{
+ "layers": [
+  {
+   "name": "px",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 17,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "px_r",
+   "op": "relu",
+   "inputs": [
+    "px"
+   ]
+  },
+  {
+   "name": "pxr",
+   "op": "conv",
+   "inputs": [
+    "px_r"
+   ],
+   "out": 54,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pxr_r",
+   "op": "relu",
+   "inputs": [
+    "pxr"
+   ]
+  },
+  {
+   "name": "pxf",
+   "op": "conv",
+   "inputs": [
+    "pxr_r"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pxf_r",
+   "op": "relu",
+   "inputs": [
+    "pxf"
+   ]
+  },
+  {
+   "name": "grid",
+   "op": "avgpool",
+   "inputs": [
+    "pxf_r"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "sh",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sh_r",
+   "op": "relu",
+   "inputs": [
+    "sh"
+   ]
+  },
+  {
+   "name": "shr",
+   "op": "conv",
+   "inputs": [
+    "sh_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shr_r",
+   "op": "relu",
+   "inputs": [
+    "shr"
+   ]
+  },
+  {
+   "name": "shf",
+   "op": "conv",
+   "inputs": [
+    "shr_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shf_r",
+   "op": "relu",
+   "inputs": [
+    "shf"
+   ]
+  },
+  {
+   "name": "shpool",
+   "op": "avgpool",
+   "inputs": [
+    "shf_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "half",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ll",
+   "op": "conv",
+   "inputs": [
+    "half"
+   ],
+   "out": 4,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "ll_r",
+   "op": "relu",
+   "inputs": [
+    "ll"
+   ]
+  },
+  {
+   "name": "llr",
+   "op": "conv",
+   "inputs": [
+    "ll_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "llr_r",
+   "op": "relu",
+   "inputs": [
+    "llr"
+   ]
+  },
+  {
+   "name": "llf",
+   "op": "conv",
+   "inputs": [
+    "llr_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "llf_r",
+   "op": "relu",
+   "inputs": [
+    "llf"
+   ]
+  },
+  {
+   "name": "llpool",
+   "op": "avgpool",
+   "inputs": [
+    "llf_r"
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "stride": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "q_main",
+   "op": "dense",
+   "inputs": [
+    "grid"
+   ],
+   "out": 112
+  },
+  {
+   "name": "q_shape",
+   "op": "dense",
+   "inputs": [
+    "shpool"
+   ],
+   "out": 112
+  },
+  {
+   "name": "q_long",
+   "op": "dense",
+   "inputs": [
+    "llpool"
+   ],
+   "out": 112
+  },
+  {
+   "name": "q",
+   "op": "add",
+   "inputs": [
+    "q_main",
+    "q_shape",
+    "q_long"
+   ]
+  },
+  {
+   "name": "q_r",
+   "op": "relu",
+   "inputs": [
+    "q"
+   ]
+  },
+  {
+   "name": "phi",
+   "op": "dense",
+   "inputs": [
+    "q_r"
+   ],
+   "out": 50
+  },
+  {
+   "name": "phi_r",
+   "op": "relu",
+   "inputs": [
+    "phi"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "phi_r"
+   ],
+   "out": 10
+  }
+ ]
+}

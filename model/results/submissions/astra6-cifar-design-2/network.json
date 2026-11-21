@@ -1,0 +1,419 @@
+{
+  "layers": [
+    {
+      "name": "small_image",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "opponent_coordinates",
+      "op": "conv",
+      "inputs": [
+        "small_image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_normalized",
+      "op": "norm",
+      "inputs": [
+        "opponent_coordinates"
+      ]
+    },
+    {
+      "name": "weighted_contrast",
+      "op": "conv",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "gray_contrast",
+      "op": "conv",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "stacked_planes",
+      "op": "reshape",
+      "inputs": [
+        "weighted_contrast"
+      ],
+      "shape": [
+        1,
+        48,
+        16
+      ]
+    },
+    {
+      "name": "signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "gray_contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rectified_derivatives",
+      "op": "relu",
+      "inputs": [
+        "signed_derivatives"
+      ]
+    },
+    {
+      "name": "edge_magnitudes",
+      "op": "conv",
+      "inputs": [
+        "rectified_derivatives"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "soft_contours",
+      "op": "conv",
+      "inputs": [
+        "edge_magnitudes"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "normalized_contours",
+      "op": "norm",
+      "inputs": [
+        "soft_contours"
+      ]
+    },
+    {
+      "name": "color_basis",
+      "op": "conv",
+      "inputs": [
+        "small_image"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_rectified",
+      "op": "relu",
+      "inputs": [
+        "color_basis"
+      ]
+    },
+    {
+      "name": "color_thresholds",
+      "op": "conv",
+      "inputs": [
+        "color_rectified"
+      ],
+      "out": 18,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_hinges",
+      "op": "relu",
+      "inputs": [
+        "color_thresholds"
+      ]
+    },
+    {
+      "name": "color_membership",
+      "op": "conv",
+      "inputs": [
+        "color_hinges"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coarse_color",
+      "op": "avgpool",
+      "inputs": [
+        "color_membership"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "silhouette_correlations",
+      "op": "conv",
+      "inputs": [
+        "stacked_planes"
+      ],
+      "out": 9720,
+      "kernel": [
+        16,
+        16
+      ],
+      "stride": 16,
+      "padding": 0
+    },
+    {
+      "name": "silhouette_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "silhouette_correlations"
+      ],
+      "shape": [
+        1,
+        4860,
+        6
+      ]
+    },
+    {
+      "name": "best_color_contrast",
+      "op": "maxpool",
+      "inputs": [
+        "silhouette_alternatives"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "silhouette_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_color_contrast"
+      ],
+      "shape": [
+        4860
+      ]
+    },
+    {
+      "name": "contour_scores",
+      "op": "dense",
+      "inputs": [
+        "normalized_contours"
+      ],
+      "out": 4860
+    },
+    {
+      "name": "landmark_scores",
+      "op": "dense",
+      "inputs": [
+        "gray_contrast"
+      ],
+      "out": 4860
+    },
+    {
+      "name": "semantic_color_scores",
+      "op": "dense",
+      "inputs": [
+        "coarse_color"
+      ],
+      "out": 4860
+    },
+    {
+      "name": "drawing_scores",
+      "op": "add",
+      "inputs": [
+        "silhouette_scores",
+        "contour_scores",
+        "landmark_scores",
+        "semantic_color_scores"
+      ]
+    },
+    {
+      "name": "class_pose_groups",
+      "op": "reshape",
+      "inputs": [
+        "drawing_scores"
+      ],
+      "shape": [
+        10,
+        1,
+        486
+      ]
+    },
+    {
+      "name": "best_pose_per_class",
+      "op": "maxpool",
+      "inputs": [
+        "class_pose_groups"
+      ],
+      "size": [
+        1,
+        486
+      ],
+      "stride": [
+        1,
+        486
+      ]
+    },
+    {
+      "name": "object_scores",
+      "op": "reshape",
+      "inputs": [
+        "best_pose_per_class"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "long_signed_edges",
+      "op": "conv",
+      "inputs": [
+        "gray_contrast"
+      ],
+      "out": 4,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "long_edge_rectification",
+      "op": "relu",
+      "inputs": [
+        "long_signed_edges"
+      ]
+    },
+    {
+      "name": "long_edge_magnitudes",
+      "op": "conv",
+      "inputs": [
+        "long_edge_rectification"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "long_edge_regions",
+      "op": "avgpool",
+      "inputs": [
+        "long_edge_magnitudes"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "short_edge_regions",
+      "op": "avgpool",
+      "inputs": [
+        "edge_magnitudes"
+      ],
+      "size": [
+        7,
+        7
+      ],
+      "stride": [
+        7,
+        7
+      ]
+    },
+    {
+      "name": "long_structure_scores",
+      "op": "dense",
+      "inputs": [
+        "long_edge_regions"
+      ],
+      "out": 10
+    },
+    {
+      "name": "short_structure_scores",
+      "op": "dense",
+      "inputs": [
+        "short_edge_regions"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "object_scores",
+        "long_structure_scores",
+        "short_structure_scores"
+      ]
+    }
+  ]
+}

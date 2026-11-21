@@ -1,0 +1,179 @@
+{
+ "layers": [
+  {
+   "name": "thr",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "thr_r",
+   "op": "relu",
+   "inputs": [
+    "thr"
+   ]
+  },
+  {
+   "name": "proto",
+   "op": "dense",
+   "inputs": [
+    "thr_r"
+   ],
+   "out": 750
+  },
+  {
+   "name": "proto_g",
+   "op": "reshape",
+   "inputs": [
+    "proto"
+   ],
+   "shape": [
+    1,
+    10,
+    75
+   ]
+  },
+  {
+   "name": "proto_max",
+   "op": "maxpool",
+   "inputs": [
+    "proto_g"
+   ],
+   "size": [
+    1,
+    75
+   ],
+   "stride": [
+    1,
+    75
+   ]
+  },
+  {
+   "name": "shape_score",
+   "op": "reshape",
+   "inputs": [
+    "proto_max"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "cue1",
+   "op": "conv",
+   "inputs": [
+    "thr_r"
+   ],
+   "out": 21,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "cue1_r",
+   "op": "relu",
+   "inputs": [
+    "cue1"
+   ]
+  },
+  {
+   "name": "cue2",
+   "op": "conv",
+   "inputs": [
+    "cue1_r"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "cue2_r",
+   "op": "relu",
+   "inputs": [
+    "cue2"
+   ]
+  },
+  {
+   "name": "cue3",
+   "op": "conv",
+   "inputs": [
+    "cue2_r"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "cue3_r",
+   "op": "relu",
+   "inputs": [
+    "cue3"
+   ]
+  },
+  {
+   "name": "cue4",
+   "op": "dense",
+   "inputs": [
+    "cue3_r"
+   ],
+   "out": 14
+  },
+  {
+   "name": "cue4_r",
+   "op": "relu",
+   "inputs": [
+    "cue4"
+   ]
+  },
+  {
+   "name": "cue5",
+   "op": "dense",
+   "inputs": [
+    "cue4_r"
+   ],
+   "out": 8
+  },
+  {
+   "name": "cue5_r",
+   "op": "relu",
+   "inputs": [
+    "cue5"
+   ]
+  },
+  {
+   "name": "bonus",
+   "op": "dense",
+   "inputs": [
+    "cue5_r"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape_score",
+    "bonus"
+   ]
+  }
+ ]
+}

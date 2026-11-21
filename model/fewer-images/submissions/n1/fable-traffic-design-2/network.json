@@ -1,0 +1,70 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "fn",
+   "op": "norm",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "fn"
+   ],
+   "out": 4300
+  },
+  {
+   "name": "grp",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    43,
+    100
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "grp"
+   ],
+   "size": [
+    1,
+    100
+   ],
+   "stride": [
+    1,
+    100
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

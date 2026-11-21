@@ -1,0 +1,106 @@
+{
+  "layers": [
+    {
+      "name": "thresholds",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive",
+      "op": "relu",
+      "inputs": [
+        "thresholds"
+      ]
+    },
+    {
+      "name": "foreground",
+      "op": "conv",
+      "inputs": [
+        "positive"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cells",
+      "op": "avgpool",
+      "inputs": [
+        "foreground"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "cells"
+      ]
+    },
+    {
+      "name": "shape_similarity",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 16000
+    },
+    {
+      "name": "by_category",
+      "op": "reshape",
+      "inputs": [
+        "shape_similarity"
+      ],
+      "shape": [
+        10,
+        1,
+        1600
+      ]
+    },
+    {
+      "name": "best_shape",
+      "op": "maxpool",
+      "inputs": [
+        "by_category"
+      ],
+      "size": [
+        1,
+        1600
+      ],
+      "stride": [
+        1,
+        1600
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_shape"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

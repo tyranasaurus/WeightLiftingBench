@@ -1,0 +1,56 @@
+{
+  "layers": [
+    {
+      "name": "color",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "poolc",
+      "op": "avgpool",
+      "inputs": [
+        "color"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "det",
+      "op": "dense",
+      "inputs": [
+        "poolc"
+      ],
+      "out": 9
+    },
+    {
+      "name": "drelu",
+      "op": "relu",
+      "inputs": [
+        "det"
+      ]
+    },
+    {
+      "name": "out",
+      "op": "dense",
+      "inputs": [
+        "drelu"
+      ],
+      "out": 10
+    }
+  ]
+}

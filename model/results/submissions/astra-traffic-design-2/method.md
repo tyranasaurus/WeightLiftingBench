@@ -1,0 +1,3 @@
+The network compares each candidate sign at several positions, sizes, and aspect ratios. At each pose it scores whether the border, colors, and pictogram agree: for example, a speed-limit number must fit inside a red ring, while a cancelled restriction should have a diagonal stripe visible on both sides of its center. A piecewise-linear log transform and contrast normalization reduce the effect of shadows. Separate readers match numeral strokes, oriented boundary edges, and parts of warning pictograms; max pooling selects the best-supported pose and drawing.
+
+`build.py` generates every weight from arithmetic, geometric primitives, and hand-written sign and glyph descriptions. It uses no external fonts, image assets, fitted coefficients, or training examples.

@@ -1,0 +1,420 @@
+{
+  "layers": [
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "light_adaptation",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "rgb_as_one_channel",
+      "op": "reshape",
+      "inputs": [
+        "image"
+      ],
+      "shape": [
+        1,
+        96,
+        32
+      ]
+    },
+    {
+      "name": "joint_colour_adaptation",
+      "op": "norm",
+      "inputs": [
+        "rgb_as_one_channel"
+      ]
+    },
+    {
+      "name": "adapted_rgb",
+      "op": "reshape",
+      "inputs": [
+        "joint_colour_adaptation"
+      ],
+      "shape": [
+        3,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "gray_projection",
+      "op": "conv",
+      "inputs": [
+        "light_adaptation"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_projection",
+      "op": "conv",
+      "inputs": [
+        "adapted_rgb"
+      ],
+      "out": 12,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "feature_thresholds",
+      "op": "add",
+      "inputs": [
+        "gray_projection",
+        "colour_projection"
+      ]
+    },
+    {
+      "name": "positive_parts",
+      "op": "relu",
+      "inputs": [
+        "feature_thresholds"
+      ]
+    },
+    {
+      "name": "bounded_contrast_features",
+      "op": "conv",
+      "inputs": [
+        "positive_parts"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "antialias",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_contrast_features"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ideal_sign_matches",
+      "op": "dense",
+      "inputs": [
+        "antialias"
+      ],
+      "out": 41796
+    },
+    {
+      "name": "shape_candidates",
+      "op": "reshape",
+      "inputs": [
+        "ideal_sign_matches"
+      ],
+      "shape": [
+        172,
+        243,
+        1
+      ]
+    },
+    {
+      "name": "disc_sample",
+      "op": "conv",
+      "inputs": [
+        "light_adaptation"
+      ],
+      "out": 24300,
+      "kernel": [
+        32,
+        32
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "disc_candidate_grids",
+      "op": "reshape",
+      "inputs": [
+        "disc_sample"
+      ],
+      "shape": [
+        243,
+        10,
+        10
+      ]
+    },
+    {
+      "name": "disc_local_contrast",
+      "op": "norm",
+      "inputs": [
+        "disc_candidate_grids"
+      ]
+    },
+    {
+      "name": "disc_shared_grid",
+      "op": "reshape",
+      "inputs": [
+        "disc_local_contrast"
+      ],
+      "shape": [
+        1,
+        2430,
+        10
+      ]
+    },
+    {
+      "name": "disc_symbol_correlations",
+      "op": "conv",
+      "inputs": [
+        "disc_shared_grid"
+      ],
+      "out": 172,
+      "kernel": [
+        10,
+        10
+      ],
+      "stride": 10,
+      "padding": 0
+    },
+    {
+      "name": "disc_joint_geometry_evidence",
+      "op": "add",
+      "inputs": [
+        "disc_symbol_correlations",
+        "shape_candidates"
+      ]
+    },
+    {
+      "name": "disc_best_geometry",
+      "op": "maxpool",
+      "inputs": [
+        "disc_joint_geometry_evidence"
+      ],
+      "size": [
+        243,
+        1
+      ],
+      "stride": [
+        243,
+        1
+      ]
+    },
+    {
+      "name": "disc_styles",
+      "op": "reshape",
+      "inputs": [
+        "disc_best_geometry"
+      ],
+      "shape": [
+        43,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "disc_best_style",
+      "op": "maxpool",
+      "inputs": [
+        "disc_styles"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "disc_vector",
+      "op": "reshape",
+      "inputs": [
+        "disc_best_style"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "triangle_sample",
+      "op": "conv",
+      "inputs": [
+        "light_adaptation"
+      ],
+      "out": 24300,
+      "kernel": [
+        32,
+        32
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_candidate_grids",
+      "op": "reshape",
+      "inputs": [
+        "triangle_sample"
+      ],
+      "shape": [
+        243,
+        10,
+        10
+      ]
+    },
+    {
+      "name": "triangle_local_contrast",
+      "op": "norm",
+      "inputs": [
+        "triangle_candidate_grids"
+      ]
+    },
+    {
+      "name": "triangle_shared_grid",
+      "op": "reshape",
+      "inputs": [
+        "triangle_local_contrast"
+      ],
+      "shape": [
+        1,
+        2430,
+        10
+      ]
+    },
+    {
+      "name": "triangle_symbol_correlations",
+      "op": "conv",
+      "inputs": [
+        "triangle_shared_grid"
+      ],
+      "out": 172,
+      "kernel": [
+        10,
+        10
+      ],
+      "stride": 10,
+      "padding": 0
+    },
+    {
+      "name": "triangle_joint_geometry_evidence",
+      "op": "add",
+      "inputs": [
+        "triangle_symbol_correlations",
+        "shape_candidates"
+      ]
+    },
+    {
+      "name": "triangle_best_geometry",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_joint_geometry_evidence"
+      ],
+      "size": [
+        243,
+        1
+      ],
+      "stride": [
+        243,
+        1
+      ]
+    },
+    {
+      "name": "triangle_styles",
+      "op": "reshape",
+      "inputs": [
+        "triangle_best_geometry"
+      ],
+      "shape": [
+        43,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "triangle_best_style",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_styles"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "triangle_vector",
+      "op": "reshape",
+      "inputs": [
+        "triangle_best_style"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "disc_select",
+      "op": "dense",
+      "inputs": [
+        "disc_vector"
+      ],
+      "out": 43
+    },
+    {
+      "name": "triangle_select",
+      "op": "dense",
+      "inputs": [
+        "triangle_vector"
+      ],
+      "out": 43
+    },
+    {
+      "name": "local_symbol_scores",
+      "op": "add",
+      "inputs": [
+        "disc_select",
+        "triangle_select"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "local_symbol_scores"
+      ],
+      "shape": [
+        43
+      ]
+    }
+  ]
+}

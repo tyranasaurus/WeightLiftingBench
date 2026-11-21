@@ -1,0 +1,93 @@
+{
+  "layers": [
+    {
+      "name": "half",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "phot",
+      "op": "conv",
+      "inputs": [
+        "half"
+      ],
+      "out": 18,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "phot_relu",
+      "op": "relu",
+      "inputs": [
+        "phot"
+      ]
+    },
+    {
+      "name": "quarter",
+      "op": "avgpool",
+      "inputs": [
+        "phot_relu"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "primitive",
+      "op": "dense",
+      "inputs": [
+        "quarter"
+      ],
+      "out": 774
+    },
+    {
+      "name": "primitive_relu",
+      "op": "relu",
+      "inputs": [
+        "primitive"
+      ]
+    },
+    {
+      "name": "concept",
+      "op": "dense",
+      "inputs": [
+        "primitive_relu"
+      ],
+      "out": 511
+    },
+    {
+      "name": "concept_relu",
+      "op": "relu",
+      "inputs": [
+        "concept"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "concept_relu"
+      ],
+      "out": 10
+    }
+  ]
+}

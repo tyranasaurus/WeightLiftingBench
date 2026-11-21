@@ -1,0 +1,159 @@
+{
+ "layers": [
+  {
+   "name": "exposure",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "oriented",
+   "op": "conv",
+   "inputs": [
+    "exposure"
+   ],
+   "out": 48,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_waves",
+   "op": "relu",
+   "inputs": [
+    "oriented"
+   ]
+  },
+  {
+   "name": "compress",
+   "op": "conv",
+   "inputs": [
+    "half_waves"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bins",
+   "op": "avgpool",
+   "inputs": [
+    "compress"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "overlap",
+   "op": "avgpool",
+   "inputs": [
+    "bins"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "compare",
+   "op": "dense",
+   "inputs": [
+    "overlap"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "pose_groups",
+   "op": "reshape",
+   "inputs": [
+    "compare"
+   ],
+   "shape": [
+    24,
+    8,
+    256
+   ]
+  },
+  {
+   "name": "group_winners",
+   "op": "maxpool",
+   "inputs": [
+    "pose_groups"
+   ],
+   "size": [
+    1,
+    256
+   ],
+   "stride": [
+    1,
+    256
+   ]
+  },
+  {
+   "name": "best_pose",
+   "op": "maxpool",
+   "inputs": [
+    "group_winners"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "support",
+   "op": "avgpool",
+   "inputs": [
+    "group_winners"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "evidence",
+   "op": "add",
+   "inputs": [
+    "best_pose",
+    "support"
+   ]
+  },
+  {
+   "name": "class_scores",
+   "op": "reshape",
+   "inputs": [
+    "evidence"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

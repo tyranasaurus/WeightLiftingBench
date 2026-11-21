@@ -1,0 +1,5 @@
+# Method
+
+The network is a hand-built analytic morphology classifier.  It first averages the image to 32 x 32 pixels, then splits into a normalized luminance branch and a raw colour branch containing sky-subtracted light, blue excess, red/yellow excess, and blue light.  Dense layers implement fixed formula-derived templates: round/concentrated profiles, diffuse disks, ellipses, thin edge-on disks, bars, two-core pairs, off-centre clumps, tidal arcs, and logarithmic spirals in 16 orientations.  A max-pool over orientation makes these template responses rotation-tolerant.
+
+A second dense layer combines the primitive template responses into hand-written morphology propositions such as round smooth, intermediate smooth, cigar smooth, edge-on with or without bulge, barred spiral, tight/loose spiral, merging pair, and disturbed/asymmetric.  The final dense layer maps these propositions to the 10 class scores.  All weights are generated directly in `build.py` from Gaussian, ring, line, pair, arc, and logarithmic-spiral formulae with manually chosen constants from general galaxy morphology; `build.py` reads no data files and performs no fitting or optimization.

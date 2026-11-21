@@ -1,0 +1,315 @@
+{
+ "layers": [
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "steerable_ramps",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 51,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "positive",
+   "op": "relu",
+   "inputs": [
+    "steerable_ramps"
+   ]
+  },
+  {
+   "name": "cell_histograms",
+   "op": "avgpool",
+   "inputs": [
+    "positive"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "moments",
+   "op": "conv",
+   "inputs": [
+    "cell_histograms"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "stack_maps",
+   "op": "reshape",
+   "inputs": [
+    "moments"
+   ],
+   "shape": [
+    1,
+    432,
+    12
+   ]
+  },
+  {
+   "name": "cells_to_channels",
+   "op": "conv",
+   "inputs": [
+    "stack_maps"
+   ],
+   "out": 144,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 12,
+   "padding": 0
+  },
+  {
+   "name": "local_norm",
+   "op": "norm",
+   "inputs": [
+    "cells_to_channels"
+   ]
+  },
+  {
+   "name": "stack_histograms",
+   "op": "reshape",
+   "inputs": [
+    "local_norm"
+   ],
+   "shape": [
+    1,
+    864,
+    6
+   ]
+  },
+  {
+   "name": "take_features",
+   "op": "conv",
+   "inputs": [
+    "stack_histograms"
+   ],
+   "out": 17,
+   "kernel": [
+    6,
+    6
+   ],
+   "stride": 6,
+   "padding": 0
+  },
+  {
+   "name": "fine_layout",
+   "op": "reshape",
+   "inputs": [
+    "take_features"
+   ],
+   "shape": [
+    1,
+    204,
+    12
+   ]
+  },
+  {
+   "name": "fine_dc",
+   "op": "conv",
+   "inputs": [
+    "fine_layout"
+   ],
+   "out": 144,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 12,
+   "padding": 0
+  },
+  {
+   "name": "fine_stripes",
+   "op": "reshape",
+   "inputs": [
+    "fine_dc"
+   ],
+   "shape": [
+    1,
+    144,
+    17
+   ]
+  },
+  {
+   "name": "fine_norm",
+   "op": "norm",
+   "inputs": [
+    "fine_stripes"
+   ]
+  },
+  {
+   "name": "coarse_edges",
+   "op": "conv",
+   "inputs": [
+    "moments"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_cells",
+   "op": "avgpool",
+   "inputs": [
+    "coarse_edges"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "coarse_layout",
+   "op": "reshape",
+   "inputs": [
+    "coarse_cells"
+   ],
+   "shape": [
+    1,
+    48,
+    6
+   ]
+  },
+  {
+   "name": "coarse_dc",
+   "op": "conv",
+   "inputs": [
+    "coarse_layout"
+   ],
+   "out": 36,
+   "kernel": [
+    6,
+    6
+   ],
+   "stride": 6,
+   "padding": 0
+  },
+  {
+   "name": "coarse_stripes",
+   "op": "reshape",
+   "inputs": [
+    "coarse_dc"
+   ],
+   "shape": [
+    1,
+    36,
+    8
+   ]
+  },
+  {
+   "name": "coarse_norm",
+   "op": "norm",
+   "inputs": [
+    "coarse_stripes"
+   ]
+  },
+  {
+   "name": "finger_match",
+   "op": "dense",
+   "inputs": [
+    "fine_norm"
+   ],
+   "out": 36864
+  },
+  {
+   "name": "outline_match",
+   "op": "dense",
+   "inputs": [
+    "coarse_norm"
+   ],
+   "out": 36864
+  },
+  {
+   "name": "pose_matches",
+   "op": "add",
+   "inputs": [
+    "finger_match",
+    "outline_match"
+   ]
+  },
+  {
+   "name": "by_pose",
+   "op": "reshape",
+   "inputs": [
+    "pose_matches"
+   ],
+   "shape": [
+    24,
+    4,
+    384
+   ]
+  },
+  {
+   "name": "best_views",
+   "op": "maxpool",
+   "inputs": [
+    "by_pose"
+   ],
+   "size": [
+    1,
+    384
+   ],
+   "stride": [
+    1,
+    384
+   ]
+  },
+  {
+   "name": "letter_evidence",
+   "op": "avgpool",
+   "inputs": [
+    "best_views"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "letters",
+   "op": "reshape",
+   "inputs": [
+    "letter_evidence"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

@@ -1,0 +1,363 @@
+{
+  "layers": [
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_normalization",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "analytic_derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast_normalization"
+      ],
+      "out": 16,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "signed_edge_relu",
+      "op": "relu",
+      "inputs": [
+        "analytic_derivatives"
+      ]
+    },
+    {
+      "name": "unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "signed_edge_relu"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "unsigned_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "color_cells",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "color_ramp_bounds",
+      "op": "conv",
+      "inputs": [
+        "color_cells"
+      ],
+      "out": 40,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_ramp_relu",
+      "op": "relu",
+      "inputs": [
+        "color_ramp_bounds"
+      ]
+    },
+    {
+      "name": "semantic_color_bounds",
+      "op": "conv",
+      "inputs": [
+        "color_ramp_relu"
+      ],
+      "out": 26,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "semantic_color_relu",
+      "op": "relu",
+      "inputs": [
+        "semantic_color_bounds"
+      ]
+    },
+    {
+      "name": "semantic_colors",
+      "op": "conv",
+      "inputs": [
+        "semantic_color_relu"
+      ],
+      "out": 13,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_regions",
+      "op": "dense",
+      "inputs": [
+        "semantic_colors"
+      ],
+      "out": 168
+    },
+    {
+      "name": "edge_regions",
+      "op": "dense",
+      "inputs": [
+        "edge_cells"
+      ],
+      "out": 168
+    },
+    {
+      "name": "regional_features",
+      "op": "add",
+      "inputs": [
+        "color_regions",
+        "edge_regions"
+      ]
+    },
+    {
+      "name": "scene_rules",
+      "op": "dense",
+      "inputs": [
+        "regional_features"
+      ],
+      "out": 40
+    },
+    {
+      "name": "scene_support",
+      "op": "relu",
+      "inputs": [
+        "scene_rules"
+      ]
+    },
+    {
+      "name": "scene_rule_groups",
+      "op": "reshape",
+      "inputs": [
+        "scene_support"
+      ],
+      "shape": [
+        10,
+        4,
+        1
+      ]
+    },
+    {
+      "name": "best_scene_explanation",
+      "op": "maxpool",
+      "inputs": [
+        "scene_rule_groups"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "scene_vector",
+      "op": "reshape",
+      "inputs": [
+        "best_scene_explanation"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "geometry_edge_channels",
+      "op": "conv",
+      "inputs": [
+        "edge_cells"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "luminance_cells",
+      "op": "avgpool",
+      "inputs": [
+        "contrast_normalization"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "geometry_contrast_channel",
+      "op": "conv",
+      "inputs": [
+        "luminance_cells"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "geometry_channels",
+      "op": "add",
+      "inputs": [
+        "geometry_edge_channels",
+        "geometry_contrast_channel"
+      ]
+    },
+    {
+      "name": "analytic_object_models",
+      "op": "conv",
+      "inputs": [
+        "geometry_channels"
+      ],
+      "out": 720,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "translation_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "analytic_object_models"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "object_view_groups",
+      "op": "reshape",
+      "inputs": [
+        "translation_invariance"
+      ],
+      "shape": [
+        10,
+        72,
+        1
+      ]
+    },
+    {
+      "name": "view_scale_polarity_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "object_view_groups"
+      ],
+      "size": [
+        72,
+        1
+      ],
+      "stride": [
+        72,
+        1
+      ]
+    },
+    {
+      "name": "geometry_vector",
+      "op": "reshape",
+      "inputs": [
+        "view_scale_polarity_invariance"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "context_scores",
+      "op": "dense",
+      "inputs": [
+        "scene_vector"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shape_scores",
+      "op": "dense",
+      "inputs": [
+        "geometry_vector"
+      ],
+      "out": 10
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "context_scores",
+        "shape_scores"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 8,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 3,
+   "padding": 2
+  },
+  {
+   "name": "c4",
+   "op": "conv",
+   "inputs": [
+    "c3"
+   ],
+   "out": 64,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r4",
+   "op": "relu",
+   "inputs": [
+    "c4"
+   ]
+  },
+  {
+   "name": "c5",
+   "op": "conv",
+   "inputs": [
+    "r4"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fc",
+   "op": "dense",
+   "inputs": [
+    "c5"
+   ],
+   "out": 230000
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "fc"
+   ],
+   "shape": [
+    1,
+    10,
+    23000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    23000
+   ],
+   "stride": [
+    1,
+    23000
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

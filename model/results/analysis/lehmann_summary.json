@@ -1,0 +1,408 @@
+{
+ "astra-digits": {
+  "run": "astra-digits-design-1",
+  "designed": 0.9323999881744385,
+  "ours": 0.9819999933242798,
+  "standard": {
+   "first": 0.8651000261306763,
+   "end": 0.9837999939918518,
+   "min": 0.8651000261306763,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.9348999857902527,
+   "end": 0.9847999811172485,
+   "min": 0.880299985408783,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.9319000244140625,
+   "end": 0.8319000005722046,
+   "min": 0.8130999803543091,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.8651000261306763,
+   "end": 0.9828000068664551,
+   "min": 0.8651000261306763,
+   "diverged": false
+  }
+ },
+ "astra-clothing": {
+  "run": "astra-clothing-design-1",
+  "designed": 0.6801999807357788,
+  "ours": 0.8676999807357788,
+  "standard": {
+   "first": 0.6491000056266785,
+   "end": 0.8769999742507935,
+   "min": 0.6491000056266785,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.7337999939918518,
+   "end": 0.8589000105857849,
+   "min": 0.6801999807357788,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.7139999866485596,
+   "end": 0.8400999903678894,
+   "min": 0.6801999807357788,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.6883999705314636,
+   "end": 0.7883999943733215,
+   "min": 0.6692000031471252,
+   "diverged": false
+  }
+ },
+ "astra-traffic": {
+  "run": "astra-traffic-design-1",
+  "designed": 0.798020601272583,
+  "ours": 0.9216943979263306,
+  "standard": {
+   "first": 0.672288179397583,
+   "end": 0.9237529635429382,
+   "min": 0.672288179397583,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.8485352396965027,
+   "end": 0.9725257158279419,
+   "min": 0.798020601272583,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.7992874383926392,
+   "end": 0.8407759070396423,
+   "min": 0.798020601272583,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.6888360977172852,
+   "end": 0.9207442402839661,
+   "min": 0.6888360977172852,
+   "diverged": false
+  }
+ },
+ "astra-galaxies": {
+  "run": "astra-galaxies-design-1",
+  "designed": 0.5171637535095215,
+  "ours": 0.6601012945175171,
+  "standard": {
+   "first": 0.04614518955349922,
+   "end": 0.28193584084510803,
+   "min": 0.04614518955349922,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.12605515122413635,
+   "end": 0.30557119846343994,
+   "min": 0.11480022221803665,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.13224536180496216,
+   "end": 0.5869442820549011,
+   "min": 0.13224536180496216,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.10298255831003189,
+   "end": 0.4040517807006836,
+   "min": 0.10298255831003189,
+   "diverged": false
+  }
+ },
+ "astra-letters": {
+  "run": "astra-letters-design-1",
+  "designed": 0.5330451726913452,
+  "ours": 0.7826268672943115,
+  "standard": {
+   "first": 0.754601240158081,
+   "end": 0.9793642163276672,
+   "min": 0.5330451726913452,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.6879531741142273,
+   "end": 0.9931678771972656,
+   "min": 0.5330451726913452,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.5336028933525085,
+   "end": 0.5593976378440857,
+   "min": 0.5330451726913452,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.690741777420044,
+   "end": 0.9834076762199402,
+   "min": 0.4907975494861603,
+   "diverged": false
+  }
+ },
+ "astra-cifar": {
+  "run": "astra-cifar-design-1",
+  "designed": 0.2976999878883362,
+  "ours": 0.4814999997615814,
+  "standard": {
+   "first": 0.40950000286102295,
+   "end": 0.6837999820709229,
+   "min": 0.2976999878883362,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.43880000710487366,
+   "end": 0.6503999829292297,
+   "min": 0.2976999878883362,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.32659998536109924,
+   "end": 0.41780000925064087,
+   "min": 0.2976999878883362,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.4361000061035156,
+   "end": 0.6811000108718872,
+   "min": 0.3221000134944916,
+   "diverged": false
+  }
+ },
+ "astra-person": {
+  "run": "astra-person-design-1",
+  "designed": 0.5993066430091858,
+  "ours": 0.6833317875862122,
+  "standard": {
+   "first": 0.6274062395095825,
+   "end": 0.7182738780975342,
+   "min": 0.5993066430091858,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.6273150444030762,
+   "end": 0.7100629210472107,
+   "min": 0.5993066430091858,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.5990329384803772,
+   "end": 0.6064227819442749,
+   "min": 0.5990329384803772,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.6274062395095825,
+   "end": 0.7310464382171631,
+   "min": 0.5993066430091858,
+   "diverged": false
+  }
+ },
+ "fable-digits": {
+  "run": "fable-digits-design-1",
+  "designed": 0.9592999815940857,
+  "ours": 0.8427000045776367,
+  "standard": {
+   "first": 0.10320000350475311,
+   "end": 0.08919999748468399,
+   "min": 0.08919999748468399,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.9488999843597412,
+   "end": 0.9894000291824341,
+   "min": 0.9488999843597412,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.9304999709129333,
+   "end": 0.11349999904632568,
+   "min": 0.11339999735355377,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.11349999904632568,
+   "end": 0.11349999904632568,
+   "min": 0.09740000218153,
+   "diverged": false
+  }
+ },
+ "fable-clothing": {
+  "run": "fable-clothing-design-1",
+  "designed": 0.7317000031471252,
+  "ours": 0.8287000060081482,
+  "standard": {
+   "first": 0.6970000267028809,
+   "end": 0.792900025844574,
+   "min": 0.6970000267028809,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.7028999924659729,
+   "end": 0.7875999808311462,
+   "min": 0.7028999924659729,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.633899986743927,
+   "end": 0.7142000198364258,
+   "min": 0.6256999969482422,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.720300018787384,
+   "end": 0.7958999872207642,
+   "min": 0.720300018787384,
+   "diverged": false
+  }
+ },
+ "fable-traffic": {
+  "run": "fable-traffic-design-1",
+  "designed": 0.5111638903617859,
+  "ours": 0.6230403780937195,
+  "standard": {
+   "first": 0.4494853615760803,
+   "end": 0.6664291620254517,
+   "min": 0.4395090937614441,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.4660332500934601,
+   "end": 0.7144893407821655,
+   "min": 0.4322248697280884,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.5110847353935242,
+   "end": 0.5085510611534119,
+   "min": 0.5085510611534119,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.4202691912651062,
+   "end": 0.677513837814331,
+   "min": 0.4170229732990265,
+   "diverged": false
+  }
+ },
+ "fable-galaxies": {
+  "run": "fable-galaxies-design-1",
+  "designed": 0.41868317127227783,
+  "ours": 0.21553179621696472,
+  "standard": {
+   "first": 0.261114239692688,
+   "end": 0.5801913142204285,
+   "min": 0.261114239692688,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.4254361391067505,
+   "end": 0.5503658056259155,
+   "min": 0.41868317127227783,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.2706809341907501,
+   "end": 0.43106359243392944,
+   "min": 0.24366910755634308,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.28306132555007935,
+   "end": 0.6280247569084167,
+   "min": 0.28306132555007935,
+   "diverged": false
+  }
+ },
+ "fable-letters": {
+  "run": "fable-letters-design-1",
+  "designed": 0.32696598768234253,
+  "ours": 0.7725878357887268,
+  "standard": {
+   "first": 0.3835750222206116,
+   "end": 0.6296709179878235,
+   "min": 0.32696598768234253,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.452314555644989,
+   "end": 0.6469603776931763,
+   "min": 0.32696598768234253,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.32696598768234253,
+   "end": 0.32696598768234253,
+   "min": 0.32696598768234253,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.3835750222206116,
+   "end": 0.6298103928565979,
+   "min": 0.32696598768234253,
+   "diverged": false
+  }
+ },
+ "fable-cifar": {
+  "run": "fable-cifar-design-1",
+  "designed": 0.20340000092983246,
+  "ours": 0.34709998965263367,
+  "standard": {
+   "first": 0.22589999437332153,
+   "end": 0.4512999951839447,
+   "min": 0.20340000092983246,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.22100000083446503,
+   "end": 0.4453999996185303,
+   "min": 0.20340000092983246,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.2037000060081482,
+   "end": 0.21209999918937683,
+   "min": 0.20340000092983246,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.23600000143051147,
+   "end": 0.44920000433921814,
+   "min": 0.2125999927520752,
+   "diverged": false
+  }
+ },
+ "fable-person": {
+  "run": "fable-person-design-1",
+  "designed": 0.6228446364402771,
+  "ours": 0.6672748923301697,
+  "standard": {
+   "first": 0.6047806143760681,
+   "end": 0.645287811756134,
+   "min": 0.5279628038406372,
+   "diverged": false
+  },
+  "structure": {
+   "first": 0.6225709319114685,
+   "end": 0.629413366317749,
+   "min": 0.5941976308822632,
+   "diverged": false
+  },
+  "sgd": {
+   "first": 0.6226621866226196,
+   "end": 0.6083386540412903,
+   "min": 0.6083386540412903,
+   "diverged": false
+  },
+  "calibrated": {
+   "first": 0.6118967533111572,
+   "end": 0.6732962131500244,
+   "min": 0.6101633310317993,
+   "diverged": false
+  }
+ }
+}

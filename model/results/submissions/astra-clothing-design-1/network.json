@@ -1,0 +1,742 @@
+{
+  "layers": [
+    {
+      "name": "foreground_hinges",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "foreground_pos",
+      "op": "relu",
+      "inputs": [
+        "foreground_hinges"
+      ]
+    },
+    {
+      "name": "fabric",
+      "op": "conv",
+      "inputs": [
+        "foreground_pos"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "silhouette_grid",
+      "op": "avgpool",
+      "inputs": [
+        "fabric"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "scanline_padding",
+      "op": "dense",
+      "inputs": [
+        "silhouette_grid"
+      ],
+      "out": 1120
+    },
+    {
+      "name": "scanlines",
+      "op": "reshape",
+      "inputs": [
+        "scanline_padding"
+      ],
+      "shape": [
+        1,
+        28,
+        40
+      ]
+    },
+    {
+      "name": "scanline_maxima",
+      "op": "maxpool",
+      "inputs": [
+        "scanlines"
+      ],
+      "size": [
+        1,
+        14
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "envelope_sides",
+      "op": "dense",
+      "inputs": [
+        "scanline_maxima"
+      ],
+      "out": 784
+    },
+    {
+      "name": "scanline_positive",
+      "op": "relu",
+      "inputs": [
+        "envelope_sides"
+      ]
+    },
+    {
+      "name": "extent_grids",
+      "op": "dense",
+      "inputs": [
+        "scanline_positive"
+      ],
+      "out": 588
+    },
+    {
+      "name": "unfilled_grid",
+      "op": "dense",
+      "inputs": [
+        "silhouette_grid"
+      ],
+      "out": 588
+    },
+    {
+      "name": "shape_measurements",
+      "op": "add",
+      "inputs": [
+        "extent_grids",
+        "unfilled_grid"
+      ]
+    },
+    {
+      "name": "paper_patterns",
+      "op": "dense",
+      "inputs": [
+        "shape_measurements"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "pattern_families",
+      "op": "reshape",
+      "inputs": [
+        "paper_patterns"
+      ],
+      "shape": [
+        10,
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "best_cut",
+      "op": "maxpool",
+      "inputs": [
+        "pattern_families"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "outline_vote",
+      "op": "reshape",
+      "inputs": [
+        "best_cut"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "exposure",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "linear_light",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "relative_light",
+      "op": "conv",
+      "inputs": [
+        "exposure"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "light",
+      "op": "add",
+      "inputs": [
+        "linear_light",
+        "relative_light"
+      ]
+    },
+    {
+      "name": "local_contrasts",
+      "op": "conv",
+      "inputs": [
+        "light"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "rectified_contrasts",
+      "op": "relu",
+      "inputs": [
+        "local_contrasts"
+      ]
+    },
+    {
+      "name": "border_for_envelope",
+      "op": "conv",
+      "inputs": [
+        "fabric"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "nearby_fabric",
+      "op": "maxpool",
+      "inputs": [
+        "border_for_envelope"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "inverted_envelope",
+      "op": "conv",
+      "inputs": [
+        "nearby_fabric"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "trim_envelope",
+      "op": "maxpool",
+      "inputs": [
+        "inverted_envelope"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "fabric_envelope",
+      "op": "conv",
+      "inputs": [
+        "trim_envelope"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "silhouette_flanks",
+      "op": "conv",
+      "inputs": [
+        "fabric_envelope"
+      ],
+      "out": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "oriented_flanks",
+      "op": "relu",
+      "inputs": [
+        "silhouette_flanks"
+      ]
+    },
+    {
+      "name": "columns_used",
+      "op": "maxpool",
+      "inputs": [
+        "fabric"
+      ],
+      "size": [
+        28,
+        1
+      ],
+      "stride": [
+        28,
+        1
+      ]
+    },
+    {
+      "name": "rows_used",
+      "op": "maxpool",
+      "inputs": [
+        "fabric"
+      ],
+      "size": [
+        1,
+        28
+      ],
+      "stride": [
+        1,
+        28
+      ]
+    },
+    {
+      "name": "raw_flank_signs",
+      "op": "conv",
+      "inputs": [
+        "fabric"
+      ],
+      "out": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "inner_fabric_edges",
+      "op": "relu",
+      "inputs": [
+        "raw_flank_signs"
+      ]
+    },
+    {
+      "name": "gap_boundaries",
+      "op": "conv",
+      "inputs": [
+        "fabric"
+      ],
+      "out": 4,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "open_spaces",
+      "op": "relu",
+      "inputs": [
+        "gap_boundaries"
+      ]
+    },
+    {
+      "name": "shoe_height_samples",
+      "op": "dense",
+      "inputs": [
+        "silhouette_grid"
+      ],
+      "out": 945
+    },
+    {
+      "name": "shoe_scan_sets",
+      "op": "reshape",
+      "inputs": [
+        "shoe_height_samples"
+      ],
+      "shape": [
+        1,
+        35,
+        27
+      ]
+    },
+    {
+      "name": "shoe_top_lines",
+      "op": "maxpool",
+      "inputs": [
+        "shoe_scan_sets"
+      ],
+      "size": [
+        1,
+        27
+      ],
+      "stride": [
+        1,
+        27
+      ]
+    },
+    {
+      "name": "enclosed_space_maps",
+      "op": "dense",
+      "inputs": [
+        "shape_measurements"
+      ],
+      "out": 392
+    },
+    {
+      "name": "enclosed_spaces",
+      "op": "reshape",
+      "inputs": [
+        "enclosed_space_maps"
+      ],
+      "shape": [
+        2,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "read_columns_used",
+      "op": "dense",
+      "inputs": [
+        "columns_used"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_rows_used",
+      "op": "dense",
+      "inputs": [
+        "rows_used"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_fabric",
+      "op": "dense",
+      "inputs": [
+        "fabric"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_oriented_flanks",
+      "op": "dense",
+      "inputs": [
+        "oriented_flanks"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_fabric_envelope",
+      "op": "dense",
+      "inputs": [
+        "fabric_envelope"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_inner_fabric_edges",
+      "op": "dense",
+      "inputs": [
+        "inner_fabric_edges"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_rectified_contrasts",
+      "op": "dense",
+      "inputs": [
+        "rectified_contrasts"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_light",
+      "op": "dense",
+      "inputs": [
+        "light"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_open_spaces",
+      "op": "dense",
+      "inputs": [
+        "open_spaces"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_shoe_top_lines",
+      "op": "dense",
+      "inputs": [
+        "shoe_top_lines"
+      ],
+      "out": 302
+    },
+    {
+      "name": "read_enclosed_spaces",
+      "op": "dense",
+      "inputs": [
+        "enclosed_spaces"
+      ],
+      "out": 302
+    },
+    {
+      "name": "observations",
+      "op": "add",
+      "inputs": [
+        "read_columns_used",
+        "read_rows_used",
+        "read_fabric",
+        "read_oriented_flanks",
+        "read_fabric_envelope",
+        "read_inner_fabric_edges",
+        "read_rectified_contrasts",
+        "read_light",
+        "read_open_spaces",
+        "read_shoe_top_lines",
+        "read_enclosed_spaces"
+      ]
+    },
+    {
+      "name": "evidence_ramps",
+      "op": "dense",
+      "inputs": [
+        "observations"
+      ],
+      "out": 290
+    },
+    {
+      "name": "evidence_positive",
+      "op": "relu",
+      "inputs": [
+        "evidence_ramps"
+      ]
+    },
+    {
+      "name": "local_combinations",
+      "op": "dense",
+      "inputs": [
+        "evidence_positive"
+      ],
+      "out": 314
+    },
+    {
+      "name": "construction_positive",
+      "op": "relu",
+      "inputs": [
+        "local_combinations"
+      ]
+    },
+    {
+      "name": "construction_vote",
+      "op": "dense",
+      "inputs": [
+        "construction_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "family_evidence",
+      "op": "dense",
+      "inputs": [
+        "construction_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "style_hypotheses",
+      "op": "add",
+      "inputs": [
+        "outline_vote",
+        "construction_vote"
+      ]
+    },
+    {
+      "name": "shape_hypotheses",
+      "op": "add",
+      "inputs": [
+        "outline_vote",
+        "family_evidence"
+      ]
+    },
+    {
+      "name": "style_collect",
+      "op": "dense",
+      "inputs": [
+        "style_hypotheses"
+      ],
+      "out": 20
+    },
+    {
+      "name": "style_sets",
+      "op": "reshape",
+      "inputs": [
+        "style_collect"
+      ],
+      "shape": [
+        1,
+        5,
+        4
+      ]
+    },
+    {
+      "name": "style_max",
+      "op": "maxpool",
+      "inputs": [
+        "style_sets"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "style_broadcast",
+      "op": "dense",
+      "inputs": [
+        "style_max"
+      ],
+      "out": 10
+    },
+    {
+      "name": "family_collect",
+      "op": "dense",
+      "inputs": [
+        "shape_hypotheses"
+      ],
+      "out": 20
+    },
+    {
+      "name": "family_sets",
+      "op": "reshape",
+      "inputs": [
+        "family_collect"
+      ],
+      "shape": [
+        1,
+        5,
+        4
+      ]
+    },
+    {
+      "name": "family_max",
+      "op": "maxpool",
+      "inputs": [
+        "family_sets"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "family_broadcast",
+      "op": "dense",
+      "inputs": [
+        "family_max"
+      ],
+      "out": 10
+    },
+    {
+      "name": "remove_local_max",
+      "op": "dense",
+      "inputs": [
+        "style_broadcast"
+      ],
+      "out": 10
+    },
+    {
+      "name": "restore_shape_max",
+      "op": "dense",
+      "inputs": [
+        "family_broadcast"
+      ],
+      "out": 10
+    },
+    {
+      "name": "family_calibration",
+      "op": "add",
+      "inputs": [
+        "remove_local_max",
+        "restore_shape_max"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "style_hypotheses",
+        "family_calibration"
+      ]
+    }
+  ]
+}

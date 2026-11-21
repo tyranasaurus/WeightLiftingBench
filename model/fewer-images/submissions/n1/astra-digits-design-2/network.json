@@ -1,0 +1,380 @@
+{
+  "layers": [
+    {
+      "name": "pen_filters",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 18,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "positive_responses",
+      "op": "relu",
+      "inputs": [
+        "pen_filters"
+      ]
+    },
+    {
+      "name": "integrate",
+      "op": "conv",
+      "inputs": [
+        "positive_responses"
+      ],
+      "out": 18,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "orientation_bins",
+      "op": "avgpool",
+      "inputs": [
+        "integrate"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "all_directions",
+      "op": "reshape",
+      "inputs": [
+        "orientation_bins"
+      ],
+      "shape": [
+        1,
+        126,
+        7
+      ]
+    },
+    {
+      "name": "normalized_directions",
+      "op": "norm",
+      "inputs": [
+        "all_directions"
+      ]
+    },
+    {
+      "name": "density_bins",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_density",
+      "op": "norm",
+      "inputs": [
+        "density_bins"
+      ]
+    },
+    {
+      "name": "match_directions",
+      "op": "dense",
+      "inputs": [
+        "normalized_directions"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "match_density",
+      "op": "dense",
+      "inputs": [
+        "normalized_density"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "stroke_match",
+      "op": "add",
+      "inputs": [
+        "match_directions",
+        "match_density"
+      ]
+    },
+    {
+      "name": "by_class_and_group",
+      "op": "reshape",
+      "inputs": [
+        "stroke_match"
+      ],
+      "shape": [
+        10,
+        12,
+        160
+      ]
+    },
+    {
+      "name": "group_winners",
+      "op": "maxpool",
+      "inputs": [
+        "by_class_and_group"
+      ],
+      "size": [
+        1,
+        160
+      ],
+      "stride": [
+        1,
+        160
+      ]
+    },
+    {
+      "name": "best_match",
+      "op": "maxpool",
+      "inputs": [
+        "group_winners"
+      ],
+      "size": [
+        12,
+        1
+      ],
+      "stride": [
+        12,
+        1
+      ]
+    },
+    {
+      "name": "consistent_match",
+      "op": "avgpool",
+      "inputs": [
+        "group_winners"
+      ],
+      "size": [
+        12,
+        1
+      ],
+      "stride": [
+        12,
+        1
+      ]
+    },
+    {
+      "name": "peak_vector",
+      "op": "reshape",
+      "inputs": [
+        "best_match"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "consensus_vector",
+      "op": "reshape",
+      "inputs": [
+        "consistent_match"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "peak_vote",
+      "op": "dense",
+      "inputs": [
+        "peak_vector"
+      ],
+      "out": 10
+    },
+    {
+      "name": "consensus_vote",
+      "op": "dense",
+      "inputs": [
+        "consensus_vector"
+      ],
+      "out": 10
+    },
+    {
+      "name": "cuts",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cut_hinges",
+      "op": "relu",
+      "inputs": [
+        "cuts"
+      ]
+    },
+    {
+      "name": "soft_ink",
+      "op": "conv",
+      "inputs": [
+        "cut_hinges"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cell_border",
+      "op": "conv",
+      "inputs": [
+        "soft_ink"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "vertices",
+      "op": "maxpool",
+      "inputs": [
+        "cell_border"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "horizontal_edges",
+      "op": "maxpool",
+      "inputs": [
+        "cell_border"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "vertical_edges",
+      "op": "maxpool",
+      "inputs": [
+        "cell_border"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "V",
+      "op": "dense",
+      "inputs": [
+        "vertices"
+      ],
+      "out": 2
+    },
+    {
+      "name": "Eh",
+      "op": "dense",
+      "inputs": [
+        "horizontal_edges"
+      ],
+      "out": 2
+    },
+    {
+      "name": "Ev",
+      "op": "dense",
+      "inputs": [
+        "vertical_edges"
+      ],
+      "out": 2
+    },
+    {
+      "name": "Fc",
+      "op": "dense",
+      "inputs": [
+        "soft_ink"
+      ],
+      "out": 2
+    },
+    {
+      "name": "euler_halves",
+      "op": "add",
+      "inputs": [
+        "V",
+        "Eh",
+        "Ev",
+        "Fc"
+      ]
+    },
+    {
+      "name": "euler_intervals",
+      "op": "dense",
+      "inputs": [
+        "euler_halves"
+      ],
+      "out": 28
+    },
+    {
+      "name": "euler_violations",
+      "op": "relu",
+      "inputs": [
+        "euler_intervals"
+      ]
+    },
+    {
+      "name": "topology_adjustment",
+      "op": "dense",
+      "inputs": [
+        "euler_violations"
+      ],
+      "out": 10
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "peak_vote",
+        "consensus_vote",
+        "topology_adjustment"
+      ]
+    }
+  ]
+}

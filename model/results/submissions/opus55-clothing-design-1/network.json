@@ -1,0 +1,360 @@
+{
+ "layers": [
+  {
+   "name": "px1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 17,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "px1r",
+   "op": "relu",
+   "inputs": [
+    "px1"
+   ]
+  },
+  {
+   "name": "px2",
+   "op": "conv",
+   "inputs": [
+    "px1r"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "px2r",
+   "op": "relu",
+   "inputs": [
+    "px2"
+   ]
+  },
+  {
+   "name": "px3",
+   "op": "conv",
+   "inputs": [
+    "px2r"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pix",
+   "op": "relu",
+   "inputs": [
+    "px3"
+   ]
+  },
+  {
+   "name": "msel",
+   "op": "conv",
+   "inputs": [
+    "pix"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cum",
+   "op": "dense",
+   "inputs": [
+    "msel"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "cumr",
+   "op": "reshape",
+   "inputs": [
+    "cum"
+   ],
+   "shape": [
+    9,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "cumrr",
+   "op": "relu",
+   "inputs": [
+    "cumr"
+   ]
+  },
+  {
+   "name": "qc",
+   "op": "conv",
+   "inputs": [
+    "cumrr"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "q",
+   "op": "relu",
+   "inputs": [
+    "qc"
+   ]
+  },
+  {
+   "name": "hsel",
+   "op": "conv",
+   "inputs": [
+    "q"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tmatch",
+   "op": "dense",
+   "inputs": [
+    "hsel"
+   ],
+   "out": 2640
+  },
+  {
+   "name": "tm3",
+   "op": "reshape",
+   "inputs": [
+    "tmatch"
+   ],
+   "shape": [
+    10,
+    264,
+    1
+   ]
+  },
+  {
+   "name": "tmax",
+   "op": "maxpool",
+   "inputs": [
+    "tm3"
+   ],
+   "size": [
+    264,
+    1
+   ],
+   "stride": [
+    264,
+    1
+   ]
+  },
+  {
+   "name": "tscore",
+   "op": "reshape",
+   "inputs": [
+    "tmax"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "vavg",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "z1",
+   "op": "conv",
+   "inputs": [
+    "vavg"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "z1r",
+   "op": "relu",
+   "inputs": [
+    "z1"
+   ]
+  },
+  {
+   "name": "z2",
+   "op": "conv",
+   "inputs": [
+    "z1r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "z2r",
+   "op": "relu",
+   "inputs": [
+    "z2"
+   ]
+  },
+  {
+   "name": "z3",
+   "op": "conv",
+   "inputs": [
+    "z2r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "zl",
+   "op": "relu",
+   "inputs": [
+    "z3"
+   ]
+  },
+  {
+   "name": "fq",
+   "op": "dense",
+   "inputs": [
+    "q"
+   ],
+   "out": 109
+  },
+  {
+   "name": "fp",
+   "op": "dense",
+   "inputs": [
+    "pix"
+   ],
+   "out": 109
+  },
+  {
+   "name": "fz",
+   "op": "dense",
+   "inputs": [
+    "zl"
+   ],
+   "out": 109
+  },
+  {
+   "name": "feat",
+   "op": "add",
+   "inputs": [
+    "fq",
+    "fp",
+    "fz"
+   ]
+  },
+  {
+   "name": "g1",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 74
+  },
+  {
+   "name": "g1r",
+   "op": "relu",
+   "inputs": [
+    "g1"
+   ]
+  },
+  {
+   "name": "ev1",
+   "op": "dense",
+   "inputs": [
+    "g1r"
+   ],
+   "out": 30
+  },
+  {
+   "name": "ev1r",
+   "op": "relu",
+   "inputs": [
+    "ev1"
+   ]
+  },
+  {
+   "name": "ev3",
+   "op": "dense",
+   "inputs": [
+    "ev1r"
+   ],
+   "out": 19
+  },
+  {
+   "name": "ev3r",
+   "op": "relu",
+   "inputs": [
+    "ev3"
+   ]
+  },
+  {
+   "name": "ev4",
+   "op": "dense",
+   "inputs": [
+    "ev3r"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "tscore",
+    "ev4"
+   ]
+  }
+ ]
+}

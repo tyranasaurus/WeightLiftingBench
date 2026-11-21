@@ -1,0 +1,2635 @@
+{
+ "layers": [
+  {
+   "name": "grad",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "grad_r",
+   "op": "relu",
+   "inputs": [
+    "grad"
+   ]
+  },
+  {
+   "name": "sharp",
+   "op": "conv",
+   "inputs": [
+    "grad_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sharp_r",
+   "op": "relu",
+   "inputs": [
+    "sharp"
+   ]
+  },
+  {
+   "name": "pool",
+   "op": "maxpool",
+   "inputs": [
+    "sharp_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "pool"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "h_ones",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "h_seed",
+   "op": "conv",
+   "inputs": [
+    "h_ones"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f0a",
+   "op": "conv",
+   "inputs": [
+    "h_seed"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f0b",
+   "op": "relu",
+   "inputs": [
+    "f0a"
+   ]
+  },
+  {
+   "name": "f0c",
+   "op": "conv",
+   "inputs": [
+    "f0b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f0d",
+   "op": "relu",
+   "inputs": [
+    "f0c"
+   ]
+  },
+  {
+   "name": "f1a",
+   "op": "conv",
+   "inputs": [
+    "f0d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f1b",
+   "op": "relu",
+   "inputs": [
+    "f1a"
+   ]
+  },
+  {
+   "name": "f1c",
+   "op": "conv",
+   "inputs": [
+    "f1b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f1d",
+   "op": "relu",
+   "inputs": [
+    "f1c"
+   ]
+  },
+  {
+   "name": "f2a",
+   "op": "conv",
+   "inputs": [
+    "f1d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f2b",
+   "op": "relu",
+   "inputs": [
+    "f2a"
+   ]
+  },
+  {
+   "name": "f2c",
+   "op": "conv",
+   "inputs": [
+    "f2b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f2d",
+   "op": "relu",
+   "inputs": [
+    "f2c"
+   ]
+  },
+  {
+   "name": "f3a",
+   "op": "conv",
+   "inputs": [
+    "f2d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f3b",
+   "op": "relu",
+   "inputs": [
+    "f3a"
+   ]
+  },
+  {
+   "name": "f3c",
+   "op": "conv",
+   "inputs": [
+    "f3b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f3d",
+   "op": "relu",
+   "inputs": [
+    "f3c"
+   ]
+  },
+  {
+   "name": "f4a",
+   "op": "conv",
+   "inputs": [
+    "f3d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f4b",
+   "op": "relu",
+   "inputs": [
+    "f4a"
+   ]
+  },
+  {
+   "name": "f4c",
+   "op": "conv",
+   "inputs": [
+    "f4b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f4d",
+   "op": "relu",
+   "inputs": [
+    "f4c"
+   ]
+  },
+  {
+   "name": "f5a",
+   "op": "conv",
+   "inputs": [
+    "f4d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f5b",
+   "op": "relu",
+   "inputs": [
+    "f5a"
+   ]
+  },
+  {
+   "name": "f5c",
+   "op": "conv",
+   "inputs": [
+    "f5b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f5d",
+   "op": "relu",
+   "inputs": [
+    "f5c"
+   ]
+  },
+  {
+   "name": "f6a",
+   "op": "conv",
+   "inputs": [
+    "f5d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f6b",
+   "op": "relu",
+   "inputs": [
+    "f6a"
+   ]
+  },
+  {
+   "name": "f6c",
+   "op": "conv",
+   "inputs": [
+    "f6b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f6d",
+   "op": "relu",
+   "inputs": [
+    "f6c"
+   ]
+  },
+  {
+   "name": "f7a",
+   "op": "conv",
+   "inputs": [
+    "f6d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f7b",
+   "op": "relu",
+   "inputs": [
+    "f7a"
+   ]
+  },
+  {
+   "name": "f7c",
+   "op": "conv",
+   "inputs": [
+    "f7b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f7d",
+   "op": "relu",
+   "inputs": [
+    "f7c"
+   ]
+  },
+  {
+   "name": "f8a",
+   "op": "conv",
+   "inputs": [
+    "f7d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f8b",
+   "op": "relu",
+   "inputs": [
+    "f8a"
+   ]
+  },
+  {
+   "name": "f8c",
+   "op": "conv",
+   "inputs": [
+    "f8b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f8d",
+   "op": "relu",
+   "inputs": [
+    "f8c"
+   ]
+  },
+  {
+   "name": "f9a",
+   "op": "conv",
+   "inputs": [
+    "f8d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f9b",
+   "op": "relu",
+   "inputs": [
+    "f9a"
+   ]
+  },
+  {
+   "name": "f9c",
+   "op": "conv",
+   "inputs": [
+    "f9b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f9d",
+   "op": "relu",
+   "inputs": [
+    "f9c"
+   ]
+  },
+  {
+   "name": "f10a",
+   "op": "conv",
+   "inputs": [
+    "f9d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f10b",
+   "op": "relu",
+   "inputs": [
+    "f10a"
+   ]
+  },
+  {
+   "name": "f10c",
+   "op": "conv",
+   "inputs": [
+    "f10b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f10d",
+   "op": "relu",
+   "inputs": [
+    "f10c"
+   ]
+  },
+  {
+   "name": "f11a",
+   "op": "conv",
+   "inputs": [
+    "f10d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f11b",
+   "op": "relu",
+   "inputs": [
+    "f11a"
+   ]
+  },
+  {
+   "name": "f11c",
+   "op": "conv",
+   "inputs": [
+    "f11b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f11d",
+   "op": "relu",
+   "inputs": [
+    "f11c"
+   ]
+  },
+  {
+   "name": "f12a",
+   "op": "conv",
+   "inputs": [
+    "f11d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f12b",
+   "op": "relu",
+   "inputs": [
+    "f12a"
+   ]
+  },
+  {
+   "name": "f12c",
+   "op": "conv",
+   "inputs": [
+    "f12b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f12d",
+   "op": "relu",
+   "inputs": [
+    "f12c"
+   ]
+  },
+  {
+   "name": "f13a",
+   "op": "conv",
+   "inputs": [
+    "f12d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f13b",
+   "op": "relu",
+   "inputs": [
+    "f13a"
+   ]
+  },
+  {
+   "name": "f13c",
+   "op": "conv",
+   "inputs": [
+    "f13b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f13d",
+   "op": "relu",
+   "inputs": [
+    "f13c"
+   ]
+  },
+  {
+   "name": "f14a",
+   "op": "conv",
+   "inputs": [
+    "f13d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f14b",
+   "op": "relu",
+   "inputs": [
+    "f14a"
+   ]
+  },
+  {
+   "name": "f14c",
+   "op": "conv",
+   "inputs": [
+    "f14b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f14d",
+   "op": "relu",
+   "inputs": [
+    "f14c"
+   ]
+  },
+  {
+   "name": "f15a",
+   "op": "conv",
+   "inputs": [
+    "f14d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f15b",
+   "op": "relu",
+   "inputs": [
+    "f15a"
+   ]
+  },
+  {
+   "name": "f15c",
+   "op": "conv",
+   "inputs": [
+    "f15b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f15d",
+   "op": "relu",
+   "inputs": [
+    "f15c"
+   ]
+  },
+  {
+   "name": "f16a",
+   "op": "conv",
+   "inputs": [
+    "f15d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f16b",
+   "op": "relu",
+   "inputs": [
+    "f16a"
+   ]
+  },
+  {
+   "name": "f16c",
+   "op": "conv",
+   "inputs": [
+    "f16b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f16d",
+   "op": "relu",
+   "inputs": [
+    "f16c"
+   ]
+  },
+  {
+   "name": "f17a",
+   "op": "conv",
+   "inputs": [
+    "f16d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f17b",
+   "op": "relu",
+   "inputs": [
+    "f17a"
+   ]
+  },
+  {
+   "name": "f17c",
+   "op": "conv",
+   "inputs": [
+    "f17b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f17d",
+   "op": "relu",
+   "inputs": [
+    "f17c"
+   ]
+  },
+  {
+   "name": "f18a",
+   "op": "conv",
+   "inputs": [
+    "f17d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f18b",
+   "op": "relu",
+   "inputs": [
+    "f18a"
+   ]
+  },
+  {
+   "name": "f18c",
+   "op": "conv",
+   "inputs": [
+    "f18b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f18d",
+   "op": "relu",
+   "inputs": [
+    "f18c"
+   ]
+  },
+  {
+   "name": "f19a",
+   "op": "conv",
+   "inputs": [
+    "f18d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f19b",
+   "op": "relu",
+   "inputs": [
+    "f19a"
+   ]
+  },
+  {
+   "name": "f19c",
+   "op": "conv",
+   "inputs": [
+    "f19b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f19d",
+   "op": "relu",
+   "inputs": [
+    "f19c"
+   ]
+  },
+  {
+   "name": "f20a",
+   "op": "conv",
+   "inputs": [
+    "f19d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f20b",
+   "op": "relu",
+   "inputs": [
+    "f20a"
+   ]
+  },
+  {
+   "name": "f20c",
+   "op": "conv",
+   "inputs": [
+    "f20b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f20d",
+   "op": "relu",
+   "inputs": [
+    "f20c"
+   ]
+  },
+  {
+   "name": "f21a",
+   "op": "conv",
+   "inputs": [
+    "f20d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f21b",
+   "op": "relu",
+   "inputs": [
+    "f21a"
+   ]
+  },
+  {
+   "name": "f21c",
+   "op": "conv",
+   "inputs": [
+    "f21b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f21d",
+   "op": "relu",
+   "inputs": [
+    "f21c"
+   ]
+  },
+  {
+   "name": "f22a",
+   "op": "conv",
+   "inputs": [
+    "f21d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f22b",
+   "op": "relu",
+   "inputs": [
+    "f22a"
+   ]
+  },
+  {
+   "name": "f22c",
+   "op": "conv",
+   "inputs": [
+    "f22b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f22d",
+   "op": "relu",
+   "inputs": [
+    "f22c"
+   ]
+  },
+  {
+   "name": "f23a",
+   "op": "conv",
+   "inputs": [
+    "f22d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f23b",
+   "op": "relu",
+   "inputs": [
+    "f23a"
+   ]
+  },
+  {
+   "name": "f23c",
+   "op": "conv",
+   "inputs": [
+    "f23b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f23d",
+   "op": "relu",
+   "inputs": [
+    "f23c"
+   ]
+  },
+  {
+   "name": "f24a",
+   "op": "conv",
+   "inputs": [
+    "f23d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f24b",
+   "op": "relu",
+   "inputs": [
+    "f24a"
+   ]
+  },
+  {
+   "name": "f24c",
+   "op": "conv",
+   "inputs": [
+    "f24b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f24d",
+   "op": "relu",
+   "inputs": [
+    "f24c"
+   ]
+  },
+  {
+   "name": "f25a",
+   "op": "conv",
+   "inputs": [
+    "f24d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f25b",
+   "op": "relu",
+   "inputs": [
+    "f25a"
+   ]
+  },
+  {
+   "name": "f25c",
+   "op": "conv",
+   "inputs": [
+    "f25b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f25d",
+   "op": "relu",
+   "inputs": [
+    "f25c"
+   ]
+  },
+  {
+   "name": "f26a",
+   "op": "conv",
+   "inputs": [
+    "f25d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f26b",
+   "op": "relu",
+   "inputs": [
+    "f26a"
+   ]
+  },
+  {
+   "name": "f26c",
+   "op": "conv",
+   "inputs": [
+    "f26b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f26d",
+   "op": "relu",
+   "inputs": [
+    "f26c"
+   ]
+  },
+  {
+   "name": "f27a",
+   "op": "conv",
+   "inputs": [
+    "f26d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f27b",
+   "op": "relu",
+   "inputs": [
+    "f27a"
+   ]
+  },
+  {
+   "name": "f27c",
+   "op": "conv",
+   "inputs": [
+    "f27b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f27d",
+   "op": "relu",
+   "inputs": [
+    "f27c"
+   ]
+  },
+  {
+   "name": "f28a",
+   "op": "conv",
+   "inputs": [
+    "f27d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f28b",
+   "op": "relu",
+   "inputs": [
+    "f28a"
+   ]
+  },
+  {
+   "name": "f28c",
+   "op": "conv",
+   "inputs": [
+    "f28b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f28d",
+   "op": "relu",
+   "inputs": [
+    "f28c"
+   ]
+  },
+  {
+   "name": "f29a",
+   "op": "conv",
+   "inputs": [
+    "f28d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f29b",
+   "op": "relu",
+   "inputs": [
+    "f29a"
+   ]
+  },
+  {
+   "name": "f29c",
+   "op": "conv",
+   "inputs": [
+    "f29b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f29d",
+   "op": "relu",
+   "inputs": [
+    "f29c"
+   ]
+  },
+  {
+   "name": "f30a",
+   "op": "conv",
+   "inputs": [
+    "f29d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f30b",
+   "op": "relu",
+   "inputs": [
+    "f30a"
+   ]
+  },
+  {
+   "name": "f30c",
+   "op": "conv",
+   "inputs": [
+    "f30b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f30d",
+   "op": "relu",
+   "inputs": [
+    "f30c"
+   ]
+  },
+  {
+   "name": "f31a",
+   "op": "conv",
+   "inputs": [
+    "f30d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f31b",
+   "op": "relu",
+   "inputs": [
+    "f31a"
+   ]
+  },
+  {
+   "name": "f31c",
+   "op": "conv",
+   "inputs": [
+    "f31b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f31d",
+   "op": "relu",
+   "inputs": [
+    "f31c"
+   ]
+  },
+  {
+   "name": "f32a",
+   "op": "conv",
+   "inputs": [
+    "f31d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f32b",
+   "op": "relu",
+   "inputs": [
+    "f32a"
+   ]
+  },
+  {
+   "name": "f32c",
+   "op": "conv",
+   "inputs": [
+    "f32b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f32d",
+   "op": "relu",
+   "inputs": [
+    "f32c"
+   ]
+  },
+  {
+   "name": "f33a",
+   "op": "conv",
+   "inputs": [
+    "f32d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f33b",
+   "op": "relu",
+   "inputs": [
+    "f33a"
+   ]
+  },
+  {
+   "name": "f33c",
+   "op": "conv",
+   "inputs": [
+    "f33b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f33d",
+   "op": "relu",
+   "inputs": [
+    "f33c"
+   ]
+  },
+  {
+   "name": "f34a",
+   "op": "conv",
+   "inputs": [
+    "f33d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f34b",
+   "op": "relu",
+   "inputs": [
+    "f34a"
+   ]
+  },
+  {
+   "name": "f34c",
+   "op": "conv",
+   "inputs": [
+    "f34b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f34d",
+   "op": "relu",
+   "inputs": [
+    "f34c"
+   ]
+  },
+  {
+   "name": "f35a",
+   "op": "conv",
+   "inputs": [
+    "f34d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f35b",
+   "op": "relu",
+   "inputs": [
+    "f35a"
+   ]
+  },
+  {
+   "name": "f35c",
+   "op": "conv",
+   "inputs": [
+    "f35b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f35d",
+   "op": "relu",
+   "inputs": [
+    "f35c"
+   ]
+  },
+  {
+   "name": "f36a",
+   "op": "conv",
+   "inputs": [
+    "f35d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f36b",
+   "op": "relu",
+   "inputs": [
+    "f36a"
+   ]
+  },
+  {
+   "name": "f36c",
+   "op": "conv",
+   "inputs": [
+    "f36b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f36d",
+   "op": "relu",
+   "inputs": [
+    "f36c"
+   ]
+  },
+  {
+   "name": "f37a",
+   "op": "conv",
+   "inputs": [
+    "f36d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f37b",
+   "op": "relu",
+   "inputs": [
+    "f37a"
+   ]
+  },
+  {
+   "name": "f37c",
+   "op": "conv",
+   "inputs": [
+    "f37b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f37d",
+   "op": "relu",
+   "inputs": [
+    "f37c"
+   ]
+  },
+  {
+   "name": "f38a",
+   "op": "conv",
+   "inputs": [
+    "f37d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f38b",
+   "op": "relu",
+   "inputs": [
+    "f38a"
+   ]
+  },
+  {
+   "name": "f38c",
+   "op": "conv",
+   "inputs": [
+    "f38b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f38d",
+   "op": "relu",
+   "inputs": [
+    "f38c"
+   ]
+  },
+  {
+   "name": "f39a",
+   "op": "conv",
+   "inputs": [
+    "f38d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f39b",
+   "op": "relu",
+   "inputs": [
+    "f39a"
+   ]
+  },
+  {
+   "name": "f39c",
+   "op": "conv",
+   "inputs": [
+    "f39b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f39d",
+   "op": "relu",
+   "inputs": [
+    "f39c"
+   ]
+  },
+  {
+   "name": "f40a",
+   "op": "conv",
+   "inputs": [
+    "f39d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f40b",
+   "op": "relu",
+   "inputs": [
+    "f40a"
+   ]
+  },
+  {
+   "name": "f40c",
+   "op": "conv",
+   "inputs": [
+    "f40b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f40d",
+   "op": "relu",
+   "inputs": [
+    "f40c"
+   ]
+  },
+  {
+   "name": "f41a",
+   "op": "conv",
+   "inputs": [
+    "f40d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f41b",
+   "op": "relu",
+   "inputs": [
+    "f41a"
+   ]
+  },
+  {
+   "name": "f41c",
+   "op": "conv",
+   "inputs": [
+    "f41b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f41d",
+   "op": "relu",
+   "inputs": [
+    "f41c"
+   ]
+  },
+  {
+   "name": "f42a",
+   "op": "conv",
+   "inputs": [
+    "f41d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f42b",
+   "op": "relu",
+   "inputs": [
+    "f42a"
+   ]
+  },
+  {
+   "name": "f42c",
+   "op": "conv",
+   "inputs": [
+    "f42b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f42d",
+   "op": "relu",
+   "inputs": [
+    "f42c"
+   ]
+  },
+  {
+   "name": "f43a",
+   "op": "conv",
+   "inputs": [
+    "f42d"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "f43b",
+   "op": "relu",
+   "inputs": [
+    "f43a"
+   ]
+  },
+  {
+   "name": "f43c",
+   "op": "conv",
+   "inputs": [
+    "f43b"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f43d",
+   "op": "relu",
+   "inputs": [
+    "f43c"
+   ]
+  },
+  {
+   "name": "hole",
+   "op": "conv",
+   "inputs": [
+    "f43d"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hole_r",
+   "op": "relu",
+   "inputs": [
+    "hole"
+   ]
+  },
+  {
+   "name": "hpool",
+   "op": "avgpool",
+   "inputs": [
+    "hole_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "hblur",
+   "op": "conv",
+   "inputs": [
+    "hpool"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "r_init",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r0",
+   "op": "conv",
+   "inputs": [
+    "r_init"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r0r",
+   "op": "relu",
+   "inputs": [
+    "r0"
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "conv",
+   "inputs": [
+    "r0r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r1r",
+   "op": "relu",
+   "inputs": [
+    "r1"
+   ]
+  },
+  {
+   "name": "r2",
+   "op": "conv",
+   "inputs": [
+    "r1r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r2r",
+   "op": "relu",
+   "inputs": [
+    "r2"
+   ]
+  },
+  {
+   "name": "r3",
+   "op": "conv",
+   "inputs": [
+    "r2r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r3r",
+   "op": "relu",
+   "inputs": [
+    "r3"
+   ]
+  },
+  {
+   "name": "r4",
+   "op": "conv",
+   "inputs": [
+    "r3r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r4r",
+   "op": "relu",
+   "inputs": [
+    "r4"
+   ]
+  },
+  {
+   "name": "r5",
+   "op": "conv",
+   "inputs": [
+    "r4r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r5r",
+   "op": "relu",
+   "inputs": [
+    "r5"
+   ]
+  },
+  {
+   "name": "r6",
+   "op": "conv",
+   "inputs": [
+    "r5r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r6r",
+   "op": "relu",
+   "inputs": [
+    "r6"
+   ]
+  },
+  {
+   "name": "r7",
+   "op": "conv",
+   "inputs": [
+    "r6r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r7r",
+   "op": "relu",
+   "inputs": [
+    "r7"
+   ]
+  },
+  {
+   "name": "r8",
+   "op": "conv",
+   "inputs": [
+    "r7r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r8r",
+   "op": "relu",
+   "inputs": [
+    "r8"
+   ]
+  },
+  {
+   "name": "r9",
+   "op": "conv",
+   "inputs": [
+    "r8r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r9r",
+   "op": "relu",
+   "inputs": [
+    "r9"
+   ]
+  },
+  {
+   "name": "r10",
+   "op": "conv",
+   "inputs": [
+    "r9r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r10r",
+   "op": "relu",
+   "inputs": [
+    "r10"
+   ]
+  },
+  {
+   "name": "r11",
+   "op": "conv",
+   "inputs": [
+    "r10r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r11r",
+   "op": "relu",
+   "inputs": [
+    "r11"
+   ]
+  },
+  {
+   "name": "r12",
+   "op": "conv",
+   "inputs": [
+    "r11r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r12r",
+   "op": "relu",
+   "inputs": [
+    "r12"
+   ]
+  },
+  {
+   "name": "r13",
+   "op": "conv",
+   "inputs": [
+    "r12r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r13r",
+   "op": "relu",
+   "inputs": [
+    "r13"
+   ]
+  },
+  {
+   "name": "r14",
+   "op": "conv",
+   "inputs": [
+    "r13r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r14r",
+   "op": "relu",
+   "inputs": [
+    "r14"
+   ]
+  },
+  {
+   "name": "r15",
+   "op": "conv",
+   "inputs": [
+    "r14r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r15r",
+   "op": "relu",
+   "inputs": [
+    "r15"
+   ]
+  },
+  {
+   "name": "r16",
+   "op": "conv",
+   "inputs": [
+    "r15r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r16r",
+   "op": "relu",
+   "inputs": [
+    "r16"
+   ]
+  },
+  {
+   "name": "r17",
+   "op": "conv",
+   "inputs": [
+    "r16r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r17r",
+   "op": "relu",
+   "inputs": [
+    "r17"
+   ]
+  },
+  {
+   "name": "r18",
+   "op": "conv",
+   "inputs": [
+    "r17r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r18r",
+   "op": "relu",
+   "inputs": [
+    "r18"
+   ]
+  },
+  {
+   "name": "r19",
+   "op": "conv",
+   "inputs": [
+    "r18r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r19r",
+   "op": "relu",
+   "inputs": [
+    "r19"
+   ]
+  },
+  {
+   "name": "r20",
+   "op": "conv",
+   "inputs": [
+    "r19r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r20r",
+   "op": "relu",
+   "inputs": [
+    "r20"
+   ]
+  },
+  {
+   "name": "r21",
+   "op": "conv",
+   "inputs": [
+    "r20r"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r21r",
+   "op": "relu",
+   "inputs": [
+    "r21"
+   ]
+  },
+  {
+   "name": "codes",
+   "op": "conv",
+   "inputs": [
+    "r21r"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "codes_r",
+   "op": "relu",
+   "inputs": [
+    "codes"
+   ]
+  },
+  {
+   "name": "cpool",
+   "op": "avgpool",
+   "inputs": [
+    "codes_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "cblur",
+   "op": "conv",
+   "inputs": [
+    "cpool"
+   ],
+   "out": 9,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "blur"
+   ],
+   "shape": [
+    1,
+    1,
+    1568
+   ]
+  },
+  {
+   "name": "unit",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "unit"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "hmatch",
+   "op": "dense",
+   "inputs": [
+    "hblur"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "cflat",
+   "op": "reshape",
+   "inputs": [
+    "cblur"
+   ],
+   "shape": [
+    1,
+    1,
+    1764
+   ]
+  },
+  {
+   "name": "cunit",
+   "op": "norm",
+   "inputs": [
+    "cflat"
+   ]
+  },
+  {
+   "name": "cmatch",
+   "op": "dense",
+   "inputs": [
+    "cunit"
+   ],
+   "out": 30000
+  },
+  {
+   "name": "total",
+   "op": "add",
+   "inputs": [
+    "match",
+    "hmatch",
+    "cmatch"
+   ]
+  },
+  {
+   "name": "byclass",
+   "op": "reshape",
+   "inputs": [
+    "total"
+   ],
+   "shape": [
+    1,
+    10,
+    3000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "byclass"
+   ],
+   "size": [
+    1,
+    3000
+   ],
+   "stride": [
+    1,
+    3000
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

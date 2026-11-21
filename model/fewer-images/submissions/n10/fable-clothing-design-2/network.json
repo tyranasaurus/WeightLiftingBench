@@ -1,0 +1,344 @@
+{
+ "layers": [
+  {
+   "name": "ramp",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ramp_r",
+   "op": "relu",
+   "inputs": [
+    "ramp"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "ramp_r"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "feat_n",
+   "op": "norm",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "feat_n"
+   ],
+   "out": 100000
+  },
+  {
+   "name": "match_g",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    10000
+   ]
+  },
+  {
+   "name": "match_max",
+   "op": "maxpool",
+   "inputs": [
+    "match_g"
+   ],
+   "size": [
+    1,
+    10000
+   ],
+   "stride": [
+    1,
+    10000
+   ]
+  },
+  {
+   "name": "shape_score",
+   "op": "reshape",
+   "inputs": [
+    "match_max"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "m_neg",
+   "op": "conv",
+   "inputs": [
+    "ramp_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "ero_neg",
+   "op": "maxpool",
+   "inputs": [
+    "m_neg"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "ero",
+   "op": "conv",
+   "inputs": [
+    "ero_neg"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "opened",
+   "op": "maxpool",
+   "inputs": [
+    "ero"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "m_pad",
+   "op": "conv",
+   "inputs": [
+    "ramp_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "dil",
+   "op": "maxpool",
+   "inputs": [
+    "m_pad"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "dil_neg",
+   "op": "conv",
+   "inputs": [
+    "dil"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "closed_neg",
+   "op": "maxpool",
+   "inputs": [
+    "dil_neg"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "s_ink",
+   "op": "dense",
+   "inputs": [
+    "ramp_r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "s_open",
+   "op": "dense",
+   "inputs": [
+    "opened"
+   ],
+   "out": 1
+  },
+  {
+   "name": "s_closed",
+   "op": "dense",
+   "inputs": [
+    "closed_neg"
+   ],
+   "out": 1
+  },
+  {
+   "name": "s_sum",
+   "op": "add",
+   "inputs": [
+    "s_ink",
+    "s_open",
+    "s_closed"
+   ]
+  },
+  {
+   "name": "s_ramp",
+   "op": "dense",
+   "inputs": [
+    "s_sum"
+   ],
+   "out": 2
+  },
+  {
+   "name": "s_ramp_r",
+   "op": "relu",
+   "inputs": [
+    "s_ramp"
+   ]
+  },
+  {
+   "name": "strappy",
+   "op": "dense",
+   "inputs": [
+    "s_ramp_r"
+   ],
+   "out": 10
+  },
+  {
+   "name": "img_n",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "line",
+   "op": "dense",
+   "inputs": [
+    "img_n"
+   ],
+   "out": 14
+  },
+  {
+   "name": "line_r",
+   "op": "relu",
+   "inputs": [
+    "line"
+   ]
+  },
+  {
+   "name": "line_g",
+   "op": "reshape",
+   "inputs": [
+    "line_r"
+   ],
+   "shape": [
+    1,
+    1,
+    14
+   ]
+  },
+  {
+   "name": "line_max",
+   "op": "maxpool",
+   "inputs": [
+    "line_g"
+   ],
+   "size": [
+    1,
+    14
+   ],
+   "stride": [
+    1,
+    14
+   ]
+  },
+  {
+   "name": "line_ramp",
+   "op": "dense",
+   "inputs": [
+    "line_max"
+   ],
+   "out": 2
+  },
+  {
+   "name": "line_ramp_r",
+   "op": "relu",
+   "inputs": [
+    "line_ramp"
+   ]
+  },
+  {
+   "name": "opening",
+   "op": "dense",
+   "inputs": [
+    "line_ramp_r"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape_score",
+    "strappy",
+    "opening"
+   ]
+  }
+ ]
+}

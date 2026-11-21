@@ -1,0 +1,812 @@
+{
+ "layers": [
+  {
+   "name": "tone_knots",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tone_relu",
+   "op": "relu",
+   "inputs": [
+    "tone_knots"
+   ]
+  },
+  {
+   "name": "radiance",
+   "op": "conv",
+   "inputs": [
+    "tone_relu"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "opponency",
+   "op": "conv",
+   "inputs": [
+    "radiance"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "opponency"
+   ]
+  },
+  {
+   "name": "clip_knots",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "clip_ramp",
+   "op": "relu",
+   "inputs": [
+    "clip_knots"
+   ]
+  },
+  {
+   "name": "bounded",
+   "op": "conv",
+   "inputs": [
+    "clip_ramp"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "light",
+   "op": "conv",
+   "inputs": [
+    "bounded"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse",
+   "op": "avgpool",
+   "inputs": [
+    "bounded"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "rim_bank",
+   "op": "dense",
+   "inputs": [
+    "coarse"
+   ],
+   "out": 1440
+  },
+  {
+   "name": "rim_views",
+   "op": "reshape",
+   "inputs": [
+    "rim_bank"
+   ],
+   "shape": [
+    32,
+    5,
+    9
+   ]
+  },
+  {
+   "name": "rim_view",
+   "op": "maxpool",
+   "inputs": [
+    "rim_views"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "rim_grid",
+   "op": "reshape",
+   "inputs": [
+    "rim_view"
+   ],
+   "shape": [
+    8,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "rim_evidence",
+   "op": "conv",
+   "inputs": [
+    "rim_grid"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fine_variation",
+   "op": "conv",
+   "inputs": [
+    "light"
+   ],
+   "out": 2,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "abs_halves",
+   "op": "relu",
+   "inputs": [
+    "fine_variation"
+   ]
+  },
+  {
+   "name": "face_texture",
+   "op": "conv",
+   "inputs": [
+    "abs_halves"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "texture_bank",
+   "op": "dense",
+   "inputs": [
+    "face_texture"
+   ],
+   "out": 108
+  },
+  {
+   "name": "texture_grid",
+   "op": "reshape",
+   "inputs": [
+    "texture_bank"
+   ],
+   "shape": [
+    3,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "uniformity",
+   "op": "conv",
+   "inputs": [
+    "texture_grid"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "extract_windows",
+   "op": "dense",
+   "inputs": [
+    "light"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "window_columns",
+   "op": "reshape",
+   "inputs": [
+    "extract_windows"
+   ],
+   "shape": [
+    784,
+    1,
+    9
+   ]
+  },
+  {
+   "name": "pictogram_bank",
+   "op": "conv",
+   "inputs": [
+    "window_columns"
+   ],
+   "out": 4300,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pictogram_grid",
+   "op": "reshape",
+   "inputs": [
+    "pictogram_bank"
+   ],
+   "shape": [
+    172,
+    25,
+    9
+   ]
+  },
+  {
+   "name": "best_art",
+   "op": "maxpool",
+   "inputs": [
+    "pictogram_grid"
+   ],
+   "size": [
+    25,
+    1
+   ],
+   "stride": [
+    25,
+    1
+   ]
+  },
+  {
+   "name": "symbol_grid",
+   "op": "reshape",
+   "inputs": [
+    "best_art"
+   ],
+   "shape": [
+    43,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "symbol_evidence",
+   "op": "conv",
+   "inputs": [
+    "symbol_grid"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digit_parts",
+   "op": "conv",
+   "inputs": [
+    "window_columns"
+   ],
+   "out": 1920,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digit_hypotheses",
+   "op": "reshape",
+   "inputs": [
+    "digit_parts"
+   ],
+   "shape": [
+    64,
+    30,
+    9
+   ]
+  },
+  {
+   "name": "best_glyph",
+   "op": "maxpool",
+   "inputs": [
+    "digit_hypotheses"
+   ],
+   "size": [
+    30,
+    1
+   ],
+   "stride": [
+    30,
+    1
+   ]
+  },
+  {
+   "name": "separate_glyphs",
+   "op": "reshape",
+   "inputs": [
+    "best_glyph"
+   ],
+   "shape": [
+    32,
+    2,
+    9
+   ]
+  },
+  {
+   "name": "legend_parts",
+   "op": "avgpool",
+   "inputs": [
+    "separate_glyphs"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "legend_grid",
+   "op": "reshape",
+   "inputs": [
+    "legend_parts"
+   ],
+   "shape": [
+    8,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "digit_support",
+   "op": "conv",
+   "inputs": [
+    "legend_grid"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "slash_parts",
+   "op": "dense",
+   "inputs": [
+    "light"
+   ],
+   "out": 108
+  },
+  {
+   "name": "slash_maps",
+   "op": "reshape",
+   "inputs": [
+    "slash_parts"
+   ],
+   "shape": [
+    3,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "slash_part_a",
+   "op": "conv",
+   "inputs": [
+    "slash_maps"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "slash_difference",
+   "op": "conv",
+   "inputs": [
+    "slash_maps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "unequal_parts",
+   "op": "relu",
+   "inputs": [
+    "slash_difference"
+   ]
+  },
+  {
+   "name": "slash_balance",
+   "op": "conv",
+   "inputs": [
+    "unequal_parts"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "slash_support",
+   "op": "add",
+   "inputs": [
+    "slash_part_a",
+    "slash_balance"
+   ]
+  },
+  {
+   "name": "warning_parts",
+   "op": "conv",
+   "inputs": [
+    "window_columns"
+   ],
+   "out": 2880,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "part_views",
+   "op": "reshape",
+   "inputs": [
+    "warning_parts"
+   ],
+   "shape": [
+    120,
+    24,
+    9
+   ]
+  },
+  {
+   "name": "best_part",
+   "op": "maxpool",
+   "inputs": [
+    "part_views"
+   ],
+   "size": [
+    24,
+    1
+   ],
+   "stride": [
+    24,
+    1
+   ]
+  },
+  {
+   "name": "part_pairs",
+   "op": "reshape",
+   "inputs": [
+    "best_part"
+   ],
+   "shape": [
+    60,
+    2,
+    9
+   ]
+  },
+  {
+   "name": "part_mean",
+   "op": "avgpool",
+   "inputs": [
+    "part_pairs"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "warning_grid",
+   "op": "reshape",
+   "inputs": [
+    "part_mean"
+   ],
+   "shape": [
+    15,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "warning_support",
+   "op": "conv",
+   "inputs": [
+    "warning_grid"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "local_windows",
+   "op": "dense",
+   "inputs": [
+    "light"
+   ],
+   "out": 3600
+  },
+  {
+   "name": "local_images",
+   "op": "reshape",
+   "inputs": [
+    "local_windows"
+   ],
+   "shape": [
+    9,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "local_contrast",
+   "op": "norm",
+   "inputs": [
+    "local_images"
+   ]
+  },
+  {
+   "name": "local_strip",
+   "op": "reshape",
+   "inputs": [
+    "local_contrast"
+   ],
+   "shape": [
+    1,
+    180,
+    20
+   ]
+  },
+  {
+   "name": "local_symbol_bank",
+   "op": "conv",
+   "inputs": [
+    "local_strip"
+   ],
+   "out": 3440,
+   "kernel": [
+    20,
+    20
+   ],
+   "stride": 20,
+   "padding": 0
+  },
+  {
+   "name": "local_symbol_grid",
+   "op": "reshape",
+   "inputs": [
+    "local_symbol_bank"
+   ],
+   "shape": [
+    172,
+    20,
+    9
+   ]
+  },
+  {
+   "name": "local_best",
+   "op": "maxpool",
+   "inputs": [
+    "local_symbol_grid"
+   ],
+   "size": [
+    20,
+    1
+   ],
+   "stride": [
+    20,
+    1
+   ]
+  },
+  {
+   "name": "local_evidence",
+   "op": "reshape",
+   "inputs": [
+    "local_best"
+   ],
+   "shape": [
+    43,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "local_support",
+   "op": "conv",
+   "inputs": [
+    "local_evidence"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diagonal_variants",
+   "op": "dense",
+   "inputs": [
+    "light"
+   ],
+   "out": 648
+  },
+  {
+   "name": "diagonal_grid",
+   "op": "reshape",
+   "inputs": [
+    "diagonal_variants"
+   ],
+   "shape": [
+    4,
+    18,
+    9
+   ]
+  },
+  {
+   "name": "diagonal_peak",
+   "op": "maxpool",
+   "inputs": [
+    "diagonal_grid"
+   ],
+   "size": [
+    18,
+    1
+   ],
+   "stride": [
+    18,
+    1
+   ]
+  },
+  {
+   "name": "continuous_slash",
+   "op": "reshape",
+   "inputs": [
+    "diagonal_peak"
+   ],
+   "shape": [
+    1,
+    4,
+    9
+   ]
+  },
+  {
+   "name": "diagonal_support",
+   "op": "conv",
+   "inputs": [
+    "continuous_slash"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pose_scores",
+   "op": "add",
+   "inputs": [
+    "rim_evidence",
+    "symbol_evidence",
+    "uniformity",
+    "digit_support",
+    "slash_support",
+    "warning_support",
+    "local_support",
+    "diagonal_support"
+   ]
+  },
+  {
+   "name": "best_pose",
+   "op": "maxpool",
+   "inputs": [
+    "pose_scores"
+   ],
+   "size": [
+    4,
+    9
+   ],
+   "stride": [
+    4,
+    9
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best_pose"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

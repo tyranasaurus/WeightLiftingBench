@@ -1,0 +1,899 @@
+{
+ "layers": [
+  {
+   "name": "lum",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "polL",
+   "op": "dense",
+   "inputs": [
+    "lum"
+   ],
+   "out": 4032
+  },
+  {
+   "name": "P",
+   "op": "reshape",
+   "inputs": [
+    "polL"
+   ],
+   "shape": [
+    56,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "dif",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dif2",
+   "op": "avgpool",
+   "inputs": [
+    "dif"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "polD",
+   "op": "dense",
+   "inputs": [
+    "dif2"
+   ],
+   "out": 3312
+  },
+  {
+   "name": "Dp",
+   "op": "reshape",
+   "inputs": [
+    "polD"
+   ],
+   "shape": [
+    46,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "lum2",
+   "op": "avgpool",
+   "inputs": [
+    "lum"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "polF",
+   "op": "dense",
+   "inputs": [
+    "lum2"
+   ],
+   "out": 3312
+  },
+  {
+   "name": "Fp",
+   "op": "reshape",
+   "inputs": [
+    "polF"
+   ],
+   "shape": [
+    46,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "cen",
+   "op": "conv",
+   "inputs": [
+    "P"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cen_r",
+   "op": "reshape",
+   "inputs": [
+    "cen"
+   ],
+   "shape": [
+    1,
+    10,
+    36
+   ]
+  },
+  {
+   "name": "L0",
+   "op": "maxpool",
+   "inputs": [
+    "cen_r"
+   ],
+   "size": [
+    10,
+    36
+   ],
+   "stride": [
+    10,
+    36
+   ]
+  },
+  {
+   "name": "rt1",
+   "op": "dense",
+   "inputs": [
+    "L0"
+   ],
+   "out": 3
+  },
+  {
+   "name": "rt1r",
+   "op": "relu",
+   "inputs": [
+    "rt1"
+   ]
+  },
+  {
+   "name": "rt2",
+   "op": "dense",
+   "inputs": [
+    "rt1r"
+   ],
+   "out": 216
+  },
+  {
+   "name": "Tmap",
+   "op": "reshape",
+   "inputs": [
+    "rt2"
+   ],
+   "shape": [
+    3,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "thr_a",
+   "op": "conv",
+   "inputs": [
+    "P"
+   ],
+   "out": 1008,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "thr_b",
+   "op": "conv",
+   "inputs": [
+    "Tmap"
+   ],
+   "out": 1008,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "thr",
+   "op": "add",
+   "inputs": [
+    "thr_a",
+    "thr_b"
+   ]
+  },
+  {
+   "name": "ramp",
+   "op": "relu",
+   "inputs": [
+    "thr"
+   ]
+  },
+  {
+   "name": "star_pre",
+   "op": "conv",
+   "inputs": [
+    "ramp"
+   ],
+   "out": 672,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "M",
+   "op": "relu",
+   "inputs": [
+    "star_pre"
+   ]
+  },
+  {
+   "name": "fh_pre",
+   "op": "conv",
+   "inputs": [
+    "P"
+   ],
+   "out": 1176,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fh",
+   "op": "relu",
+   "inputs": [
+    "fh_pre"
+   ]
+  },
+  {
+   "name": "arm_f",
+   "op": "conv",
+   "inputs": [
+    "fh"
+   ],
+   "out": 100,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "arm_m",
+   "op": "conv",
+   "inputs": [
+    "M"
+   ],
+   "out": 100,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "arm_pre",
+   "op": "add",
+   "inputs": [
+    "arm_f",
+    "arm_m"
+   ]
+  },
+  {
+   "name": "arm",
+   "op": "relu",
+   "inputs": [
+    "arm_pre"
+   ]
+  },
+  {
+   "name": "arm_s",
+   "op": "conv",
+   "inputs": [
+    "arm"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "arm_sm",
+   "op": "dense",
+   "inputs": [
+    "arm_s"
+   ],
+   "out": 144
+  },
+  {
+   "name": "arm_r",
+   "op": "reshape",
+   "inputs": [
+    "arm_sm"
+   ],
+   "shape": [
+    2,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "armavg",
+   "op": "avgpool",
+   "inputs": [
+    "arm_r"
+   ],
+   "size": [
+    2,
+    36
+   ],
+   "stride": [
+    2,
+    36
+   ]
+  },
+  {
+   "name": "arm_mx0",
+   "op": "maxpool",
+   "inputs": [
+    "arm_r"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "armmax",
+   "op": "avgpool",
+   "inputs": [
+    "arm_mx0"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "rho",
+   "op": "conv",
+   "inputs": [
+    "M"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rho_sm",
+   "op": "dense",
+   "inputs": [
+    "rho"
+   ],
+   "out": 648
+  },
+  {
+   "name": "rho_s",
+   "op": "reshape",
+   "inputs": [
+    "rho_sm"
+   ],
+   "shape": [
+    9,
+    2,
+    36
+   ]
+  },
+  {
+   "name": "rho_max",
+   "op": "maxpool",
+   "inputs": [
+    "rho_s"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rho_avg",
+   "op": "avgpool",
+   "inputs": [
+    "rho_s"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "sym_a",
+   "op": "conv",
+   "inputs": [
+    "rho_avg"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sym_b",
+   "op": "conv",
+   "inputs": [
+    "rho_max"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sym",
+   "op": "add",
+   "inputs": [
+    "sym_a",
+    "sym_b"
+   ]
+  },
+  {
+   "name": "ang",
+   "op": "conv",
+   "inputs": [
+    "sym"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ab",
+   "op": "maxpool",
+   "inputs": [
+    "ang"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "mir",
+   "op": "dense",
+   "inputs": [
+    "sym"
+   ],
+   "out": 7776
+  },
+  {
+   "name": "mir_r",
+   "op": "relu",
+   "inputs": [
+    "mir"
+   ]
+  },
+  {
+   "name": "mir_sum",
+   "op": "dense",
+   "inputs": [
+    "mir_r"
+   ],
+   "out": 36
+  },
+  {
+   "name": "mir_v",
+   "op": "reshape",
+   "inputs": [
+    "mir_sum"
+   ],
+   "shape": [
+    1,
+    1,
+    36
+   ]
+  },
+  {
+   "name": "chi",
+   "op": "maxpool",
+   "inputs": [
+    "mir_v"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "g_m",
+   "op": "conv",
+   "inputs": [
+    "M"
+   ],
+   "out": 535,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "g_f",
+   "op": "conv",
+   "inputs": [
+    "Fp"
+   ],
+   "out": 535,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "g_d",
+   "op": "conv",
+   "inputs": [
+    "Dp"
+   ],
+   "out": 535,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "g_pre",
+   "op": "add",
+   "inputs": [
+    "g_m",
+    "g_f",
+    "g_d"
+   ]
+  },
+  {
+   "name": "g",
+   "op": "relu",
+   "inputs": [
+    "g_pre"
+   ]
+  },
+  {
+   "name": "gs",
+   "op": "conv",
+   "inputs": [
+    "g"
+   ],
+   "out": 17,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gsum",
+   "op": "avgpool",
+   "inputs": [
+    "gs"
+   ],
+   "size": [
+    2,
+    36
+   ],
+   "stride": [
+    2,
+    36
+   ]
+  },
+  {
+   "name": "gs_mx",
+   "op": "maxpool",
+   "inputs": [
+    "gs"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "gmax",
+   "op": "avgpool",
+   "inputs": [
+    "gs_mx"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "th_ab",
+   "op": "dense",
+   "inputs": [
+    "ab"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_chi",
+   "op": "dense",
+   "inputs": [
+    "chi"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_sym",
+   "op": "dense",
+   "inputs": [
+    "sym"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_gs",
+   "op": "dense",
+   "inputs": [
+    "gsum"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_gm",
+   "op": "dense",
+   "inputs": [
+    "gmax"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_l0",
+   "op": "dense",
+   "inputs": [
+    "L0"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_aa",
+   "op": "dense",
+   "inputs": [
+    "armavg"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_am",
+   "op": "dense",
+   "inputs": [
+    "armmax"
+   ],
+   "out": 408
+  },
+  {
+   "name": "th_pre",
+   "op": "add",
+   "inputs": [
+    "th_ab",
+    "th_chi",
+    "th_sym",
+    "th_gs",
+    "th_gm",
+    "th_l0",
+    "th_aa",
+    "th_am"
+   ]
+  },
+  {
+   "name": "th",
+   "op": "relu",
+   "inputs": [
+    "th_pre"
+   ]
+  },
+  {
+   "name": "hid_pre",
+   "op": "dense",
+   "inputs": [
+    "th"
+   ],
+   "out": 414
+  },
+  {
+   "name": "hid",
+   "op": "relu",
+   "inputs": [
+    "hid_pre"
+   ]
+  },
+  {
+   "name": "bar_pre",
+   "op": "dense",
+   "inputs": [
+    "hid"
+   ],
+   "out": 6
+  },
+  {
+   "name": "bar",
+   "op": "relu",
+   "inputs": [
+    "bar_pre"
+   ]
+  },
+  {
+   "name": "out_a",
+   "op": "dense",
+   "inputs": [
+    "hid"
+   ],
+   "out": 26
+  },
+  {
+   "name": "out_b",
+   "op": "dense",
+   "inputs": [
+    "bar"
+   ],
+   "out": 26
+  },
+  {
+   "name": "pre_scores",
+   "op": "add",
+   "inputs": [
+    "out_a",
+    "out_b"
+   ]
+  },
+  {
+   "name": "host_sel",
+   "op": "dense",
+   "inputs": [
+    "pre_scores"
+   ],
+   "out": 16
+  },
+  {
+   "name": "host_r",
+   "op": "reshape",
+   "inputs": [
+    "host_sel"
+   ],
+   "shape": [
+    2,
+    1,
+    8
+   ]
+  },
+  {
+   "name": "host_best",
+   "op": "maxpool",
+   "inputs": [
+    "host_r"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "mod_scores",
+   "op": "dense",
+   "inputs": [
+    "host_best"
+   ],
+   "out": 10
+  },
+  {
+   "name": "cls_scores",
+   "op": "dense",
+   "inputs": [
+    "pre_scores"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "cls_scores",
+    "mod_scores"
+   ]
+  }
+ ]
+}

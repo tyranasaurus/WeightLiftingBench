@@ -1,0 +1,419 @@
+{
+ "layers": [
+  {
+   "name": "cA",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 5,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rA",
+   "op": "relu",
+   "inputs": [
+    "cA"
+   ]
+  },
+  {
+   "name": "cB",
+   "op": "conv",
+   "inputs": [
+    "rA"
+   ],
+   "out": 11,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rB",
+   "op": "relu",
+   "inputs": [
+    "cB"
+   ]
+  },
+  {
+   "name": "pB",
+   "op": "avgpool",
+   "inputs": [
+    "rB"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "cCS",
+   "op": "conv",
+   "inputs": [
+    "pB"
+   ],
+   "out": 11,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rCS",
+   "op": "relu",
+   "inputs": [
+    "cCS"
+   ]
+  },
+  {
+   "name": "pCS",
+   "op": "avgpool",
+   "inputs": [
+    "rCS"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cE",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 16,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "rE",
+   "op": "relu",
+   "inputs": [
+    "cE"
+   ]
+  },
+  {
+   "name": "nE",
+   "op": "norm",
+   "inputs": [
+    "rE"
+   ]
+  },
+  {
+   "name": "qE",
+   "op": "relu",
+   "inputs": [
+    "nE"
+   ]
+  },
+  {
+   "name": "mE",
+   "op": "maxpool",
+   "inputs": [
+    "qE"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "pE",
+   "op": "avgpool",
+   "inputs": [
+    "mE"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cE2",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 12,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "rE2",
+   "op": "relu",
+   "inputs": [
+    "cE2"
+   ]
+  },
+  {
+   "name": "nE2",
+   "op": "norm",
+   "inputs": [
+    "rE2"
+   ]
+  },
+  {
+   "name": "qE2",
+   "op": "relu",
+   "inputs": [
+    "nE2"
+   ]
+  },
+  {
+   "name": "mE2",
+   "op": "maxpool",
+   "inputs": [
+    "qE2"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "pE2",
+   "op": "avgpool",
+   "inputs": [
+    "mE2"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cW",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "rW",
+   "op": "relu",
+   "inputs": [
+    "cW"
+   ]
+  },
+  {
+   "name": "mW",
+   "op": "maxpool",
+   "inputs": [
+    "rW"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "pW",
+   "op": "avgpool",
+   "inputs": [
+    "mW"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "cCSE",
+   "op": "conv",
+   "inputs": [
+    "pE"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rCSE",
+   "op": "relu",
+   "inputs": [
+    "cCSE"
+   ]
+  },
+  {
+   "name": "pCSE",
+   "op": "avgpool",
+   "inputs": [
+    "rCSE"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cCSE2",
+   "op": "conv",
+   "inputs": [
+    "pE2"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rCSE2",
+   "op": "relu",
+   "inputs": [
+    "cCSE2"
+   ]
+  },
+  {
+   "name": "pCSE2",
+   "op": "avgpool",
+   "inputs": [
+    "rCSE2"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "dB",
+   "op": "dense",
+   "inputs": [
+    "pB"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dCS",
+   "op": "dense",
+   "inputs": [
+    "pCS"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dE",
+   "op": "dense",
+   "inputs": [
+    "pE"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dE2",
+   "op": "dense",
+   "inputs": [
+    "pE2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dW",
+   "op": "dense",
+   "inputs": [
+    "pW"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dCSE",
+   "op": "dense",
+   "inputs": [
+    "pCSE"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dCSE2",
+   "op": "dense",
+   "inputs": [
+    "pCSE2"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "dB",
+    "dCS",
+    "dE",
+    "dE2",
+    "dW",
+    "dCSE",
+    "dCSE2"
+   ]
+  }
+ ]
+}

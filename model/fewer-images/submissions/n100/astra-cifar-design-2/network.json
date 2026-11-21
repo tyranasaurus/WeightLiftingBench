@@ -1,0 +1,634 @@
+{
+ "layers": [
+  {
+   "name": "retina",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luma",
+   "op": "conv",
+   "inputs": [
+    "retina"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "global_contrast",
+   "op": "norm",
+   "inputs": [
+    "luma"
+   ]
+  },
+  {
+   "name": "retina_detail",
+   "op": "dense",
+   "inputs": [
+    "luma"
+   ],
+   "out": 256
+  },
+  {
+   "name": "detail_field",
+   "op": "reshape",
+   "inputs": [
+    "retina_detail"
+   ],
+   "shape": [
+    1,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "detail_contrast",
+   "op": "norm",
+   "inputs": [
+    "detail_field"
+   ]
+  },
+  {
+   "name": "oriented_differences",
+   "op": "dense",
+   "inputs": [
+    "luma"
+   ],
+   "out": 2048
+  },
+  {
+   "name": "half_waves",
+   "op": "relu",
+   "inputs": [
+    "oriented_differences"
+   ]
+  },
+  {
+   "name": "opposite_sides",
+   "op": "reshape",
+   "inputs": [
+    "half_waves"
+   ],
+   "shape": [
+    2,
+    4,
+    256
+   ]
+  },
+  {
+   "name": "edge_energy",
+   "op": "conv",
+   "inputs": [
+    "opposite_sides"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "gradient_field",
+   "op": "reshape",
+   "inputs": [
+    "edge_energy"
+   ],
+   "shape": [
+    4,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "orientation_selectivity",
+   "op": "conv",
+   "inputs": [
+    "gradient_field"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "selective_edges",
+   "op": "relu",
+   "inputs": [
+    "orientation_selectivity"
+   ]
+  },
+  {
+   "name": "shared_edge_contrast",
+   "op": "reshape",
+   "inputs": [
+    "selective_edges"
+   ],
+   "shape": [
+    1,
+    64,
+    16
+   ]
+  },
+  {
+   "name": "contrast_of_edges",
+   "op": "norm",
+   "inputs": [
+    "shared_edge_contrast"
+   ]
+  },
+  {
+   "name": "drawn_shading",
+   "op": "dense",
+   "inputs": [
+    "global_contrast"
+   ],
+   "out": 7680
+  },
+  {
+   "name": "drawn_detail",
+   "op": "dense",
+   "inputs": [
+    "detail_contrast"
+   ],
+   "out": 7680
+  },
+  {
+   "name": "drawn_contour",
+   "op": "dense",
+   "inputs": [
+    "contrast_of_edges"
+   ],
+   "out": 7680
+  },
+  {
+   "name": "agreement",
+   "op": "add",
+   "inputs": [
+    "drawn_shading",
+    "drawn_detail",
+    "drawn_contour"
+   ]
+  },
+  {
+   "name": "views",
+   "op": "reshape",
+   "inputs": [
+    "agreement"
+   ],
+   "shape": [
+    10,
+    4,
+    192
+   ]
+  },
+  {
+   "name": "best_pose_per_group",
+   "op": "maxpool",
+   "inputs": [
+    "views"
+   ],
+   "size": [
+    1,
+    192
+   ],
+   "stride": [
+    1,
+    192
+   ]
+  },
+  {
+   "name": "strongest_pose",
+   "op": "maxpool",
+   "inputs": [
+    "best_pose_per_group"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "supporting_poses",
+   "op": "avgpool",
+   "inputs": [
+    "best_pose_per_group"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "shape_support",
+   "op": "add",
+   "inputs": [
+    "strongest_pose",
+    "supporting_poses"
+   ]
+  },
+  {
+   "name": "shape_evidence",
+   "op": "dense",
+   "inputs": [
+    "shape_support"
+   ],
+   "out": 10
+  },
+  {
+   "name": "chromatic_axes",
+   "op": "conv",
+   "inputs": [
+    "retina"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "half_axes",
+   "op": "relu",
+   "inputs": [
+    "chromatic_axes"
+   ]
+  },
+  {
+   "name": "material_transitions",
+   "op": "conv",
+   "inputs": [
+    "half_axes"
+   ],
+   "out": 32,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "transition_ramps",
+   "op": "relu",
+   "inputs": [
+    "material_transitions"
+   ]
+  },
+  {
+   "name": "material_memberships",
+   "op": "conv",
+   "inputs": [
+    "transition_ramps"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "material_grid",
+   "op": "avgpool",
+   "inputs": [
+    "material_memberships"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "full_luma",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "fine_derivatives",
+   "op": "conv",
+   "inputs": [
+    "full_luma"
+   ],
+   "out": 10,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "fine_rectify",
+   "op": "relu",
+   "inputs": [
+    "fine_derivatives"
+   ]
+  },
+  {
+   "name": "fine_magnitude",
+   "op": "conv",
+   "inputs": [
+    "fine_rectify"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "fine_cells",
+   "op": "avgpool",
+   "inputs": [
+    "fine_magnitude"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "broad_derivatives",
+   "op": "conv",
+   "inputs": [
+    "luma"
+   ],
+   "out": 10,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "broad_rectify",
+   "op": "relu",
+   "inputs": [
+    "broad_derivatives"
+   ]
+  },
+  {
+   "name": "broad_magnitude",
+   "op": "conv",
+   "inputs": [
+    "broad_rectify"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "broad_cells",
+   "op": "avgpool",
+   "inputs": [
+    "broad_magnitude"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "scene_terms_0",
+   "op": "dense",
+   "inputs": [
+    "material_grid"
+   ],
+   "out": 23
+  },
+  {
+   "name": "scene_terms_1",
+   "op": "dense",
+   "inputs": [
+    "fine_cells"
+   ],
+   "out": 23
+  },
+  {
+   "name": "scene_terms_2",
+   "op": "dense",
+   "inputs": [
+    "broad_cells"
+   ],
+   "out": 23
+  },
+  {
+   "name": "scene_conditions",
+   "op": "add",
+   "inputs": [
+    "scene_terms_0",
+    "scene_terms_1",
+    "scene_terms_2"
+   ]
+  },
+  {
+   "name": "scene_linear",
+   "op": "dense",
+   "inputs": [
+    "scene_conditions"
+   ],
+   "out": 10
+  },
+  {
+   "name": "possible_environments",
+   "op": "relu",
+   "inputs": [
+    "scene_conditions"
+   ]
+  },
+  {
+   "name": "scene_combinations",
+   "op": "dense",
+   "inputs": [
+    "possible_environments"
+   ],
+   "out": 10
+  },
+  {
+   "name": "context_evidence",
+   "op": "add",
+   "inputs": [
+    "scene_linear",
+    "scene_combinations"
+   ]
+  },
+  {
+   "name": "mirror_differences",
+   "op": "dense",
+   "inputs": [
+    "global_contrast"
+   ],
+   "out": 1012
+  },
+  {
+   "name": "mirror_disagreement",
+   "op": "relu",
+   "inputs": [
+    "mirror_differences"
+   ]
+  },
+  {
+   "name": "bilateral_coherence",
+   "op": "dense",
+   "inputs": [
+    "mirror_disagreement"
+   ],
+   "out": 10
+  },
+  {
+   "name": "reflection_axes",
+   "op": "reshape",
+   "inputs": [
+    "bilateral_coherence"
+   ],
+   "shape": [
+    2,
+    1,
+    5
+   ]
+  },
+  {
+   "name": "best_reflection",
+   "op": "maxpool",
+   "inputs": [
+    "reflection_axes"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "symmetry_evidence",
+   "op": "dense",
+   "inputs": [
+    "best_reflection"
+   ],
+   "out": 10
+  },
+  {
+   "name": "line_support",
+   "op": "dense",
+   "inputs": [
+    "contrast_of_edges"
+   ],
+   "out": 300
+  },
+  {
+   "name": "line_locations",
+   "op": "reshape",
+   "inputs": [
+    "line_support"
+   ],
+   "shape": [
+    12,
+    1,
+    25
+   ]
+  },
+  {
+   "name": "long_edges",
+   "op": "maxpool",
+   "inputs": [
+    "line_locations"
+   ],
+   "size": [
+    1,
+    25
+   ],
+   "stride": [
+    1,
+    25
+   ]
+  },
+  {
+   "name": "geometry_of_lines",
+   "op": "dense",
+   "inputs": [
+    "long_edges"
+   ],
+   "out": 4
+  },
+  {
+   "name": "line_evidence",
+   "op": "dense",
+   "inputs": [
+    "geometry_of_lines"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape_evidence",
+    "context_evidence",
+    "symmetry_evidence",
+    "line_evidence"
+   ]
+  }
+ ]
+}

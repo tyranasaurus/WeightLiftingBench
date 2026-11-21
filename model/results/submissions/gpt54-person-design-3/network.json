@@ -1,0 +1,58 @@
+{
+  "layers": [
+    {
+      "name": "c1",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 16,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "a1",
+      "op": "relu",
+      "inputs": [
+        "c1"
+      ]
+    },
+    {
+      "name": "p1",
+      "op": "avgpool",
+      "inputs": [
+        "a1"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "f1",
+      "op": "reshape",
+      "inputs": [
+        "p1"
+      ],
+      "shape": [
+        1024
+      ]
+    },
+    {
+      "name": "out",
+      "op": "dense",
+      "inputs": [
+        "f1"
+      ],
+      "out": 2
+    }
+  ]
+}

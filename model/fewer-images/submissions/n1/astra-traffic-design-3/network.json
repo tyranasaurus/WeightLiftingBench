@@ -1,0 +1,919 @@
+{
+ "layers": [
+  {
+   "name": "light_breaks",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "light_positive",
+   "op": "relu",
+   "inputs": [
+    "light_breaks"
+   ]
+  },
+  {
+   "name": "log_light",
+   "op": "conv",
+   "inputs": [
+    "light_positive"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "luminance",
+   "op": "conv",
+   "inputs": [
+    "log_light"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "opponents",
+   "op": "conv",
+   "inputs": [
+    "log_light"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hue_floor",
+   "op": "conv",
+   "inputs": [
+    "opponents"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hue_pattern",
+   "op": "norm",
+   "inputs": [
+    "hue_floor"
+   ]
+  },
+  {
+   "name": "joint_letters",
+   "op": "conv",
+   "inputs": [
+    "log_light"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint_floor",
+   "op": "conv",
+   "inputs": [
+    "joint_letters"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_intensity",
+   "op": "norm",
+   "inputs": [
+    "joint_floor"
+   ]
+  },
+  {
+   "name": "local_ink",
+   "op": "conv",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "face_maps_0",
+   "op": "conv",
+   "inputs": [
+    "face_intensity"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_maps_1",
+   "op": "conv",
+   "inputs": [
+    "hue_pattern"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_maps",
+   "op": "add",
+   "inputs": [
+    "face_maps_0",
+    "face_maps_1"
+   ]
+  },
+  {
+   "name": "face_cells",
+   "op": "avgpool",
+   "inputs": [
+    "face_maps"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "core0_select",
+   "op": "dense",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 400
+  },
+  {
+   "name": "core0",
+   "op": "reshape",
+   "inputs": [
+    "core0_select"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "contrast_floor0",
+   "op": "conv",
+   "inputs": [
+    "core0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "context0",
+   "op": "norm",
+   "inputs": [
+    "contrast_floor0"
+   ]
+  },
+  {
+   "name": "inner0_area_select",
+   "op": "dense",
+   "inputs": [
+    "core0"
+   ],
+   "out": 144
+  },
+  {
+   "name": "inner0_area",
+   "op": "reshape",
+   "inputs": [
+    "inner0_area_select"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "inner0_floor",
+   "op": "conv",
+   "inputs": [
+    "inner0_area"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inner0",
+   "op": "norm",
+   "inputs": [
+    "inner0_floor"
+   ]
+  },
+  {
+   "name": "inner_scatter0",
+   "op": "dense",
+   "inputs": [
+    "inner0"
+   ],
+   "out": 400
+  },
+  {
+   "name": "inner_map0",
+   "op": "reshape",
+   "inputs": [
+    "inner_scatter0"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "context_weight0",
+   "op": "dense",
+   "inputs": [
+    "context0"
+   ],
+   "out": 400
+  },
+  {
+   "name": "outer_map0",
+   "op": "reshape",
+   "inputs": [
+    "context_weight0"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "blended_detail0",
+   "op": "add",
+   "inputs": [
+    "inner_map0",
+    "outer_map0"
+   ]
+  },
+  {
+   "name": "core1_select",
+   "op": "dense",
+   "inputs": [
+    "local_ink"
+   ],
+   "out": 400
+  },
+  {
+   "name": "core1",
+   "op": "reshape",
+   "inputs": [
+    "core1_select"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "contrast_floor1",
+   "op": "conv",
+   "inputs": [
+    "core1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "context1",
+   "op": "norm",
+   "inputs": [
+    "contrast_floor1"
+   ]
+  },
+  {
+   "name": "inner1_area_select",
+   "op": "dense",
+   "inputs": [
+    "core1"
+   ],
+   "out": 144
+  },
+  {
+   "name": "inner1_area",
+   "op": "reshape",
+   "inputs": [
+    "inner1_area_select"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "inner1_floor",
+   "op": "conv",
+   "inputs": [
+    "inner1_area"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inner1",
+   "op": "norm",
+   "inputs": [
+    "inner1_floor"
+   ]
+  },
+  {
+   "name": "inner_scatter1",
+   "op": "dense",
+   "inputs": [
+    "inner1"
+   ],
+   "out": 400
+  },
+  {
+   "name": "inner_map1",
+   "op": "reshape",
+   "inputs": [
+    "inner_scatter1"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "context_weight1",
+   "op": "dense",
+   "inputs": [
+    "context1"
+   ],
+   "out": 400
+  },
+  {
+   "name": "outer_map1",
+   "op": "reshape",
+   "inputs": [
+    "context_weight1"
+   ],
+   "shape": [
+    1,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "blended_detail1",
+   "op": "add",
+   "inputs": [
+    "inner_map1",
+    "outer_map1"
+   ]
+  },
+  {
+   "name": "legend_contrast_0",
+   "op": "conv",
+   "inputs": [
+    "context0"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "legend_contrast_1",
+   "op": "conv",
+   "inputs": [
+    "context1"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "legend_contrast",
+   "op": "add",
+   "inputs": [
+    "legend_contrast_0",
+    "legend_contrast_1"
+   ]
+  },
+  {
+   "name": "legend_maps_0",
+   "op": "conv",
+   "inputs": [
+    "blended_detail0"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "legend_maps_1",
+   "op": "conv",
+   "inputs": [
+    "blended_detail1"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "legend_maps",
+   "op": "add",
+   "inputs": [
+    "legend_maps_0",
+    "legend_maps_1"
+   ]
+  },
+  {
+   "name": "sign_faces",
+   "op": "dense",
+   "inputs": [
+    "face_cells"
+   ],
+   "out": 9288
+  },
+  {
+   "name": "sign_faces_poses",
+   "op": "reshape",
+   "inputs": [
+    "sign_faces"
+   ],
+   "shape": [
+    43,
+    4,
+    54
+   ]
+  },
+  {
+   "name": "sign_legends",
+   "op": "dense",
+   "inputs": [
+    "legend_maps"
+   ],
+   "out": 9288
+  },
+  {
+   "name": "sign_legends_poses",
+   "op": "reshape",
+   "inputs": [
+    "sign_legends"
+   ],
+   "shape": [
+    43,
+    4,
+    54
+   ]
+  },
+  {
+   "name": "directional_edges",
+   "op": "conv",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_positive",
+   "op": "relu",
+   "inputs": [
+    "directional_edges"
+   ]
+  },
+  {
+   "name": "edge_cells",
+   "op": "avgpool",
+   "inputs": [
+    "edge_positive"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "edge_floor",
+   "op": "conv",
+   "inputs": [
+    "edge_cells"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_contrast",
+   "op": "norm",
+   "inputs": [
+    "edge_floor"
+   ]
+  },
+  {
+   "name": "sign_contours",
+   "op": "dense",
+   "inputs": [
+    "edge_contrast"
+   ],
+   "out": 9288
+  },
+  {
+   "name": "sign_contours_poses",
+   "op": "reshape",
+   "inputs": [
+    "sign_contours"
+   ],
+   "shape": [
+    43,
+    4,
+    54
+   ]
+  },
+  {
+   "name": "face_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "sign_faces_poses"
+   ],
+   "size": [
+    1,
+    54
+   ],
+   "stride": [
+    1,
+    54
+   ]
+  },
+  {
+   "name": "legend_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "sign_legends_poses"
+   ],
+   "size": [
+    1,
+    54
+   ],
+   "stride": [
+    1,
+    54
+   ]
+  },
+  {
+   "name": "coat_evidence",
+   "op": "conv",
+   "inputs": [
+    "face_pose_max"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "legend_evidence",
+   "op": "conv",
+   "inputs": [
+    "legend_pose_max"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "registered_views",
+   "op": "add",
+   "inputs": [
+    "sign_legends_poses",
+    "sign_contours_poses"
+   ]
+  },
+  {
+   "name": "registered_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "registered_views"
+   ],
+   "size": [
+    1,
+    54
+   ],
+   "stride": [
+    1,
+    54
+   ]
+  },
+  {
+   "name": "oriented_evidence",
+   "op": "conv",
+   "inputs": [
+    "registered_pose_max"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "within_size",
+   "op": "add",
+   "inputs": [
+    "coat_evidence",
+    "legend_evidence",
+    "oriented_evidence"
+   ]
+  },
+  {
+   "name": "best_size",
+   "op": "maxpool",
+   "inputs": [
+    "within_size"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "shape_scores",
+   "op": "reshape",
+   "inputs": [
+    "best_size"
+   ],
+   "shape": [
+    43
+   ]
+  },
+  {
+   "name": "red_green_difference",
+   "op": "conv",
+   "inputs": [
+    "log_light"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "red_over_green",
+   "op": "relu",
+   "inputs": [
+    "red_green_difference"
+   ]
+  },
+  {
+   "name": "semantic_axes",
+   "op": "conv",
+   "inputs": [
+    "log_light"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "yellow_correction",
+   "op": "conv",
+   "inputs": [
+    "red_over_green"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "semantic_chroma",
+   "op": "add",
+   "inputs": [
+    "semantic_axes",
+    "yellow_correction"
+   ]
+  },
+  {
+   "name": "chroma_hinges",
+   "op": "conv",
+   "inputs": [
+    "semantic_chroma"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "chroma_positive",
+   "op": "relu",
+   "inputs": [
+    "chroma_hinges"
+   ]
+  },
+  {
+   "name": "chroma_amount",
+   "op": "conv",
+   "inputs": [
+    "chroma_positive"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "chroma_cells",
+   "op": "avgpool",
+   "inputs": [
+    "chroma_amount"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "hue_rules",
+   "op": "dense",
+   "inputs": [
+    "chroma_cells"
+   ],
+   "out": 43
+  },
+  {
+   "name": "ink_signs",
+   "op": "conv",
+   "inputs": [
+    "legend_contrast"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink_energy",
+   "op": "relu",
+   "inputs": [
+    "ink_signs"
+   ]
+  },
+  {
+   "name": "empty_face_test",
+   "op": "dense",
+   "inputs": [
+    "ink_energy"
+   ],
+   "out": 43
+  },
+  {
+   "name": "class_scores",
+   "op": "add",
+   "inputs": [
+    "shape_scores",
+    "hue_rules",
+    "empty_face_test"
+   ]
+  }
+ ]
+}

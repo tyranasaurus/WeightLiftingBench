@@ -1,0 +1,64 @@
+name: claude_code_wsp_k3
+
+install_cmd: "bash setup.sh"
+
+final_output: /logs
+
+secrets:
+  ANTHROPIC_API_KEY: anthropic-api-key
+  OPENROUTER_API_KEY: openrouter-api-key
+
+defaults:
+  model:
+    type: str
+    required: false
+    default: claude-opus-5-5
+    description: Any Claude model id, set as ANTHROPIC_MODEL (anthropic/ prefix stripped)
+
+kwargs:
+  effort:
+    type: str
+    required: false
+    default: default
+    description: Claude Code effort level (default = no flag), passed as `claude --effort <effort>`
+    choices:
+      - default
+      - low
+      - medium
+      - high
+      - xhigh
+      - max
+  time_limit_s:
+    type: str
+    required: false
+    default: "3600"
+    description: Seconds before the session is stopped and resumed once with the out-of-time notice
+  final_turn_s:
+    type: str
+    required: false
+    default: "900"
+    description: Seconds allowed for the turn after the out-of-time notice
+  tools:
+    type: str
+    required: false
+    default: default
+    description: Built-in tools that exist in the session, passed as `claude --tools` ("default" = all; e.g. "Read Write Edit")
+  access:
+    type: str
+    required: false
+    default: agentic
+    description: >-
+      agentic = claude -p with the tools kwarg (stock behaviour). l0 = one reply, no tools: `claude -p --bare --tools ""`
+      with no MCP servers, skills or slash commands and the codex_wsp L0 system prompt, then the reply's single python
+      block is run once with numpy and the starting weights (zeros from /app/l0/shapes.json) and saved to
+      /app/out/weights.npz. A capped task (/app/l0/limits.json) gets up to 2 over-cap retries in the same conversation
+      (--resume). A trace with any tool call writes nothing, so the task scores 0. The tools kwarg is ignored.
+    choices:
+      - agentic
+      - l0
+      - builder
+
+run_cmd: >-
+  bash -lc 'set -o pipefail && mkdir -p /logs &&
+  AGENT_OUTPUT_ROOT=/logs python3 /bundle/claude_code_wsp_k3/collect_outputs.py
+  "{problem_statement_path}" --task-id "{task_id}" --model "{model}" --effort "{effort}" --tools "{tools}" --access "{access}" --time-limit-s "{time_limit_s}" --final-turn-s "{final_turn_s}"'

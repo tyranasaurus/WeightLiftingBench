@@ -1,0 +1,215 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "e1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 16,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e1r",
+   "op": "relu",
+   "inputs": [
+    "e1"
+   ]
+  },
+  {
+   "name": "e2",
+   "op": "conv",
+   "inputs": [
+    "e1r"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e2r",
+   "op": "relu",
+   "inputs": [
+    "e2"
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "avgpool",
+   "inputs": [
+    "e2r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "e3",
+   "op": "conv",
+   "inputs": [
+    "p1"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f1",
+   "op": "reshape",
+   "inputs": [
+    "e3"
+   ],
+   "shape": [
+    1,
+    88,
+    11
+   ]
+  },
+  {
+   "name": "f2",
+   "op": "norm",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "f3",
+   "op": "reshape",
+   "inputs": [
+    "f2"
+   ],
+   "shape": [
+    8,
+    11,
+    11
+   ]
+  },
+  {
+   "name": "f4",
+   "op": "conv",
+   "inputs": [
+    "f3"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "s1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 9,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "f5",
+   "op": "add",
+   "inputs": [
+    "f4",
+    "s1"
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "conv",
+   "inputs": [
+    "f5"
+   ],
+   "out": 5184,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tmax",
+   "op": "maxpool",
+   "inputs": [
+    "tm"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "tr",
+   "op": "reshape",
+   "inputs": [
+    "tmax"
+   ],
+   "shape": [
+    24,
+    216,
+    1
+   ]
+  },
+  {
+   "name": "cmax",
+   "op": "maxpool",
+   "inputs": [
+    "tr"
+   ],
+   "size": [
+    216,
+    1
+   ],
+   "stride": [
+    216,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "cmax"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

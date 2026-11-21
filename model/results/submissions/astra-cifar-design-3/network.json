@@ -1,0 +1,1575 @@
+{
+ "layers": [
+  {
+   "name": "light",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "relative_light",
+   "op": "norm",
+   "inputs": [
+    "light"
+   ]
+  },
+  {
+   "name": "small_photo",
+   "op": "avgpool",
+   "inputs": [
+    "relative_light"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "slope",
+   "op": "conv",
+   "inputs": [
+    "relative_light"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 0,
+   "stride": 2
+  },
+  {
+   "name": "rectified_slope",
+   "op": "relu",
+   "inputs": [
+    "slope"
+   ]
+  },
+  {
+   "name": "orientation",
+   "op": "conv",
+   "inputs": [
+    "rectified_slope"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "relative_orientation",
+   "op": "norm",
+   "inputs": [
+    "orientation"
+   ]
+  },
+  {
+   "name": "model_shading",
+   "op": "dense",
+   "inputs": [
+    "small_photo"
+   ],
+   "out": 10800
+  },
+  {
+   "name": "model_contour",
+   "op": "dense",
+   "inputs": [
+    "relative_orientation"
+   ],
+   "out": 10800
+  },
+  {
+   "name": "chromatic_grid",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "leaf_axis",
+   "op": "conv",
+   "inputs": [
+    "chromatic_grid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "leaf_unit",
+   "op": "norm",
+   "inputs": [
+    "leaf_axis"
+   ]
+  },
+  {
+   "name": "leaf_raw",
+   "op": "conv",
+   "inputs": [
+    "leaf_axis"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "leaf_relative",
+   "op": "conv",
+   "inputs": [
+    "leaf_unit"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "leaf_opponent",
+   "op": "add",
+   "inputs": [
+    "leaf_raw",
+    "leaf_relative"
+   ]
+  },
+  {
+   "name": "leaf_in_outline",
+   "op": "dense",
+   "inputs": [
+    "leaf_opponent"
+   ],
+   "out": 5400
+  },
+  {
+   "name": "cool_axis",
+   "op": "conv",
+   "inputs": [
+    "chromatic_grid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cool_unit",
+   "op": "norm",
+   "inputs": [
+    "cool_axis"
+   ]
+  },
+  {
+   "name": "cool_raw",
+   "op": "conv",
+   "inputs": [
+    "cool_axis"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cool_relative",
+   "op": "conv",
+   "inputs": [
+    "cool_unit"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cool_opponent",
+   "op": "add",
+   "inputs": [
+    "cool_raw",
+    "cool_relative"
+   ]
+  },
+  {
+   "name": "cool_in_outline",
+   "op": "dense",
+   "inputs": [
+    "cool_opponent"
+   ],
+   "out": 5400
+  },
+  {
+   "name": "russet_axis",
+   "op": "conv",
+   "inputs": [
+    "chromatic_grid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "russet_unit",
+   "op": "norm",
+   "inputs": [
+    "russet_axis"
+   ]
+  },
+  {
+   "name": "russet_raw",
+   "op": "conv",
+   "inputs": [
+    "russet_axis"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "russet_relative",
+   "op": "conv",
+   "inputs": [
+    "russet_unit"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "russet_opponent",
+   "op": "add",
+   "inputs": [
+    "russet_raw",
+    "russet_relative"
+   ]
+  },
+  {
+   "name": "russet_in_outline",
+   "op": "dense",
+   "inputs": [
+    "russet_opponent"
+   ],
+   "out": 5400
+  },
+  {
+   "name": "outline_field_0",
+   "op": "reshape",
+   "inputs": [
+    "leaf_in_outline"
+   ],
+   "shape": [
+    10,
+    5,
+    108
+   ]
+  },
+  {
+   "name": "color_expectation_0",
+   "op": "conv",
+   "inputs": [
+    "outline_field_0"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "outline_field_1",
+   "op": "reshape",
+   "inputs": [
+    "cool_in_outline"
+   ],
+   "shape": [
+    10,
+    5,
+    108
+   ]
+  },
+  {
+   "name": "color_expectation_1",
+   "op": "conv",
+   "inputs": [
+    "outline_field_1"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "outline_field_2",
+   "op": "reshape",
+   "inputs": [
+    "russet_in_outline"
+   ],
+   "shape": [
+    10,
+    5,
+    108
+   ]
+  },
+  {
+   "name": "color_expectation_2",
+   "op": "conv",
+   "inputs": [
+    "outline_field_2"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "outline_color_agreement",
+   "op": "add",
+   "inputs": [
+    "color_expectation_0",
+    "color_expectation_1",
+    "color_expectation_2"
+   ]
+  },
+  {
+   "name": "chroma_polarity_grid",
+   "op": "reshape",
+   "inputs": [
+    "outline_color_agreement"
+   ],
+   "shape": [
+    50,
+    1,
+    108
+   ]
+  },
+  {
+   "name": "channels_as_rows",
+   "op": "reshape",
+   "inputs": [
+    "chromatic_grid"
+   ],
+   "shape": [
+    3,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "subtract_flanks",
+   "op": "dense",
+   "inputs": [
+    "channels_as_rows"
+   ],
+   "out": 1536
+  },
+  {
+   "name": "flank_residuals",
+   "op": "reshape",
+   "inputs": [
+    "subtract_flanks"
+   ],
+   "shape": [
+    6,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "flank_opponents",
+   "op": "conv",
+   "inputs": [
+    "flank_residuals"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "foreground_differences",
+   "op": "relu",
+   "inputs": [
+    "flank_opponents"
+   ]
+  },
+  {
+   "name": "difference_from_flanks",
+   "op": "conv",
+   "inputs": [
+    "foreground_differences"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "which_flank",
+   "op": "conv",
+   "inputs": [
+    "difference_from_flanks"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "prefer_right_background",
+   "op": "relu",
+   "inputs": [
+    "which_flank"
+   ]
+  },
+  {
+   "name": "left_novelty",
+   "op": "conv",
+   "inputs": [
+    "difference_from_flanks"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "subtract_background_match",
+   "op": "conv",
+   "inputs": [
+    "prefer_right_background"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "foreground_margin",
+   "op": "add",
+   "inputs": [
+    "left_novelty",
+    "subtract_background_match"
+   ]
+  },
+  {
+   "name": "overly_strong_contrast",
+   "op": "conv",
+   "inputs": [
+    "foreground_margin"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "foreground_overflow",
+   "op": "relu",
+   "inputs": [
+    "overly_strong_contrast"
+   ]
+  },
+  {
+   "name": "limit_contrast",
+   "op": "conv",
+   "inputs": [
+    "foreground_overflow"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "foreground",
+   "op": "add",
+   "inputs": [
+    "foreground_margin",
+    "limit_contrast"
+   ]
+  },
+  {
+   "name": "relative_foreground",
+   "op": "norm",
+   "inputs": [
+    "foreground"
+   ]
+  },
+  {
+   "name": "segmented_silhouettes",
+   "op": "dense",
+   "inputs": [
+    "relative_foreground"
+   ],
+   "out": 5400
+  },
+  {
+   "name": "figure_polarity_grid",
+   "op": "reshape",
+   "inputs": [
+    "segmented_silhouettes"
+   ],
+   "shape": [
+    50,
+    1,
+    108
+   ]
+  },
+  {
+   "name": "colored_figures",
+   "op": "add",
+   "inputs": [
+    "chroma_polarity_grid",
+    "figure_polarity_grid"
+   ]
+  },
+  {
+   "name": "paint_polarities",
+   "op": "conv",
+   "inputs": [
+    "colored_figures"
+   ],
+   "out": 100,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "colored_poses",
+   "op": "reshape",
+   "inputs": [
+    "paint_polarities"
+   ],
+   "shape": [
+    10800
+   ]
+  },
+  {
+   "name": "model_agreement",
+   "op": "add",
+   "inputs": [
+    "model_shading",
+    "model_contour",
+    "colored_poses"
+   ]
+  },
+  {
+   "name": "pose_grid",
+   "op": "reshape",
+   "inputs": [
+    "model_agreement"
+   ],
+   "shape": [
+    10,
+    5,
+    216
+   ]
+  },
+  {
+   "name": "best_per_view",
+   "op": "maxpool",
+   "inputs": [
+    "pose_grid"
+   ],
+   "size": [
+    1,
+    216
+   ],
+   "stride": [
+    1,
+    216
+   ]
+  },
+  {
+   "name": "best_view",
+   "op": "maxpool",
+   "inputs": [
+    "best_per_view"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "best_model",
+   "op": "reshape",
+   "inputs": [
+    "best_view"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "typical_view",
+   "op": "avgpool",
+   "inputs": [
+    "best_per_view"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    5,
+    1
+   ]
+  },
+  {
+   "name": "typical_model",
+   "op": "reshape",
+   "inputs": [
+    "typical_view"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "top_shape",
+   "op": "dense",
+   "inputs": [
+    "best_model"
+   ],
+   "out": 10
+  },
+  {
+   "name": "support_shapes",
+   "op": "dense",
+   "inputs": [
+    "typical_model"
+   ],
+   "out": 10
+  },
+  {
+   "name": "shape_evidence",
+   "op": "add",
+   "inputs": [
+    "top_shape",
+    "support_shapes"
+   ]
+  },
+  {
+   "name": "local_color",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "color_boundaries",
+   "op": "conv",
+   "inputs": [
+    "local_color"
+   ],
+   "out": 39,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_violations",
+   "op": "relu",
+   "inputs": [
+    "color_boundaries"
+   ]
+  },
+  {
+   "name": "soft_intersections",
+   "op": "conv",
+   "inputs": [
+    "color_violations"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_membership",
+   "op": "relu",
+   "inputs": [
+    "soft_intersections"
+   ]
+  },
+  {
+   "name": "area_light",
+   "op": "avgpool",
+   "inputs": [
+    "light"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "spatial_derivatives",
+   "op": "conv",
+   "inputs": [
+    "relative_light"
+   ],
+   "out": 18,
+   "kernel": [
+    7,
+    7
+   ],
+   "padding": 0,
+   "stride": 2
+  },
+  {
+   "name": "edge_halfwaves",
+   "op": "relu",
+   "inputs": [
+    "spatial_derivatives"
+   ]
+  },
+  {
+   "name": "edge_strength",
+   "op": "conv",
+   "inputs": [
+    "edge_halfwaves"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "surface_thresholds",
+   "op": "conv",
+   "inputs": [
+    "edge_strength"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "surface_features",
+   "op": "relu",
+   "inputs": [
+    "surface_thresholds"
+   ]
+  },
+  {
+   "name": "line_contrasts",
+   "op": "dense",
+   "inputs": [
+    "small_photo"
+   ],
+   "out": 272
+  },
+  {
+   "name": "line_groups",
+   "op": "dense",
+   "inputs": [
+    "line_contrasts"
+   ],
+   "out": 384
+  },
+  {
+   "name": "line_search_grid",
+   "op": "reshape",
+   "inputs": [
+    "line_groups"
+   ],
+   "shape": [
+    4,
+    1,
+    96
+   ]
+  },
+  {
+   "name": "longest_edges",
+   "op": "maxpool",
+   "inputs": [
+    "line_search_grid"
+   ],
+   "size": [
+    1,
+    96
+   ],
+   "stride": [
+    1,
+    96
+   ]
+  },
+  {
+   "name": "part_contrast",
+   "op": "dense",
+   "inputs": [
+    "small_photo"
+   ],
+   "out": 1584
+  },
+  {
+   "name": "part_triplets",
+   "op": "reshape",
+   "inputs": [
+    "part_contrast"
+   ],
+   "shape": [
+    1,
+    528,
+    3
+   ]
+  },
+  {
+   "name": "part_caps",
+   "op": "conv",
+   "inputs": [
+    "part_triplets"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "excess_part_contrast",
+   "op": "relu",
+   "inputs": [
+    "part_caps"
+   ]
+  },
+  {
+   "name": "remove_excess",
+   "op": "conv",
+   "inputs": [
+    "excess_part_contrast"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bounded_parts",
+   "op": "add",
+   "inputs": [
+    "part_triplets",
+    "remove_excess"
+   ]
+  },
+  {
+   "name": "landmark_layout",
+   "op": "avgpool",
+   "inputs": [
+    "bounded_parts"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "part_groups",
+   "op": "dense",
+   "inputs": [
+    "landmark_layout"
+   ],
+   "out": 576
+  },
+  {
+   "name": "landmark_poses",
+   "op": "reshape",
+   "inputs": [
+    "part_groups"
+   ],
+   "shape": [
+    6,
+    1,
+    96
+   ]
+  },
+  {
+   "name": "landmark_evidence",
+   "op": "maxpool",
+   "inputs": [
+    "landmark_poses"
+   ],
+   "size": [
+    1,
+    96
+   ],
+   "stride": [
+    1,
+    96
+   ]
+  },
+  {
+   "name": "mirror_pairs",
+   "op": "dense",
+   "inputs": [
+    "small_photo"
+   ],
+   "out": 150
+  },
+  {
+   "name": "mirror_differences",
+   "op": "relu",
+   "inputs": [
+    "mirror_pairs"
+   ]
+  },
+  {
+   "name": "mirror_agreement",
+   "op": "dense",
+   "inputs": [
+    "mirror_differences"
+   ],
+   "out": 5
+  },
+  {
+   "name": "mirrored_windows",
+   "op": "reshape",
+   "inputs": [
+    "mirror_agreement"
+   ],
+   "shape": [
+    1,
+    1,
+    5
+   ]
+  },
+  {
+   "name": "bilateral",
+   "op": "maxpool",
+   "inputs": [
+    "mirrored_windows"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "local_structure",
+   "op": "conv",
+   "inputs": [
+    "edge_strength"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "material_structure",
+   "op": "avgpool",
+   "inputs": [
+    "local_structure"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "material_color",
+   "op": "avgpool",
+   "inputs": [
+    "color_membership"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "material_light",
+   "op": "avgpool",
+   "inputs": [
+    "light"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "grid_material_color",
+   "op": "conv",
+   "inputs": [
+    "material_color"
+   ],
+   "out": 17,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "grid_material_light",
+   "op": "conv",
+   "inputs": [
+    "material_light"
+   ],
+   "out": 17,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "grid_material_structure",
+   "op": "conv",
+   "inputs": [
+    "material_structure"
+   ],
+   "out": 17,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "local_ingredients",
+   "op": "add",
+   "inputs": [
+    "grid_material_color",
+    "grid_material_light",
+    "grid_material_structure"
+   ]
+  },
+  {
+   "name": "material_tests",
+   "op": "conv",
+   "inputs": [
+    "local_ingredients"
+   ],
+   "out": 72,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "material_violations",
+   "op": "relu",
+   "inputs": [
+    "material_tests"
+   ]
+  },
+  {
+   "name": "material_quality",
+   "op": "conv",
+   "inputs": [
+    "material_violations"
+   ],
+   "out": 26,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "compatible_materials",
+   "op": "conv",
+   "inputs": [
+    "material_quality"
+   ],
+   "out": 104,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "material_options",
+   "op": "reshape",
+   "inputs": [
+    "compatible_materials"
+   ],
+   "shape": [
+    26,
+    4,
+    36
+   ]
+  },
+  {
+   "name": "most_plausible_material",
+   "op": "maxpool",
+   "inputs": [
+    "material_options"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "material_grid",
+   "op": "reshape",
+   "inputs": [
+    "most_plausible_material"
+   ],
+   "shape": [
+    26,
+    6,
+    6
+   ]
+  },
+  {
+   "name": "layout_compatibility",
+   "op": "dense",
+   "inputs": [
+    "material_grid"
+   ],
+   "out": 50
+  },
+  {
+   "name": "scene_hypotheses",
+   "op": "reshape",
+   "inputs": [
+    "layout_compatibility"
+   ],
+   "shape": [
+    10,
+    1,
+    5
+   ]
+  },
+  {
+   "name": "best_scene",
+   "op": "maxpool",
+   "inputs": [
+    "scene_hypotheses"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "layout_agreement",
+   "op": "reshape",
+   "inputs": [
+    "best_scene"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "round_parts",
+   "op": "dense",
+   "inputs": [
+    "small_photo"
+   ],
+   "out": 504
+  },
+  {
+   "name": "rim_response_grid",
+   "op": "reshape",
+   "inputs": [
+    "round_parts"
+   ],
+   "shape": [
+    1,
+    1,
+    504
+   ]
+  },
+  {
+   "name": "rim_clip_level",
+   "op": "conv",
+   "inputs": [
+    "rim_response_grid"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "rim_clip",
+   "op": "relu",
+   "inputs": [
+    "rim_clip_level"
+   ]
+  },
+  {
+   "name": "rim_clip_excess",
+   "op": "conv",
+   "inputs": [
+    "rim_clip"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bounded_rims",
+   "op": "add",
+   "inputs": [
+    "rim_response_grid",
+    "rim_clip_excess"
+   ]
+  },
+  {
+   "name": "wheel_chassis",
+   "op": "dense",
+   "inputs": [
+    "bounded_rims"
+   ],
+   "out": 144
+  },
+  {
+   "name": "axle_poses",
+   "op": "reshape",
+   "inputs": [
+    "wheel_chassis"
+   ],
+   "shape": [
+    2,
+    1,
+    72
+   ]
+  },
+  {
+   "name": "axle_agreement",
+   "op": "maxpool",
+   "inputs": [
+    "axle_poses"
+   ],
+   "size": [
+    1,
+    72
+   ],
+   "stride": [
+    1,
+    72
+   ]
+  },
+  {
+   "name": "measure_longest_edges",
+   "op": "dense",
+   "inputs": [
+    "longest_edges"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_color_membership",
+   "op": "dense",
+   "inputs": [
+    "color_membership"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_landmark_evidence",
+   "op": "dense",
+   "inputs": [
+    "landmark_evidence"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_axle_agreement",
+   "op": "dense",
+   "inputs": [
+    "axle_agreement"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_surface_features",
+   "op": "dense",
+   "inputs": [
+    "surface_features"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_edge_strength",
+   "op": "dense",
+   "inputs": [
+    "edge_strength"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_bilateral",
+   "op": "dense",
+   "inputs": [
+    "bilateral"
+   ],
+   "out": 58
+  },
+  {
+   "name": "measure_area_light",
+   "op": "dense",
+   "inputs": [
+    "area_light"
+   ],
+   "out": 58
+  },
+  {
+   "name": "scene_measurements",
+   "op": "add",
+   "inputs": [
+    "measure_longest_edges",
+    "measure_color_membership",
+    "measure_landmark_evidence",
+    "measure_axle_agreement",
+    "measure_surface_features",
+    "measure_edge_strength",
+    "measure_bilateral",
+    "measure_area_light"
+   ]
+  },
+  {
+   "name": "rule_conditions",
+   "op": "dense",
+   "inputs": [
+    "scene_measurements"
+   ],
+   "out": 102
+  },
+  {
+   "name": "rule_responses",
+   "op": "relu",
+   "inputs": [
+    "rule_conditions"
+   ]
+  },
+  {
+   "name": "cue_families",
+   "op": "dense",
+   "inputs": [
+    "rule_responses"
+   ],
+   "out": 60
+  },
+  {
+   "name": "family_limits",
+   "op": "dense",
+   "inputs": [
+    "cue_families"
+   ],
+   "out": 120
+  },
+  {
+   "name": "family_bounds",
+   "op": "relu",
+   "inputs": [
+    "family_limits"
+   ]
+  },
+  {
+   "name": "scene_evidence",
+   "op": "dense",
+   "inputs": [
+    "family_bounds"
+   ],
+   "out": 10
+  },
+  {
+   "name": "habitat_testimony",
+   "op": "dense",
+   "inputs": [
+    "scene_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "geometry_testimony",
+   "op": "dense",
+   "inputs": [
+    "shape_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "layout_testimony",
+   "op": "dense",
+   "inputs": [
+    "layout_agreement"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "habitat_testimony",
+    "geometry_testimony",
+    "layout_testimony"
+   ]
+  }
+ ]
+}

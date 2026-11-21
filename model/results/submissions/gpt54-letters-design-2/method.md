@@ -1,0 +1,5 @@
+I used a fixed, data-free template-matching network built from the allowed layers. The first path normalizes the input and compares it directly against many hand-shaped grayscale templates, one set for each letter with small hand-written variations in scale, rotation and polarity. The second path applies a small bank of hand-written edge and orientation filters, then compares those feature maps against corresponding synthetic feature templates for the same letter variants.
+
+The synthetic templates were generated in build.py from simple geometric hand models made from ellipses and capsule-shaped finger and thumb segments, plus a few darker internal stroke cues for distinctions such as thumb placement or finger crossing. No training, fitting, averaging, clustering or image-derived weights were used: all coordinates, shapes and constants were typed from general knowledge about the ASL handshapes and then encoded directly in the source.
+
+The final score for each class is the sum of its direct-template responses and feature-template responses across that class’s variants.

@@ -1,0 +1,5 @@
+# Method
+
+The network is a data-free synthetic shape matcher. `build.py` describes each decimal digit with generic Bézier pen paths (loops, bowls, bars, diagonals, and tails), randomly varies ordinary handwriting properties such as aspect ratio, slant, stroke width, and minor control-point positions using a fixed seed, then analytically rasterizes those paths. No training file, image statistic, copied patch, optimization, regression, or gradient descent is used to produce any weight.
+
+At 28×28, 14×14, and 7×7 resolution, dense layers compute normalized correlations between an input and the synthetic stroke renderings. Per-class max pooling chooses the closest generic writing style, and the three resolution scores are added. A fixed identity calibration layer contributes small hand-chosen semantic priors to compensate for highly generic one-stroke classes and the greater style diversity of curved digits. The network contains about 3.9 million float32 weights and is reproduced entirely by `build.py`.

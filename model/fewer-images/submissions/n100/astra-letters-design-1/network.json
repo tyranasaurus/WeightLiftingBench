@@ -1,0 +1,860 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 10,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rectify",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "angular_tuning",
+      "op": "conv",
+      "inputs": [
+        "rectify"
+      ],
+      "out": 30,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compress",
+      "op": "relu",
+      "inputs": [
+        "angular_tuning"
+      ]
+    },
+    {
+      "name": "cells",
+      "op": "avgpool",
+      "inputs": [
+        "compress"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "orientations",
+      "op": "conv",
+      "inputs": [
+        "cells"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family0",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family0_vector",
+      "op": "reshape",
+      "inputs": [
+        "whole_family0"
+      ],
+      "shape": [
+        1,
+        4,
+        121
+      ]
+    },
+    {
+      "name": "whole_family0_normalized",
+      "op": "norm",
+      "inputs": [
+        "whole_family0_vector"
+      ]
+    },
+    {
+      "name": "whole_family0_map",
+      "op": "reshape",
+      "inputs": [
+        "whole_family0_normalized"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "whole_family0_place",
+      "op": "conv",
+      "inputs": [
+        "whole_family0_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family4",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family4_vector",
+      "op": "reshape",
+      "inputs": [
+        "whole_family4"
+      ],
+      "shape": [
+        1,
+        4,
+        121
+      ]
+    },
+    {
+      "name": "whole_family4_normalized",
+      "op": "norm",
+      "inputs": [
+        "whole_family4_vector"
+      ]
+    },
+    {
+      "name": "whole_family4_map",
+      "op": "reshape",
+      "inputs": [
+        "whole_family4_normalized"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "whole_family4_place",
+      "op": "conv",
+      "inputs": [
+        "whole_family4_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family8",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_family8_vector",
+      "op": "reshape",
+      "inputs": [
+        "whole_family8"
+      ],
+      "shape": [
+        1,
+        2,
+        121
+      ]
+    },
+    {
+      "name": "whole_family8_normalized",
+      "op": "norm",
+      "inputs": [
+        "whole_family8_vector"
+      ]
+    },
+    {
+      "name": "whole_family8_map",
+      "op": "reshape",
+      "inputs": [
+        "whole_family8_normalized"
+      ],
+      "shape": [
+        2,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "whole_family8_place",
+      "op": "conv",
+      "inputs": [
+        "whole_family8_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "whole_descriptor",
+      "op": "add",
+      "inputs": [
+        "whole_family0_place",
+        "whole_family4_place",
+        "whole_family8_place"
+      ]
+    },
+    {
+      "name": "whole_match",
+      "op": "dense",
+      "inputs": [
+        "whole_descriptor"
+      ],
+      "out": 61440
+    },
+    {
+      "name": "whole_views",
+      "op": "reshape",
+      "inputs": [
+        "whole_match"
+      ],
+      "shape": [
+        24,
+        1,
+        2560
+      ]
+    },
+    {
+      "name": "whole_search",
+      "op": "maxpool",
+      "inputs": [
+        "whole_views"
+      ],
+      "size": [
+        1,
+        640
+      ],
+      "stride": [
+        1,
+        640
+      ]
+    },
+    {
+      "name": "whole_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "whole_search"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "upper_family0",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_family0_crop",
+      "op": "dense",
+      "inputs": [
+        "upper_family0"
+      ],
+      "out": 264
+    },
+    {
+      "name": "upper_family0_vector",
+      "op": "reshape",
+      "inputs": [
+        "upper_family0_crop"
+      ],
+      "shape": [
+        1,
+        4,
+        66
+      ]
+    },
+    {
+      "name": "upper_family0_normalized",
+      "op": "norm",
+      "inputs": [
+        "upper_family0_vector"
+      ]
+    },
+    {
+      "name": "upper_family0_map",
+      "op": "reshape",
+      "inputs": [
+        "upper_family0_normalized"
+      ],
+      "shape": [
+        4,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "upper_family0_place",
+      "op": "conv",
+      "inputs": [
+        "upper_family0_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_family4",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_family4_crop",
+      "op": "dense",
+      "inputs": [
+        "upper_family4"
+      ],
+      "out": 264
+    },
+    {
+      "name": "upper_family4_vector",
+      "op": "reshape",
+      "inputs": [
+        "upper_family4_crop"
+      ],
+      "shape": [
+        1,
+        4,
+        66
+      ]
+    },
+    {
+      "name": "upper_family4_normalized",
+      "op": "norm",
+      "inputs": [
+        "upper_family4_vector"
+      ]
+    },
+    {
+      "name": "upper_family4_map",
+      "op": "reshape",
+      "inputs": [
+        "upper_family4_normalized"
+      ],
+      "shape": [
+        4,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "upper_family4_place",
+      "op": "conv",
+      "inputs": [
+        "upper_family4_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_family8",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_family8_crop",
+      "op": "dense",
+      "inputs": [
+        "upper_family8"
+      ],
+      "out": 132
+    },
+    {
+      "name": "upper_family8_vector",
+      "op": "reshape",
+      "inputs": [
+        "upper_family8_crop"
+      ],
+      "shape": [
+        1,
+        2,
+        66
+      ]
+    },
+    {
+      "name": "upper_family8_normalized",
+      "op": "norm",
+      "inputs": [
+        "upper_family8_vector"
+      ]
+    },
+    {
+      "name": "upper_family8_map",
+      "op": "reshape",
+      "inputs": [
+        "upper_family8_normalized"
+      ],
+      "shape": [
+        2,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "upper_family8_place",
+      "op": "conv",
+      "inputs": [
+        "upper_family8_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "upper_descriptor",
+      "op": "add",
+      "inputs": [
+        "upper_family0_place",
+        "upper_family4_place",
+        "upper_family8_place"
+      ]
+    },
+    {
+      "name": "upper_match",
+      "op": "dense",
+      "inputs": [
+        "upper_descriptor"
+      ],
+      "out": 30720
+    },
+    {
+      "name": "upper_views",
+      "op": "reshape",
+      "inputs": [
+        "upper_match"
+      ],
+      "shape": [
+        24,
+        1,
+        1280
+      ]
+    },
+    {
+      "name": "upper_search",
+      "op": "maxpool",
+      "inputs": [
+        "upper_views"
+      ],
+      "size": [
+        1,
+        320
+      ],
+      "stride": [
+        1,
+        320
+      ]
+    },
+    {
+      "name": "upper_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "upper_search"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "lower_family0",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_family0_crop",
+      "op": "dense",
+      "inputs": [
+        "lower_family0"
+      ],
+      "out": 264
+    },
+    {
+      "name": "lower_family0_vector",
+      "op": "reshape",
+      "inputs": [
+        "lower_family0_crop"
+      ],
+      "shape": [
+        1,
+        4,
+        66
+      ]
+    },
+    {
+      "name": "lower_family0_normalized",
+      "op": "norm",
+      "inputs": [
+        "lower_family0_vector"
+      ]
+    },
+    {
+      "name": "lower_family0_map",
+      "op": "reshape",
+      "inputs": [
+        "lower_family0_normalized"
+      ],
+      "shape": [
+        4,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "lower_family0_place",
+      "op": "conv",
+      "inputs": [
+        "lower_family0_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_family4",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_family4_crop",
+      "op": "dense",
+      "inputs": [
+        "lower_family4"
+      ],
+      "out": 264
+    },
+    {
+      "name": "lower_family4_vector",
+      "op": "reshape",
+      "inputs": [
+        "lower_family4_crop"
+      ],
+      "shape": [
+        1,
+        4,
+        66
+      ]
+    },
+    {
+      "name": "lower_family4_normalized",
+      "op": "norm",
+      "inputs": [
+        "lower_family4_vector"
+      ]
+    },
+    {
+      "name": "lower_family4_map",
+      "op": "reshape",
+      "inputs": [
+        "lower_family4_normalized"
+      ],
+      "shape": [
+        4,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "lower_family4_place",
+      "op": "conv",
+      "inputs": [
+        "lower_family4_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_family8",
+      "op": "conv",
+      "inputs": [
+        "orientations"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_family8_crop",
+      "op": "dense",
+      "inputs": [
+        "lower_family8"
+      ],
+      "out": 132
+    },
+    {
+      "name": "lower_family8_vector",
+      "op": "reshape",
+      "inputs": [
+        "lower_family8_crop"
+      ],
+      "shape": [
+        1,
+        2,
+        66
+      ]
+    },
+    {
+      "name": "lower_family8_normalized",
+      "op": "norm",
+      "inputs": [
+        "lower_family8_vector"
+      ]
+    },
+    {
+      "name": "lower_family8_map",
+      "op": "reshape",
+      "inputs": [
+        "lower_family8_normalized"
+      ],
+      "shape": [
+        2,
+        6,
+        11
+      ]
+    },
+    {
+      "name": "lower_family8_place",
+      "op": "conv",
+      "inputs": [
+        "lower_family8_map"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lower_descriptor",
+      "op": "add",
+      "inputs": [
+        "lower_family0_place",
+        "lower_family4_place",
+        "lower_family8_place"
+      ]
+    },
+    {
+      "name": "lower_match",
+      "op": "dense",
+      "inputs": [
+        "lower_descriptor"
+      ],
+      "out": 30720
+    },
+    {
+      "name": "lower_views",
+      "op": "reshape",
+      "inputs": [
+        "lower_match"
+      ],
+      "shape": [
+        24,
+        1,
+        1280
+      ]
+    },
+    {
+      "name": "lower_search",
+      "op": "maxpool",
+      "inputs": [
+        "lower_views"
+      ],
+      "size": [
+        1,
+        320
+      ],
+      "stride": [
+        1,
+        320
+      ]
+    },
+    {
+      "name": "lower_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "lower_search"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "evidence",
+      "op": "add",
+      "inputs": [
+        "whole_consensus",
+        "whole_consensus",
+        "whole_consensus",
+        "whole_consensus",
+        "upper_consensus",
+        "lower_consensus"
+      ]
+    },
+    {
+      "name": "letters",
+      "op": "reshape",
+      "inputs": [
+        "evidence"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

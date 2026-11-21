@@ -1,0 +1,2823 @@
+{
+ "layers": [
+  {
+   "name": "poly",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 7,
+   "kernel": [
+    2,
+    2
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "sky_blocks",
+   "op": "avgpool",
+   "inputs": [
+    "poly"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "sky_neg",
+   "op": "conv",
+   "inputs": [
+    "sky_blocks"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "negsky",
+   "op": "maxpool",
+   "inputs": [
+    "sky_neg"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "skymap_fc",
+   "op": "dense",
+   "inputs": [
+    "negsky"
+   ],
+   "out": 28672
+  },
+  {
+   "name": "skymap",
+   "op": "reshape",
+   "inputs": [
+    "skymap_fc"
+   ],
+   "shape": [
+    7,
+    64,
+    64
+   ]
+  },
+  {
+   "name": "desky",
+   "op": "add",
+   "inputs": [
+    "poly",
+    "skymap"
+   ]
+  },
+  {
+   "name": "smooth",
+   "op": "conv",
+   "inputs": [
+    "desky"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "thr_lin",
+   "op": "conv",
+   "inputs": [
+    "smooth"
+   ],
+   "out": 30,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "thr_relu",
+   "op": "relu",
+   "inputs": [
+    "thr_lin"
+   ]
+  },
+  {
+   "name": "tm1_64",
+   "op": "conv",
+   "inputs": [
+    "thr_relu"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "seed_fc",
+   "op": "dense",
+   "inputs": [
+    "negsky"
+   ],
+   "out": 24576
+  },
+  {
+   "name": "seed",
+   "op": "reshape",
+   "inputs": [
+    "seed_fc"
+   ],
+   "shape": [
+    6,
+    64,
+    64
+   ]
+  },
+  {
+   "name": "fl_x0",
+   "op": "add",
+   "inputs": [
+    "seed",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad0",
+   "op": "conv",
+   "inputs": [
+    "fl_x0"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp0",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad0",
+   "op": "add",
+   "inputs": [
+    "flA_mp0",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad1",
+   "op": "conv",
+   "inputs": [
+    "flA_ad0"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp1",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad1",
+   "op": "add",
+   "inputs": [
+    "flA_mp1",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad2",
+   "op": "conv",
+   "inputs": [
+    "flA_ad1"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp2",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad2",
+   "op": "add",
+   "inputs": [
+    "flA_mp2",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad3",
+   "op": "conv",
+   "inputs": [
+    "flA_ad2"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp3",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad3",
+   "op": "add",
+   "inputs": [
+    "flA_mp3",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad4",
+   "op": "conv",
+   "inputs": [
+    "flA_ad3"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp4",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad4"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad4",
+   "op": "add",
+   "inputs": [
+    "flA_mp4",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad5",
+   "op": "conv",
+   "inputs": [
+    "flA_ad4"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp5",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad5"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad5",
+   "op": "add",
+   "inputs": [
+    "flA_mp5",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad6",
+   "op": "conv",
+   "inputs": [
+    "flA_ad5"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp6",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad6"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad6",
+   "op": "add",
+   "inputs": [
+    "flA_mp6",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "flA_pad7",
+   "op": "conv",
+   "inputs": [
+    "flA_ad6"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flA_mp7",
+   "op": "maxpool",
+   "inputs": [
+    "flA_pad7"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flA_ad7",
+   "op": "add",
+   "inputs": [
+    "flA_mp7",
+    "tm1_64"
+   ]
+  },
+  {
+   "name": "fl_xf",
+   "op": "conv",
+   "inputs": [
+    "flA_ad7"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl_tmf",
+   "op": "conv",
+   "inputs": [
+    "tm1_64"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl_xb",
+   "op": "conv",
+   "inputs": [
+    "flA_ad7"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl_tmb",
+   "op": "conv",
+   "inputs": [
+    "tm1_64"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flF_pad0",
+   "op": "conv",
+   "inputs": [
+    "fl_xf"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp0",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad0"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad0",
+   "op": "add",
+   "inputs": [
+    "flF_mp0",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad1",
+   "op": "conv",
+   "inputs": [
+    "flF_ad0"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp1",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad1"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad1",
+   "op": "add",
+   "inputs": [
+    "flF_mp1",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad2",
+   "op": "conv",
+   "inputs": [
+    "flF_ad1"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp2",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad2",
+   "op": "add",
+   "inputs": [
+    "flF_mp2",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad3",
+   "op": "conv",
+   "inputs": [
+    "flF_ad2"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp3",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad3"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad3",
+   "op": "add",
+   "inputs": [
+    "flF_mp3",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad4",
+   "op": "conv",
+   "inputs": [
+    "flF_ad3"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp4",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad4"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad4",
+   "op": "add",
+   "inputs": [
+    "flF_mp4",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad5",
+   "op": "conv",
+   "inputs": [
+    "flF_ad4"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp5",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad5"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad5",
+   "op": "add",
+   "inputs": [
+    "flF_mp5",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad6",
+   "op": "conv",
+   "inputs": [
+    "flF_ad5"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp6",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad6"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad6",
+   "op": "add",
+   "inputs": [
+    "flF_mp6",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad7",
+   "op": "conv",
+   "inputs": [
+    "flF_ad6"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp7",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad7"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad7",
+   "op": "add",
+   "inputs": [
+    "flF_mp7",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad8",
+   "op": "conv",
+   "inputs": [
+    "flF_ad7"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp8",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad8"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad8",
+   "op": "add",
+   "inputs": [
+    "flF_mp8",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flF_pad9",
+   "op": "conv",
+   "inputs": [
+    "flF_ad8"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flF_mp9",
+   "op": "maxpool",
+   "inputs": [
+    "flF_pad9"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flF_ad9",
+   "op": "add",
+   "inputs": [
+    "flF_mp9",
+    "fl_tmf"
+   ]
+  },
+  {
+   "name": "flB_pad0",
+   "op": "conv",
+   "inputs": [
+    "fl_xb"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flB_mp0",
+   "op": "maxpool",
+   "inputs": [
+    "flB_pad0"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flB_ad0",
+   "op": "add",
+   "inputs": [
+    "flB_mp0",
+    "fl_tmb"
+   ]
+  },
+  {
+   "name": "flB_pad1",
+   "op": "conv",
+   "inputs": [
+    "flB_ad0"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flB_mp1",
+   "op": "maxpool",
+   "inputs": [
+    "flB_pad1"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flB_ad1",
+   "op": "add",
+   "inputs": [
+    "flB_mp1",
+    "fl_tmb"
+   ]
+  },
+  {
+   "name": "flB_pad2",
+   "op": "conv",
+   "inputs": [
+    "flB_ad1"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "flB_mp2",
+   "op": "maxpool",
+   "inputs": [
+    "flB_pad2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "flB_ad2",
+   "op": "add",
+   "inputs": [
+    "flB_mp2",
+    "fl_tmb"
+   ]
+  },
+  {
+   "name": "cc_faint",
+   "op": "relu",
+   "inputs": [
+    "flF_ad9"
+   ]
+  },
+  {
+   "name": "cc_bright",
+   "op": "relu",
+   "inputs": [
+    "flB_ad2"
+   ]
+  },
+  {
+   "name": "segment",
+   "op": "conv",
+   "inputs": [
+    "cc_faint"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ccf_b",
+   "op": "conv",
+   "inputs": [
+    "cc_faint"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ccb_b",
+   "op": "conv",
+   "inputs": [
+    "cc_bright"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tm1_128",
+   "op": "conv",
+   "inputs": [
+    "thr_relu"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lev_add",
+   "op": "add",
+   "inputs": [
+    "ccf_b",
+    "ccb_b",
+    "tm1_128"
+   ]
+  },
+  {
+   "name": "levmask",
+   "op": "relu",
+   "inputs": [
+    "lev_add"
+   ]
+  },
+  {
+   "name": "moments",
+   "op": "dense",
+   "inputs": [
+    "levmask"
+   ],
+   "out": 36
+  },
+  {
+   "name": "centre",
+   "op": "dense",
+   "inputs": [
+    "smooth"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mask64",
+   "op": "conv",
+   "inputs": [
+    "levmask"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col_src",
+   "op": "conv",
+   "inputs": [
+    "smooth"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col_reg",
+   "op": "conv",
+   "inputs": [
+    "mask64"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "col_add",
+   "op": "add",
+   "inputs": [
+    "col_src",
+    "col_reg"
+   ]
+  },
+  {
+   "name": "col_gate",
+   "op": "relu",
+   "inputs": [
+    "col_add"
+   ]
+  },
+  {
+   "name": "col_sums",
+   "op": "dense",
+   "inputs": [
+    "col_gate"
+   ],
+   "out": 6
+  },
+  {
+   "name": "ls64",
+   "op": "conv",
+   "inputs": [
+    "smooth"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "asy_l",
+   "op": "conv",
+   "inputs": [
+    "ls64"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cc1",
+   "op": "conv",
+   "inputs": [
+    "cc_faint"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "asy_add",
+   "op": "add",
+   "inputs": [
+    "asy_l",
+    "cc1"
+   ]
+  },
+  {
+   "name": "asy_P",
+   "op": "relu",
+   "inputs": [
+    "asy_add"
+   ]
+  },
+  {
+   "name": "asy_diff",
+   "op": "dense",
+   "inputs": [
+    "asy_P"
+   ],
+   "out": 10368
+  },
+  {
+   "name": "asy_relu",
+   "op": "relu",
+   "inputs": [
+    "asy_diff"
+   ]
+  },
+  {
+   "name": "asy_sum",
+   "op": "dense",
+   "inputs": [
+    "asy_relu"
+   ],
+   "out": 5
+  },
+  {
+   "name": "asy_tot",
+   "op": "dense",
+   "inputs": [
+    "asy_P"
+   ],
+   "out": 6
+  },
+  {
+   "name": "annulus",
+   "op": "conv",
+   "inputs": [
+    "mask64"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ridge0",
+   "op": "conv",
+   "inputs": [
+    "ls64"
+   ],
+   "out": 4,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ridge_m0",
+   "op": "conv",
+   "inputs": [
+    "annulus"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ridge_a0",
+   "op": "add",
+   "inputs": [
+    "ridge0",
+    "ridge_m0"
+   ]
+  },
+  {
+   "name": "ridgeE0",
+   "op": "relu",
+   "inputs": [
+    "ridge_a0"
+   ]
+  },
+  {
+   "name": "ridgeZ0",
+   "op": "dense",
+   "inputs": [
+    "ridgeE0"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ls_down0",
+   "op": "avgpool",
+   "inputs": [
+    "ls64"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ann_down0",
+   "op": "avgpool",
+   "inputs": [
+    "annulus"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ridge1",
+   "op": "conv",
+   "inputs": [
+    "ls_down0"
+   ],
+   "out": 4,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ridge_m1",
+   "op": "conv",
+   "inputs": [
+    "ann_down0"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ridge_a1",
+   "op": "add",
+   "inputs": [
+    "ridge1",
+    "ridge_m1"
+   ]
+  },
+  {
+   "name": "ridgeE1",
+   "op": "relu",
+   "inputs": [
+    "ridge_a1"
+   ]
+  },
+  {
+   "name": "ridgeZ1",
+   "op": "dense",
+   "inputs": [
+    "ridgeE1"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ls_down1",
+   "op": "avgpool",
+   "inputs": [
+    "ls_down0"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ann_down1",
+   "op": "avgpool",
+   "inputs": [
+    "ann_down0"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ridge2",
+   "op": "conv",
+   "inputs": [
+    "ls_down1"
+   ],
+   "out": 4,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ridge_m2",
+   "op": "conv",
+   "inputs": [
+    "ann_down1"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ridge_a2",
+   "op": "add",
+   "inputs": [
+    "ridge2",
+    "ridge_m2"
+   ]
+  },
+  {
+   "name": "ridgeE2",
+   "op": "relu",
+   "inputs": [
+    "ridge_a2"
+   ]
+  },
+  {
+   "name": "ridgeZ2",
+   "op": "dense",
+   "inputs": [
+    "ridgeE2"
+   ],
+   "out": 3
+  },
+  {
+   "name": "seg3",
+   "op": "conv",
+   "inputs": [
+    "segment"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tm1b",
+   "op": "conv",
+   "inputs": [
+    "tm1_64"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ball_add",
+   "op": "add",
+   "inputs": [
+    "seg3",
+    "tm1b"
+   ]
+  },
+  {
+   "name": "bright_all",
+   "op": "relu",
+   "inputs": [
+    "ball_add"
+   ]
+  },
+  {
+   "name": "ball_area",
+   "op": "dense",
+   "inputs": [
+    "bright_all"
+   ],
+   "out": 3
+  },
+  {
+   "name": "core_area",
+   "op": "dense",
+   "inputs": [
+    "cc_bright"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc1",
+   "op": "dense",
+   "inputs": [
+    "moments"
+   ],
+   "out": 186
+  },
+  {
+   "name": "re2",
+   "op": "relu",
+   "inputs": [
+    "fc1"
+   ]
+  },
+  {
+   "name": "fc3",
+   "op": "dense",
+   "inputs": [
+    "re2"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc4",
+   "op": "dense",
+   "inputs": [
+    "moments"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc5",
+   "op": "dense",
+   "inputs": [
+    "fc4"
+   ],
+   "out": 342
+  },
+  {
+   "name": "re6",
+   "op": "relu",
+   "inputs": [
+    "fc5"
+   ]
+  },
+  {
+   "name": "fc7",
+   "op": "dense",
+   "inputs": [
+    "re6"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc8",
+   "op": "dense",
+   "inputs": [
+    "moments"
+   ],
+   "out": 36
+  },
+  {
+   "name": "rs9",
+   "op": "reshape",
+   "inputs": [
+    "fc8"
+   ],
+   "shape": [
+    6,
+    1,
+    6
+   ]
+  },
+  {
+   "name": "nm10",
+   "op": "norm",
+   "inputs": [
+    "rs9"
+   ]
+  },
+  {
+   "name": "rs11",
+   "op": "reshape",
+   "inputs": [
+    "nm10"
+   ],
+   "shape": [
+    36
+   ]
+  },
+  {
+   "name": "fc12",
+   "op": "dense",
+   "inputs": [
+    "rs11"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc13",
+   "op": "dense",
+   "inputs": [
+    "fc12"
+   ],
+   "out": 588
+  },
+  {
+   "name": "re14",
+   "op": "relu",
+   "inputs": [
+    "fc13"
+   ]
+  },
+  {
+   "name": "fc15",
+   "op": "dense",
+   "inputs": [
+    "re14"
+   ],
+   "out": 12
+  },
+  {
+   "name": "fc16",
+   "op": "dense",
+   "inputs": [
+    "fc7"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc17",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc18",
+   "op": "dense",
+   "inputs": [
+    "fc3"
+   ],
+   "out": 6
+  },
+  {
+   "name": "ad19",
+   "op": "add",
+   "inputs": [
+    "fc16",
+    "fc17",
+    "fc18"
+   ]
+  },
+  {
+   "name": "fc20",
+   "op": "dense",
+   "inputs": [
+    "col_sums"
+   ],
+   "out": 318
+  },
+  {
+   "name": "re21",
+   "op": "relu",
+   "inputs": [
+    "fc20"
+   ]
+  },
+  {
+   "name": "fc22",
+   "op": "dense",
+   "inputs": [
+    "re21"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc23",
+   "op": "dense",
+   "inputs": [
+    "asy_sum"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc24",
+   "op": "dense",
+   "inputs": [
+    "asy_tot"
+   ],
+   "out": 6
+  },
+  {
+   "name": "ad25",
+   "op": "add",
+   "inputs": [
+    "fc23",
+    "fc24"
+   ]
+  },
+  {
+   "name": "fc26",
+   "op": "dense",
+   "inputs": [
+    "ad25"
+   ],
+   "out": 5
+  },
+  {
+   "name": "fc27",
+   "op": "dense",
+   "inputs": [
+    "fc26"
+   ],
+   "out": 5
+  },
+  {
+   "name": "rs28",
+   "op": "reshape",
+   "inputs": [
+    "fc27"
+   ],
+   "shape": [
+    1,
+    1,
+    5
+   ]
+  },
+  {
+   "name": "ma29",
+   "op": "maxpool",
+   "inputs": [
+    "rs28"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "rs30",
+   "op": "reshape",
+   "inputs": [
+    "ma29"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "fc31",
+   "op": "dense",
+   "inputs": [
+    "rs30"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc32",
+   "op": "dense",
+   "inputs": [
+    "fc31"
+   ],
+   "out": 106
+  },
+  {
+   "name": "fc33",
+   "op": "dense",
+   "inputs": [
+    "ad25"
+   ],
+   "out": 106
+  },
+  {
+   "name": "ad34",
+   "op": "add",
+   "inputs": [
+    "fc32",
+    "fc33"
+   ]
+  },
+  {
+   "name": "re35",
+   "op": "relu",
+   "inputs": [
+    "ad34"
+   ]
+  },
+  {
+   "name": "fc36",
+   "op": "dense",
+   "inputs": [
+    "re35"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc37",
+   "op": "dense",
+   "inputs": [
+    "ball_area"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc38",
+   "op": "dense",
+   "inputs": [
+    "core_area"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ad39",
+   "op": "add",
+   "inputs": [
+    "fc37",
+    "fc38"
+   ]
+  },
+  {
+   "name": "re40",
+   "op": "relu",
+   "inputs": [
+    "ad39"
+   ]
+  },
+  {
+   "name": "fc41",
+   "op": "dense",
+   "inputs": [
+    "ridgeZ0"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc42",
+   "op": "dense",
+   "inputs": [
+    "ridgeZ1"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc43",
+   "op": "dense",
+   "inputs": [
+    "ridgeZ2"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc44",
+   "op": "dense",
+   "inputs": [
+    "re40"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc45",
+   "op": "dense",
+   "inputs": [
+    "core_area"
+   ],
+   "out": 36
+  },
+  {
+   "name": "ad46",
+   "op": "add",
+   "inputs": [
+    "fc41",
+    "fc42",
+    "fc43",
+    "fc44",
+    "fc45"
+   ]
+  },
+  {
+   "name": "rs47",
+   "op": "reshape",
+   "inputs": [
+    "ad46"
+   ],
+   "shape": [
+    9,
+    1,
+    4
+   ]
+  },
+  {
+   "name": "nm48",
+   "op": "norm",
+   "inputs": [
+    "rs47"
+   ]
+  },
+  {
+   "name": "rs49",
+   "op": "reshape",
+   "inputs": [
+    "nm48"
+   ],
+   "shape": [
+    36
+   ]
+  },
+  {
+   "name": "fc50",
+   "op": "dense",
+   "inputs": [
+    "rs49"
+   ],
+   "out": 36
+  },
+  {
+   "name": "fc51",
+   "op": "dense",
+   "inputs": [
+    "core_area"
+   ],
+   "out": 6
+  },
+  {
+   "name": "re52",
+   "op": "relu",
+   "inputs": [
+    "fc51"
+   ]
+  },
+  {
+   "name": "fc53",
+   "op": "dense",
+   "inputs": [
+    "re52"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc54",
+   "op": "dense",
+   "inputs": [
+    "fc50"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc55",
+   "op": "dense",
+   "inputs": [
+    "fc53"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ad56",
+   "op": "add",
+   "inputs": [
+    "fc54",
+    "fc55"
+   ]
+  },
+  {
+   "name": "re57",
+   "op": "relu",
+   "inputs": [
+    "ad56"
+   ]
+  },
+  {
+   "name": "fc58",
+   "op": "dense",
+   "inputs": [
+    "fc12"
+   ],
+   "out": 186
+  },
+  {
+   "name": "re59",
+   "op": "relu",
+   "inputs": [
+    "fc58"
+   ]
+  },
+  {
+   "name": "fc60",
+   "op": "dense",
+   "inputs": [
+    "re59"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc61",
+   "op": "dense",
+   "inputs": [
+    "fc3"
+   ],
+   "out": 12
+  },
+  {
+   "name": "re62",
+   "op": "relu",
+   "inputs": [
+    "fc61"
+   ]
+  },
+  {
+   "name": "fc63",
+   "op": "dense",
+   "inputs": [
+    "re62"
+   ],
+   "out": 6
+  },
+  {
+   "name": "fc64",
+   "op": "dense",
+   "inputs": [
+    "fc12"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc65",
+   "op": "dense",
+   "inputs": [
+    "fc64"
+   ],
+   "out": 32
+  },
+  {
+   "name": "rs66",
+   "op": "reshape",
+   "inputs": [
+    "fc65"
+   ],
+   "shape": [
+    2,
+    1,
+    16
+   ]
+  },
+  {
+   "name": "ma67",
+   "op": "maxpool",
+   "inputs": [
+    "rs66"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "rs68",
+   "op": "reshape",
+   "inputs": [
+    "ma67"
+   ],
+   "shape": [
+    2
+   ]
+  },
+  {
+   "name": "fc69",
+   "op": "dense",
+   "inputs": [
+    "rs68"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc70",
+   "op": "dense",
+   "inputs": [
+    "fc60"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc71",
+   "op": "dense",
+   "inputs": [
+    "fc63"
+   ],
+   "out": 2
+  },
+  {
+   "name": "ad72",
+   "op": "add",
+   "inputs": [
+    "fc69",
+    "fc70",
+    "fc71"
+   ]
+  },
+  {
+   "name": "re73",
+   "op": "relu",
+   "inputs": [
+    "ad72"
+   ]
+  },
+  {
+   "name": "fc74",
+   "op": "dense",
+   "inputs": [
+    "fc12"
+   ],
+   "out": 16
+  },
+  {
+   "name": "fc75",
+   "op": "dense",
+   "inputs": [
+    "fc74"
+   ],
+   "out": 16
+  },
+  {
+   "name": "rs76",
+   "op": "reshape",
+   "inputs": [
+    "fc75"
+   ],
+   "shape": [
+    1,
+    1,
+    16
+   ]
+  },
+  {
+   "name": "ma77",
+   "op": "maxpool",
+   "inputs": [
+    "rs76"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "rs78",
+   "op": "reshape",
+   "inputs": [
+    "ma77"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "fc79",
+   "op": "dense",
+   "inputs": [
+    "fc60"
+   ],
+   "out": 2
+  },
+  {
+   "name": "re80",
+   "op": "relu",
+   "inputs": [
+    "fc79"
+   ]
+  },
+  {
+   "name": "fc81",
+   "op": "dense",
+   "inputs": [
+    "rs78"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc82",
+   "op": "dense",
+   "inputs": [
+    "re80"
+   ],
+   "out": 1
+  },
+  {
+   "name": "ad83",
+   "op": "add",
+   "inputs": [
+    "fc81",
+    "fc82"
+   ]
+  },
+  {
+   "name": "re84",
+   "op": "relu",
+   "inputs": [
+    "ad83"
+   ]
+  },
+  {
+   "name": "fc85",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc86",
+   "op": "dense",
+   "inputs": [
+    "re84"
+   ],
+   "out": 1
+  },
+  {
+   "name": "ad87",
+   "op": "add",
+   "inputs": [
+    "fc85",
+    "fc86"
+   ]
+  },
+  {
+   "name": "fc88",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc89",
+   "op": "dense",
+   "inputs": [
+    "ad87"
+   ],
+   "out": 2
+  },
+  {
+   "name": "ad90",
+   "op": "add",
+   "inputs": [
+    "fc88",
+    "fc89"
+   ]
+  },
+  {
+   "name": "re91",
+   "op": "relu",
+   "inputs": [
+    "ad90"
+   ]
+  },
+  {
+   "name": "fc92",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc93",
+   "op": "dense",
+   "inputs": [
+    "re91"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc94",
+   "op": "dense",
+   "inputs": [
+    "ad87"
+   ],
+   "out": 2
+  },
+  {
+   "name": "ad95",
+   "op": "add",
+   "inputs": [
+    "fc92",
+    "fc93",
+    "fc94"
+   ]
+  },
+  {
+   "name": "re96",
+   "op": "relu",
+   "inputs": [
+    "ad95"
+   ]
+  },
+  {
+   "name": "fc97",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc98",
+   "op": "dense",
+   "inputs": [
+    "re91"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc99",
+   "op": "dense",
+   "inputs": [
+    "re96"
+   ],
+   "out": 1
+  },
+  {
+   "name": "ad100",
+   "op": "add",
+   "inputs": [
+    "fc97",
+    "fc98",
+    "fc99"
+   ]
+  },
+  {
+   "name": "re101",
+   "op": "relu",
+   "inputs": [
+    "ad100"
+   ]
+  },
+  {
+   "name": "fc102",
+   "op": "dense",
+   "inputs": [
+    "ad87"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc103",
+   "op": "dense",
+   "inputs": [
+    "re91"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc104",
+   "op": "dense",
+   "inputs": [
+    "re96"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc105",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 2
+  },
+  {
+   "name": "fc106",
+   "op": "dense",
+   "inputs": [
+    "re101"
+   ],
+   "out": 2
+  },
+  {
+   "name": "ad107",
+   "op": "add",
+   "inputs": [
+    "fc102",
+    "fc103",
+    "fc104",
+    "fc105",
+    "fc106"
+   ]
+  },
+  {
+   "name": "fc108",
+   "op": "dense",
+   "inputs": [
+    "fc12"
+   ],
+   "out": 16
+  },
+  {
+   "name": "fc109",
+   "op": "dense",
+   "inputs": [
+    "fc108"
+   ],
+   "out": 16
+  },
+  {
+   "name": "rs110",
+   "op": "reshape",
+   "inputs": [
+    "fc109"
+   ],
+   "shape": [
+    1,
+    1,
+    16
+   ]
+  },
+  {
+   "name": "ma111",
+   "op": "maxpool",
+   "inputs": [
+    "rs110"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "rs112",
+   "op": "reshape",
+   "inputs": [
+    "ma111"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "fc113",
+   "op": "dense",
+   "inputs": [
+    "rs112"
+   ],
+   "out": 49
+  },
+  {
+   "name": "re114",
+   "op": "relu",
+   "inputs": [
+    "fc113"
+   ]
+  },
+  {
+   "name": "fc115",
+   "op": "dense",
+   "inputs": [
+    "re114"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fc116",
+   "op": "dense",
+   "inputs": [
+    "fc15"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc117",
+   "op": "dense",
+   "inputs": [
+    "ad107"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc118",
+   "op": "dense",
+   "inputs": [
+    "fc63"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ad119",
+   "op": "add",
+   "inputs": [
+    "fc116",
+    "fc117",
+    "fc118"
+   ]
+  },
+  {
+   "name": "re120",
+   "op": "relu",
+   "inputs": [
+    "ad119"
+   ]
+  },
+  {
+   "name": "fc121",
+   "op": "dense",
+   "inputs": [
+    "ad19"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc122",
+   "op": "dense",
+   "inputs": [
+    "fc63"
+   ],
+   "out": 3
+  },
+  {
+   "name": "ad123",
+   "op": "add",
+   "inputs": [
+    "fc121",
+    "fc122"
+   ]
+  },
+  {
+   "name": "re124",
+   "op": "relu",
+   "inputs": [
+    "ad123"
+   ]
+  },
+  {
+   "name": "fc125",
+   "op": "dense",
+   "inputs": [
+    "fc50"
+   ],
+   "out": 6
+  },
+  {
+   "name": "re126",
+   "op": "relu",
+   "inputs": [
+    "fc125"
+   ]
+  },
+  {
+   "name": "fc127",
+   "op": "dense",
+   "inputs": [
+    "re126"
+   ],
+   "out": 3
+  },
+  {
+   "name": "fc128",
+   "op": "dense",
+   "inputs": [
+    "re73"
+   ],
+   "out": 15
+  },
+  {
+   "name": "fc129",
+   "op": "dense",
+   "inputs": [
+    "re120"
+   ],
+   "out": 15
+  },
+  {
+   "name": "fc130",
+   "op": "dense",
+   "inputs": [
+    "re124"
+   ],
+   "out": 15
+  },
+  {
+   "name": "fc131",
+   "op": "dense",
+   "inputs": [
+    "fc127"
+   ],
+   "out": 15
+  },
+  {
+   "name": "fc132",
+   "op": "dense",
+   "inputs": [
+    "re57"
+   ],
+   "out": 15
+  },
+  {
+   "name": "ad133",
+   "op": "add",
+   "inputs": [
+    "fc128",
+    "fc129",
+    "fc130",
+    "fc131",
+    "fc132"
+   ]
+  },
+  {
+   "name": "rs134",
+   "op": "reshape",
+   "inputs": [
+    "ad133"
+   ],
+   "shape": [
+    5,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "ma135",
+   "op": "maxpool",
+   "inputs": [
+    "rs134"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "rs136",
+   "op": "reshape",
+   "inputs": [
+    "ma135"
+   ],
+   "shape": [
+    5
+   ]
+  },
+  {
+   "name": "fc137",
+   "op": "dense",
+   "inputs": [
+    "fc22"
+   ],
+   "out": 5
+  },
+  {
+   "name": "fc138",
+   "op": "dense",
+   "inputs": [
+    "fc36"
+   ],
+   "out": 5
+  },
+  {
+   "name": "fc139",
+   "op": "dense",
+   "inputs": [
+    "fc50"
+   ],
+   "out": 5
+  },
+  {
+   "name": "fc140",
+   "op": "dense",
+   "inputs": [
+    "fc3"
+   ],
+   "out": 5
+  },
+  {
+   "name": "ad141",
+   "op": "add",
+   "inputs": [
+    "fc137",
+    "fc138",
+    "fc139",
+    "fc140"
+   ]
+  },
+  {
+   "name": "fc142",
+   "op": "dense",
+   "inputs": [
+    "ad107"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc143",
+   "op": "dense",
+   "inputs": [
+    "rs136"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc144",
+   "op": "dense",
+   "inputs": [
+    "ad141"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc145",
+   "op": "dense",
+   "inputs": [
+    "centre"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc146",
+   "op": "dense",
+   "inputs": [
+    "fc3"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fc147",
+   "op": "dense",
+   "inputs": [
+    "ad19"
+   ],
+   "out": 32
+  },
+  {
+   "name": "ad148",
+   "op": "add",
+   "inputs": [
+    "fc142",
+    "fc143",
+    "fc144",
+    "fc145",
+    "fc146",
+    "fc147"
+   ]
+  },
+  {
+   "name": "re149",
+   "op": "relu",
+   "inputs": [
+    "ad148"
+   ]
+  },
+  {
+   "name": "fc150",
+   "op": "dense",
+   "inputs": [
+    "re149"
+   ],
+   "out": 16
+  },
+  {
+   "name": "fc151",
+   "op": "dense",
+   "inputs": [
+    "fc150"
+   ],
+   "out": 10
+  }
+ ]
+}

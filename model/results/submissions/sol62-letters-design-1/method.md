@@ -1,0 +1,3 @@
+The network extracts four orientations of contrast-polarity-independent edges, pools them spatially, and normalizes each orientation channel. A dense layer correlates these maps with analytic hand models; max pooling returns the best pose score for each letter.
+
+The hand models use palm ellipses and tapered finger and wrist capsules with procedural surface shading. A fixed seed varies rotation, scale, placement, finger extension, and reflection. All weights come from these formulas and handwritten ASL pose descriptions; the builder reads no data or other files. Two official sanity checks on a 480-image training subset measured 14.79% before shading and 15.42% with shading. Held-out performance is unknown.

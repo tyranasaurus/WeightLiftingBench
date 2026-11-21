@@ -1,0 +1,7 @@
+# Analytic person-presence network
+
+The network uses hand-written soft RGB colour inequalities, multiscale Gaussian region filters, and ReLU/pooling logic. Compact-region branches look for skin-coloured centres surrounded by non-skin regions; facial branches check cheek/eye, nose/eye, forehead/eye, and mouth contrasts relative to local luminance variation, with several head aspect ratios and tilts. A fixed readout combines these cues and penalizes broadly skin-coloured scenes, which can instead depict wood, food, or other warm-coloured objects.
+
+Every weight is a manually chosen constant or the result of an analytic formula in `build.py`; the builder reads no files and performs no training, fitting, or data-dependent parameter estimation. Training images were viewed as contact sheets, and five labelled evaluations were made exclusively with the supplied runner to check and revise the hand-designed rules. The final network has 466 layers and 181,236 float32 parameters.
+
+The fifth check used 4,000 fixed-seed training-split images disjoint from the 2,000 images used for the first four checks and achieved 53.10% accuracy (confusion matrix, true classes as rows: [[795, 1263], [613, 1329]]). This is a weak heuristic result, not a held-out test result or evidence of beating the comparison systems; monochrome photos, hidden faces, skin-coloured objects, and small or distant people are important limitations. No parameters were changed after this final check.

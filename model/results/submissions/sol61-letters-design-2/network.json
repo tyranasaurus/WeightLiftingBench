@@ -1,0 +1,278 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "gradients",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "half_waves",
+      "op": "relu",
+      "inputs": [
+        "gradients"
+      ]
+    },
+    {
+      "name": "oriented",
+      "op": "conv",
+      "inputs": [
+        "half_waves"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edges",
+      "op": "relu",
+      "inputs": [
+        "oriented"
+      ]
+    },
+    {
+      "name": "edge_tolerance",
+      "op": "conv",
+      "inputs": [
+        "edges"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_grid",
+      "op": "avgpool",
+      "inputs": [
+        "edge_tolerance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_standardization",
+      "op": "norm",
+      "inputs": [
+        "edge_grid"
+      ]
+    },
+    {
+      "name": "edge_slots",
+      "op": "conv",
+      "inputs": [
+        "edge_standardization"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "smooth_intensity",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "intensity_grid",
+      "op": "avgpool",
+      "inputs": [
+        "smooth_intensity"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "intensity_standardization",
+      "op": "norm",
+      "inputs": [
+        "intensity_grid"
+      ]
+    },
+    {
+      "name": "intensity_slot",
+      "op": "conv",
+      "inputs": [
+        "intensity_standardization"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "signed_gradients",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "signed_grid",
+      "op": "avgpool",
+      "inputs": [
+        "signed_gradients"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "signed_standardization",
+      "op": "norm",
+      "inputs": [
+        "signed_grid"
+      ]
+    },
+    {
+      "name": "signed_slots",
+      "op": "conv",
+      "inputs": [
+        "signed_standardization"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "features",
+      "op": "add",
+      "inputs": [
+        "edge_slots",
+        "intensity_slot",
+        "signed_slots"
+      ]
+    },
+    {
+      "name": "pose_matches",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 64512,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "translation_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "pose_matches"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "sign_pose_table",
+      "op": "reshape",
+      "inputs": [
+        "translation_invariance"
+      ],
+      "shape": [
+        24,
+        2688,
+        1
+      ]
+    },
+    {
+      "name": "best_symbolic_pose",
+      "op": "maxpool",
+      "inputs": [
+        "sign_pose_table"
+      ],
+      "size": [
+        2688,
+        1
+      ],
+      "stride": [
+        2688,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_symbolic_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

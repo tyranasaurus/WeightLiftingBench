@@ -1,0 +1,7 @@
+# Method
+
+The network is a hand-designed, multi-resolution template matcher. I typed parametric pen paths for the usual stroke families of each digit (including plain/serifed ones, open/closed fours, crossed sevens, and looped digits). A fixed-seed generator varies slant, rotation, aspect ratio, smooth stroke position, and stroke width, producing 384 synthetic models per class. Every model is drawn analytically and centered by its own ink centre of mass; no training image, crop, label statistic, or measured image coordinate enters a weight.
+
+A fixed 5×5 Gaussian filter softens the input. Separate dense layers compare normalized full-resolution and 2×2-pooled images with the correspondingly processed models. A third route computes eight unsigned gradient orientations, pools them into a 7×7 spatial pyramid, normalizes each orientation channel, and compares those features with the same models. Per-class max pooling selects the best pen model in each route, and the three route scores are added. All convolution kernels, model coordinates, route weights, and random seeds are fixed formulas or hand choices in `build.py`; there is no optimization or fitting.
+
+The selected configuration reached 71.51% on the 60,000 official training images on the third permitted end-to-end check. Later checks of global HOG normalization and Euclidean matching were lower, so this file restores the third configuration.

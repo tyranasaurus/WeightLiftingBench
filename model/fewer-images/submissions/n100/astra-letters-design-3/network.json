@@ -1,0 +1,491 @@
+{
+  "layers": [
+    {
+      "name": "illum",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "oriented",
+      "op": "conv",
+      "inputs": [
+        "illum"
+      ],
+      "out": 10,
+      "kernel": [
+        5,
+        5
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "half_wave",
+      "op": "relu",
+      "inputs": [
+        "oriented"
+      ]
+    },
+    {
+      "name": "local_energy",
+      "op": "avgpool",
+      "inputs": [
+        "half_wave"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "neighborhood",
+      "op": "conv",
+      "inputs": [
+        "local_energy"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "reference",
+      "op": "conv",
+      "inputs": [
+        "neighborhood"
+      ],
+      "out": 40,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "orient_copy",
+      "op": "conv",
+      "inputs": [
+        "local_energy"
+      ],
+      "out": 40,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "angular_margin",
+      "op": "add",
+      "inputs": [
+        "orient_copy",
+        "reference"
+      ]
+    },
+    {
+      "name": "ramps",
+      "op": "relu",
+      "inputs": [
+        "angular_margin"
+      ]
+    },
+    {
+      "name": "ramp_mix",
+      "op": "conv",
+      "inputs": [
+        "ramps"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "energy_floor",
+      "op": "conv",
+      "inputs": [
+        "local_energy"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "gradient_code",
+      "op": "add",
+      "inputs": [
+        "ramp_mix",
+        "energy_floor"
+      ]
+    },
+    {
+      "name": "shaft_quadrature",
+      "op": "conv",
+      "inputs": [
+        "illum"
+      ],
+      "out": 24,
+      "kernel": [
+        7,
+        7
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "phase_axis",
+      "op": "reshape",
+      "inputs": [
+        "shaft_quadrature"
+      ],
+      "shape": [
+        6,
+        4,
+        484
+      ]
+    },
+    {
+      "name": "phase_max",
+      "op": "maxpool",
+      "inputs": [
+        "phase_axis"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "ridge_map",
+      "op": "reshape",
+      "inputs": [
+        "phase_max"
+      ],
+      "shape": [
+        6,
+        22,
+        22
+      ]
+    },
+    {
+      "name": "axis_difference",
+      "op": "conv",
+      "inputs": [
+        "ridge_map"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "preferred",
+      "op": "relu",
+      "inputs": [
+        "axis_difference"
+      ]
+    },
+    {
+      "name": "pref_gain",
+      "op": "conv",
+      "inputs": [
+        "preferred"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "base_gain",
+      "op": "conv",
+      "inputs": [
+        "ridge_map"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "ridge_strength",
+      "op": "add",
+      "inputs": [
+        "pref_gain",
+        "base_gain"
+      ]
+    },
+    {
+      "name": "ridge_cell",
+      "op": "avgpool",
+      "inputs": [
+        "ridge_strength"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ridge_remaining",
+      "op": "conv",
+      "inputs": [
+        "ridge_cell"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "ridge_complement",
+      "op": "relu",
+      "inputs": [
+        "ridge_remaining"
+      ]
+    },
+    {
+      "name": "compare",
+      "op": "dense",
+      "inputs": [
+        "gradient_code"
+      ],
+      "out": 42240
+    },
+    {
+      "name": "shafts",
+      "op": "dense",
+      "inputs": [
+        "ridge_complement"
+      ],
+      "out": 42240
+    },
+    {
+      "name": "joint_similarity",
+      "op": "add",
+      "inputs": [
+        "shafts",
+        "compare"
+      ]
+    },
+    {
+      "name": "pose_axis",
+      "op": "reshape",
+      "inputs": [
+        "joint_similarity"
+      ],
+      "shape": [
+        24,
+        1,
+        1760
+      ]
+    },
+    {
+      "name": "subgroup",
+      "op": "maxpool",
+      "inputs": [
+        "pose_axis"
+      ],
+      "size": [
+        1,
+        220
+      ],
+      "stride": [
+        1,
+        220
+      ]
+    },
+    {
+      "name": "closest",
+      "op": "maxpool",
+      "inputs": [
+        "subgroup"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "consensus",
+      "op": "avgpool",
+      "inputs": [
+        "subgroup"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "consensus_weight",
+      "op": "conv",
+      "inputs": [
+        "consensus"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "elastic",
+      "op": "dense",
+      "inputs": [
+        "gradient_code"
+      ],
+      "out": 19200
+    },
+    {
+      "name": "elastic_axis",
+      "op": "reshape",
+      "inputs": [
+        "elastic"
+      ],
+      "shape": [
+        960,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "allow_motion",
+      "op": "maxpool",
+      "inputs": [
+        "elastic_axis"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "part_mean",
+      "op": "avgpool",
+      "inputs": [
+        "allow_motion"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "elastic_pose",
+      "op": "reshape",
+      "inputs": [
+        "part_mean"
+      ],
+      "shape": [
+        24,
+        1,
+        40
+      ]
+    },
+    {
+      "name": "elastic_best",
+      "op": "maxpool",
+      "inputs": [
+        "elastic_pose"
+      ],
+      "size": [
+        1,
+        40
+      ],
+      "stride": [
+        1,
+        40
+      ]
+    },
+    {
+      "name": "part_weight",
+      "op": "conv",
+      "inputs": [
+        "elastic_best"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "match",
+      "op": "add",
+      "inputs": [
+        "closest",
+        "consensus_weight",
+        "part_weight"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "match"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

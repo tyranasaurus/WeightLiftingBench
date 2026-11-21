@@ -1,0 +1,6 @@
+#!/bin/bash
+set -euo pipefail
+mkdir -p "$(dirname /app/out/answer.txt)"
+cat > /app/out/answer.txt <<'ORACLE'
+ANSWER: A) classifying the topic of encyclopedia articles
+ORACLE

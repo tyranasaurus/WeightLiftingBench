@@ -1,0 +1,187 @@
+{
+ "layers": [
+  {
+   "name": "v",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vr",
+   "op": "relu",
+   "inputs": [
+    "v"
+   ]
+  },
+  {
+   "name": "m",
+   "op": "conv",
+   "inputs": [
+    "vr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin",
+   "op": "relu",
+   "inputs": [
+    "m"
+   ]
+  },
+  {
+   "name": "pf",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bf",
+   "op": "conv",
+   "inputs": [
+    "pf"
+   ],
+   "out": 3,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "bfr",
+   "op": "relu",
+   "inputs": [
+    "bf"
+   ]
+  },
+  {
+   "name": "gf",
+   "op": "avgpool",
+   "inputs": [
+    "bfr"
+   ],
+   "size": [
+    47,
+    47
+   ],
+   "stride": [
+    47,
+    47
+   ]
+  },
+  {
+   "name": "da",
+   "op": "dense",
+   "inputs": [
+    "gf"
+   ],
+   "out": 4
+  },
+  {
+   "name": "pc",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "bc",
+   "op": "conv",
+   "inputs": [
+    "pc"
+   ],
+   "out": 2,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "bcr",
+   "op": "relu",
+   "inputs": [
+    "bc"
+   ]
+  },
+  {
+   "name": "gc",
+   "op": "avgpool",
+   "inputs": [
+    "bcr"
+   ],
+   "size": [
+    23,
+    23
+   ],
+   "stride": [
+    23,
+    23
+   ]
+  },
+  {
+   "name": "db",
+   "op": "dense",
+   "inputs": [
+    "gc"
+   ],
+   "out": 4
+  },
+  {
+   "name": "h",
+   "op": "add",
+   "inputs": [
+    "da",
+    "db"
+   ]
+  },
+  {
+   "name": "hr",
+   "op": "relu",
+   "inputs": [
+    "h"
+   ]
+  },
+  {
+   "name": "o",
+   "op": "dense",
+   "inputs": [
+    "hr"
+   ],
+   "out": 2
+  }
+ ]
+}

@@ -1,0 +1,651 @@
+{
+  "layers": [
+    {
+      "name": "adjust_exposure",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "oriented_derivatives",
+      "op": "conv",
+      "inputs": [
+        "adjust_exposure"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "rectify",
+      "op": "relu",
+      "inputs": [
+        "oriented_derivatives"
+      ]
+    },
+    {
+      "name": "unsigned",
+      "op": "conv",
+      "inputs": [
+        "rectify"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "orientation_competition",
+      "op": "conv",
+      "inputs": [
+        "unsigned"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "select_orientation",
+      "op": "relu",
+      "inputs": [
+        "orientation_competition"
+      ]
+    },
+    {
+      "name": "contrast_threshold",
+      "op": "conv",
+      "inputs": [
+        "select_orientation"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "excess",
+      "op": "relu",
+      "inputs": [
+        "contrast_threshold"
+      ]
+    },
+    {
+      "name": "discount_strong_edges",
+      "op": "conv",
+      "inputs": [
+        "excess"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "compressed",
+      "op": "add",
+      "inputs": [
+        "select_orientation",
+        "discount_strong_edges"
+      ]
+    },
+    {
+      "name": "local_histogram",
+      "op": "avgpool",
+      "inputs": [
+        "compressed"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "one_histogram",
+      "op": "reshape",
+      "inputs": [
+        "local_histogram"
+      ],
+      "shape": [
+        1,
+        44,
+        11
+      ]
+    },
+    {
+      "name": "unit_contrast",
+      "op": "norm",
+      "inputs": [
+        "one_histogram"
+      ]
+    },
+    {
+      "name": "field",
+      "op": "reshape",
+      "inputs": [
+        "unit_contrast"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "detrend_lighting",
+      "op": "dense",
+      "inputs": [
+        "adjust_exposure"
+      ],
+      "out": 121
+    },
+    {
+      "name": "silhouette_image",
+      "op": "reshape",
+      "inputs": [
+        "detrend_lighting"
+      ],
+      "shape": [
+        1,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "tone_contrast",
+      "op": "norm",
+      "inputs": [
+        "silhouette_image"
+      ]
+    },
+    {
+      "name": "ridge_curvature",
+      "op": "conv",
+      "inputs": [
+        "adjust_exposure"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "ridge_polarities",
+      "op": "relu",
+      "inputs": [
+        "ridge_curvature"
+      ]
+    },
+    {
+      "name": "ridge_strength",
+      "op": "conv",
+      "inputs": [
+        "ridge_polarities"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ridge_competition",
+      "op": "conv",
+      "inputs": [
+        "ridge_strength"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ridge_positive",
+      "op": "relu",
+      "inputs": [
+        "ridge_competition"
+      ]
+    },
+    {
+      "name": "ridge_knee",
+      "op": "conv",
+      "inputs": [
+        "ridge_positive"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ridge_excess",
+      "op": "relu",
+      "inputs": [
+        "ridge_knee"
+      ]
+    },
+    {
+      "name": "ridge_discount",
+      "op": "conv",
+      "inputs": [
+        "ridge_excess"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ridge_compression",
+      "op": "add",
+      "inputs": [
+        "ridge_positive",
+        "ridge_discount"
+      ]
+    },
+    {
+      "name": "ridge_histogram",
+      "op": "avgpool",
+      "inputs": [
+        "ridge_compression"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ridge_vector",
+      "op": "reshape",
+      "inputs": [
+        "ridge_histogram"
+      ],
+      "shape": [
+        1,
+        44,
+        11
+      ]
+    },
+    {
+      "name": "ridge_unit",
+      "op": "norm",
+      "inputs": [
+        "ridge_vector"
+      ]
+    },
+    {
+      "name": "ridge_field",
+      "op": "reshape",
+      "inputs": [
+        "ridge_unit"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "histogram_channels",
+      "op": "conv",
+      "inputs": [
+        "field"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ridge_channels",
+      "op": "conv",
+      "inputs": [
+        "ridge_field"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "tone_channel",
+      "op": "conv",
+      "inputs": [
+        "tone_contrast"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "combined_fields",
+      "op": "add",
+      "inputs": [
+        "histogram_channels",
+        "ridge_channels",
+        "tone_channel"
+      ]
+    },
+    {
+      "name": "geometric_matches",
+      "op": "conv",
+      "inputs": [
+        "combined_fields"
+      ],
+      "out": 18432,
+      "kernel": [
+        11,
+        11
+      ],
+      "padding": 1
+    },
+    {
+      "name": "position_max",
+      "op": "maxpool",
+      "inputs": [
+        "geometric_matches"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "class_pose",
+      "op": "reshape",
+      "inputs": [
+        "position_max"
+      ],
+      "shape": [
+        24,
+        768,
+        1
+      ]
+    },
+    {
+      "name": "pose_max",
+      "op": "maxpool",
+      "inputs": [
+        "class_pose"
+      ],
+      "size": [
+        192,
+        1
+      ],
+      "stride": [
+        192,
+        1
+      ]
+    },
+    {
+      "name": "agreement",
+      "op": "avgpool",
+      "inputs": [
+        "pose_max"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "take_edges",
+      "op": "dense",
+      "inputs": [
+        "field"
+      ],
+      "out": 1152
+    },
+    {
+      "name": "patch_edges",
+      "op": "reshape",
+      "inputs": [
+        "take_edges"
+      ],
+      "shape": [
+        9,
+        2,
+        64
+      ]
+    },
+    {
+      "name": "contrast_edges",
+      "op": "norm",
+      "inputs": [
+        "patch_edges"
+      ]
+    },
+    {
+      "name": "replace_edges",
+      "op": "dense",
+      "inputs": [
+        "contrast_edges"
+      ],
+      "out": 484
+    },
+    {
+      "name": "local_edges",
+      "op": "reshape",
+      "inputs": [
+        "replace_edges"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "take_ridges",
+      "op": "dense",
+      "inputs": [
+        "ridge_field"
+      ],
+      "out": 1152
+    },
+    {
+      "name": "patch_ridges",
+      "op": "reshape",
+      "inputs": [
+        "take_ridges"
+      ],
+      "shape": [
+        9,
+        2,
+        64
+      ]
+    },
+    {
+      "name": "contrast_ridges",
+      "op": "norm",
+      "inputs": [
+        "patch_ridges"
+      ]
+    },
+    {
+      "name": "replace_ridges",
+      "op": "dense",
+      "inputs": [
+        "contrast_ridges"
+      ],
+      "out": 484
+    },
+    {
+      "name": "local_ridges",
+      "op": "reshape",
+      "inputs": [
+        "replace_ridges"
+      ],
+      "shape": [
+        4,
+        11,
+        11
+      ]
+    },
+    {
+      "name": "local_edge_channels",
+      "op": "conv",
+      "inputs": [
+        "local_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "local_ridge_channels",
+      "op": "conv",
+      "inputs": [
+        "local_ridges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "local_features",
+      "op": "add",
+      "inputs": [
+        "local_edge_channels",
+        "local_ridge_channels"
+      ]
+    },
+    {
+      "name": "part_structure",
+      "op": "conv",
+      "inputs": [
+        "local_features"
+      ],
+      "out": 18432,
+      "kernel": [
+        11,
+        11
+      ],
+      "padding": 1
+    },
+    {
+      "name": "position_max_parts",
+      "op": "maxpool",
+      "inputs": [
+        "part_structure"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "class_pose_parts",
+      "op": "reshape",
+      "inputs": [
+        "position_max_parts"
+      ],
+      "shape": [
+        24,
+        768,
+        1
+      ]
+    },
+    {
+      "name": "pose_max_parts",
+      "op": "maxpool",
+      "inputs": [
+        "class_pose_parts"
+      ],
+      "size": [
+        192,
+        1
+      ],
+      "stride": [
+        192,
+        1
+      ]
+    },
+    {
+      "name": "agreement_parts",
+      "op": "avgpool",
+      "inputs": [
+        "pose_max_parts"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "detail_weight",
+      "op": "conv",
+      "inputs": [
+        "agreement_parts"
+      ],
+      "out": 24,
+      "kernel": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "all_evidence",
+      "op": "add",
+      "inputs": [
+        "agreement",
+        "detail_weight"
+      ]
+    },
+    {
+      "name": "letters",
+      "op": "reshape",
+      "inputs": [
+        "all_evidence"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

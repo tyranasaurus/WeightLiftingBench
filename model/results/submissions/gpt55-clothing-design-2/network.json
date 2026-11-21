@@ -1,0 +1,1 @@
+{"layers":[{"name":"n0","op":"norm","inputs":["image"]},{"name":"match","op":"dense","inputs":["n0"],"out":1920},{"name":"grid","op":"reshape","inputs":["match"],"shape":[10,192,1]},{"name":"best","op":"maxpool","inputs":["grid"],"size":[192,1],"stride":[192,1]},{"name":"scores","op":"reshape","inputs":["best"],"shape":[10]}]}

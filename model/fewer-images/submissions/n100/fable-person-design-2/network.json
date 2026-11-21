@@ -1,0 +1,271 @@
+{
+ "layers": [
+  {
+   "name": "f1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "f1r",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "sk",
+   "op": "conv",
+   "inputs": [
+    "f1r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skr",
+   "op": "relu",
+   "inputs": [
+    "sk"
+   ]
+  },
+  {
+   "name": "sn",
+   "op": "conv",
+   "inputs": [
+    "f1r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "snr",
+   "op": "relu",
+   "inputs": [
+    "sn"
+   ]
+  },
+  {
+   "name": "sk48",
+   "op": "avgpool",
+   "inputs": [
+    "skr"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sn48",
+   "op": "avgpool",
+   "inputs": [
+    "snr"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "bS",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "bSr",
+   "op": "relu",
+   "inputs": [
+    "bS"
+   ]
+  },
+  {
+   "name": "bSm",
+   "op": "maxpool",
+   "inputs": [
+    "bSr"
+   ],
+   "size": [
+    16,
+    48
+   ],
+   "stride": [
+    16,
+    48
+   ]
+  },
+  {
+   "name": "bL",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 2,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 2,
+   "padding": 13
+  },
+  {
+   "name": "bLr",
+   "op": "relu",
+   "inputs": [
+    "bL"
+   ]
+  },
+  {
+   "name": "bLm",
+   "op": "maxpool",
+   "inputs": [
+    "bLr"
+   ],
+   "size": [
+    8,
+    24
+   ],
+   "stride": [
+    8,
+    24
+   ]
+  },
+  {
+   "name": "dS",
+   "op": "dense",
+   "inputs": [
+    "bSm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "dL",
+   "op": "dense",
+   "inputs": [
+    "bLm"
+   ],
+   "out": 2
+  },
+  {
+   "name": "gf",
+   "op": "avgpool",
+   "inputs": [
+    "sk48"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "gfd",
+   "op": "dense",
+   "inputs": [
+    "gf"
+   ],
+   "out": 1
+  },
+  {
+   "name": "gfr",
+   "op": "relu",
+   "inputs": [
+    "gfd"
+   ]
+  },
+  {
+   "name": "dG",
+   "op": "dense",
+   "inputs": [
+    "gfr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "snb",
+   "op": "avgpool",
+   "inputs": [
+    "sn48"
+   ],
+   "size": [
+    24,
+    48
+   ],
+   "stride": [
+    24,
+    48
+   ]
+  },
+  {
+   "name": "snd",
+   "op": "dense",
+   "inputs": [
+    "snb"
+   ],
+   "out": 1
+  },
+  {
+   "name": "sndr",
+   "op": "relu",
+   "inputs": [
+    "snd"
+   ]
+  },
+  {
+   "name": "dN",
+   "op": "dense",
+   "inputs": [
+    "sndr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "dS",
+    "dL",
+    "dG",
+    "dN"
+   ]
+  }
+ ]
+}

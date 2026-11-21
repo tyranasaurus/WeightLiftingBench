@@ -1,0 +1,218 @@
+{
+  "layers": [
+    {
+      "name": "smooth",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "smooth_n",
+      "op": "norm",
+      "inputs": [
+        "smooth"
+      ]
+    },
+    {
+      "name": "raw_corr",
+      "op": "dense",
+      "inputs": [
+        "smooth_n"
+      ],
+      "out": 28800
+    },
+    {
+      "name": "pool",
+      "op": "avgpool",
+      "inputs": [
+        "smooth"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "pool_n",
+      "op": "norm",
+      "inputs": [
+        "pool"
+      ]
+    },
+    {
+      "name": "coarse_corr",
+      "op": "dense",
+      "inputs": [
+        "pool_n"
+      ],
+      "out": 28800
+    },
+    {
+      "name": "light_shift",
+      "op": "conv",
+      "inputs": [
+        "smooth_n"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "light_relu",
+      "op": "relu",
+      "inputs": [
+        "light_shift"
+      ]
+    },
+    {
+      "name": "light_n",
+      "op": "norm",
+      "inputs": [
+        "light_relu"
+      ]
+    },
+    {
+      "name": "dark_shift",
+      "op": "conv",
+      "inputs": [
+        "smooth_n"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark_relu",
+      "op": "relu",
+      "inputs": [
+        "dark_shift"
+      ]
+    },
+    {
+      "name": "dark_n",
+      "op": "norm",
+      "inputs": [
+        "dark_relu"
+      ]
+    },
+    {
+      "name": "seg_light_corr",
+      "op": "dense",
+      "inputs": [
+        "light_n"
+      ],
+      "out": 28800
+    },
+    {
+      "name": "seg_dark_corr",
+      "op": "dense",
+      "inputs": [
+        "dark_n"
+      ],
+      "out": 28800
+    },
+    {
+      "name": "raw_grid",
+      "op": "reshape",
+      "inputs": [
+        "raw_corr"
+      ],
+      "shape": [
+        24,
+        1200,
+        1
+      ]
+    },
+    {
+      "name": "coarse_grid",
+      "op": "reshape",
+      "inputs": [
+        "coarse_corr"
+      ],
+      "shape": [
+        24,
+        1200,
+        1
+      ]
+    },
+    {
+      "name": "seg_light_grid",
+      "op": "reshape",
+      "inputs": [
+        "seg_light_corr"
+      ],
+      "shape": [
+        24,
+        1200,
+        1
+      ]
+    },
+    {
+      "name": "seg_dark_grid",
+      "op": "reshape",
+      "inputs": [
+        "seg_dark_corr"
+      ],
+      "shape": [
+        24,
+        1200,
+        1
+      ]
+    },
+    {
+      "name": "combined",
+      "op": "add",
+      "inputs": [
+        "raw_grid",
+        "coarse_grid",
+        "seg_light_grid",
+        "seg_dark_grid"
+      ]
+    },
+    {
+      "name": "best",
+      "op": "maxpool",
+      "inputs": [
+        "combined"
+      ],
+      "size": [
+        1200,
+        1
+      ],
+      "stride": [
+        1200,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

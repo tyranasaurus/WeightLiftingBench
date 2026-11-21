@@ -1,0 +1,1892 @@
+{
+ "layers": [
+  {
+   "name": "pix",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pix_r",
+   "op": "relu",
+   "inputs": [
+    "pix"
+   ]
+  },
+  {
+   "name": "maps_a",
+   "op": "conv",
+   "inputs": [
+    "pix_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "maps_b",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "maps",
+   "op": "add",
+   "inputs": [
+    "maps_a",
+    "maps_b"
+   ]
+  },
+  {
+   "name": "maps_r",
+   "op": "relu",
+   "inputs": [
+    "maps"
+   ]
+  },
+  {
+   "name": "L2",
+   "op": "avgpool",
+   "inputs": [
+    "maps_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "L4",
+   "op": "avgpool",
+   "inputs": [
+    "L2"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "L8",
+   "op": "avgpool",
+   "inputs": [
+    "L4"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "skin_avg",
+   "op": "avgpool",
+   "inputs": [
+    "maps_r"
+   ],
+   "size": [
+    96,
+    96
+   ],
+   "stride": [
+    96,
+    96
+   ]
+  },
+  {
+   "name": "feat_skin",
+   "op": "dense",
+   "inputs": [
+    "skin_avg"
+   ],
+   "out": 11
+  },
+  {
+   "name": "s1",
+   "op": "conv",
+   "inputs": [
+    "maps_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b1_big",
+   "op": "conv",
+   "inputs": [
+    "s1"
+   ],
+   "out": 5,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 2,
+   "padding": 4
+  },
+  {
+   "name": "b1_big_r",
+   "op": "relu",
+   "inputs": [
+    "b1_big"
+   ]
+  },
+  {
+   "name": "b1_c1",
+   "op": "conv",
+   "inputs": [
+    "b1_big_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b1_c1_r",
+   "op": "relu",
+   "inputs": [
+    "b1_c1"
+   ]
+  },
+  {
+   "name": "b1_c2",
+   "op": "conv",
+   "inputs": [
+    "b1_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b1_c2_r",
+   "op": "relu",
+   "inputs": [
+    "b1_c2"
+   ]
+  },
+  {
+   "name": "b1_c3",
+   "op": "conv",
+   "inputs": [
+    "b1_c2_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b1_c3_r",
+   "op": "relu",
+   "inputs": [
+    "b1_c3"
+   ]
+  },
+  {
+   "name": "b1_c4",
+   "op": "conv",
+   "inputs": [
+    "b1_c3_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b1_c4_r",
+   "op": "relu",
+   "inputs": [
+    "b1_c4"
+   ]
+  },
+  {
+   "name": "b1_max",
+   "op": "maxpool",
+   "inputs": [
+    "b1_c4_r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "b1_fmax",
+   "op": "dense",
+   "inputs": [
+    "b1_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v2_pre",
+   "op": "conv",
+   "inputs": [
+    "L2"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "v2_pre_r",
+   "op": "relu",
+   "inputs": [
+    "v2_pre"
+   ]
+  },
+  {
+   "name": "v2_pre2",
+   "op": "conv",
+   "inputs": [
+    "v2_pre_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_pre2_r",
+   "op": "relu",
+   "inputs": [
+    "v2_pre2"
+   ]
+  },
+  {
+   "name": "v2_s",
+   "op": "conv",
+   "inputs": [
+    "v2_pre2_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_Y",
+   "op": "conv",
+   "inputs": [
+    "v2_pre2_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_snowv",
+   "op": "conv",
+   "inputs": [
+    "v2_pre2_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_snowv_r",
+   "op": "relu",
+   "inputs": [
+    "v2_snowv"
+   ]
+  },
+  {
+   "name": "v2_snow",
+   "op": "conv",
+   "inputs": [
+    "v2_snowv_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_snow_r",
+   "op": "relu",
+   "inputs": [
+    "v2_snow"
+   ]
+  },
+  {
+   "name": "feat_snow",
+   "op": "dense",
+   "inputs": [
+    "v2_snow_r"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v2s_big",
+   "op": "conv",
+   "inputs": [
+    "v2_s"
+   ],
+   "out": 5,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "v2s_big_r",
+   "op": "relu",
+   "inputs": [
+    "v2s_big"
+   ]
+  },
+  {
+   "name": "v2y_big",
+   "op": "conv",
+   "inputs": [
+    "v2_Y"
+   ],
+   "out": 28,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "v2y_big_r",
+   "op": "relu",
+   "inputs": [
+    "v2y_big"
+   ]
+  },
+  {
+   "name": "v2b_c1",
+   "op": "conv",
+   "inputs": [
+    "v2s_big_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2b_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v2b_c1"
+   ]
+  },
+  {
+   "name": "v2b_c2",
+   "op": "conv",
+   "inputs": [
+    "v2b_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2b_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v2b_c2"
+   ]
+  },
+  {
+   "name": "v2b_c3",
+   "op": "conv",
+   "inputs": [
+    "v2b_c2_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2b_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v2b_c3"
+   ]
+  },
+  {
+   "name": "v2b_c4",
+   "op": "conv",
+   "inputs": [
+    "v2b_c3_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2b_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v2b_c4"
+   ]
+  },
+  {
+   "name": "v2g_c1",
+   "op": "conv",
+   "inputs": [
+    "v2y_big_r"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c1"
+   ]
+  },
+  {
+   "name": "v2g_c2",
+   "op": "conv",
+   "inputs": [
+    "v2g_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c2"
+   ]
+  },
+  {
+   "name": "v2g_c3",
+   "op": "conv",
+   "inputs": [
+    "v2g_c2_r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c3"
+   ]
+  },
+  {
+   "name": "v2g_c4",
+   "op": "conv",
+   "inputs": [
+    "v2g_c3_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c4"
+   ]
+  },
+  {
+   "name": "v2g_c5",
+   "op": "conv",
+   "inputs": [
+    "v2g_c4_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c5_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c5"
+   ]
+  },
+  {
+   "name": "v2g_c6",
+   "op": "conv",
+   "inputs": [
+    "v2g_c5_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2g_c6_r",
+   "op": "relu",
+   "inputs": [
+    "v2g_c6"
+   ]
+  },
+  {
+   "name": "v2_bb",
+   "op": "conv",
+   "inputs": [
+    "v2b_c4_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_gg",
+   "op": "conv",
+   "inputs": [
+    "v2g_c6_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2_bf",
+   "op": "add",
+   "inputs": [
+    "v2_bb",
+    "v2_gg"
+   ]
+  },
+  {
+   "name": "v2_bf_r",
+   "op": "relu",
+   "inputs": [
+    "v2_bf"
+   ]
+  },
+  {
+   "name": "v2_bf_max",
+   "op": "maxpool",
+   "inputs": [
+    "v2_bf_r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "v2_bf_fmax",
+   "op": "dense",
+   "inputs": [
+    "v2_bf_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v2f_c1",
+   "op": "conv",
+   "inputs": [
+    "v2y_big_r"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c1"
+   ]
+  },
+  {
+   "name": "v2f_c2",
+   "op": "conv",
+   "inputs": [
+    "v2f_c1_r"
+   ],
+   "out": 19,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c2"
+   ]
+  },
+  {
+   "name": "v2f_c3",
+   "op": "conv",
+   "inputs": [
+    "v2f_c2_r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c3"
+   ]
+  },
+  {
+   "name": "v2f_c4",
+   "op": "conv",
+   "inputs": [
+    "v2f_c3_r"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c4"
+   ]
+  },
+  {
+   "name": "v2f_c5",
+   "op": "conv",
+   "inputs": [
+    "v2f_c4_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c5_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c5"
+   ]
+  },
+  {
+   "name": "v2f_c6",
+   "op": "conv",
+   "inputs": [
+    "v2f_c5_r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c6_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c6"
+   ]
+  },
+  {
+   "name": "v2f_c7",
+   "op": "conv",
+   "inputs": [
+    "v2f_c6_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_c7_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c7"
+   ]
+  },
+  {
+   "name": "v2f_c8",
+   "op": "conv",
+   "inputs": [
+    "v2f_c7_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_raw_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_c8"
+   ]
+  },
+  {
+   "name": "v2f_pool",
+   "op": "maxpool",
+   "inputs": [
+    "v2f_raw_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "v4_pre",
+   "op": "conv",
+   "inputs": [
+    "L4"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "v4_pre_r",
+   "op": "relu",
+   "inputs": [
+    "v4_pre"
+   ]
+  },
+  {
+   "name": "v4_pre2",
+   "op": "conv",
+   "inputs": [
+    "v4_pre_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4_pre2_r",
+   "op": "relu",
+   "inputs": [
+    "v4_pre2"
+   ]
+  },
+  {
+   "name": "v4_e",
+   "op": "conv",
+   "inputs": [
+    "v4_pre2_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_ring",
+   "op": "conv",
+   "inputs": [
+    "v4_e"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "v2f_ring_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_ring"
+   ]
+  },
+  {
+   "name": "v2f_pen",
+   "op": "conv",
+   "inputs": [
+    "v2f_ring_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2f_fig",
+   "op": "add",
+   "inputs": [
+    "v2f_pool",
+    "v2f_pen"
+   ]
+  },
+  {
+   "name": "v2f_fig_r",
+   "op": "relu",
+   "inputs": [
+    "v2f_fig"
+   ]
+  },
+  {
+   "name": "v2f_max",
+   "op": "maxpool",
+   "inputs": [
+    "v2f_fig_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "v2f_fmax",
+   "op": "dense",
+   "inputs": [
+    "v2f_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v4_big",
+   "op": "conv",
+   "inputs": [
+    "v4_pre2_r"
+   ],
+   "out": 74,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "v4_big_r",
+   "op": "relu",
+   "inputs": [
+    "v4_big"
+   ]
+  },
+  {
+   "name": "v4b_c1",
+   "op": "conv",
+   "inputs": [
+    "v4_big_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4b_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v4b_c1"
+   ]
+  },
+  {
+   "name": "v4b_c2",
+   "op": "conv",
+   "inputs": [
+    "v4b_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4b_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v4b_c2"
+   ]
+  },
+  {
+   "name": "v4b_c3",
+   "op": "conv",
+   "inputs": [
+    "v4b_c2_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4b_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v4b_c3"
+   ]
+  },
+  {
+   "name": "v4b_c4",
+   "op": "conv",
+   "inputs": [
+    "v4b_c3_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4b_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v4b_c4"
+   ]
+  },
+  {
+   "name": "v4g_c1",
+   "op": "conv",
+   "inputs": [
+    "v4_big_r"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c1"
+   ]
+  },
+  {
+   "name": "v4g_c2",
+   "op": "conv",
+   "inputs": [
+    "v4g_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c2"
+   ]
+  },
+  {
+   "name": "v4g_c3",
+   "op": "conv",
+   "inputs": [
+    "v4g_c2_r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c3"
+   ]
+  },
+  {
+   "name": "v4g_c4",
+   "op": "conv",
+   "inputs": [
+    "v4g_c3_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c4"
+   ]
+  },
+  {
+   "name": "v4g_c5",
+   "op": "conv",
+   "inputs": [
+    "v4g_c4_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c5_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c5"
+   ]
+  },
+  {
+   "name": "v4g_c6",
+   "op": "conv",
+   "inputs": [
+    "v4g_c5_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4g_c6_r",
+   "op": "relu",
+   "inputs": [
+    "v4g_c6"
+   ]
+  },
+  {
+   "name": "v4_bb",
+   "op": "conv",
+   "inputs": [
+    "v4b_c4_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4_gg",
+   "op": "conv",
+   "inputs": [
+    "v4g_c6_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4_bf",
+   "op": "add",
+   "inputs": [
+    "v4_bb",
+    "v4_gg"
+   ]
+  },
+  {
+   "name": "v4_bf_r",
+   "op": "relu",
+   "inputs": [
+    "v4_bf"
+   ]
+  },
+  {
+   "name": "v4_bf_max",
+   "op": "maxpool",
+   "inputs": [
+    "v4_bf_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "v4_bf_fmax",
+   "op": "dense",
+   "inputs": [
+    "v4_bf_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v4f_c1",
+   "op": "conv",
+   "inputs": [
+    "v4_big_r"
+   ],
+   "out": 38,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c1"
+   ]
+  },
+  {
+   "name": "v4f_c2",
+   "op": "conv",
+   "inputs": [
+    "v4f_c1_r"
+   ],
+   "out": 56,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c2"
+   ]
+  },
+  {
+   "name": "v4f_c3",
+   "op": "conv",
+   "inputs": [
+    "v4f_c2_r"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c3"
+   ]
+  },
+  {
+   "name": "v4f_c4",
+   "op": "conv",
+   "inputs": [
+    "v4f_c3_r"
+   ],
+   "out": 26,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c4"
+   ]
+  },
+  {
+   "name": "v4f_c5",
+   "op": "conv",
+   "inputs": [
+    "v4f_c4_r"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c5_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c5"
+   ]
+  },
+  {
+   "name": "v4f_c6",
+   "op": "conv",
+   "inputs": [
+    "v4f_c5_r"
+   ],
+   "out": 20,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c6_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c6"
+   ]
+  },
+  {
+   "name": "v4f_c7",
+   "op": "conv",
+   "inputs": [
+    "v4f_c6_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_c7_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c7"
+   ]
+  },
+  {
+   "name": "v4f_c8",
+   "op": "conv",
+   "inputs": [
+    "v4f_c7_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v4f_fig_r",
+   "op": "relu",
+   "inputs": [
+    "v4f_c8"
+   ]
+  },
+  {
+   "name": "v4f_max",
+   "op": "maxpool",
+   "inputs": [
+    "v4f_fig_r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "v4f_fmax",
+   "op": "dense",
+   "inputs": [
+    "v4f_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "v8_pre",
+   "op": "conv",
+   "inputs": [
+    "L8"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "v8_pre_r",
+   "op": "relu",
+   "inputs": [
+    "v8_pre"
+   ]
+  },
+  {
+   "name": "v8_pre2",
+   "op": "conv",
+   "inputs": [
+    "v8_pre_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8_pre2_r",
+   "op": "relu",
+   "inputs": [
+    "v8_pre2"
+   ]
+  },
+  {
+   "name": "v8_big",
+   "op": "conv",
+   "inputs": [
+    "v8_pre2_r"
+   ],
+   "out": 13,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "v8_big_r",
+   "op": "relu",
+   "inputs": [
+    "v8_big"
+   ]
+  },
+  {
+   "name": "v8b_c1",
+   "op": "conv",
+   "inputs": [
+    "v8_big_r"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8b_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v8b_c1"
+   ]
+  },
+  {
+   "name": "v8b_c2",
+   "op": "conv",
+   "inputs": [
+    "v8b_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8b_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v8b_c2"
+   ]
+  },
+  {
+   "name": "v8b_c3",
+   "op": "conv",
+   "inputs": [
+    "v8b_c2_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8b_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v8b_c3"
+   ]
+  },
+  {
+   "name": "v8b_c4",
+   "op": "conv",
+   "inputs": [
+    "v8b_c3_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8b_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v8b_c4"
+   ]
+  },
+  {
+   "name": "v8g_c1",
+   "op": "conv",
+   "inputs": [
+    "v8_big_r"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c1_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c1"
+   ]
+  },
+  {
+   "name": "v8g_c2",
+   "op": "conv",
+   "inputs": [
+    "v8g_c1_r"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c2_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c2"
+   ]
+  },
+  {
+   "name": "v8g_c3",
+   "op": "conv",
+   "inputs": [
+    "v8g_c2_r"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c3_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c3"
+   ]
+  },
+  {
+   "name": "v8g_c4",
+   "op": "conv",
+   "inputs": [
+    "v8g_c3_r"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c4_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c4"
+   ]
+  },
+  {
+   "name": "v8g_c5",
+   "op": "conv",
+   "inputs": [
+    "v8g_c4_r"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c5_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c5"
+   ]
+  },
+  {
+   "name": "v8g_c6",
+   "op": "conv",
+   "inputs": [
+    "v8g_c5_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8g_c6_r",
+   "op": "relu",
+   "inputs": [
+    "v8g_c6"
+   ]
+  },
+  {
+   "name": "v8_bb",
+   "op": "conv",
+   "inputs": [
+    "v8b_c4_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8_gg",
+   "op": "conv",
+   "inputs": [
+    "v8g_c6_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v8_bf",
+   "op": "add",
+   "inputs": [
+    "v8_bb",
+    "v8_gg"
+   ]
+  },
+  {
+   "name": "v8_bf_r",
+   "op": "relu",
+   "inputs": [
+    "v8_bf"
+   ]
+  },
+  {
+   "name": "v8_bf_max",
+   "op": "maxpool",
+   "inputs": [
+    "v8_bf_r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "v8_bf_fmax",
+   "op": "dense",
+   "inputs": [
+    "v8_bf_max"
+   ],
+   "out": 11
+  },
+  {
+   "name": "feat",
+   "op": "add",
+   "inputs": [
+    "feat_skin",
+    "b1_fmax",
+    "feat_snow",
+    "v2_bf_fmax",
+    "v2f_fmax",
+    "v4_bf_fmax",
+    "v4f_fmax",
+    "v8_bf_fmax"
+   ]
+  },
+  {
+   "name": "clip",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 24
+  },
+  {
+   "name": "clip_r",
+   "op": "relu",
+   "inputs": [
+    "clip"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "clip_r"
+   ],
+   "out": 2
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+The classifier compares each item's outline with 6,944 silhouettes drawn from hand-written geometric clothing patterns. The builder varies dimensions such as sleeve length, skirt flare, handle height, and shoe profile, then encodes each drawing independently using a grid of foreground coverage and horizontal and vertical projections. At inference it compares both mirror orientations at two foreground thresholds, then uses cues such as leg gaps, sole arches, plackets, lapels, fabric texture, and hem curvature to distinguish similar outlines.
+
+The patterns, thresholds, and scoring rules were written without fitting to images or measuring performance on generated drawings. The classifier was frozen before its single labeled check; that check was not used to tune it.

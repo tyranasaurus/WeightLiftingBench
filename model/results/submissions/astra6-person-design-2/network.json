@@ -1,0 +1,2273 @@
+{
+  "layers": [
+    {
+      "name": "half_image",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "colour_halfspaces",
+      "op": "conv",
+      "inputs": [
+        "half_image"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_violations",
+      "op": "relu",
+      "inputs": [
+        "colour_halfspaces"
+      ]
+    },
+    {
+      "name": "skin_affinity_raw",
+      "op": "conv",
+      "inputs": [
+        "colour_violations"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_affinity",
+      "op": "relu",
+      "inputs": [
+        "skin_affinity_raw"
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "half_image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contrast_reference",
+      "op": "norm",
+      "inputs": [
+        "luminance"
+      ]
+    },
+    {
+      "name": "face_luminance_channels",
+      "op": "conv",
+      "inputs": [
+        "contrast_reference"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "skin_affinity"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_input_48",
+      "op": "add",
+      "inputs": [
+        "face_luminance_channels",
+        "face_skin_channels"
+      ]
+    },
+    {
+      "name": "face_input_24",
+      "op": "avgpool",
+      "inputs": [
+        "face_input_48"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "skin_24",
+      "op": "avgpool",
+      "inputs": [
+        "skin_affinity"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face_input_12",
+      "op": "avgpool",
+      "inputs": [
+        "face_input_24"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "skin_12",
+      "op": "avgpool",
+      "inputs": [
+        "skin_24"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face_48_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_48"
+      ],
+      "out": 51,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face_48_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_48_0_measurements"
+      ],
+      "out": 51,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_48_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_48_0_shortfalls"
+      ]
+    },
+    {
+      "name": "face_48_0_rules",
+      "op": "conv",
+      "inputs": [
+        "face_48_0_penalties"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_48_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_48_0_rules"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face_48_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_48_0_best_space"
+      ],
+      "shape": [
+        1,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "face_48_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_48_0_best_channels"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "face_48_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_48"
+      ],
+      "out": 85,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 2,
+      "padding": 4
+    },
+    {
+      "name": "face_48_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_48_1_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_48_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_48_1_shortfalls"
+      ]
+    },
+    {
+      "name": "face_48_1_rules",
+      "op": "conv",
+      "inputs": [
+        "face_48_1_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_48_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_48_1_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_48_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_48_1_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_48_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_48_1_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_24_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_24"
+      ],
+      "out": 85,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face_24_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_24_0_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_24_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_24_0_shortfalls"
+      ]
+    },
+    {
+      "name": "face_24_0_rules",
+      "op": "conv",
+      "inputs": [
+        "face_24_0_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_24_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_24_0_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_24_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_24_0_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_24_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_24_0_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_24_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_24"
+      ],
+      "out": 85,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "face_24_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_24_1_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_24_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_24_1_shortfalls"
+      ]
+    },
+    {
+      "name": "face_24_1_rules",
+      "op": "conv",
+      "inputs": [
+        "face_24_1_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_24_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_24_1_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face_24_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_24_1_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_24_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_24_1_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_12"
+      ],
+      "out": 85,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face_12_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_12_0_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_12_0_shortfalls"
+      ]
+    },
+    {
+      "name": "face_12_0_rules",
+      "op": "conv",
+      "inputs": [
+        "face_12_0_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_0_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face_12_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_12_0_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_0_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_12"
+      ],
+      "out": 85,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "face_12_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_12_1_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_12_1_shortfalls"
+      ]
+    },
+    {
+      "name": "face_12_1_rules",
+      "op": "conv",
+      "inputs": [
+        "face_12_1_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_1_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face_12_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_12_1_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_1_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_2_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_12"
+      ],
+      "out": 85,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face_12_2_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "face_12_2_measurements"
+      ],
+      "out": 85,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_2_penalties",
+      "op": "relu",
+      "inputs": [
+        "face_12_2_shortfalls"
+      ]
+    },
+    {
+      "name": "face_12_2_rules",
+      "op": "conv",
+      "inputs": [
+        "face_12_2_penalties"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_12_2_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_2_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face_12_2_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "face_12_2_best_space"
+      ],
+      "shape": [
+        1,
+        5,
+        1
+      ]
+    },
+    {
+      "name": "face_12_2_best",
+      "op": "maxpool",
+      "inputs": [
+        "face_12_2_best_channels"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact_48_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_48"
+      ],
+      "out": 54,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 2,
+      "padding": 5
+    },
+    {
+      "name": "compact_48_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_48_0_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_48_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_48_0_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_48_0_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_48_0_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_48_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_48_0_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "compact_48_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_48_0_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_48_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_48_0_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_48_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_48"
+      ],
+      "out": 54,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "compact_48_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_48_1_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_48_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_48_1_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_48_1_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_48_1_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_48_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_48_1_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "compact_48_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_48_1_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_48_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_48_1_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_24_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_24"
+      ],
+      "out": 54,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "compact_24_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_24_0_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_24_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_24_0_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_24_0_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_24_0_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_24_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_24_0_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "compact_24_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_24_0_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_24_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_24_0_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_24_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_24"
+      ],
+      "out": 54,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "compact_24_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_24_1_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_24_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_24_1_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_24_1_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_24_1_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_24_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_24_1_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "compact_24_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_24_1_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_24_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_24_1_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_12_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_12"
+      ],
+      "out": 54,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "compact_12_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_12_0_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_12_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_12_0_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_12_0_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_12_0_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_12_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_12_0_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "compact_12_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_12_0_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_12_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_12_0_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_12_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "face_input_12"
+      ],
+      "out": 54,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "compact_12_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "compact_12_1_measurements"
+      ],
+      "out": 108,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_12_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "compact_12_1_shortfalls"
+      ]
+    },
+    {
+      "name": "compact_12_1_rules",
+      "op": "conv",
+      "inputs": [
+        "compact_12_1_penalties"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_12_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "compact_12_1_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "compact_12_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "compact_12_1_best_space"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "compact_12_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact_12_1_best_channels"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "oriented_derivatives",
+      "op": "conv",
+      "inputs": [
+        "contrast_reference"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "derivative_halfwaves",
+      "op": "relu",
+      "inputs": [
+        "oriented_derivatives"
+      ]
+    },
+    {
+      "name": "orientation_selectivity",
+      "op": "conv",
+      "inputs": [
+        "derivative_halfwaves"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "orientation_selectivity"
+      ]
+    },
+    {
+      "name": "edge_cap_arguments",
+      "op": "conv",
+      "inputs": [
+        "oriented_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_cap_parts",
+      "op": "relu",
+      "inputs": [
+        "edge_cap_arguments"
+      ]
+    },
+    {
+      "name": "bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "edge_cap_parts"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edges_24",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edges_12",
+      "op": "avgpool",
+      "inputs": [
+        "edges_24"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "body_edge_channels_24",
+      "op": "conv",
+      "inputs": [
+        "edges_24"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_skin_channels_24",
+      "op": "conv",
+      "inputs": [
+        "skin_24"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_input_24",
+      "op": "add",
+      "inputs": [
+        "body_edge_channels_24",
+        "body_skin_channels_24"
+      ]
+    },
+    {
+      "name": "body_24_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "body_input_24"
+      ],
+      "out": 64,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body_24_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "body_24_0_measurements"
+      ],
+      "out": 128,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_24_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "body_24_0_shortfalls"
+      ]
+    },
+    {
+      "name": "body_24_0_rules",
+      "op": "conv",
+      "inputs": [
+        "body_24_0_penalties"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_24_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_24_0_rules"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body_24_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "body_24_0_best_space"
+      ],
+      "shape": [
+        1,
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_24_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "body_24_0_best_channels"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_24_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "body_input_24"
+      ],
+      "out": 64,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 2,
+      "padding": 7
+    },
+    {
+      "name": "body_24_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "body_24_1_measurements"
+      ],
+      "out": 128,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_24_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "body_24_1_shortfalls"
+      ]
+    },
+    {
+      "name": "body_24_1_rules",
+      "op": "conv",
+      "inputs": [
+        "body_24_1_penalties"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_24_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_24_1_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body_24_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "body_24_1_best_space"
+      ],
+      "shape": [
+        1,
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_24_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "body_24_1_best_channels"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_edge_channels_12",
+      "op": "conv",
+      "inputs": [
+        "edges_12"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_skin_channels_12",
+      "op": "conv",
+      "inputs": [
+        "skin_12"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_input_12",
+      "op": "add",
+      "inputs": [
+        "body_edge_channels_12",
+        "body_skin_channels_12"
+      ]
+    },
+    {
+      "name": "body_12_0_measurements",
+      "op": "conv",
+      "inputs": [
+        "body_input_12"
+      ],
+      "out": 64,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body_12_0_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "body_12_0_measurements"
+      ],
+      "out": 128,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_12_0_penalties",
+      "op": "relu",
+      "inputs": [
+        "body_12_0_shortfalls"
+      ]
+    },
+    {
+      "name": "body_12_0_rules",
+      "op": "conv",
+      "inputs": [
+        "body_12_0_penalties"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_12_0_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_12_0_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body_12_0_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "body_12_0_best_space"
+      ],
+      "shape": [
+        1,
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_12_0_best",
+      "op": "maxpool",
+      "inputs": [
+        "body_12_0_best_channels"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_12_1_measurements",
+      "op": "conv",
+      "inputs": [
+        "body_input_12"
+      ],
+      "out": 64,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "body_12_1_shortfalls",
+      "op": "conv",
+      "inputs": [
+        "body_12_1_measurements"
+      ],
+      "out": 128,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_12_1_penalties",
+      "op": "relu",
+      "inputs": [
+        "body_12_1_shortfalls"
+      ]
+    },
+    {
+      "name": "body_12_1_rules",
+      "op": "conv",
+      "inputs": [
+        "body_12_1_penalties"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body_12_1_best_space",
+      "op": "maxpool",
+      "inputs": [
+        "body_12_1_rules"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body_12_1_best_channels",
+      "op": "reshape",
+      "inputs": [
+        "body_12_1_best_space"
+      ],
+      "shape": [
+        1,
+        16,
+        1
+      ]
+    },
+    {
+      "name": "body_12_1_best",
+      "op": "maxpool",
+      "inputs": [
+        "body_12_1_best_channels"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "evidence_channel_0",
+      "op": "conv",
+      "inputs": [
+        "face_48_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_1",
+      "op": "conv",
+      "inputs": [
+        "face_48_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_2",
+      "op": "conv",
+      "inputs": [
+        "face_24_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_3",
+      "op": "conv",
+      "inputs": [
+        "face_24_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_4",
+      "op": "conv",
+      "inputs": [
+        "face_12_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_5",
+      "op": "conv",
+      "inputs": [
+        "face_12_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_6",
+      "op": "conv",
+      "inputs": [
+        "face_12_2_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_7",
+      "op": "conv",
+      "inputs": [
+        "compact_48_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_8",
+      "op": "conv",
+      "inputs": [
+        "compact_48_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_9",
+      "op": "conv",
+      "inputs": [
+        "compact_24_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_10",
+      "op": "conv",
+      "inputs": [
+        "compact_24_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_11",
+      "op": "conv",
+      "inputs": [
+        "compact_12_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_12",
+      "op": "conv",
+      "inputs": [
+        "compact_12_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_13",
+      "op": "conv",
+      "inputs": [
+        "body_24_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_14",
+      "op": "conv",
+      "inputs": [
+        "body_24_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_15",
+      "op": "conv",
+      "inputs": [
+        "body_12_0_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "evidence_channel_16",
+      "op": "conv",
+      "inputs": [
+        "body_12_1_best"
+      ],
+      "out": 17,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "all_evidence",
+      "op": "add",
+      "inputs": [
+        "evidence_channel_0",
+        "evidence_channel_1",
+        "evidence_channel_2",
+        "evidence_channel_3",
+        "evidence_channel_4",
+        "evidence_channel_5",
+        "evidence_channel_6",
+        "evidence_channel_7",
+        "evidence_channel_8",
+        "evidence_channel_9",
+        "evidence_channel_10",
+        "evidence_channel_11",
+        "evidence_channel_12",
+        "evidence_channel_13",
+        "evidence_channel_14",
+        "evidence_channel_15",
+        "evidence_channel_16"
+      ]
+    },
+    {
+      "name": "strongest_evidence_space",
+      "op": "maxpool",
+      "inputs": [
+        "all_evidence"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "strongest_evidence_channels",
+      "op": "reshape",
+      "inputs": [
+        "strongest_evidence_space"
+      ],
+      "shape": [
+        1,
+        17,
+        1
+      ]
+    },
+    {
+      "name": "strongest_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_evidence_channels"
+      ],
+      "size": [
+        17,
+        1
+      ],
+      "stride": [
+        17,
+        1
+      ]
+    },
+    {
+      "name": "warm_scene_coverage",
+      "op": "avgpool",
+      "inputs": [
+        "skin_12"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "warm_scene_excess",
+      "op": "conv",
+      "inputs": [
+        "warm_scene_coverage"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "warm_scene_penalty",
+      "op": "relu",
+      "inputs": [
+        "warm_scene_excess"
+      ]
+    },
+    {
+      "name": "warm_scene_correction",
+      "op": "conv",
+      "inputs": [
+        "warm_scene_penalty"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "contextual_evidence",
+      "op": "add",
+      "inputs": [
+        "strongest_evidence",
+        "warm_scene_correction"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "contextual_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

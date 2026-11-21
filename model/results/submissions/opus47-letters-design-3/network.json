@@ -1,0 +1,177 @@
+{
+  "layers": [
+    {
+      "name": "n0",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "sx",
+      "op": "conv",
+      "inputs": [
+        "n0"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dup_x",
+      "op": "conv",
+      "inputs": [
+        "sx"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rx",
+      "op": "relu",
+      "inputs": [
+        "dup_x"
+      ]
+    },
+    {
+      "name": "abs_x",
+      "op": "conv",
+      "inputs": [
+        "rx"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sy",
+      "op": "conv",
+      "inputs": [
+        "n0"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "dup_y",
+      "op": "conv",
+      "inputs": [
+        "sy"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ry",
+      "op": "relu",
+      "inputs": [
+        "dup_y"
+      ]
+    },
+    {
+      "name": "abs_y",
+      "op": "conv",
+      "inputs": [
+        "ry"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge",
+      "op": "add",
+      "inputs": [
+        "abs_x",
+        "abs_y"
+      ]
+    },
+    {
+      "name": "thr",
+      "op": "conv",
+      "inputs": [
+        "edge"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "rt",
+      "op": "relu",
+      "inputs": [
+        "thr"
+      ]
+    },
+    {
+      "name": "tpl",
+      "op": "conv",
+      "inputs": [
+        "rt"
+      ],
+      "out": 24,
+      "kernel": [
+        20,
+        20
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pool",
+      "op": "maxpool",
+      "inputs": [
+        "tpl"
+      ],
+      "size": [
+        9,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "flat",
+      "op": "reshape",
+      "inputs": [
+        "pool"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

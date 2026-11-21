@@ -1,0 +1,34 @@
+{
+  "layers": [
+    {
+      "name": "n",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "feat",
+      "op": "dense",
+      "inputs": [
+        "n"
+      ],
+      "out": 20
+    },
+    {
+      "name": "rfeat",
+      "op": "relu",
+      "inputs": [
+        "feat"
+      ]
+    },
+    {
+      "name": "out",
+      "op": "dense",
+      "inputs": [
+        "rfeat"
+      ],
+      "out": 10
+    }
+  ]
+}

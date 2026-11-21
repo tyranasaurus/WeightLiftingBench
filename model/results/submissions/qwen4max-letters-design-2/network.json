@@ -1,0 +1,202 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "f1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 24,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "a1",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bv",
+   "op": "maxpool",
+   "inputs": [
+    "a1"
+   ],
+   "size": [
+    7,
+    1
+   ],
+   "stride": [
+    7,
+    1
+   ]
+  },
+  {
+   "name": "bh",
+   "op": "maxpool",
+   "inputs": [
+    "a1"
+   ],
+   "size": [
+    1,
+    7
+   ],
+   "stride": [
+    1,
+    7
+   ]
+  },
+  {
+   "name": "g7",
+   "op": "avgpool",
+   "inputs": [
+    "a1"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "g4",
+   "op": "maxpool",
+   "inputs": [
+    "a1"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "d_bv",
+   "op": "dense",
+   "inputs": [
+    "bv"
+   ],
+   "out": 519
+  },
+  {
+   "name": "d_bh",
+   "op": "dense",
+   "inputs": [
+    "bh"
+   ],
+   "out": 519
+  },
+  {
+   "name": "d_g7",
+   "op": "dense",
+   "inputs": [
+    "g7"
+   ],
+   "out": 519
+  },
+  {
+   "name": "d_g4",
+   "op": "dense",
+   "inputs": [
+    "g4"
+   ],
+   "out": 519
+  },
+  {
+   "name": "F",
+   "op": "add",
+   "inputs": [
+    "d_bv",
+    "d_bh",
+    "d_g7",
+    "d_g4"
+   ]
+  },
+  {
+   "name": "dh",
+   "op": "dense",
+   "inputs": [
+    "F"
+   ],
+   "out": 82
+  },
+  {
+   "name": "H",
+   "op": "relu",
+   "inputs": [
+    "dh"
+   ]
+  },
+  {
+   "name": "dp",
+   "op": "dense",
+   "inputs": [
+    "H"
+   ],
+   "out": 12
+  },
+  {
+   "name": "P",
+   "op": "relu",
+   "inputs": [
+    "dp"
+   ]
+  },
+  {
+   "name": "s1",
+   "op": "dense",
+   "inputs": [
+    "H"
+   ],
+   "out": 24
+  },
+  {
+   "name": "s2",
+   "op": "dense",
+   "inputs": [
+    "P"
+   ],
+   "out": 24
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "s1",
+    "s2"
+   ]
+  }
+ ]
+}

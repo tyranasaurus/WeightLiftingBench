@@ -1,0 +1,139 @@
+{
+ "layers": [
+  {
+   "name": "col",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rcol",
+   "op": "relu",
+   "inputs": [
+    "col"
+   ]
+  },
+  {
+   "name": "ca",
+   "op": "avgpool",
+   "inputs": [
+    "rcol"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "edg",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 22,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "redg",
+   "op": "relu",
+   "inputs": [
+    "edg"
+   ]
+  },
+  {
+   "name": "ea",
+   "op": "avgpool",
+   "inputs": [
+    "redg"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "er",
+   "op": "maxpool",
+   "inputs": [
+    "redg"
+   ],
+   "size": [
+    6,
+    24
+   ],
+   "stride": [
+    6,
+    24
+   ]
+  },
+  {
+   "name": "d_ca",
+   "op": "dense",
+   "inputs": [
+    "ca"
+   ],
+   "out": 77
+  },
+  {
+   "name": "d_ea",
+   "op": "dense",
+   "inputs": [
+    "ea"
+   ],
+   "out": 77
+  },
+  {
+   "name": "d_er",
+   "op": "dense",
+   "inputs": [
+    "er"
+   ],
+   "out": 77
+  },
+  {
+   "name": "hsum",
+   "op": "add",
+   "inputs": [
+    "d_ca",
+    "d_ea",
+    "d_er"
+   ]
+  },
+  {
+   "name": "h",
+   "op": "relu",
+   "inputs": [
+    "hsum"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "h"
+   ],
+   "out": 10
+  }
+ ]
+}

@@ -1,0 +1,134 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 3072
+  },
+  {
+   "name": "feat3",
+   "op": "reshape",
+   "inputs": [
+    "feat"
+   ],
+   "shape": [
+    3,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "feat3"
+   ]
+  },
+  {
+   "name": "frame",
+   "op": "conv",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 1548,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "picto",
+   "op": "conv",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 1548,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "pmax",
+   "op": "maxpool",
+   "inputs": [
+    "picto"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "sum",
+   "op": "add",
+   "inputs": [
+    "frame",
+    "pmax"
+   ]
+  },
+  {
+   "name": "shiftmax",
+   "op": "maxpool",
+   "inputs": [
+    "sum"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "shiftmax"
+   ],
+   "shape": [
+    1,
+    1548,
+    1
+   ]
+  },
+  {
+   "name": "hypmax",
+   "op": "maxpool",
+   "inputs": [
+    "flat"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "hypmax"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

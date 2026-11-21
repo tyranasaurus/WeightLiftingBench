@@ -1,0 +1,195 @@
+{
+ "layers": [
+  {
+   "name": "down1",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "color",
+   "op": "conv",
+   "inputs": [
+    "down1"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "down2",
+   "op": "avgpool",
+   "inputs": [
+    "color"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "down2"
+   ]
+  },
+  {
+   "name": "r",
+   "op": "relu",
+   "inputs": [
+    "nrm"
+   ]
+  },
+  {
+   "name": "feats",
+   "op": "conv",
+   "inputs": [
+    "r"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flat_a",
+   "op": "reshape",
+   "inputs": [
+    "feats"
+   ],
+   "shape": [
+    16
+   ]
+  },
+  {
+   "name": "dense_a",
+   "op": "dense",
+   "inputs": [
+    "flat_a"
+   ],
+   "out": 10
+  },
+  {
+   "name": "oriented",
+   "op": "conv",
+   "inputs": [
+    "r"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "resh_b",
+   "op": "reshape",
+   "inputs": [
+    "oriented"
+   ],
+   "shape": [
+    1,
+    1,
+    8
+   ]
+  },
+  {
+   "name": "maxor",
+   "op": "maxpool",
+   "inputs": [
+    "resh_b"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "avgor",
+   "op": "avgpool",
+   "inputs": [
+    "resh_b"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "flat_max",
+   "op": "reshape",
+   "inputs": [
+    "maxor"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "flat_avg",
+   "op": "reshape",
+   "inputs": [
+    "avgor"
+   ],
+   "shape": [
+    1
+   ]
+  },
+  {
+   "name": "dense_max",
+   "op": "dense",
+   "inputs": [
+    "flat_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dense_avg",
+   "op": "dense",
+   "inputs": [
+    "flat_avg"
+   ],
+   "out": 10
+  },
+  {
+   "name": "out",
+   "op": "add",
+   "inputs": [
+    "dense_a",
+    "dense_max",
+    "dense_avg"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1947 @@
+{
+  "layers": [
+    {
+      "name": "seeing_pixels",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "seeing_pixels"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sky_clip_hinges",
+      "op": "conv",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sky_clip_relu",
+      "op": "relu",
+      "inputs": [
+        "sky_clip_hinges"
+      ]
+    },
+    {
+      "name": "sky_clip",
+      "op": "conv",
+      "inputs": [
+        "sky_clip_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "sky_level",
+      "op": "dense",
+      "inputs": [
+        "sky_clip"
+      ],
+      "out": 1
+    },
+    {
+      "name": "central_pixels",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "central_black_level",
+      "op": "dense",
+      "inputs": [
+        "sky_level"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "sky_subtracted",
+      "op": "add",
+      "inputs": [
+        "central_pixels",
+        "central_black_level"
+      ]
+    },
+    {
+      "name": "above_sky",
+      "op": "relu",
+      "inputs": [
+        "sky_subtracted"
+      ]
+    },
+    {
+      "name": "central_map",
+      "op": "reshape",
+      "inputs": [
+        "above_sky"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "dynamic_range_hinges",
+      "op": "conv",
+      "inputs": [
+        "central_map"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dynamic_range_positive",
+      "op": "relu",
+      "inputs": [
+        "dynamic_range_hinges"
+      ]
+    },
+    {
+      "name": "dynamic_range",
+      "op": "conv",
+      "inputs": [
+        "dynamic_range_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "central_window",
+      "op": "dense",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "windowed_map",
+      "op": "reshape",
+      "inputs": [
+        "central_window"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "contrast_normalized",
+      "op": "norm",
+      "inputs": [
+        "windowed_map"
+      ]
+    },
+    {
+      "name": "models_round",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 369
+    },
+    {
+      "name": "match_round_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_round"
+      ],
+      "shape": [
+        1,
+        9,
+        41
+      ]
+    },
+    {
+      "name": "match_round_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_round_rows"
+      ],
+      "size": [
+        9,
+        1
+      ],
+      "stride": [
+        9,
+        1
+      ]
+    },
+    {
+      "name": "match_round",
+      "op": "maxpool",
+      "inputs": [
+        "match_round_columns"
+      ],
+      "size": [
+        1,
+        41
+      ],
+      "stride": [
+        1,
+        41
+      ]
+    },
+    {
+      "name": "models_middle",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 672
+    },
+    {
+      "name": "match_middle_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_middle"
+      ],
+      "shape": [
+        1,
+        24,
+        28
+      ]
+    },
+    {
+      "name": "match_middle_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_middle_rows"
+      ],
+      "size": [
+        24,
+        1
+      ],
+      "stride": [
+        24,
+        1
+      ]
+    },
+    {
+      "name": "match_middle",
+      "op": "maxpool",
+      "inputs": [
+        "match_middle_columns"
+      ],
+      "size": [
+        1,
+        28
+      ],
+      "stride": [
+        1,
+        28
+      ]
+    },
+    {
+      "name": "models_cigar",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 552
+    },
+    {
+      "name": "match_cigar_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_cigar"
+      ],
+      "shape": [
+        1,
+        23,
+        24
+      ]
+    },
+    {
+      "name": "match_cigar_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_cigar_rows"
+      ],
+      "size": [
+        23,
+        1
+      ],
+      "stride": [
+        23,
+        1
+      ]
+    },
+    {
+      "name": "match_cigar",
+      "op": "maxpool",
+      "inputs": [
+        "match_cigar_columns"
+      ],
+      "size": [
+        1,
+        24
+      ],
+      "stride": [
+        1,
+        24
+      ]
+    },
+    {
+      "name": "models_thin",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 552
+    },
+    {
+      "name": "match_thin_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_thin"
+      ],
+      "shape": [
+        1,
+        23,
+        24
+      ]
+    },
+    {
+      "name": "match_thin_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_thin_rows"
+      ],
+      "size": [
+        23,
+        1
+      ],
+      "stride": [
+        23,
+        1
+      ]
+    },
+    {
+      "name": "match_thin",
+      "op": "maxpool",
+      "inputs": [
+        "match_thin_columns"
+      ],
+      "size": [
+        1,
+        24
+      ],
+      "stride": [
+        1,
+        24
+      ]
+    },
+    {
+      "name": "models_bulge",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 2160
+    },
+    {
+      "name": "match_bulge_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_bulge"
+      ],
+      "shape": [
+        1,
+        45,
+        48
+      ]
+    },
+    {
+      "name": "match_bulge_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_bulge_rows"
+      ],
+      "size": [
+        45,
+        1
+      ],
+      "stride": [
+        45,
+        1
+      ]
+    },
+    {
+      "name": "match_bulge",
+      "op": "maxpool",
+      "inputs": [
+        "match_bulge_columns"
+      ],
+      "size": [
+        1,
+        48
+      ],
+      "stride": [
+        1,
+        48
+      ]
+    },
+    {
+      "name": "models_disk",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 1377
+    },
+    {
+      "name": "match_disk_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_disk"
+      ],
+      "shape": [
+        1,
+        27,
+        51
+      ]
+    },
+    {
+      "name": "match_disk_columns",
+      "op": "maxpool",
+      "inputs": [
+        "match_disk_rows"
+      ],
+      "size": [
+        27,
+        1
+      ],
+      "stride": [
+        27,
+        1
+      ]
+    },
+    {
+      "name": "match_disk",
+      "op": "maxpool",
+      "inputs": [
+        "match_disk_columns"
+      ],
+      "size": [
+        1,
+        51
+      ],
+      "stride": [
+        1,
+        51
+      ]
+    },
+    {
+      "name": "shape_matches_part0",
+      "op": "dense",
+      "inputs": [
+        "match_round"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches_part1",
+      "op": "dense",
+      "inputs": [
+        "match_middle"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches_part2",
+      "op": "dense",
+      "inputs": [
+        "match_cigar"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches_part3",
+      "op": "dense",
+      "inputs": [
+        "match_thin"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches_part4",
+      "op": "dense",
+      "inputs": [
+        "match_bulge"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches_part5",
+      "op": "dense",
+      "inputs": [
+        "match_disk"
+      ],
+      "out": 6
+    },
+    {
+      "name": "shape_matches",
+      "op": "add",
+      "inputs": [
+        "shape_matches_part0",
+        "shape_matches_part1",
+        "shape_matches_part2",
+        "shape_matches_part3",
+        "shape_matches_part4",
+        "shape_matches_part5"
+      ]
+    },
+    {
+      "name": "best_shape_match_rows",
+      "op": "reshape",
+      "inputs": [
+        "shape_matches"
+      ],
+      "shape": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "best_shape_match_columns",
+      "op": "maxpool",
+      "inputs": [
+        "best_shape_match_rows"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "best_shape_match",
+      "op": "maxpool",
+      "inputs": [
+        "best_shape_match_columns"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "models_bar",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 23760
+    },
+    {
+      "name": "strongest_bar_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_bar"
+      ],
+      "shape": [
+        1,
+        144,
+        165
+      ]
+    },
+    {
+      "name": "strongest_bar_columns",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_bar_rows"
+      ],
+      "size": [
+        144,
+        1
+      ],
+      "stride": [
+        144,
+        1
+      ]
+    },
+    {
+      "name": "strongest_bar",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_bar_columns"
+      ],
+      "size": [
+        1,
+        165
+      ],
+      "stride": [
+        1,
+        165
+      ]
+    },
+    {
+      "name": "shape_reference_bar",
+      "op": "dense",
+      "inputs": [
+        "best_shape_match"
+      ],
+      "out": 1
+    },
+    {
+      "name": "structure_scalar_bar",
+      "op": "reshape",
+      "inputs": [
+        "strongest_bar"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "conditional_bar",
+      "op": "add",
+      "inputs": [
+        "structure_scalar_bar",
+        "shape_reference_bar"
+      ]
+    },
+    {
+      "name": "models_tight",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 23760
+    },
+    {
+      "name": "strongest_tight_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_tight"
+      ],
+      "shape": [
+        1,
+        144,
+        165
+      ]
+    },
+    {
+      "name": "strongest_tight_columns",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_tight_rows"
+      ],
+      "size": [
+        144,
+        1
+      ],
+      "stride": [
+        144,
+        1
+      ]
+    },
+    {
+      "name": "strongest_tight",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_tight_columns"
+      ],
+      "size": [
+        1,
+        165
+      ],
+      "stride": [
+        1,
+        165
+      ]
+    },
+    {
+      "name": "shape_reference_tight",
+      "op": "dense",
+      "inputs": [
+        "best_shape_match"
+      ],
+      "out": 1
+    },
+    {
+      "name": "structure_scalar_tight",
+      "op": "reshape",
+      "inputs": [
+        "strongest_tight"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "conditional_tight",
+      "op": "add",
+      "inputs": [
+        "structure_scalar_tight",
+        "shape_reference_tight"
+      ]
+    },
+    {
+      "name": "models_loose",
+      "op": "dense",
+      "inputs": [
+        "contrast_normalized"
+      ],
+      "out": 35640
+    },
+    {
+      "name": "strongest_loose_rows",
+      "op": "reshape",
+      "inputs": [
+        "models_loose"
+      ],
+      "shape": [
+        1,
+        180,
+        198
+      ]
+    },
+    {
+      "name": "strongest_loose_columns",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_loose_rows"
+      ],
+      "size": [
+        180,
+        1
+      ],
+      "stride": [
+        180,
+        1
+      ]
+    },
+    {
+      "name": "strongest_loose",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_loose_columns"
+      ],
+      "size": [
+        1,
+        198
+      ],
+      "stride": [
+        1,
+        198
+      ]
+    },
+    {
+      "name": "shape_reference_loose",
+      "op": "dense",
+      "inputs": [
+        "best_shape_match"
+      ],
+      "out": 1
+    },
+    {
+      "name": "structure_scalar_loose",
+      "op": "reshape",
+      "inputs": [
+        "strongest_loose"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "conditional_loose",
+      "op": "add",
+      "inputs": [
+        "structure_scalar_loose",
+        "shape_reference_loose"
+      ]
+    },
+    {
+      "name": "structure_strengths_part0",
+      "op": "dense",
+      "inputs": [
+        "conditional_bar"
+      ],
+      "out": 3
+    },
+    {
+      "name": "structure_strengths_part1",
+      "op": "dense",
+      "inputs": [
+        "conditional_tight"
+      ],
+      "out": 3
+    },
+    {
+      "name": "structure_strengths_part2",
+      "op": "dense",
+      "inputs": [
+        "conditional_loose"
+      ],
+      "out": 3
+    },
+    {
+      "name": "structure_strengths",
+      "op": "add",
+      "inputs": [
+        "structure_strengths_part0",
+        "structure_strengths_part1",
+        "structure_strengths_part2"
+      ]
+    },
+    {
+      "name": "arm_strengths",
+      "op": "dense",
+      "inputs": [
+        "structure_strengths"
+      ],
+      "out": 2
+    },
+    {
+      "name": "strongest_arms_rows",
+      "op": "reshape",
+      "inputs": [
+        "arm_strengths"
+      ],
+      "shape": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "strongest_arms_columns",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_arms_rows"
+      ],
+      "size": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "strongest_arms",
+      "op": "maxpool",
+      "inputs": [
+        "strongest_arms_columns"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "asymmetry_noise_subtraction",
+      "op": "conv",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "asymmetry_noise_floor",
+      "op": "relu",
+      "inputs": [
+        "asymmetry_noise_subtraction"
+      ]
+    },
+    {
+      "name": "asymmetry_pixels",
+      "op": "avgpool",
+      "inputs": [
+        "asymmetry_noise_floor"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "opposite_differences",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_pixels"
+      ],
+      "out": 4608
+    },
+    {
+      "name": "absolute_opposite_differences",
+      "op": "relu",
+      "inputs": [
+        "opposite_differences"
+      ]
+    },
+    {
+      "name": "asymmetry_residuals_0",
+      "op": "dense",
+      "inputs": [
+        "absolute_opposite_differences"
+      ],
+      "out": 9
+    },
+    {
+      "name": "best_center_symmetry_0_rows",
+      "op": "reshape",
+      "inputs": [
+        "asymmetry_residuals_0"
+      ],
+      "shape": [
+        1,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "best_center_symmetry_0_columns",
+      "op": "maxpool",
+      "inputs": [
+        "best_center_symmetry_0_rows"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "best_center_symmetry_0",
+      "op": "maxpool",
+      "inputs": [
+        "best_center_symmetry_0_columns"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "asymmetry_0",
+      "op": "dense",
+      "inputs": [
+        "best_center_symmetry_0"
+      ],
+      "out": 1
+    },
+    {
+      "name": "aperture_flux_0",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_pixels"
+      ],
+      "out": 1
+    },
+    {
+      "name": "asymmetry_residuals_1",
+      "op": "dense",
+      "inputs": [
+        "absolute_opposite_differences"
+      ],
+      "out": 9
+    },
+    {
+      "name": "best_center_symmetry_1_rows",
+      "op": "reshape",
+      "inputs": [
+        "asymmetry_residuals_1"
+      ],
+      "shape": [
+        1,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "best_center_symmetry_1_columns",
+      "op": "maxpool",
+      "inputs": [
+        "best_center_symmetry_1_rows"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "best_center_symmetry_1",
+      "op": "maxpool",
+      "inputs": [
+        "best_center_symmetry_1_columns"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "asymmetry_1",
+      "op": "dense",
+      "inputs": [
+        "best_center_symmetry_1"
+      ],
+      "out": 1
+    },
+    {
+      "name": "aperture_flux_1",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_pixels"
+      ],
+      "out": 1
+    },
+    {
+      "name": "asymmetry_photometry_part0",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_0"
+      ],
+      "out": 4
+    },
+    {
+      "name": "asymmetry_photometry_part1",
+      "op": "dense",
+      "inputs": [
+        "aperture_flux_0"
+      ],
+      "out": 4
+    },
+    {
+      "name": "asymmetry_photometry_part2",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_1"
+      ],
+      "out": 4
+    },
+    {
+      "name": "asymmetry_photometry_part3",
+      "op": "dense",
+      "inputs": [
+        "aperture_flux_1"
+      ],
+      "out": 4
+    },
+    {
+      "name": "asymmetry_photometry",
+      "op": "add",
+      "inputs": [
+        "asymmetry_photometry_part0",
+        "asymmetry_photometry_part1",
+        "asymmetry_photometry_part2",
+        "asymmetry_photometry_part3"
+      ]
+    },
+    {
+      "name": "asymmetry_logs_hinges",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_photometry"
+      ],
+      "out": 56
+    },
+    {
+      "name": "asymmetry_logs_relu",
+      "op": "relu",
+      "inputs": [
+        "asymmetry_logs_hinges"
+      ]
+    },
+    {
+      "name": "asymmetry_logs",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_logs_relu"
+      ],
+      "out": 4
+    },
+    {
+      "name": "log_asymmetry",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_logs"
+      ],
+      "out": 1
+    },
+    {
+      "name": "nucleus_filter",
+      "op": "conv",
+      "inputs": [
+        "central_map"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "nuclear_curvature",
+      "op": "relu",
+      "inputs": [
+        "nucleus_filter"
+      ]
+    },
+    {
+      "name": "nucleus_mask_central",
+      "op": "dense",
+      "inputs": [
+        "nuclear_curvature"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "nucleus_peak_central_rows",
+      "op": "reshape",
+      "inputs": [
+        "nucleus_mask_central"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "nucleus_peak_central_columns",
+      "op": "maxpool",
+      "inputs": [
+        "nucleus_peak_central_rows"
+      ],
+      "size": [
+        32,
+        1
+      ],
+      "stride": [
+        32,
+        1
+      ]
+    },
+    {
+      "name": "nucleus_peak_central",
+      "op": "maxpool",
+      "inputs": [
+        "nucleus_peak_central_columns"
+      ],
+      "size": [
+        1,
+        32
+      ],
+      "stride": [
+        1,
+        32
+      ]
+    },
+    {
+      "name": "nucleus_mask_companion",
+      "op": "dense",
+      "inputs": [
+        "nuclear_curvature"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "nucleus_peak_companion_rows",
+      "op": "reshape",
+      "inputs": [
+        "nucleus_mask_companion"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "nucleus_peak_companion_columns",
+      "op": "maxpool",
+      "inputs": [
+        "nucleus_peak_companion_rows"
+      ],
+      "size": [
+        32,
+        1
+      ],
+      "stride": [
+        32,
+        1
+      ]
+    },
+    {
+      "name": "nucleus_peak_companion",
+      "op": "maxpool",
+      "inputs": [
+        "nucleus_peak_companion_columns"
+      ],
+      "size": [
+        1,
+        32
+      ],
+      "stride": [
+        1,
+        32
+      ]
+    },
+    {
+      "name": "mean_central_light",
+      "op": "dense",
+      "inputs": [
+        "central_map"
+      ],
+      "out": 1
+    },
+    {
+      "name": "nucleus_photometry_part0",
+      "op": "dense",
+      "inputs": [
+        "nucleus_peak_central"
+      ],
+      "out": 3
+    },
+    {
+      "name": "nucleus_photometry_part1",
+      "op": "dense",
+      "inputs": [
+        "nucleus_peak_companion"
+      ],
+      "out": 3
+    },
+    {
+      "name": "nucleus_photometry_part2",
+      "op": "dense",
+      "inputs": [
+        "mean_central_light"
+      ],
+      "out": 3
+    },
+    {
+      "name": "nucleus_photometry",
+      "op": "add",
+      "inputs": [
+        "nucleus_photometry_part0",
+        "nucleus_photometry_part1",
+        "nucleus_photometry_part2"
+      ]
+    },
+    {
+      "name": "nucleus_logs_hinges",
+      "op": "dense",
+      "inputs": [
+        "nucleus_photometry"
+      ],
+      "out": 42
+    },
+    {
+      "name": "nucleus_logs_relu",
+      "op": "relu",
+      "inputs": [
+        "nucleus_logs_hinges"
+      ]
+    },
+    {
+      "name": "nucleus_logs",
+      "op": "dense",
+      "inputs": [
+        "nucleus_logs_relu"
+      ],
+      "out": 3
+    },
+    {
+      "name": "nucleus_ratios",
+      "op": "dense",
+      "inputs": [
+        "nucleus_logs"
+      ],
+      "out": 2
+    },
+    {
+      "name": "bounded_nucleus_ratios_hinges",
+      "op": "dense",
+      "inputs": [
+        "nucleus_ratios"
+      ],
+      "out": 4
+    },
+    {
+      "name": "bounded_nucleus_ratios_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_nucleus_ratios_hinges"
+      ]
+    },
+    {
+      "name": "bounded_nucleus_ratios",
+      "op": "dense",
+      "inputs": [
+        "bounded_nucleus_ratios_relu"
+      ],
+      "out": 2
+    },
+    {
+      "name": "colour_pixels",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "colour_apertures",
+      "op": "dense",
+      "inputs": [
+        "colour_pixels"
+      ],
+      "out": 4
+    },
+    {
+      "name": "positive_colour_flux",
+      "op": "relu",
+      "inputs": [
+        "colour_apertures"
+      ]
+    },
+    {
+      "name": "colour_logs_hinges",
+      "op": "dense",
+      "inputs": [
+        "positive_colour_flux"
+      ],
+      "out": 56
+    },
+    {
+      "name": "colour_logs_relu",
+      "op": "relu",
+      "inputs": [
+        "colour_logs_hinges"
+      ]
+    },
+    {
+      "name": "colour_logs",
+      "op": "dense",
+      "inputs": [
+        "colour_logs_relu"
+      ],
+      "out": 4
+    },
+    {
+      "name": "physical_colours",
+      "op": "dense",
+      "inputs": [
+        "colour_logs"
+      ],
+      "out": 2
+    },
+    {
+      "name": "bounded_colours_hinges",
+      "op": "dense",
+      "inputs": [
+        "physical_colours"
+      ],
+      "out": 4
+    },
+    {
+      "name": "bounded_colours_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_colours_hinges"
+      ]
+    },
+    {
+      "name": "bounded_colours",
+      "op": "dense",
+      "inputs": [
+        "bounded_colours_relu"
+      ],
+      "out": 2
+    },
+    {
+      "name": "quadrupole_flux_0",
+      "op": "dense",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 1
+    },
+    {
+      "name": "quadrupole_directions_0",
+      "op": "dense",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 12
+    },
+    {
+      "name": "quadrupole_amplitude_0_rows",
+      "op": "reshape",
+      "inputs": [
+        "quadrupole_directions_0"
+      ],
+      "shape": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "quadrupole_amplitude_0_columns",
+      "op": "maxpool",
+      "inputs": [
+        "quadrupole_amplitude_0_rows"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "quadrupole_amplitude_0",
+      "op": "maxpool",
+      "inputs": [
+        "quadrupole_amplitude_0_columns"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "quadrupole_pair_0_part0",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_amplitude_0"
+      ],
+      "out": 2
+    },
+    {
+      "name": "quadrupole_pair_0_part1",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_flux_0"
+      ],
+      "out": 2
+    },
+    {
+      "name": "quadrupole_pair_0",
+      "op": "add",
+      "inputs": [
+        "quadrupole_pair_0_part0",
+        "quadrupole_pair_0_part1"
+      ]
+    },
+    {
+      "name": "quadrupole_logs_0_hinges",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_pair_0"
+      ],
+      "out": 28
+    },
+    {
+      "name": "quadrupole_logs_0_relu",
+      "op": "relu",
+      "inputs": [
+        "quadrupole_logs_0_hinges"
+      ]
+    },
+    {
+      "name": "quadrupole_logs_0",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_logs_0_relu"
+      ],
+      "out": 2
+    },
+    {
+      "name": "log_ellipticity_0",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_logs_0"
+      ],
+      "out": 1
+    },
+    {
+      "name": "quadrupole_flux_1",
+      "op": "dense",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 1
+    },
+    {
+      "name": "quadrupole_directions_1",
+      "op": "dense",
+      "inputs": [
+        "dynamic_range"
+      ],
+      "out": 12
+    },
+    {
+      "name": "quadrupole_amplitude_1_rows",
+      "op": "reshape",
+      "inputs": [
+        "quadrupole_directions_1"
+      ],
+      "shape": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "quadrupole_amplitude_1_columns",
+      "op": "maxpool",
+      "inputs": [
+        "quadrupole_amplitude_1_rows"
+      ],
+      "size": [
+        3,
+        1
+      ],
+      "stride": [
+        3,
+        1
+      ]
+    },
+    {
+      "name": "quadrupole_amplitude_1",
+      "op": "maxpool",
+      "inputs": [
+        "quadrupole_amplitude_1_columns"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "quadrupole_pair_1_part0",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_amplitude_1"
+      ],
+      "out": 2
+    },
+    {
+      "name": "quadrupole_pair_1_part1",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_flux_1"
+      ],
+      "out": 2
+    },
+    {
+      "name": "quadrupole_pair_1",
+      "op": "add",
+      "inputs": [
+        "quadrupole_pair_1_part0",
+        "quadrupole_pair_1_part1"
+      ]
+    },
+    {
+      "name": "quadrupole_logs_1_hinges",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_pair_1"
+      ],
+      "out": 28
+    },
+    {
+      "name": "quadrupole_logs_1_relu",
+      "op": "relu",
+      "inputs": [
+        "quadrupole_logs_1_hinges"
+      ]
+    },
+    {
+      "name": "quadrupole_logs_1",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_logs_1_relu"
+      ],
+      "out": 2
+    },
+    {
+      "name": "log_ellipticity_1",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_logs_1"
+      ],
+      "out": 1
+    },
+    {
+      "name": "ellipticity_windows_part0",
+      "op": "dense",
+      "inputs": [
+        "log_ellipticity_0"
+      ],
+      "out": 2
+    },
+    {
+      "name": "ellipticity_windows_part1",
+      "op": "dense",
+      "inputs": [
+        "log_ellipticity_1"
+      ],
+      "out": 2
+    },
+    {
+      "name": "ellipticity_windows",
+      "op": "add",
+      "inputs": [
+        "ellipticity_windows_part0",
+        "ellipticity_windows_part1"
+      ]
+    },
+    {
+      "name": "inner_bar_excess",
+      "op": "dense",
+      "inputs": [
+        "ellipticity_windows"
+      ],
+      "out": 1
+    },
+    {
+      "name": "bounded_bar_excess_hinges",
+      "op": "dense",
+      "inputs": [
+        "inner_bar_excess"
+      ],
+      "out": 2
+    },
+    {
+      "name": "bounded_bar_excess_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_bar_excess_hinges"
+      ]
+    },
+    {
+      "name": "bounded_bar_excess",
+      "op": "dense",
+      "inputs": [
+        "bounded_bar_excess_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "absolute_bar_ellipticity",
+      "op": "dense",
+      "inputs": [
+        "ellipticity_windows"
+      ],
+      "out": 1
+    },
+    {
+      "name": "bounded_inner_ellipticity_hinges",
+      "op": "dense",
+      "inputs": [
+        "absolute_bar_ellipticity"
+      ],
+      "out": 2
+    },
+    {
+      "name": "bounded_inner_ellipticity_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_inner_ellipticity_hinges"
+      ]
+    },
+    {
+      "name": "bounded_inner_ellipticity",
+      "op": "dense",
+      "inputs": [
+        "bounded_inner_ellipticity_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "negative_inner_evidence",
+      "op": "dense",
+      "inputs": [
+        "bounded_inner_ellipticity"
+      ],
+      "out": 1
+    },
+    {
+      "name": "bar_evidence_difference",
+      "op": "add",
+      "inputs": [
+        "bounded_bar_excess",
+        "negative_inner_evidence"
+      ]
+    },
+    {
+      "name": "bar_evidence_excess",
+      "op": "relu",
+      "inputs": [
+        "bar_evidence_difference"
+      ]
+    },
+    {
+      "name": "negative_bar_excess",
+      "op": "dense",
+      "inputs": [
+        "bar_evidence_excess"
+      ],
+      "out": 1
+    },
+    {
+      "name": "supported_bar_excess",
+      "op": "add",
+      "inputs": [
+        "bounded_bar_excess",
+        "negative_bar_excess"
+      ]
+    },
+    {
+      "name": "outer_flattening",
+      "op": "dense",
+      "inputs": [
+        "ellipticity_windows"
+      ],
+      "out": 1
+    },
+    {
+      "name": "bounded_outer_flattening_hinges",
+      "op": "dense",
+      "inputs": [
+        "outer_flattening"
+      ],
+      "out": 2
+    },
+    {
+      "name": "bounded_outer_flattening_relu",
+      "op": "relu",
+      "inputs": [
+        "bounded_outer_flattening_hinges"
+      ]
+    },
+    {
+      "name": "bounded_outer_flattening",
+      "op": "dense",
+      "inputs": [
+        "bounded_outer_flattening_relu"
+      ],
+      "out": 1
+    },
+    {
+      "name": "global_match_scalar",
+      "op": "reshape",
+      "inputs": [
+        "best_shape_match"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "arm_scalar",
+      "op": "reshape",
+      "inputs": [
+        "strongest_arms"
+      ],
+      "shape": [
+        1
+      ]
+    },
+    {
+      "name": "morphology_features_part0",
+      "op": "dense",
+      "inputs": [
+        "shape_matches"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part1",
+      "op": "dense",
+      "inputs": [
+        "global_match_scalar"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part2",
+      "op": "dense",
+      "inputs": [
+        "structure_strengths"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part3",
+      "op": "dense",
+      "inputs": [
+        "arm_scalar"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part4",
+      "op": "dense",
+      "inputs": [
+        "log_asymmetry"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part5",
+      "op": "dense",
+      "inputs": [
+        "bounded_nucleus_ratios"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part6",
+      "op": "dense",
+      "inputs": [
+        "bounded_colours"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part7",
+      "op": "dense",
+      "inputs": [
+        "supported_bar_excess"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features_part8",
+      "op": "dense",
+      "inputs": [
+        "bounded_outer_flattening"
+      ],
+      "out": 18
+    },
+    {
+      "name": "morphology_features",
+      "op": "add",
+      "inputs": [
+        "morphology_features_part0",
+        "morphology_features_part1",
+        "morphology_features_part2",
+        "morphology_features_part3",
+        "morphology_features_part4",
+        "morphology_features_part5",
+        "morphology_features_part6",
+        "morphology_features_part7",
+        "morphology_features_part8"
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "morphology_features"
+      ],
+      "out": 10
+    }
+  ]
+}

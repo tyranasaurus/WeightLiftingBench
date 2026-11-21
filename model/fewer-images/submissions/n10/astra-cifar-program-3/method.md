@@ -1,0 +1,3 @@
+The builder renders 3,072 independent views per class from hand-specified 3D parts, material palettes, camera poses, and backgrounds. Each view becomes one template: it is downsampled and encoded with oriented gradients, coarse luminance, edge density, and soft color memberships. All template normalizations operate within a single view; no class prototype, fitted readout, or training-photo feature is used.
+
+For each input photo, the classifier compares both horizontal orientations to those templates. It combines the strongest matches with fixed tests for features such as paired wheels, eyes, thin legs, horizontal waterlines, and sky or vegetation around the subject. The renderer uses a fixed seed, and prediction has no randomness or cross-image normalization.

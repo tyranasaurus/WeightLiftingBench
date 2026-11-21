@@ -1,0 +1,410 @@
+{
+  "layers": [
+    {
+      "name": "ink_scales",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "ink_normalized",
+      "op": "norm",
+      "inputs": [
+        "ink_scales"
+      ]
+    },
+    {
+      "name": "directional_derivatives",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 3
+    },
+    {
+      "name": "edge_strength",
+      "op": "relu",
+      "inputs": [
+        "directional_derivatives"
+      ]
+    },
+    {
+      "name": "edge_neighborhood",
+      "op": "maxpool",
+      "inputs": [
+        "edge_strength"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_array",
+      "op": "reshape",
+      "inputs": [
+        "edge_neighborhood"
+      ],
+      "shape": [
+        1,
+        48,
+        6
+      ]
+    },
+    {
+      "name": "edge_normalized",
+      "op": "norm",
+      "inputs": [
+        "edge_array"
+      ]
+    },
+    {
+      "name": "ray_transmittance",
+      "op": "dense",
+      "inputs": [
+        "image"
+      ],
+      "out": 1152
+    },
+    {
+      "name": "ray_miss",
+      "op": "relu",
+      "inputs": [
+        "ray_transmittance"
+      ]
+    },
+    {
+      "name": "ray_planes",
+      "op": "reshape",
+      "inputs": [
+        "ray_miss"
+      ],
+      "shape": [
+        8,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "both_sides",
+      "op": "conv",
+      "inputs": [
+        "ray_planes"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_ink_samples",
+      "op": "dense",
+      "inputs": [
+        "image"
+      ],
+      "out": 144
+    },
+    {
+      "name": "negative_ink_grid",
+      "op": "reshape",
+      "inputs": [
+        "negative_ink_samples"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "foreground_exclusion",
+      "op": "conv",
+      "inputs": [
+        "negative_ink_grid"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "opposed_ray_test",
+      "op": "add",
+      "inputs": [
+        "both_sides",
+        "foreground_exclusion"
+      ]
+    },
+    {
+      "name": "bounded_spaces",
+      "op": "relu",
+      "inputs": [
+        "opposed_ray_test"
+      ]
+    },
+    {
+      "name": "space_cells",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_spaces"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "space_array",
+      "op": "reshape",
+      "inputs": [
+        "space_cells"
+      ],
+      "shape": [
+        1,
+        24,
+        6
+      ]
+    },
+    {
+      "name": "space_normalized",
+      "op": "norm",
+      "inputs": [
+        "space_array"
+      ]
+    },
+    {
+      "name": "all_four_axes",
+      "op": "conv",
+      "inputs": [
+        "bounded_spaces"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "enclosure",
+      "op": "relu",
+      "inputs": [
+        "all_four_axes"
+      ]
+    },
+    {
+      "name": "loop_cells",
+      "op": "avgpool",
+      "inputs": [
+        "enclosure"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "loop_reference_token",
+      "op": "dense",
+      "inputs": [
+        "loop_cells"
+      ],
+      "out": 37
+    },
+    {
+      "name": "loop_array",
+      "op": "reshape",
+      "inputs": [
+        "loop_reference_token"
+      ],
+      "shape": [
+        1,
+        1,
+        37
+      ]
+    },
+    {
+      "name": "loop_normalized",
+      "op": "norm",
+      "inputs": [
+        "loop_array"
+      ]
+    },
+    {
+      "name": "ink_match",
+      "op": "dense",
+      "inputs": [
+        "ink_normalized"
+      ],
+      "out": 32000
+    },
+    {
+      "name": "edge_match",
+      "op": "dense",
+      "inputs": [
+        "edge_normalized"
+      ],
+      "out": 32000
+    },
+    {
+      "name": "space_match",
+      "op": "dense",
+      "inputs": [
+        "space_normalized"
+      ],
+      "out": 32000
+    },
+    {
+      "name": "loop_match",
+      "op": "dense",
+      "inputs": [
+        "loop_normalized"
+      ],
+      "out": 32000
+    },
+    {
+      "name": "individual_glyph_scores",
+      "op": "add",
+      "inputs": [
+        "ink_match",
+        "edge_match",
+        "space_match",
+        "loop_match"
+      ]
+    },
+    {
+      "name": "class_and_style",
+      "op": "reshape",
+      "inputs": [
+        "individual_glyph_scores"
+      ],
+      "shape": [
+        10,
+        8,
+        400
+      ]
+    },
+    {
+      "name": "neighborhood_winners",
+      "op": "maxpool",
+      "inputs": [
+        "class_and_style"
+      ],
+      "size": [
+        1,
+        400
+      ],
+      "stride": [
+        1,
+        400
+      ]
+    },
+    {
+      "name": "best_match",
+      "op": "maxpool",
+      "inputs": [
+        "neighborhood_winners"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "strongest",
+      "op": "reshape",
+      "inputs": [
+        "best_match"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "average_of_winners",
+      "op": "avgpool",
+      "inputs": [
+        "neighborhood_winners"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "corroboration",
+      "op": "reshape",
+      "inputs": [
+        "average_of_winners"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "best_match_weight",
+      "op": "dense",
+      "inputs": [
+        "strongest"
+      ],
+      "out": 10
+    },
+    {
+      "name": "corroboration_weight",
+      "op": "dense",
+      "inputs": [
+        "corroboration"
+      ],
+      "out": 10
+    },
+    {
+      "name": "digit_scores",
+      "op": "add",
+      "inputs": [
+        "best_match_weight",
+        "corroboration_weight"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+ "layers": [
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "featn",
+   "op": "norm",
+   "inputs": [
+    "feat"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "conv",
+   "inputs": [
+    "featn"
+   ],
+   "out": 172,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "shift",
+   "op": "maxpool",
+   "inputs": [
+    "match"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "grid",
+   "op": "reshape",
+   "inputs": [
+    "shift"
+   ],
+   "shape": [
+    1,
+    43,
+    4
+   ]
+  },
+  {
+   "name": "size",
+   "op": "maxpool",
+   "inputs": [
+    "grid"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "size"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

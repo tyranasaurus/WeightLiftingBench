@@ -1,0 +1,98 @@
+{
+ "layers": [
+  {
+   "name": "a",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 17,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "a_r",
+   "op": "relu",
+   "inputs": [
+    "a"
+   ]
+  },
+  {
+   "name": "b",
+   "op": "conv",
+   "inputs": [
+    "a_r"
+   ],
+   "out": 17,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "b_r",
+   "op": "relu",
+   "inputs": [
+    "b"
+   ]
+  },
+  {
+   "name": "c",
+   "op": "conv",
+   "inputs": [
+    "b_r"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cells",
+   "op": "avgpool",
+   "inputs": [
+    "c"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "regions",
+   "op": "dense",
+   "inputs": [
+    "cells"
+   ],
+   "out": 45
+  },
+  {
+   "name": "regions_r",
+   "op": "relu",
+   "inputs": [
+    "regions"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "regions_r"
+   ],
+   "out": 10
+  }
+ ]
+}

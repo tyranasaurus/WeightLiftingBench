@@ -1,0 +1,1016 @@
+{
+  "layers": [
+    {
+      "name": "antialias_half",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "colour_inequalities",
+      "op": "conv",
+      "inputs": [
+        "antialias_half"
+      ],
+      "out": 25,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_violations",
+      "op": "relu",
+      "inputs": [
+        "colour_inequalities"
+      ]
+    },
+    {
+      "name": "skin_and_luminance",
+      "op": "conv",
+      "inputs": [
+        "colour_violations"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "bounded_skin_and_luminance",
+      "op": "relu",
+      "inputs": [
+        "skin_and_luminance"
+      ]
+    },
+    {
+      "name": "s1_norm",
+      "op": "norm",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ]
+    },
+    {
+      "name": "s1_signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s1_norm"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s1_half_wave",
+      "op": "relu",
+      "inputs": [
+        "s1_signed_derivatives"
+      ]
+    },
+    {
+      "name": "s1_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "s1_half_wave"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s1_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s1_features",
+      "op": "add",
+      "inputs": [
+        "s1_unsigned_edges",
+        "s1_skin_channels"
+      ]
+    },
+    {
+      "name": "s1_analytic_templates",
+      "op": "conv",
+      "inputs": [
+        "s1_features"
+      ],
+      "out": 134,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "s1_part_deficits",
+      "op": "conv",
+      "inputs": [
+        "s1_analytic_templates"
+      ],
+      "out": 200,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s1_positive_deficits",
+      "op": "relu",
+      "inputs": [
+        "s1_part_deficits"
+      ]
+    },
+    {
+      "name": "s1_rule_scores",
+      "op": "conv",
+      "inputs": [
+        "s1_positive_deficits"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s1_location_max",
+      "op": "maxpool",
+      "inputs": [
+        "s1_rule_scores"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "s1_scale_slots",
+      "op": "dense",
+      "inputs": [
+        "s1_location_max"
+      ],
+      "out": 190
+    },
+    {
+      "name": "s2_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "s2_norm",
+      "op": "norm",
+      "inputs": [
+        "s2_pyramid"
+      ]
+    },
+    {
+      "name": "s2_signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s2_norm"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s2_half_wave",
+      "op": "relu",
+      "inputs": [
+        "s2_signed_derivatives"
+      ]
+    },
+    {
+      "name": "s2_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "s2_half_wave"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s2_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "s2_pyramid"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s2_features",
+      "op": "add",
+      "inputs": [
+        "s2_unsigned_edges",
+        "s2_skin_channels"
+      ]
+    },
+    {
+      "name": "s2_analytic_templates",
+      "op": "conv",
+      "inputs": [
+        "s2_features"
+      ],
+      "out": 134,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "s2_part_deficits",
+      "op": "conv",
+      "inputs": [
+        "s2_analytic_templates"
+      ],
+      "out": 200,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s2_positive_deficits",
+      "op": "relu",
+      "inputs": [
+        "s2_part_deficits"
+      ]
+    },
+    {
+      "name": "s2_rule_scores",
+      "op": "conv",
+      "inputs": [
+        "s2_positive_deficits"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s2_location_max",
+      "op": "maxpool",
+      "inputs": [
+        "s2_rule_scores"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "s2_scale_slots",
+      "op": "dense",
+      "inputs": [
+        "s2_location_max"
+      ],
+      "out": 190
+    },
+    {
+      "name": "s3_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "s3_norm",
+      "op": "norm",
+      "inputs": [
+        "s3_pyramid"
+      ]
+    },
+    {
+      "name": "s3_signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s3_norm"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s3_half_wave",
+      "op": "relu",
+      "inputs": [
+        "s3_signed_derivatives"
+      ]
+    },
+    {
+      "name": "s3_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "s3_half_wave"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s3_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "s3_pyramid"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s3_features",
+      "op": "add",
+      "inputs": [
+        "s3_unsigned_edges",
+        "s3_skin_channels"
+      ]
+    },
+    {
+      "name": "s3_analytic_templates",
+      "op": "conv",
+      "inputs": [
+        "s3_features"
+      ],
+      "out": 134,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "s3_part_deficits",
+      "op": "conv",
+      "inputs": [
+        "s3_analytic_templates"
+      ],
+      "out": 200,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s3_positive_deficits",
+      "op": "relu",
+      "inputs": [
+        "s3_part_deficits"
+      ]
+    },
+    {
+      "name": "s3_rule_scores",
+      "op": "conv",
+      "inputs": [
+        "s3_positive_deficits"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s3_location_max",
+      "op": "maxpool",
+      "inputs": [
+        "s3_rule_scores"
+      ],
+      "size": [
+        16,
+        16
+      ],
+      "stride": [
+        16,
+        16
+      ]
+    },
+    {
+      "name": "s3_scale_slots",
+      "op": "dense",
+      "inputs": [
+        "s3_location_max"
+      ],
+      "out": 190
+    },
+    {
+      "name": "s4_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "s4_norm",
+      "op": "norm",
+      "inputs": [
+        "s4_pyramid"
+      ]
+    },
+    {
+      "name": "s4_signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s4_norm"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s4_half_wave",
+      "op": "relu",
+      "inputs": [
+        "s4_signed_derivatives"
+      ]
+    },
+    {
+      "name": "s4_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "s4_half_wave"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s4_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "s4_pyramid"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s4_features",
+      "op": "add",
+      "inputs": [
+        "s4_unsigned_edges",
+        "s4_skin_channels"
+      ]
+    },
+    {
+      "name": "s4_analytic_templates",
+      "op": "conv",
+      "inputs": [
+        "s4_features"
+      ],
+      "out": 134,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "s4_part_deficits",
+      "op": "conv",
+      "inputs": [
+        "s4_analytic_templates"
+      ],
+      "out": 200,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s4_positive_deficits",
+      "op": "relu",
+      "inputs": [
+        "s4_part_deficits"
+      ]
+    },
+    {
+      "name": "s4_rule_scores",
+      "op": "conv",
+      "inputs": [
+        "s4_positive_deficits"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s4_location_max",
+      "op": "maxpool",
+      "inputs": [
+        "s4_rule_scores"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "s4_scale_slots",
+      "op": "dense",
+      "inputs": [
+        "s4_location_max"
+      ],
+      "out": 190
+    },
+    {
+      "name": "s6_pyramid",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "s6_norm",
+      "op": "norm",
+      "inputs": [
+        "s6_pyramid"
+      ]
+    },
+    {
+      "name": "s6_signed_derivatives",
+      "op": "conv",
+      "inputs": [
+        "s6_norm"
+      ],
+      "out": 10,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "s6_half_wave",
+      "op": "relu",
+      "inputs": [
+        "s6_signed_derivatives"
+      ]
+    },
+    {
+      "name": "s6_unsigned_edges",
+      "op": "conv",
+      "inputs": [
+        "s6_half_wave"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_skin_channels",
+      "op": "conv",
+      "inputs": [
+        "s6_pyramid"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_features",
+      "op": "add",
+      "inputs": [
+        "s6_unsigned_edges",
+        "s6_skin_channels"
+      ]
+    },
+    {
+      "name": "s6_analytic_templates",
+      "op": "conv",
+      "inputs": [
+        "s6_features"
+      ],
+      "out": 134,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "s6_part_deficits",
+      "op": "conv",
+      "inputs": [
+        "s6_analytic_templates"
+      ],
+      "out": 200,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_positive_deficits",
+      "op": "relu",
+      "inputs": [
+        "s6_part_deficits"
+      ]
+    },
+    {
+      "name": "s6_rule_scores",
+      "op": "conv",
+      "inputs": [
+        "s6_positive_deficits"
+      ],
+      "out": 38,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "s6_location_max",
+      "op": "maxpool",
+      "inputs": [
+        "s6_rule_scores"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "s6_scale_slots",
+      "op": "dense",
+      "inputs": [
+        "s6_location_max"
+      ],
+      "out": 190
+    },
+    {
+      "name": "all_scale_slots",
+      "op": "add",
+      "inputs": [
+        "s1_scale_slots",
+        "s2_scale_slots",
+        "s3_scale_slots",
+        "s4_scale_slots",
+        "s6_scale_slots"
+      ]
+    },
+    {
+      "name": "positive_person_evidence",
+      "op": "relu",
+      "inputs": [
+        "all_scale_slots"
+      ]
+    },
+    {
+      "name": "evidence_per_scale",
+      "op": "dense",
+      "inputs": [
+        "positive_person_evidence"
+      ],
+      "out": 5
+    },
+    {
+      "name": "evidence_over_cap",
+      "op": "dense",
+      "inputs": [
+        "evidence_per_scale"
+      ],
+      "out": 5
+    },
+    {
+      "name": "excess_scale_evidence",
+      "op": "relu",
+      "inputs": [
+        "evidence_over_cap"
+      ]
+    },
+    {
+      "name": "subtract_scale_excess",
+      "op": "dense",
+      "inputs": [
+        "excess_scale_evidence"
+      ],
+      "out": 5
+    },
+    {
+      "name": "bounded_scale_evidence",
+      "op": "add",
+      "inputs": [
+        "evidence_per_scale",
+        "subtract_scale_excess"
+      ]
+    },
+    {
+      "name": "geometric_evidence_score",
+      "op": "dense",
+      "inputs": [
+        "bounded_scale_evidence"
+      ],
+      "out": 2
+    },
+    {
+      "name": "soft_colour_maps",
+      "op": "conv",
+      "inputs": [
+        "bounded_skin_and_luminance"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "local_skin_contrast",
+      "op": "conv",
+      "inputs": [
+        "soft_colour_maps"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "positive_skin_contrast",
+      "op": "relu",
+      "inputs": [
+        "local_skin_contrast"
+      ]
+    },
+    {
+      "name": "average_skin_contrast",
+      "op": "avgpool",
+      "inputs": [
+        "positive_skin_contrast"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "contrast_descriptor",
+      "op": "dense",
+      "inputs": [
+        "average_skin_contrast"
+      ],
+      "out": 4
+    },
+    {
+      "name": "skin_above_occupancy_knee",
+      "op": "conv",
+      "inputs": [
+        "soft_colour_maps"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "occupancy_excess",
+      "op": "relu",
+      "inputs": [
+        "skin_above_occupancy_knee"
+      ]
+    },
+    {
+      "name": "mean_soft_colour",
+      "op": "avgpool",
+      "inputs": [
+        "soft_colour_maps"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "mean_occupancy_excess",
+      "op": "avgpool",
+      "inputs": [
+        "occupancy_excess"
+      ],
+      "size": [
+        48,
+        48
+      ],
+      "stride": [
+        48,
+        48
+      ]
+    },
+    {
+      "name": "raw_skin_descriptors",
+      "op": "dense",
+      "inputs": [
+        "mean_soft_colour"
+      ],
+      "out": 4
+    },
+    {
+      "name": "occupancy_cap_subtraction",
+      "op": "dense",
+      "inputs": [
+        "mean_occupancy_excess"
+      ],
+      "out": 4
+    },
+    {
+      "name": "skin_descriptors",
+      "op": "add",
+      "inputs": [
+        "raw_skin_descriptors",
+        "occupancy_cap_subtraction",
+        "contrast_descriptor"
+      ]
+    },
+    {
+      "name": "soft_skin_score",
+      "op": "dense",
+      "inputs": [
+        "skin_descriptors"
+      ],
+      "out": 2
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "geometric_evidence_score",
+        "soft_skin_score"
+      ]
+    }
+  ]
+}

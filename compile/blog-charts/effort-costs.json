@@ -1,0 +1,44 @@
+{
+ "opus55@high": {
+  "usd_per_task": 1.89,
+  "n": 18,
+  "mean_out_tokens": 93700,
+  "share_at_cap": 0.33
+ },
+ "opus55@low": {
+  "usd_per_task": 0.409,
+  "n": 18,
+  "mean_out_tokens": 19511,
+  "share_at_cap": 0.0
+ },
+ "sol@xhigh": {
+  "usd_per_task": 0.348,
+  "n": 18,
+  "mean_out_tokens": 34086,
+  "share_at_cap": 0.0
+ },
+ "sol@high": {
+  "usd_per_task": 0.256,
+  "n": 14,
+  "mean_out_tokens": 25039,
+  "share_at_cap": 0.0
+ },
+ "opus55@medium": {
+  "usd_per_task": 1.528,
+  "n": 18,
+  "mean_out_tokens": 75623,
+  "share_at_cap": 0.0
+ },
+ "sol@medium": {
+  "usd_per_task": 0.201,
+  "n": 18,
+  "mean_out_tokens": 19119,
+  "share_at_cap": 0.0
+ },
+ "sol@low": {
+  "usd_per_task": 0.081,
+  "n": 18,
+  "mean_out_tokens": 7116,
+  "share_at_cap": 0.0
+ }
+}

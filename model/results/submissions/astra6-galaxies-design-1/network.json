@@ -1,0 +1,1281 @@
+{
+  "layers": [
+    {
+      "name": "two_pixel_average",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "input_sky_estimate",
+      "op": "dense",
+      "inputs": [
+        "two_pixel_average"
+      ],
+      "out": 3
+    },
+    {
+      "name": "negative_sky_field",
+      "op": "dense",
+      "inputs": [
+        "input_sky_estimate"
+      ],
+      "out": 12288
+    },
+    {
+      "name": "sky_field_image",
+      "op": "reshape",
+      "inputs": [
+        "negative_sky_field"
+      ],
+      "shape": [
+        3,
+        64,
+        64
+      ]
+    },
+    {
+      "name": "sky_subtracted_rgb",
+      "op": "add",
+      "inputs": [
+        "two_pixel_average",
+        "sky_field_image"
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted_rgb"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "central_field",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "central_image",
+      "op": "reshape",
+      "inputs": [
+        "central_field"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "sky_floor",
+      "op": "conv",
+      "inputs": [
+        "central_image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_light",
+      "op": "relu",
+      "inputs": [
+        "sky_floor"
+      ]
+    },
+    {
+      "name": "compression_knots",
+      "op": "conv",
+      "inputs": [
+        "positive_light"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compression_hinges",
+      "op": "relu",
+      "inputs": [
+        "compression_knots"
+      ]
+    },
+    {
+      "name": "compressed_light",
+      "op": "conv",
+      "inputs": [
+        "compression_hinges"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "outer_shape_aperture",
+      "op": "dense",
+      "inputs": [
+        "compressed_light"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "outer_shape_image",
+      "op": "reshape",
+      "inputs": [
+        "outer_shape_aperture"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "outer_shape_contrast",
+      "op": "norm",
+      "inputs": [
+        "outer_shape_image"
+      ]
+    },
+    {
+      "name": "outer_shape_projections",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_contrast"
+      ],
+      "out": 1764
+    },
+    {
+      "name": "outer_shape_angle_grid",
+      "op": "reshape",
+      "inputs": [
+        "outer_shape_projections"
+      ],
+      "shape": [
+        147,
+        1,
+        12
+      ]
+    },
+    {
+      "name": "outer_shape_best_angle",
+      "op": "maxpool",
+      "inputs": [
+        "outer_shape_angle_grid"
+      ],
+      "size": [
+        1,
+        12
+      ],
+      "stride": [
+        1,
+        12
+      ]
+    },
+    {
+      "name": "outer_shape_hypothesis_grid",
+      "op": "reshape",
+      "inputs": [
+        "outer_shape_best_angle"
+      ],
+      "shape": [
+        1,
+        147,
+        1
+      ]
+    },
+    {
+      "name": "outer_shape_best_match",
+      "op": "maxpool",
+      "inputs": [
+        "outer_shape_hypothesis_grid"
+      ],
+      "size": [
+        147,
+        1
+      ],
+      "stride": [
+        147,
+        1
+      ]
+    },
+    {
+      "name": "outer_shape_scores_and_best_part0",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_best_angle"
+      ],
+      "out": 148
+    },
+    {
+      "name": "outer_shape_scores_and_best_part1",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_best_match"
+      ],
+      "out": 148
+    },
+    {
+      "name": "outer_shape_scores_and_best",
+      "op": "add",
+      "inputs": [
+        "outer_shape_scores_and_best_part0",
+        "outer_shape_scores_and_best_part1"
+      ]
+    },
+    {
+      "name": "outer_shape_near_maximum",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_scores_and_best"
+      ],
+      "out": 147
+    },
+    {
+      "name": "outer_shape_hypothesis_weights",
+      "op": "relu",
+      "inputs": [
+        "outer_shape_near_maximum"
+      ]
+    },
+    {
+      "name": "outer_shape_weighted_parameters",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_hypothesis_weights"
+      ],
+      "out": 4
+    },
+    {
+      "name": "outer_shape_parameters_pairs",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_weighted_parameters"
+      ],
+      "out": 8
+    },
+    {
+      "name": "outer_shape_parameters_shape",
+      "op": "reshape",
+      "inputs": [
+        "outer_shape_parameters_pairs"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "outer_shape_parameters_norm",
+      "op": "norm",
+      "inputs": [
+        "outer_shape_parameters_shape"
+      ]
+    },
+    {
+      "name": "outer_shape_parameters",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_parameters_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "outer_shape_summary_part0",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_parameters"
+      ],
+      "out": 4
+    },
+    {
+      "name": "outer_shape_summary_part1",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_best_match"
+      ],
+      "out": 4
+    },
+    {
+      "name": "outer_shape_summary",
+      "op": "add",
+      "inputs": [
+        "outer_shape_summary_part0",
+        "outer_shape_summary_part1"
+      ]
+    },
+    {
+      "name": "core_shape_aperture",
+      "op": "dense",
+      "inputs": [
+        "positive_light"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "core_shape_image",
+      "op": "reshape",
+      "inputs": [
+        "core_shape_aperture"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "core_shape_contrast",
+      "op": "norm",
+      "inputs": [
+        "core_shape_image"
+      ]
+    },
+    {
+      "name": "core_shape_projections",
+      "op": "dense",
+      "inputs": [
+        "core_shape_contrast"
+      ],
+      "out": 1008
+    },
+    {
+      "name": "core_shape_angle_grid",
+      "op": "reshape",
+      "inputs": [
+        "core_shape_projections"
+      ],
+      "shape": [
+        84,
+        1,
+        12
+      ]
+    },
+    {
+      "name": "core_shape_best_angle",
+      "op": "maxpool",
+      "inputs": [
+        "core_shape_angle_grid"
+      ],
+      "size": [
+        1,
+        12
+      ],
+      "stride": [
+        1,
+        12
+      ]
+    },
+    {
+      "name": "core_shape_hypothesis_grid",
+      "op": "reshape",
+      "inputs": [
+        "core_shape_best_angle"
+      ],
+      "shape": [
+        1,
+        84,
+        1
+      ]
+    },
+    {
+      "name": "core_shape_best_match",
+      "op": "maxpool",
+      "inputs": [
+        "core_shape_hypothesis_grid"
+      ],
+      "size": [
+        84,
+        1
+      ],
+      "stride": [
+        84,
+        1
+      ]
+    },
+    {
+      "name": "core_shape_scores_and_best_part0",
+      "op": "dense",
+      "inputs": [
+        "core_shape_best_angle"
+      ],
+      "out": 85
+    },
+    {
+      "name": "core_shape_scores_and_best_part1",
+      "op": "dense",
+      "inputs": [
+        "core_shape_best_match"
+      ],
+      "out": 85
+    },
+    {
+      "name": "core_shape_scores_and_best",
+      "op": "add",
+      "inputs": [
+        "core_shape_scores_and_best_part0",
+        "core_shape_scores_and_best_part1"
+      ]
+    },
+    {
+      "name": "core_shape_near_maximum",
+      "op": "dense",
+      "inputs": [
+        "core_shape_scores_and_best"
+      ],
+      "out": 84
+    },
+    {
+      "name": "core_shape_hypothesis_weights",
+      "op": "relu",
+      "inputs": [
+        "core_shape_near_maximum"
+      ]
+    },
+    {
+      "name": "core_shape_weighted_parameters",
+      "op": "dense",
+      "inputs": [
+        "core_shape_hypothesis_weights"
+      ],
+      "out": 4
+    },
+    {
+      "name": "core_shape_parameters_pairs",
+      "op": "dense",
+      "inputs": [
+        "core_shape_weighted_parameters"
+      ],
+      "out": 8
+    },
+    {
+      "name": "core_shape_parameters_shape",
+      "op": "reshape",
+      "inputs": [
+        "core_shape_parameters_pairs"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "core_shape_parameters_norm",
+      "op": "norm",
+      "inputs": [
+        "core_shape_parameters_shape"
+      ]
+    },
+    {
+      "name": "core_shape_parameters",
+      "op": "dense",
+      "inputs": [
+        "core_shape_parameters_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "core_shape_summary_part0",
+      "op": "dense",
+      "inputs": [
+        "core_shape_parameters"
+      ],
+      "out": 4
+    },
+    {
+      "name": "core_shape_summary_part1",
+      "op": "dense",
+      "inputs": [
+        "core_shape_best_match"
+      ],
+      "out": 4
+    },
+    {
+      "name": "core_shape_summary",
+      "op": "add",
+      "inputs": [
+        "core_shape_summary_part0",
+        "core_shape_summary_part1"
+      ]
+    },
+    {
+      "name": "red_blue_sky_subtraction",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted_rgb"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "red_blue_light",
+      "op": "relu",
+      "inputs": [
+        "red_blue_sky_subtraction"
+      ]
+    },
+    {
+      "name": "colour_integrals",
+      "op": "dense",
+      "inputs": [
+        "red_blue_light"
+      ],
+      "out": 6
+    },
+    {
+      "name": "colour_indices_pairs",
+      "op": "dense",
+      "inputs": [
+        "colour_integrals"
+      ],
+      "out": 12
+    },
+    {
+      "name": "colour_indices_shape",
+      "op": "reshape",
+      "inputs": [
+        "colour_indices_pairs"
+      ],
+      "shape": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "colour_indices_norm",
+      "op": "norm",
+      "inputs": [
+        "colour_indices_shape"
+      ]
+    },
+    {
+      "name": "colour_indices",
+      "op": "dense",
+      "inputs": [
+        "colour_indices_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "symmetry_smoothing",
+      "op": "conv",
+      "inputs": [
+        "compressed_light"
+      ],
+      "out": 1,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "rotated_differences",
+      "op": "dense",
+      "inputs": [
+        "symmetry_smoothing"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "absolute_rotation_residuals",
+      "op": "relu",
+      "inputs": [
+        "rotated_differences"
+      ]
+    },
+    {
+      "name": "negative_asymmetry_integrals",
+      "op": "dense",
+      "inputs": [
+        "absolute_rotation_residuals"
+      ],
+      "out": 15
+    },
+    {
+      "name": "asymmetry_offset_grid",
+      "op": "reshape",
+      "inputs": [
+        "negative_asymmetry_integrals"
+      ],
+      "shape": [
+        3,
+        1,
+        5
+      ]
+    },
+    {
+      "name": "minimum_offset_asymmetry",
+      "op": "maxpool",
+      "inputs": [
+        "asymmetry_offset_grid"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "aperture_fluxes",
+      "op": "dense",
+      "inputs": [
+        "symmetry_smoothing"
+      ],
+      "out": 3
+    },
+    {
+      "name": "asymmetry_flux_part0",
+      "op": "dense",
+      "inputs": [
+        "aperture_fluxes"
+      ],
+      "out": 6
+    },
+    {
+      "name": "asymmetry_flux_part1",
+      "op": "dense",
+      "inputs": [
+        "minimum_offset_asymmetry"
+      ],
+      "out": 6
+    },
+    {
+      "name": "asymmetry_flux",
+      "op": "add",
+      "inputs": [
+        "asymmetry_flux_part0",
+        "asymmetry_flux_part1"
+      ]
+    },
+    {
+      "name": "negative_asymmetry_pairs",
+      "op": "dense",
+      "inputs": [
+        "asymmetry_flux"
+      ],
+      "out": 12
+    },
+    {
+      "name": "negative_asymmetry_shape",
+      "op": "reshape",
+      "inputs": [
+        "negative_asymmetry_pairs"
+      ],
+      "shape": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "negative_asymmetry_norm",
+      "op": "norm",
+      "inputs": [
+        "negative_asymmetry_shape"
+      ]
+    },
+    {
+      "name": "negative_asymmetry",
+      "op": "dense",
+      "inputs": [
+        "negative_asymmetry_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "asymmetry",
+      "op": "dense",
+      "inputs": [
+        "negative_asymmetry"
+      ],
+      "out": 3
+    },
+    {
+      "name": "small_scale_residual",
+      "op": "conv",
+      "inputs": [
+        "compressed_light"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "positive_small_scale_residual",
+      "op": "relu",
+      "inputs": [
+        "small_scale_residual"
+      ]
+    },
+    {
+      "name": "texture_integrals",
+      "op": "dense",
+      "inputs": [
+        "positive_small_scale_residual"
+      ],
+      "out": 3
+    },
+    {
+      "name": "texture_flux_part0",
+      "op": "dense",
+      "inputs": [
+        "aperture_fluxes"
+      ],
+      "out": 6
+    },
+    {
+      "name": "texture_flux_part1",
+      "op": "dense",
+      "inputs": [
+        "texture_integrals"
+      ],
+      "out": 6
+    },
+    {
+      "name": "texture_flux",
+      "op": "add",
+      "inputs": [
+        "texture_flux_part0",
+        "texture_flux_part1"
+      ]
+    },
+    {
+      "name": "texture_fraction_pairs",
+      "op": "dense",
+      "inputs": [
+        "texture_flux"
+      ],
+      "out": 12
+    },
+    {
+      "name": "texture_fraction_shape",
+      "op": "reshape",
+      "inputs": [
+        "texture_fraction_pairs"
+      ],
+      "shape": [
+        3,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "texture_fraction_norm",
+      "op": "norm",
+      "inputs": [
+        "texture_fraction_shape"
+      ]
+    },
+    {
+      "name": "texture_fraction",
+      "op": "dense",
+      "inputs": [
+        "texture_fraction_norm"
+      ],
+      "out": 3
+    },
+    {
+      "name": "quadrupole_integrals",
+      "op": "dense",
+      "inputs": [
+        "positive_light"
+      ],
+      "out": 12
+    },
+    {
+      "name": "quadrupole_components_pairs",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_integrals"
+      ],
+      "out": 24
+    },
+    {
+      "name": "quadrupole_components_shape",
+      "op": "reshape",
+      "inputs": [
+        "quadrupole_components_pairs"
+      ],
+      "shape": [
+        4,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "quadrupole_components_norm",
+      "op": "norm",
+      "inputs": [
+        "quadrupole_components_shape"
+      ]
+    },
+    {
+      "name": "quadrupole_components",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_components_norm"
+      ],
+      "out": 8
+    },
+    {
+      "name": "quadrupole_directions",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_components"
+      ],
+      "out": 64
+    },
+    {
+      "name": "quadrupole_direction_grid",
+      "op": "reshape",
+      "inputs": [
+        "quadrupole_directions"
+      ],
+      "shape": [
+        4,
+        1,
+        16
+      ]
+    },
+    {
+      "name": "ellipticity_moments",
+      "op": "maxpool",
+      "inputs": [
+        "quadrupole_direction_grid"
+      ],
+      "size": [
+        1,
+        16
+      ],
+      "stride": [
+        1,
+        16
+      ]
+    },
+    {
+      "name": "radial_orientation_difference",
+      "op": "dense",
+      "inputs": [
+        "quadrupole_components"
+      ],
+      "out": 16
+    },
+    {
+      "name": "radial_orientation_grid",
+      "op": "reshape",
+      "inputs": [
+        "radial_orientation_difference"
+      ],
+      "shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "name": "radial_incoherence",
+      "op": "maxpool",
+      "inputs": [
+        "radial_orientation_grid"
+      ],
+      "size": [
+        1,
+        16
+      ],
+      "stride": [
+        1,
+        16
+      ]
+    },
+    {
+      "name": "bar_disk_projections",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_contrast"
+      ],
+      "out": 864
+    },
+    {
+      "name": "bar_disk_grid",
+      "op": "reshape",
+      "inputs": [
+        "bar_disk_projections"
+      ],
+      "shape": [
+        1,
+        1,
+        864
+      ]
+    },
+    {
+      "name": "bar_disk_match",
+      "op": "maxpool",
+      "inputs": [
+        "bar_disk_grid"
+      ],
+      "size": [
+        1,
+        864
+      ],
+      "stride": [
+        1,
+        864
+      ]
+    },
+    {
+      "name": "double_nucleus_projections",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_contrast"
+      ],
+      "out": 576
+    },
+    {
+      "name": "double_nucleus_grid",
+      "op": "reshape",
+      "inputs": [
+        "double_nucleus_projections"
+      ],
+      "shape": [
+        1,
+        1,
+        576
+      ]
+    },
+    {
+      "name": "double_nucleus_match",
+      "op": "maxpool",
+      "inputs": [
+        "double_nucleus_grid"
+      ],
+      "size": [
+        1,
+        576
+      ],
+      "stride": [
+        1,
+        576
+      ]
+    },
+    {
+      "name": "logarithmic_spiral_projections",
+      "op": "dense",
+      "inputs": [
+        "positive_light"
+      ],
+      "out": 128
+    },
+    {
+      "name": "spiral_phase_grid",
+      "op": "reshape",
+      "inputs": [
+        "logarithmic_spiral_projections"
+      ],
+      "shape": [
+        8,
+        1,
+        16
+      ]
+    },
+    {
+      "name": "spiral_phase_maximum",
+      "op": "maxpool",
+      "inputs": [
+        "spiral_phase_grid"
+      ],
+      "size": [
+        1,
+        16
+      ],
+      "stride": [
+        1,
+        16
+      ]
+    },
+    {
+      "name": "spiral_annular_flux",
+      "op": "dense",
+      "inputs": [
+        "positive_light"
+      ],
+      "out": 8
+    },
+    {
+      "name": "spiral_flux_and_response_part0",
+      "op": "dense",
+      "inputs": [
+        "spiral_annular_flux"
+      ],
+      "out": 16
+    },
+    {
+      "name": "spiral_flux_and_response_part1",
+      "op": "dense",
+      "inputs": [
+        "spiral_phase_maximum"
+      ],
+      "out": 16
+    },
+    {
+      "name": "spiral_flux_and_response",
+      "op": "add",
+      "inputs": [
+        "spiral_flux_and_response_part0",
+        "spiral_flux_and_response_part1"
+      ]
+    },
+    {
+      "name": "spiral_contrast_pairs",
+      "op": "dense",
+      "inputs": [
+        "spiral_flux_and_response"
+      ],
+      "out": 32
+    },
+    {
+      "name": "spiral_contrast_shape",
+      "op": "reshape",
+      "inputs": [
+        "spiral_contrast_pairs"
+      ],
+      "shape": [
+        8,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "spiral_contrast_norm",
+      "op": "norm",
+      "inputs": [
+        "spiral_contrast_shape"
+      ]
+    },
+    {
+      "name": "spiral_contrast",
+      "op": "dense",
+      "inputs": [
+        "spiral_contrast_norm"
+      ],
+      "out": 8
+    },
+    {
+      "name": "spiral_scale_grid",
+      "op": "reshape",
+      "inputs": [
+        "spiral_contrast"
+      ],
+      "shape": [
+        2,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "spiral_pitch_responses",
+      "op": "maxpool",
+      "inputs": [
+        "spiral_scale_grid"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "morphology_part0",
+      "op": "dense",
+      "inputs": [
+        "outer_shape_summary"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part1",
+      "op": "dense",
+      "inputs": [
+        "core_shape_summary"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part2",
+      "op": "dense",
+      "inputs": [
+        "colour_indices"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part3",
+      "op": "dense",
+      "inputs": [
+        "asymmetry"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part4",
+      "op": "dense",
+      "inputs": [
+        "texture_fraction"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part5",
+      "op": "dense",
+      "inputs": [
+        "ellipticity_moments"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part6",
+      "op": "dense",
+      "inputs": [
+        "double_nucleus_match"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part7",
+      "op": "dense",
+      "inputs": [
+        "spiral_pitch_responses"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part8",
+      "op": "dense",
+      "inputs": [
+        "bar_disk_match"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology_part9",
+      "op": "dense",
+      "inputs": [
+        "radial_incoherence"
+      ],
+      "out": 26
+    },
+    {
+      "name": "morphology",
+      "op": "add",
+      "inputs": [
+        "morphology_part0",
+        "morphology_part1",
+        "morphology_part2",
+        "morphology_part3",
+        "morphology_part4",
+        "morphology_part5",
+        "morphology_part6",
+        "morphology_part7",
+        "morphology_part8",
+        "morphology_part9"
+      ]
+    },
+    {
+      "name": "rule_thresholds",
+      "op": "dense",
+      "inputs": [
+        "morphology"
+      ],
+      "out": 22
+    },
+    {
+      "name": "rule_hinges",
+      "op": "relu",
+      "inputs": [
+        "rule_thresholds"
+      ]
+    },
+    {
+      "name": "features_and_rules_part0",
+      "op": "dense",
+      "inputs": [
+        "morphology"
+      ],
+      "out": 48
+    },
+    {
+      "name": "features_and_rules_part1",
+      "op": "dense",
+      "inputs": [
+        "rule_hinges"
+      ],
+      "out": 48
+    },
+    {
+      "name": "features_and_rules",
+      "op": "add",
+      "inputs": [
+        "features_and_rules_part0",
+        "features_and_rules_part1"
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "features_and_rules"
+      ],
+      "out": 10
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# Method
+
+This is a fixed, hand-designed 63-layer network with 19,561,613 float32 weight entries. It combines soft RGB color predicates, border-safe oriented derivatives, fine-texture measurements, and contrast-normalized comparisons against geometric object models made from ellipses, polygons, and line segments. The models encode generic wings, vehicle bodies and wheels, bird and animal anatomy, faces, frogs, and ship hulls; pooling allows predefined changes in scale, position, reflection, pose, and contrast polarity. Additional branches require conjunctions of local parts, compare foreground and surrounding materials, and apply manually written scene rules.
+
+Every weight is computed by `build.py` from explicit formulas and hand-chosen semantic constants. The script reads no data or other input files, uses no learned model, and performs no optimization, statistical fitting, image copying, or feature-bank construction from photographs. A training-image montage was viewed for qualitative inspection; the five authorized checks were used to diagnose the design, including a zero-padding boundary artifact, without deriving numerical weights from image or label statistics.
+
+The weights were frozen before check 5, which obtained **23.86% accuracy on a separate fixed slice of 10,000 training images** (indices 5000 through 14999), corresponding to the specified chance-adjusted score of **0.1540** on that check only. This is not the hidden test accuracy, and neither comparison system was available for evaluation; no claim of beating them is made.

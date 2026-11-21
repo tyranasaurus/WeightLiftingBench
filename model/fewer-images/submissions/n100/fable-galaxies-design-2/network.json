@@ -1,0 +1,83 @@
+{
+ "layers": [
+  {
+   "name": "lum",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half",
+   "op": "avgpool",
+   "inputs": [
+    "lum"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "half"
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "dense",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 3240
+  },
+  {
+   "name": "grp",
+   "op": "reshape",
+   "inputs": [
+    "tm"
+   ],
+   "shape": [
+    10,
+    324,
+    1
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "grp"
+   ],
+   "size": [
+    324,
+    1
+   ],
+   "stride": [
+    324,
+    1
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "best"
+   ],
+   "out": 10
+  }
+ ]
+}

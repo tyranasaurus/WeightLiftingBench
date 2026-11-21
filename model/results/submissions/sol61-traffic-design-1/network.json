@@ -1,0 +1,330 @@
+{
+  "layers": [
+    {
+      "name": "rgb_sheet",
+      "op": "reshape",
+      "inputs": [
+        "image"
+      ],
+      "shape": [
+        1,
+        96,
+        32
+      ]
+    },
+    {
+      "name": "illumination",
+      "op": "norm",
+      "inputs": [
+        "rgb_sheet"
+      ]
+    },
+    {
+      "name": "rgb",
+      "op": "reshape",
+      "inputs": [
+        "illumination"
+      ],
+      "shape": [
+        3,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "thresholds",
+      "op": "conv",
+      "inputs": [
+        "rgb"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "hinges",
+      "op": "relu",
+      "inputs": [
+        "thresholds"
+      ]
+    },
+    {
+      "name": "features",
+      "op": "conv",
+      "inputs": [
+        "hinges"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "cropped_features",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "dark",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "nearby_dark",
+      "op": "maxpool",
+      "inputs": [
+        "dark"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "ink_channel",
+      "op": "conv",
+      "inputs": [
+        "nearby_dark"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "base_descriptor",
+      "op": "add",
+      "inputs": [
+        "cropped_features",
+        "ink_channel"
+      ]
+    },
+    {
+      "name": "directions",
+      "op": "conv",
+      "inputs": [
+        "features"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "positive_directions",
+      "op": "relu",
+      "inputs": [
+        "directions"
+      ]
+    },
+    {
+      "name": "integrated_edges",
+      "op": "conv",
+      "inputs": [
+        "positive_directions"
+      ],
+      "out": 13,
+      "kernel": [
+        3,
+        3
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "appearance_channels",
+      "op": "conv",
+      "inputs": [
+        "base_descriptor"
+      ],
+      "out": 13,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "descriptor",
+      "op": "add",
+      "inputs": [
+        "appearance_channels",
+        "integrated_edges"
+      ]
+    },
+    {
+      "name": "family_matches",
+      "op": "conv",
+      "inputs": [
+        "descriptor"
+      ],
+      "out": 144,
+      "kernel": [
+        28,
+        28
+      ],
+      "padding": 3,
+      "stride": 1
+    },
+    {
+      "name": "family_positions",
+      "op": "maxpool",
+      "inputs": [
+        "family_matches"
+      ],
+      "size": [
+        9,
+        9
+      ],
+      "stride": [
+        9,
+        9
+      ]
+    },
+    {
+      "name": "family_geometry",
+      "op": "reshape",
+      "inputs": [
+        "family_positions"
+      ],
+      "shape": [
+        8,
+        18,
+        1
+      ]
+    },
+    {
+      "name": "family_best",
+      "op": "maxpool",
+      "inputs": [
+        "family_geometry"
+      ],
+      "size": [
+        18,
+        1
+      ],
+      "stride": [
+        18,
+        1
+      ]
+    },
+    {
+      "name": "family_scores",
+      "op": "dense",
+      "inputs": [
+        "family_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "geometric_matches",
+      "op": "conv",
+      "inputs": [
+        "descriptor"
+      ],
+      "out": 3870,
+      "kernel": [
+        28,
+        28
+      ],
+      "padding": 3,
+      "stride": 1
+    },
+    {
+      "name": "translation_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "geometric_matches"
+      ],
+      "size": [
+        9,
+        9
+      ],
+      "stride": [
+        9,
+        9
+      ]
+    },
+    {
+      "name": "class_variants",
+      "op": "reshape",
+      "inputs": [
+        "translation_invariance"
+      ],
+      "shape": [
+        43,
+        90,
+        1
+      ]
+    },
+    {
+      "name": "artwork_invariance",
+      "op": "maxpool",
+      "inputs": [
+        "class_variants"
+      ],
+      "size": [
+        90,
+        1
+      ],
+      "stride": [
+        90,
+        1
+      ]
+    },
+    {
+      "name": "artwork_scores",
+      "op": "reshape",
+      "inputs": [
+        "artwork_invariance"
+      ],
+      "shape": [
+        43
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "artwork_scores",
+        "family_scores"
+      ]
+    }
+  ]
+}

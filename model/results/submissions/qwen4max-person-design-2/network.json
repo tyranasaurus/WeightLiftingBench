@@ -1,0 +1,3723 @@
+{
+ "layers": [
+  {
+   "name": "cA",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rA",
+   "op": "relu",
+   "inputs": [
+    "cA"
+   ]
+  },
+  {
+   "name": "cB",
+   "op": "conv",
+   "inputs": [
+    "rA"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rB",
+   "op": "relu",
+   "inputs": [
+    "cB"
+   ]
+  },
+  {
+   "name": "cC",
+   "op": "conv",
+   "inputs": [
+    "rB"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sk48",
+   "op": "avgpool",
+   "inputs": [
+    "cC"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sk24",
+   "op": "avgpool",
+   "inputs": [
+    "sk48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sk12",
+   "op": "avgpool",
+   "inputs": [
+    "sk24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "rgb24",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "rgb48",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "s48",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "w48",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "y48",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "s24",
+   "op": "avgpool",
+   "inputs": [
+    "s48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "lap",
+   "op": "conv",
+   "inputs": [
+    "y48"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rlap",
+   "op": "relu",
+   "inputs": [
+    "lap"
+   ]
+  },
+  {
+   "name": "tex48",
+   "op": "conv",
+   "inputs": [
+    "rlap"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tex24",
+   "op": "avgpool",
+   "inputs": [
+    "tex48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "txp",
+   "op": "conv",
+   "inputs": [
+    "tex48"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "txpr",
+   "op": "relu",
+   "inputs": [
+    "txp"
+   ]
+  },
+  {
+   "name": "txn48",
+   "op": "conv",
+   "inputs": [
+    "txpr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "txn24",
+   "op": "avgpool",
+   "inputs": [
+    "txn48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ntxn",
+   "op": "conv",
+   "inputs": [
+    "txn48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "csp",
+   "op": "add",
+   "inputs": [
+    "s48",
+    "ntxn"
+   ]
+  },
+  {
+   "name": "cs48",
+   "op": "relu",
+   "inputs": [
+    "csp"
+   ]
+  },
+  {
+   "name": "cs24",
+   "op": "avgpool",
+   "inputs": [
+    "cs48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "cs12",
+   "op": "avgpool",
+   "inputs": [
+    "cs24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ptxn",
+   "op": "conv",
+   "inputs": [
+    "txn48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fdp",
+   "op": "add",
+   "inputs": [
+    "w48",
+    "ptxn"
+   ]
+  },
+  {
+   "name": "fd48",
+   "op": "relu",
+   "inputs": [
+    "fdp"
+   ]
+  },
+  {
+   "name": "fd24",
+   "op": "avgpool",
+   "inputs": [
+    "fd48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "fd12",
+   "op": "avgpool",
+   "inputs": [
+    "fd24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "mbase",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mtex",
+   "op": "conv",
+   "inputs": [
+    "tex48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m48",
+   "op": "add",
+   "inputs": [
+    "mbase",
+    "mtex"
+   ]
+  },
+  {
+   "name": "m24",
+   "op": "avgpool",
+   "inputs": [
+    "m48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "m12",
+   "op": "avgpool",
+   "inputs": [
+    "m24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "gp48",
+   "op": "conv",
+   "inputs": [
+    "y48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gp48r",
+   "op": "relu",
+   "inputs": [
+    "gp48"
+   ]
+  },
+  {
+   "name": "gn48",
+   "op": "conv",
+   "inputs": [
+    "y48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gn48r",
+   "op": "relu",
+   "inputs": [
+    "gn48"
+   ]
+  },
+  {
+   "name": "gma",
+   "op": "conv",
+   "inputs": [
+    "gp48r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gmb",
+   "op": "conv",
+   "inputs": [
+    "gn48r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gm48",
+   "op": "add",
+   "inputs": [
+    "gma",
+    "gmb"
+   ]
+  },
+  {
+   "name": "gm24",
+   "op": "avgpool",
+   "inputs": [
+    "gm48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "gm12",
+   "op": "avgpool",
+   "inputs": [
+    "gm24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "k48a",
+   "op": "conv",
+   "inputs": [
+    "rgb48"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "k48ar",
+   "op": "relu",
+   "inputs": [
+    "k48a"
+   ]
+  },
+  {
+   "name": "k48b",
+   "op": "conv",
+   "inputs": [
+    "k48ar"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "k48br",
+   "op": "relu",
+   "inputs": [
+    "k48b"
+   ]
+  },
+  {
+   "name": "kw48",
+   "op": "conv",
+   "inputs": [
+    "k48br"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vg48",
+   "op": "conv",
+   "inputs": [
+    "kw48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "wh48",
+   "op": "conv",
+   "inputs": [
+    "kw48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vg24",
+   "op": "avgpool",
+   "inputs": [
+    "vg48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "vg12",
+   "op": "avgpool",
+   "inputs": [
+    "vg24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "wh24",
+   "op": "avgpool",
+   "inputs": [
+    "wh48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "wh12",
+   "op": "avgpool",
+   "inputs": [
+    "wh24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sob",
+   "op": "conv",
+   "inputs": [
+    "y48"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "rsob",
+   "op": "relu",
+   "inputs": [
+    "sob"
+   ]
+  },
+  {
+   "name": "ex48",
+   "op": "conv",
+   "inputs": [
+    "rsob"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ey48",
+   "op": "conv",
+   "inputs": [
+    "rsob"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ex24",
+   "op": "avgpool",
+   "inputs": [
+    "ex48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ey24",
+   "op": "avgpool",
+   "inputs": [
+    "ey48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "dk48",
+   "op": "conv",
+   "inputs": [
+    "sk48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tx3",
+   "op": "conv",
+   "inputs": [
+    "tex48"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dn48",
+   "op": "add",
+   "inputs": [
+    "dk48",
+    "tx3"
+   ]
+  },
+  {
+   "name": "fma",
+   "op": "conv",
+   "inputs": [
+    "cs48"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fmb",
+   "op": "conv",
+   "inputs": [
+    "dn48"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fm48",
+   "op": "add",
+   "inputs": [
+    "fma",
+    "fmb"
+   ]
+  },
+  {
+   "name": "fm24",
+   "op": "avgpool",
+   "inputs": [
+    "fm48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "fm12",
+   "op": "avgpool",
+   "inputs": [
+    "fm24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "faa",
+   "op": "conv",
+   "inputs": [
+    "fd48"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fab",
+   "op": "conv",
+   "inputs": [
+    "dn48"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fa48",
+   "op": "add",
+   "inputs": [
+    "faa",
+    "fab"
+   ]
+  },
+  {
+   "name": "fa24",
+   "op": "avgpool",
+   "inputs": [
+    "fa48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "fa12",
+   "op": "avgpool",
+   "inputs": [
+    "fa24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "Bcs_48",
+   "op": "conv",
+   "inputs": [
+    "cs48"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bcs_48r",
+   "op": "relu",
+   "inputs": [
+    "Bcs_48"
+   ]
+  },
+  {
+   "name": "Bcs_24",
+   "op": "conv",
+   "inputs": [
+    "cs24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bcs_24r",
+   "op": "relu",
+   "inputs": [
+    "Bcs_24"
+   ]
+  },
+  {
+   "name": "Bcs_12",
+   "op": "conv",
+   "inputs": [
+    "cs12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bcs_12r",
+   "op": "relu",
+   "inputs": [
+    "Bcs_12"
+   ]
+  },
+  {
+   "name": "Bfd_48",
+   "op": "conv",
+   "inputs": [
+    "fd48"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bfd_48r",
+   "op": "relu",
+   "inputs": [
+    "Bfd_48"
+   ]
+  },
+  {
+   "name": "Bfd_24",
+   "op": "conv",
+   "inputs": [
+    "fd24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bfd_24r",
+   "op": "relu",
+   "inputs": [
+    "Bfd_24"
+   ]
+  },
+  {
+   "name": "Bfd_12",
+   "op": "conv",
+   "inputs": [
+    "fd12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bfd_12r",
+   "op": "relu",
+   "inputs": [
+    "Bfd_12"
+   ]
+  },
+  {
+   "name": "Bvg_48",
+   "op": "conv",
+   "inputs": [
+    "vg48"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bvg_48r",
+   "op": "relu",
+   "inputs": [
+    "Bvg_48"
+   ]
+  },
+  {
+   "name": "Bvg_24",
+   "op": "conv",
+   "inputs": [
+    "vg24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bvg_24r",
+   "op": "relu",
+   "inputs": [
+    "Bvg_24"
+   ]
+  },
+  {
+   "name": "Bvg_12",
+   "op": "conv",
+   "inputs": [
+    "vg12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bvg_12r",
+   "op": "relu",
+   "inputs": [
+    "Bvg_12"
+   ]
+  },
+  {
+   "name": "Bwh_48",
+   "op": "conv",
+   "inputs": [
+    "wh48"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bwh_48r",
+   "op": "relu",
+   "inputs": [
+    "Bwh_48"
+   ]
+  },
+  {
+   "name": "Bwh_24",
+   "op": "conv",
+   "inputs": [
+    "wh24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bwh_24r",
+   "op": "relu",
+   "inputs": [
+    "Bwh_24"
+   ]
+  },
+  {
+   "name": "Bwh_12",
+   "op": "conv",
+   "inputs": [
+    "wh12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "Bwh_12r",
+   "op": "relu",
+   "inputs": [
+    "Bwh_12"
+   ]
+  },
+  {
+   "name": "Bcs_48s",
+   "op": "conv",
+   "inputs": [
+    "cs48"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "Bcs_48sr",
+   "op": "relu",
+   "inputs": [
+    "Bcs_48s"
+   ]
+  },
+  {
+   "name": "F_48",
+   "op": "conv",
+   "inputs": [
+    "fm48"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "F_48r",
+   "op": "relu",
+   "inputs": [
+    "F_48"
+   ]
+  },
+  {
+   "name": "F_24",
+   "op": "conv",
+   "inputs": [
+    "fm24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "F_24r",
+   "op": "relu",
+   "inputs": [
+    "F_24"
+   ]
+  },
+  {
+   "name": "F_24b",
+   "op": "conv",
+   "inputs": [
+    "fm24"
+   ],
+   "out": 1,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "F_24br",
+   "op": "relu",
+   "inputs": [
+    "F_24b"
+   ]
+  },
+  {
+   "name": "F_12",
+   "op": "conv",
+   "inputs": [
+    "fm12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "F_12r",
+   "op": "relu",
+   "inputs": [
+    "F_12"
+   ]
+  },
+  {
+   "name": "F_12b",
+   "op": "conv",
+   "inputs": [
+    "fm12"
+   ],
+   "out": 1,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "F_12br",
+   "op": "relu",
+   "inputs": [
+    "F_12b"
+   ]
+  },
+  {
+   "name": "H_24",
+   "op": "conv",
+   "inputs": [
+    "fm24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "H_24r",
+   "op": "relu",
+   "inputs": [
+    "H_24"
+   ]
+  },
+  {
+   "name": "G_24",
+   "op": "conv",
+   "inputs": [
+    "gm24"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "G_24r",
+   "op": "relu",
+   "inputs": [
+    "G_24"
+   ]
+  },
+  {
+   "name": "G_12",
+   "op": "conv",
+   "inputs": [
+    "gm12"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "G_12r",
+   "op": "relu",
+   "inputs": [
+    "G_12"
+   ]
+  },
+  {
+   "name": "scA",
+   "op": "conv",
+   "inputs": [
+    "rgb24"
+   ],
+   "out": 11,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rscA",
+   "op": "relu",
+   "inputs": [
+    "scA"
+   ]
+  },
+  {
+   "name": "scB",
+   "op": "conv",
+   "inputs": [
+    "rscA"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rscB",
+   "op": "relu",
+   "inputs": [
+    "scB"
+   ]
+  },
+  {
+   "name": "scene",
+   "op": "conv",
+   "inputs": [
+    "rscB"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_48r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bcs_48r_p",
+   "op": "conv",
+   "inputs": [
+    "Bcs_48r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_48r_n",
+   "op": "norm",
+   "inputs": [
+    "Bcs_48r"
+   ]
+  },
+  {
+   "name": "Bcs_48r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_48r_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bcs_48r_q",
+   "op": "conv",
+   "inputs": [
+    "Bcs_48r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bcs_24r_p",
+   "op": "conv",
+   "inputs": [
+    "Bcs_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_24r_n",
+   "op": "norm",
+   "inputs": [
+    "Bcs_24r"
+   ]
+  },
+  {
+   "name": "Bcs_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bcs_24r_q",
+   "op": "conv",
+   "inputs": [
+    "Bcs_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bcs_12r_p",
+   "op": "conv",
+   "inputs": [
+    "Bcs_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_12r_n",
+   "op": "norm",
+   "inputs": [
+    "Bcs_12r"
+   ]
+  },
+  {
+   "name": "Bcs_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bcs_12r_q",
+   "op": "conv",
+   "inputs": [
+    "Bcs_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_48sr_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_48sr"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bcs_48sr_p",
+   "op": "conv",
+   "inputs": [
+    "Bcs_48sr_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_48sr_n",
+   "op": "norm",
+   "inputs": [
+    "Bcs_48sr"
+   ]
+  },
+  {
+   "name": "Bcs_48sr_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bcs_48sr_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bcs_48sr_q",
+   "op": "conv",
+   "inputs": [
+    "Bcs_48sr_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_48r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bfd_48r_p",
+   "op": "conv",
+   "inputs": [
+    "Bfd_48r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_48r_n",
+   "op": "norm",
+   "inputs": [
+    "Bfd_48r"
+   ]
+  },
+  {
+   "name": "Bfd_48r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_48r_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bfd_48r_q",
+   "op": "conv",
+   "inputs": [
+    "Bfd_48r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bfd_24r_p",
+   "op": "conv",
+   "inputs": [
+    "Bfd_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_24r_n",
+   "op": "norm",
+   "inputs": [
+    "Bfd_24r"
+   ]
+  },
+  {
+   "name": "Bfd_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bfd_24r_q",
+   "op": "conv",
+   "inputs": [
+    "Bfd_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bfd_12r_p",
+   "op": "conv",
+   "inputs": [
+    "Bfd_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_12r_n",
+   "op": "norm",
+   "inputs": [
+    "Bfd_12r"
+   ]
+  },
+  {
+   "name": "Bfd_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bfd_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bfd_12r_q",
+   "op": "conv",
+   "inputs": [
+    "Bfd_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_48r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bvg_48r_p",
+   "op": "conv",
+   "inputs": [
+    "Bvg_48r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_48r_n",
+   "op": "norm",
+   "inputs": [
+    "Bvg_48r"
+   ]
+  },
+  {
+   "name": "Bvg_48r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_48r_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bvg_48r_q",
+   "op": "conv",
+   "inputs": [
+    "Bvg_48r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bvg_24r_p",
+   "op": "conv",
+   "inputs": [
+    "Bvg_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_24r_n",
+   "op": "norm",
+   "inputs": [
+    "Bvg_24r"
+   ]
+  },
+  {
+   "name": "Bvg_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bvg_24r_q",
+   "op": "conv",
+   "inputs": [
+    "Bvg_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bvg_12r_p",
+   "op": "conv",
+   "inputs": [
+    "Bvg_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bvg_12r_n",
+   "op": "norm",
+   "inputs": [
+    "Bvg_12r"
+   ]
+  },
+  {
+   "name": "Bvg_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bvg_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bvg_12r_q",
+   "op": "conv",
+   "inputs": [
+    "Bvg_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_48r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bwh_48r_p",
+   "op": "conv",
+   "inputs": [
+    "Bwh_48r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_48r_n",
+   "op": "norm",
+   "inputs": [
+    "Bwh_48r"
+   ]
+  },
+  {
+   "name": "Bwh_48r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_48r_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "Bwh_48r_q",
+   "op": "conv",
+   "inputs": [
+    "Bwh_48r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bwh_24r_p",
+   "op": "conv",
+   "inputs": [
+    "Bwh_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_24r_n",
+   "op": "norm",
+   "inputs": [
+    "Bwh_24r"
+   ]
+  },
+  {
+   "name": "Bwh_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bwh_24r_q",
+   "op": "conv",
+   "inputs": [
+    "Bwh_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bwh_12r_p",
+   "op": "conv",
+   "inputs": [
+    "Bwh_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bwh_12r_n",
+   "op": "norm",
+   "inputs": [
+    "Bwh_12r"
+   ]
+  },
+  {
+   "name": "Bwh_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "Bwh_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Bwh_12r_q",
+   "op": "conv",
+   "inputs": [
+    "Bwh_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_48r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "F_48r"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "F_48r_p",
+   "op": "conv",
+   "inputs": [
+    "F_48r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_48r_n",
+   "op": "norm",
+   "inputs": [
+    "F_48r"
+   ]
+  },
+  {
+   "name": "F_48r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "F_48r_n"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "F_48r_q",
+   "op": "conv",
+   "inputs": [
+    "F_48r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "F_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "F_24r_p",
+   "op": "conv",
+   "inputs": [
+    "F_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_24r_n",
+   "op": "norm",
+   "inputs": [
+    "F_24r"
+   ]
+  },
+  {
+   "name": "F_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "F_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "F_24r_q",
+   "op": "conv",
+   "inputs": [
+    "F_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_24br_mx",
+   "op": "maxpool",
+   "inputs": [
+    "F_24br"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "F_24br_p",
+   "op": "conv",
+   "inputs": [
+    "F_24br_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_24br_n",
+   "op": "norm",
+   "inputs": [
+    "F_24br"
+   ]
+  },
+  {
+   "name": "F_24br_mz",
+   "op": "maxpool",
+   "inputs": [
+    "F_24br_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "F_24br_q",
+   "op": "conv",
+   "inputs": [
+    "F_24br_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "F_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "F_12r_p",
+   "op": "conv",
+   "inputs": [
+    "F_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_12r_n",
+   "op": "norm",
+   "inputs": [
+    "F_12r"
+   ]
+  },
+  {
+   "name": "F_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "F_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "F_12r_q",
+   "op": "conv",
+   "inputs": [
+    "F_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_12br_mx",
+   "op": "maxpool",
+   "inputs": [
+    "F_12br"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "F_12br_p",
+   "op": "conv",
+   "inputs": [
+    "F_12br_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_12br_n",
+   "op": "norm",
+   "inputs": [
+    "F_12br"
+   ]
+  },
+  {
+   "name": "F_12br_mz",
+   "op": "maxpool",
+   "inputs": [
+    "F_12br_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "F_12br_q",
+   "op": "conv",
+   "inputs": [
+    "F_12br_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "H_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "H_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "H_24r_p",
+   "op": "conv",
+   "inputs": [
+    "H_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "H_24r_n",
+   "op": "norm",
+   "inputs": [
+    "H_24r"
+   ]
+  },
+  {
+   "name": "H_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "H_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "H_24r_q",
+   "op": "conv",
+   "inputs": [
+    "H_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "G_24r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "G_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "G_24r_p",
+   "op": "conv",
+   "inputs": [
+    "G_24r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "G_24r_n",
+   "op": "norm",
+   "inputs": [
+    "G_24r"
+   ]
+  },
+  {
+   "name": "G_24r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "G_24r_n"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "G_24r_q",
+   "op": "conv",
+   "inputs": [
+    "G_24r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "G_12r_mx",
+   "op": "maxpool",
+   "inputs": [
+    "G_12r"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "G_12r_p",
+   "op": "conv",
+   "inputs": [
+    "G_12r_mx"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "G_12r_n",
+   "op": "norm",
+   "inputs": [
+    "G_12r"
+   ]
+  },
+  {
+   "name": "G_12r_mz",
+   "op": "maxpool",
+   "inputs": [
+    "G_12r_n"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "G_12r_q",
+   "op": "conv",
+   "inputs": [
+    "G_12r_mz"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bcs_24r_av",
+   "op": "avgpool",
+   "inputs": [
+    "Bcs_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bcs_24r_meanp",
+   "op": "conv",
+   "inputs": [
+    "Bcs_24r_av"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "Bfd_24r_av",
+   "op": "avgpool",
+   "inputs": [
+    "Bfd_24r"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "Bfd_24r_meanp",
+   "op": "conv",
+   "inputs": [
+    "Bfd_24r_av"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cs24_g",
+   "op": "avgpool",
+   "inputs": [
+    "cs24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_cs24",
+   "op": "conv",
+   "inputs": [
+    "cs24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fd24_g",
+   "op": "avgpool",
+   "inputs": [
+    "fd24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_fd24",
+   "op": "conv",
+   "inputs": [
+    "fd24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vg24_g",
+   "op": "avgpool",
+   "inputs": [
+    "vg24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_vg24",
+   "op": "conv",
+   "inputs": [
+    "vg24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "wh24_g",
+   "op": "avgpool",
+   "inputs": [
+    "wh24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_wh24",
+   "op": "conv",
+   "inputs": [
+    "wh24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "s24_g",
+   "op": "avgpool",
+   "inputs": [
+    "s24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_s24",
+   "op": "conv",
+   "inputs": [
+    "s24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tex24_g",
+   "op": "avgpool",
+   "inputs": [
+    "tex24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_tex24",
+   "op": "conv",
+   "inputs": [
+    "tex24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "txn24_g",
+   "op": "avgpool",
+   "inputs": [
+    "txn24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_txn24",
+   "op": "conv",
+   "inputs": [
+    "txn24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ex24_g",
+   "op": "avgpool",
+   "inputs": [
+    "ex24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_ex24",
+   "op": "conv",
+   "inputs": [
+    "ex24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ey24_g",
+   "op": "avgpool",
+   "inputs": [
+    "ey24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_ey24",
+   "op": "conv",
+   "inputs": [
+    "ey24_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "scene_g",
+   "op": "avgpool",
+   "inputs": [
+    "scene"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "frac_scene",
+   "op": "conv",
+   "inputs": [
+    "scene_g"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rscA_g",
+   "op": "avgpool",
+   "inputs": [
+    "rscA"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "chrsum",
+   "op": "conv",
+   "inputs": [
+    "rscA_g"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "frac_chr",
+   "op": "conv",
+   "inputs": [
+    "chrsum"
+   ],
+   "out": 58,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "feat",
+   "op": "add",
+   "inputs": [
+    "Bcs_48r_p",
+    "Bcs_48r_q",
+    "Bcs_24r_p",
+    "Bcs_24r_q",
+    "Bcs_12r_p",
+    "Bcs_12r_q",
+    "Bcs_48sr_p",
+    "Bcs_48sr_q",
+    "Bfd_48r_p",
+    "Bfd_48r_q",
+    "Bfd_24r_p",
+    "Bfd_24r_q",
+    "Bfd_12r_p",
+    "Bfd_12r_q",
+    "Bvg_48r_p",
+    "Bvg_48r_q",
+    "Bvg_24r_p",
+    "Bvg_24r_q",
+    "Bvg_12r_p",
+    "Bvg_12r_q",
+    "Bwh_48r_p",
+    "Bwh_48r_q",
+    "Bwh_24r_p",
+    "Bwh_24r_q",
+    "Bwh_12r_p",
+    "Bwh_12r_q",
+    "F_48r_p",
+    "F_48r_q",
+    "F_24r_p",
+    "F_24r_q",
+    "F_24br_p",
+    "F_24br_q",
+    "F_12r_p",
+    "F_12r_q",
+    "F_12br_p",
+    "F_12br_q",
+    "H_24r_p",
+    "H_24r_q",
+    "G_24r_p",
+    "G_24r_q",
+    "G_12r_p",
+    "G_12r_q",
+    "Bcs_24r_meanp",
+    "Bfd_24r_meanp",
+    "frac_cs24",
+    "frac_fd24",
+    "frac_vg24",
+    "frac_wh24",
+    "frac_s24",
+    "frac_tex24",
+    "frac_txn24",
+    "frac_ex24",
+    "frac_ey24",
+    "frac_scene",
+    "frac_chr"
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 114
+  },
+  {
+   "name": "r1r",
+   "op": "relu",
+   "inputs": [
+    "r1"
+   ]
+  },
+  {
+   "name": "uv",
+   "op": "dense",
+   "inputs": [
+    "r1r"
+   ],
+   "out": 57
+  },
+  {
+   "name": "uvr",
+   "op": "relu",
+   "inputs": [
+    "uv"
+   ]
+  },
+  {
+   "name": "andv",
+   "op": "dense",
+   "inputs": [
+    "uvr"
+   ],
+   "out": 21
+  },
+  {
+   "name": "andr",
+   "op": "relu",
+   "inputs": [
+    "andv"
+   ]
+  },
+  {
+   "name": "mx_Bcs_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 4
+  },
+  {
+   "name": "mx_Bcs_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bcs_1"
+   ]
+  },
+  {
+   "name": "mx_Bcs_2",
+   "op": "dense",
+   "inputs": [
+    "mx_Bcs_1r"
+   ],
+   "out": 3
+  },
+  {
+   "name": "mx_Bcs_2r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bcs_2"
+   ]
+  },
+  {
+   "name": "mx_Bcs_3",
+   "op": "dense",
+   "inputs": [
+    "mx_Bcs_2r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_Bcs_3r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bcs_3"
+   ]
+  },
+  {
+   "name": "mx_Bcs_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_Bcs_3r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "mx_Bfd_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 3
+  },
+  {
+   "name": "mx_Bfd_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bfd_1"
+   ]
+  },
+  {
+   "name": "mx_Bfd_2",
+   "op": "dense",
+   "inputs": [
+    "mx_Bfd_1r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_Bfd_2r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bfd_2"
+   ]
+  },
+  {
+   "name": "mx_Bfd_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_Bfd_2r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "mx_Bvg_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 3
+  },
+  {
+   "name": "mx_Bvg_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bvg_1"
+   ]
+  },
+  {
+   "name": "mx_Bvg_2",
+   "op": "dense",
+   "inputs": [
+    "mx_Bvg_1r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_Bvg_2r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bvg_2"
+   ]
+  },
+  {
+   "name": "mx_Bvg_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_Bvg_2r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "mx_Bwh_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 3
+  },
+  {
+   "name": "mx_Bwh_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bwh_1"
+   ]
+  },
+  {
+   "name": "mx_Bwh_2",
+   "op": "dense",
+   "inputs": [
+    "mx_Bwh_1r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_Bwh_2r",
+   "op": "relu",
+   "inputs": [
+    "mx_Bwh_2"
+   ]
+  },
+  {
+   "name": "mx_Bwh_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_Bwh_2r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "mx_FACE_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 6
+  },
+  {
+   "name": "mx_FACE_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_FACE_1"
+   ]
+  },
+  {
+   "name": "mx_FACE_2",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_1r"
+   ],
+   "out": 5
+  },
+  {
+   "name": "mx_FACE_2r",
+   "op": "relu",
+   "inputs": [
+    "mx_FACE_2"
+   ]
+  },
+  {
+   "name": "mx_FACE_3",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_2r"
+   ],
+   "out": 4
+  },
+  {
+   "name": "mx_FACE_3r",
+   "op": "relu",
+   "inputs": [
+    "mx_FACE_3"
+   ]
+  },
+  {
+   "name": "mx_FACE_4",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_3r"
+   ],
+   "out": 3
+  },
+  {
+   "name": "mx_FACE_4r",
+   "op": "relu",
+   "inputs": [
+    "mx_FACE_4"
+   ]
+  },
+  {
+   "name": "mx_FACE_5",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_4r"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_FACE_5r",
+   "op": "relu",
+   "inputs": [
+    "mx_FACE_5"
+   ]
+  },
+  {
+   "name": "mx_FACE_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_5r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "mx_GRAY_1",
+   "op": "dense",
+   "inputs": [
+    "andr"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mx_GRAY_1r",
+   "op": "relu",
+   "inputs": [
+    "mx_GRAY_1"
+   ]
+  },
+  {
+   "name": "mx_GRAY_fin",
+   "op": "dense",
+   "inputs": [
+    "mx_GRAY_1r"
+   ],
+   "out": 1
+  },
+  {
+   "name": "gp_Bcs",
+   "op": "dense",
+   "inputs": [
+    "mx_Bcs_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_Bfd",
+   "op": "dense",
+   "inputs": [
+    "mx_Bfd_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_Bvg",
+   "op": "dense",
+   "inputs": [
+    "mx_Bvg_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_Bwh",
+   "op": "dense",
+   "inputs": [
+    "mx_Bwh_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_FACE",
+   "op": "dense",
+   "inputs": [
+    "mx_FACE_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_GRAY",
+   "op": "dense",
+   "inputs": [
+    "mx_GRAY_fin"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gp_pass",
+   "op": "dense",
+   "inputs": [
+    "uvr"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gv",
+   "op": "add",
+   "inputs": [
+    "gp_Bcs",
+    "gp_Bfd",
+    "gp_Bvg",
+    "gp_Bwh",
+    "gp_FACE",
+    "gp_GRAY",
+    "gp_pass"
+   ]
+  },
+  {
+   "name": "nf",
+   "op": "dense",
+   "inputs": [
+    "gv"
+   ],
+   "out": 4
+  },
+  {
+   "name": "nfr",
+   "op": "relu",
+   "inputs": [
+    "nf"
+   ]
+  },
+  {
+   "name": "nf_p",
+   "op": "dense",
+   "inputs": [
+    "nfr"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gv_id",
+   "op": "dense",
+   "inputs": [
+    "gv"
+   ],
+   "out": 23
+  },
+  {
+   "name": "gv2",
+   "op": "add",
+   "inputs": [
+    "gv_id",
+    "nf_p"
+   ]
+  },
+  {
+   "name": "score",
+   "op": "dense",
+   "inputs": [
+    "gv2"
+   ],
+   "out": 2
+  }
+ ]
+}

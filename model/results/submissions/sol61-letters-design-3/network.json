@@ -1,0 +1,463 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "gradients",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 16,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "normal_flow",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "flow_cells",
+      "op": "avgpool",
+      "inputs": [
+        "normal_flow"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "flow_strip",
+      "op": "reshape",
+      "inputs": [
+        "flow_cells"
+      ],
+      "shape": [
+        1,
+        24,
+        12
+      ]
+    },
+    {
+      "name": "flow_energy",
+      "op": "norm",
+      "inputs": [
+        "flow_strip"
+      ]
+    },
+    {
+      "name": "signed_edges",
+      "op": "relu",
+      "inputs": [
+        "gradients"
+      ]
+    },
+    {
+      "name": "absolute_projections",
+      "op": "conv",
+      "inputs": [
+        "signed_edges"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "angular_bins",
+      "op": "conv",
+      "inputs": [
+        "absolute_projections"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_bins",
+      "op": "relu",
+      "inputs": [
+        "angular_bins"
+      ]
+    },
+    {
+      "name": "edge_headroom",
+      "op": "conv",
+      "inputs": [
+        "edge_bins"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive_headroom",
+      "op": "relu",
+      "inputs": [
+        "edge_headroom"
+      ]
+    },
+    {
+      "name": "bounded_edges",
+      "op": "conv",
+      "inputs": [
+        "positive_headroom"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_strip",
+      "op": "reshape",
+      "inputs": [
+        "edge_cells"
+      ],
+      "shape": [
+        1,
+        96,
+        12
+      ]
+    },
+    {
+      "name": "edge_energy",
+      "op": "norm",
+      "inputs": [
+        "edge_strip"
+      ]
+    },
+    {
+      "name": "gray_cells",
+      "op": "avgpool",
+      "inputs": [
+        "contrast"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "finger_widths",
+      "op": "conv",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 16,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ridge_polarities",
+      "op": "relu",
+      "inputs": [
+        "finger_widths"
+      ]
+    },
+    {
+      "name": "ridge_magnitudes",
+      "op": "conv",
+      "inputs": [
+        "ridge_polarities"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ridge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "ridge_magnitudes"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "ridge_strip",
+      "op": "reshape",
+      "inputs": [
+        "ridge_cells"
+      ],
+      "shape": [
+        1,
+        96,
+        12
+      ]
+    },
+    {
+      "name": "ridge_energy",
+      "op": "norm",
+      "inputs": [
+        "ridge_strip"
+      ]
+    },
+    {
+      "name": "contour_match",
+      "op": "dense",
+      "inputs": [
+        "edge_energy"
+      ],
+      "out": 40824
+    },
+    {
+      "name": "silhouette_match",
+      "op": "dense",
+      "inputs": [
+        "gray_cells"
+      ],
+      "out": 40824
+    },
+    {
+      "name": "finger_match",
+      "op": "dense",
+      "inputs": [
+        "ridge_energy"
+      ],
+      "out": 40824
+    },
+    {
+      "name": "flow_match",
+      "op": "dense",
+      "inputs": [
+        "flow_energy"
+      ],
+      "out": 40824
+    },
+    {
+      "name": "flow_column",
+      "op": "reshape",
+      "inputs": [
+        "flow_match"
+      ],
+      "shape": [
+        1,
+        40824,
+        1
+      ]
+    },
+    {
+      "name": "positive_flow",
+      "op": "relu",
+      "inputs": [
+        "flow_column"
+      ]
+    },
+    {
+      "name": "invert_flow",
+      "op": "conv",
+      "inputs": [
+        "flow_column"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "negative_flow",
+      "op": "relu",
+      "inputs": [
+        "invert_flow"
+      ]
+    },
+    {
+      "name": "either_flow",
+      "op": "add",
+      "inputs": [
+        "positive_flow",
+        "negative_flow"
+      ]
+    },
+    {
+      "name": "flow_scores",
+      "op": "reshape",
+      "inputs": [
+        "either_flow"
+      ],
+      "shape": [
+        40824
+      ]
+    },
+    {
+      "name": "silhouette_column",
+      "op": "reshape",
+      "inputs": [
+        "silhouette_match"
+      ],
+      "shape": [
+        1,
+        40824,
+        1
+      ]
+    },
+    {
+      "name": "bright_hand",
+      "op": "relu",
+      "inputs": [
+        "silhouette_column"
+      ]
+    },
+    {
+      "name": "invert_silhouette",
+      "op": "conv",
+      "inputs": [
+        "silhouette_column"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark_hand",
+      "op": "relu",
+      "inputs": [
+        "invert_silhouette"
+      ]
+    },
+    {
+      "name": "either_contrast",
+      "op": "add",
+      "inputs": [
+        "bright_hand",
+        "dark_hand"
+      ]
+    },
+    {
+      "name": "silhouette_scores",
+      "op": "reshape",
+      "inputs": [
+        "either_contrast"
+      ],
+      "shape": [
+        40824
+      ]
+    },
+    {
+      "name": "model_scores",
+      "op": "add",
+      "inputs": [
+        "contour_match",
+        "silhouette_scores",
+        "finger_match",
+        "flow_scores"
+      ]
+    },
+    {
+      "name": "class_models",
+      "op": "reshape",
+      "inputs": [
+        "model_scores"
+      ],
+      "shape": [
+        24,
+        1701,
+        1
+      ]
+    },
+    {
+      "name": "best_geometry",
+      "op": "maxpool",
+      "inputs": [
+        "class_models"
+      ],
+      "size": [
+        1701,
+        1
+      ],
+      "stride": [
+        1701,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_geometry"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

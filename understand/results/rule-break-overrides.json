@@ -1,0 +1,9 @@
+{
+ "_why": "Forward passes through network layers (rule: no running the network), found in the audit and scored 0.",
+ "d757a82c-03dc-4f89-bf54-c3a2a7d3241a": {
+  "diagnose-public-checkpoint-mcq-da1b7760": 0.0
+ },
+ "f07bd2c2-b86c-4d74-84af-bf96aa057d53": {
+  "diagnose-public-checkpoint-mcq-a3b934e0": 0.0
+ }
+}

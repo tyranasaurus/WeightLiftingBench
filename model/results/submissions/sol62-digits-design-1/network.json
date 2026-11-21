@@ -1,0 +1,115 @@
+{
+  "layers": [
+    {
+      "name": "clip_parts",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive",
+      "op": "relu",
+      "inputs": [
+        "clip_parts"
+      ]
+    },
+    {
+      "name": "ink",
+      "op": "conv",
+      "inputs": [
+        "positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "near",
+      "op": "maxpool",
+      "inputs": [
+        "ink"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "match",
+      "op": "dense",
+      "inputs": [
+        "ink"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "cover",
+      "op": "dense",
+      "inputs": [
+        "near"
+      ],
+      "out": 20480
+    },
+    {
+      "name": "similarity",
+      "op": "add",
+      "inputs": [
+        "match",
+        "cover"
+      ]
+    },
+    {
+      "name": "grouped",
+      "op": "reshape",
+      "inputs": [
+        "similarity"
+      ],
+      "shape": [
+        10,
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "best",
+      "op": "maxpool",
+      "inputs": [
+        "grouped"
+      ],
+      "size": [
+        2048,
+        1
+      ],
+      "stride": [
+        2048,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

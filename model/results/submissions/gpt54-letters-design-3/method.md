@@ -1,0 +1,5 @@
+I used a hand-designed template-matching network. In `build.py` I describe 24 synthetic ASL hand-shape prototypes with simple geometric primitives (ellipses, capsules, circles) meant to capture the general form of each letter, not any training image. Each prototype is rasterized to 28×28, shifted over a small translation grid, and converted into zero-mean normalized templates under a few fixed weighting maps.
+
+The network first applies per-image channel normalization, then two dense layers with opposite weights to compute an absolute template correlation for every class, weighting family, and translation. A max-pool over the translation grid keeps the best shift for each class/family, and a final dense layer sums those scores into 24 class logits.
+
+All weights are generated directly from constants and formulas inside `build.py`; I did not use gradient descent or fit any parameters from the dataset. The training images were only viewed to understand the overall appearance and pose variation of the signs.

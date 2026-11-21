@@ -1,0 +1,2552 @@
+{
+  "layers": [
+    {
+      "name": "ink_derivatives",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "edge_polarities",
+      "op": "relu",
+      "inputs": [
+        "ink_derivatives"
+      ]
+    },
+    {
+      "name": "edge_histograms",
+      "op": "conv",
+      "inputs": [
+        "edge_polarities"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 3,
+      "padding": 2
+    },
+    {
+      "name": "select_part0",
+      "op": "dense",
+      "inputs": [
+        "edge_histograms"
+      ],
+      "out": 432
+    },
+    {
+      "name": "local_contrast0_field",
+      "op": "reshape",
+      "inputs": [
+        "select_part0"
+      ],
+      "shape": [
+        1,
+        1,
+        432
+      ]
+    },
+    {
+      "name": "local_contrast0",
+      "op": "norm",
+      "inputs": [
+        "local_contrast0_field"
+      ]
+    },
+    {
+      "name": "select_part1",
+      "op": "dense",
+      "inputs": [
+        "edge_histograms"
+      ],
+      "out": 432
+    },
+    {
+      "name": "local_contrast1_field",
+      "op": "reshape",
+      "inputs": [
+        "select_part1"
+      ],
+      "shape": [
+        1,
+        1,
+        432
+      ]
+    },
+    {
+      "name": "local_contrast1",
+      "op": "norm",
+      "inputs": [
+        "local_contrast1_field"
+      ]
+    },
+    {
+      "name": "edge_contrast_field",
+      "op": "reshape",
+      "inputs": [
+        "edge_histograms"
+      ],
+      "shape": [
+        1,
+        1,
+        648
+      ]
+    },
+    {
+      "name": "edge_contrast",
+      "op": "norm",
+      "inputs": [
+        "edge_contrast_field"
+      ]
+    },
+    {
+      "name": "soft_ink",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 2,
+      "padding": 2
+    },
+    {
+      "name": "ink_contrast_field",
+      "op": "reshape",
+      "inputs": [
+        "soft_ink"
+      ],
+      "shape": [
+        1,
+        1,
+        169
+      ]
+    },
+    {
+      "name": "ink_contrast",
+      "op": "norm",
+      "inputs": [
+        "ink_contrast_field"
+      ]
+    },
+    {
+      "name": "ink_margin",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "swell_pen",
+      "op": "maxpool",
+      "inputs": [
+        "ink_margin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "invert_fat",
+      "op": "conv",
+      "inputs": [
+        "swell_pen"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "restore_width",
+      "op": "maxpool",
+      "inputs": [
+        "invert_fat"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "closed_pen",
+      "op": "conv",
+      "inputs": [
+        "restore_width"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "two_pen_widths",
+      "op": "add",
+      "inputs": [
+        "image",
+        "closed_pen"
+      ]
+    },
+    {
+      "name": "soft_close",
+      "op": "conv",
+      "inputs": [
+        "two_pen_widths"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small_image",
+      "op": "avgpool",
+      "inputs": [
+        "soft_close"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "minus_ink",
+      "op": "conv",
+      "inputs": [
+        "small_image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "initial_fill",
+      "op": "conv",
+      "inputs": [
+        "small_image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "adjacent0",
+      "op": "conv",
+      "inputs": [
+        "initial_fill"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours0",
+      "op": "reshape",
+      "inputs": [
+        "adjacent0"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours0"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier0",
+      "op": "reshape",
+      "inputs": [
+        "escape0"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual0",
+      "op": "add",
+      "inputs": [
+        "barrier0",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess0",
+      "op": "relu",
+      "inputs": [
+        "flood_residual0"
+      ]
+    },
+    {
+      "name": "neg_excess0",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess0"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation0",
+      "op": "add",
+      "inputs": [
+        "barrier0",
+        "neg_excess0"
+      ]
+    },
+    {
+      "name": "adjacent1",
+      "op": "conv",
+      "inputs": [
+        "inundation0"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours1",
+      "op": "reshape",
+      "inputs": [
+        "adjacent1"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours1"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier1",
+      "op": "reshape",
+      "inputs": [
+        "escape1"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual1",
+      "op": "add",
+      "inputs": [
+        "barrier1",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess1",
+      "op": "relu",
+      "inputs": [
+        "flood_residual1"
+      ]
+    },
+    {
+      "name": "neg_excess1",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess1"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation1",
+      "op": "add",
+      "inputs": [
+        "barrier1",
+        "neg_excess1"
+      ]
+    },
+    {
+      "name": "adjacent2",
+      "op": "conv",
+      "inputs": [
+        "inundation1"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours2",
+      "op": "reshape",
+      "inputs": [
+        "adjacent2"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours2"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier2",
+      "op": "reshape",
+      "inputs": [
+        "escape2"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual2",
+      "op": "add",
+      "inputs": [
+        "barrier2",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess2",
+      "op": "relu",
+      "inputs": [
+        "flood_residual2"
+      ]
+    },
+    {
+      "name": "neg_excess2",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess2"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation2",
+      "op": "add",
+      "inputs": [
+        "barrier2",
+        "neg_excess2"
+      ]
+    },
+    {
+      "name": "adjacent3",
+      "op": "conv",
+      "inputs": [
+        "inundation2"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours3",
+      "op": "reshape",
+      "inputs": [
+        "adjacent3"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours3"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier3",
+      "op": "reshape",
+      "inputs": [
+        "escape3"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual3",
+      "op": "add",
+      "inputs": [
+        "barrier3",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess3",
+      "op": "relu",
+      "inputs": [
+        "flood_residual3"
+      ]
+    },
+    {
+      "name": "neg_excess3",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess3"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation3",
+      "op": "add",
+      "inputs": [
+        "barrier3",
+        "neg_excess3"
+      ]
+    },
+    {
+      "name": "adjacent4",
+      "op": "conv",
+      "inputs": [
+        "inundation3"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours4",
+      "op": "reshape",
+      "inputs": [
+        "adjacent4"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape4",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours4"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier4",
+      "op": "reshape",
+      "inputs": [
+        "escape4"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual4",
+      "op": "add",
+      "inputs": [
+        "barrier4",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess4",
+      "op": "relu",
+      "inputs": [
+        "flood_residual4"
+      ]
+    },
+    {
+      "name": "neg_excess4",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess4"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation4",
+      "op": "add",
+      "inputs": [
+        "barrier4",
+        "neg_excess4"
+      ]
+    },
+    {
+      "name": "adjacent5",
+      "op": "conv",
+      "inputs": [
+        "inundation4"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours5",
+      "op": "reshape",
+      "inputs": [
+        "adjacent5"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape5",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours5"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier5",
+      "op": "reshape",
+      "inputs": [
+        "escape5"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual5",
+      "op": "add",
+      "inputs": [
+        "barrier5",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess5",
+      "op": "relu",
+      "inputs": [
+        "flood_residual5"
+      ]
+    },
+    {
+      "name": "neg_excess5",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess5"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation5",
+      "op": "add",
+      "inputs": [
+        "barrier5",
+        "neg_excess5"
+      ]
+    },
+    {
+      "name": "adjacent6",
+      "op": "conv",
+      "inputs": [
+        "inundation5"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours6",
+      "op": "reshape",
+      "inputs": [
+        "adjacent6"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape6",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours6"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier6",
+      "op": "reshape",
+      "inputs": [
+        "escape6"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual6",
+      "op": "add",
+      "inputs": [
+        "barrier6",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess6",
+      "op": "relu",
+      "inputs": [
+        "flood_residual6"
+      ]
+    },
+    {
+      "name": "neg_excess6",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess6"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation6",
+      "op": "add",
+      "inputs": [
+        "barrier6",
+        "neg_excess6"
+      ]
+    },
+    {
+      "name": "adjacent7",
+      "op": "conv",
+      "inputs": [
+        "inundation6"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours7",
+      "op": "reshape",
+      "inputs": [
+        "adjacent7"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape7",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours7"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier7",
+      "op": "reshape",
+      "inputs": [
+        "escape7"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual7",
+      "op": "add",
+      "inputs": [
+        "barrier7",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess7",
+      "op": "relu",
+      "inputs": [
+        "flood_residual7"
+      ]
+    },
+    {
+      "name": "neg_excess7",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess7"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation7",
+      "op": "add",
+      "inputs": [
+        "barrier7",
+        "neg_excess7"
+      ]
+    },
+    {
+      "name": "adjacent8",
+      "op": "conv",
+      "inputs": [
+        "inundation7"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours8",
+      "op": "reshape",
+      "inputs": [
+        "adjacent8"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape8",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours8"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier8",
+      "op": "reshape",
+      "inputs": [
+        "escape8"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual8",
+      "op": "add",
+      "inputs": [
+        "barrier8",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess8",
+      "op": "relu",
+      "inputs": [
+        "flood_residual8"
+      ]
+    },
+    {
+      "name": "neg_excess8",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess8"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation8",
+      "op": "add",
+      "inputs": [
+        "barrier8",
+        "neg_excess8"
+      ]
+    },
+    {
+      "name": "adjacent9",
+      "op": "conv",
+      "inputs": [
+        "inundation8"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours9",
+      "op": "reshape",
+      "inputs": [
+        "adjacent9"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape9",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours9"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier9",
+      "op": "reshape",
+      "inputs": [
+        "escape9"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual9",
+      "op": "add",
+      "inputs": [
+        "barrier9",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess9",
+      "op": "relu",
+      "inputs": [
+        "flood_residual9"
+      ]
+    },
+    {
+      "name": "neg_excess9",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess9"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation9",
+      "op": "add",
+      "inputs": [
+        "barrier9",
+        "neg_excess9"
+      ]
+    },
+    {
+      "name": "adjacent10",
+      "op": "conv",
+      "inputs": [
+        "inundation9"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours10",
+      "op": "reshape",
+      "inputs": [
+        "adjacent10"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape10",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours10"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier10",
+      "op": "reshape",
+      "inputs": [
+        "escape10"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual10",
+      "op": "add",
+      "inputs": [
+        "barrier10",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess10",
+      "op": "relu",
+      "inputs": [
+        "flood_residual10"
+      ]
+    },
+    {
+      "name": "neg_excess10",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess10"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation10",
+      "op": "add",
+      "inputs": [
+        "barrier10",
+        "neg_excess10"
+      ]
+    },
+    {
+      "name": "adjacent11",
+      "op": "conv",
+      "inputs": [
+        "inundation10"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours11",
+      "op": "reshape",
+      "inputs": [
+        "adjacent11"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape11",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours11"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier11",
+      "op": "reshape",
+      "inputs": [
+        "escape11"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual11",
+      "op": "add",
+      "inputs": [
+        "barrier11",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess11",
+      "op": "relu",
+      "inputs": [
+        "flood_residual11"
+      ]
+    },
+    {
+      "name": "neg_excess11",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess11"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation11",
+      "op": "add",
+      "inputs": [
+        "barrier11",
+        "neg_excess11"
+      ]
+    },
+    {
+      "name": "adjacent12",
+      "op": "conv",
+      "inputs": [
+        "inundation11"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours12",
+      "op": "reshape",
+      "inputs": [
+        "adjacent12"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape12",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours12"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier12",
+      "op": "reshape",
+      "inputs": [
+        "escape12"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual12",
+      "op": "add",
+      "inputs": [
+        "barrier12",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess12",
+      "op": "relu",
+      "inputs": [
+        "flood_residual12"
+      ]
+    },
+    {
+      "name": "neg_excess12",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess12"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation12",
+      "op": "add",
+      "inputs": [
+        "barrier12",
+        "neg_excess12"
+      ]
+    },
+    {
+      "name": "adjacent13",
+      "op": "conv",
+      "inputs": [
+        "inundation12"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours13",
+      "op": "reshape",
+      "inputs": [
+        "adjacent13"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape13",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours13"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier13",
+      "op": "reshape",
+      "inputs": [
+        "escape13"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual13",
+      "op": "add",
+      "inputs": [
+        "barrier13",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess13",
+      "op": "relu",
+      "inputs": [
+        "flood_residual13"
+      ]
+    },
+    {
+      "name": "neg_excess13",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess13"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation13",
+      "op": "add",
+      "inputs": [
+        "barrier13",
+        "neg_excess13"
+      ]
+    },
+    {
+      "name": "adjacent14",
+      "op": "conv",
+      "inputs": [
+        "inundation13"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours14",
+      "op": "reshape",
+      "inputs": [
+        "adjacent14"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape14",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours14"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier14",
+      "op": "reshape",
+      "inputs": [
+        "escape14"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual14",
+      "op": "add",
+      "inputs": [
+        "barrier14",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess14",
+      "op": "relu",
+      "inputs": [
+        "flood_residual14"
+      ]
+    },
+    {
+      "name": "neg_excess14",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess14"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation14",
+      "op": "add",
+      "inputs": [
+        "barrier14",
+        "neg_excess14"
+      ]
+    },
+    {
+      "name": "adjacent15",
+      "op": "conv",
+      "inputs": [
+        "inundation14"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours15",
+      "op": "reshape",
+      "inputs": [
+        "adjacent15"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape15",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours15"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier15",
+      "op": "reshape",
+      "inputs": [
+        "escape15"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual15",
+      "op": "add",
+      "inputs": [
+        "barrier15",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess15",
+      "op": "relu",
+      "inputs": [
+        "flood_residual15"
+      ]
+    },
+    {
+      "name": "neg_excess15",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess15"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation15",
+      "op": "add",
+      "inputs": [
+        "barrier15",
+        "neg_excess15"
+      ]
+    },
+    {
+      "name": "adjacent16",
+      "op": "conv",
+      "inputs": [
+        "inundation15"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours16",
+      "op": "reshape",
+      "inputs": [
+        "adjacent16"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape16",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours16"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier16",
+      "op": "reshape",
+      "inputs": [
+        "escape16"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual16",
+      "op": "add",
+      "inputs": [
+        "barrier16",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess16",
+      "op": "relu",
+      "inputs": [
+        "flood_residual16"
+      ]
+    },
+    {
+      "name": "neg_excess16",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess16"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation16",
+      "op": "add",
+      "inputs": [
+        "barrier16",
+        "neg_excess16"
+      ]
+    },
+    {
+      "name": "adjacent17",
+      "op": "conv",
+      "inputs": [
+        "inundation16"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours17",
+      "op": "reshape",
+      "inputs": [
+        "adjacent17"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape17",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours17"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier17",
+      "op": "reshape",
+      "inputs": [
+        "escape17"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual17",
+      "op": "add",
+      "inputs": [
+        "barrier17",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess17",
+      "op": "relu",
+      "inputs": [
+        "flood_residual17"
+      ]
+    },
+    {
+      "name": "neg_excess17",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess17"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation17",
+      "op": "add",
+      "inputs": [
+        "barrier17",
+        "neg_excess17"
+      ]
+    },
+    {
+      "name": "adjacent18",
+      "op": "conv",
+      "inputs": [
+        "inundation17"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours18",
+      "op": "reshape",
+      "inputs": [
+        "adjacent18"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape18",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours18"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier18",
+      "op": "reshape",
+      "inputs": [
+        "escape18"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual18",
+      "op": "add",
+      "inputs": [
+        "barrier18",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess18",
+      "op": "relu",
+      "inputs": [
+        "flood_residual18"
+      ]
+    },
+    {
+      "name": "neg_excess18",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess18"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation18",
+      "op": "add",
+      "inputs": [
+        "barrier18",
+        "neg_excess18"
+      ]
+    },
+    {
+      "name": "adjacent19",
+      "op": "conv",
+      "inputs": [
+        "inundation18"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours19",
+      "op": "reshape",
+      "inputs": [
+        "adjacent19"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape19",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours19"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier19",
+      "op": "reshape",
+      "inputs": [
+        "escape19"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual19",
+      "op": "add",
+      "inputs": [
+        "barrier19",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess19",
+      "op": "relu",
+      "inputs": [
+        "flood_residual19"
+      ]
+    },
+    {
+      "name": "neg_excess19",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess19"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation19",
+      "op": "add",
+      "inputs": [
+        "barrier19",
+        "neg_excess19"
+      ]
+    },
+    {
+      "name": "adjacent20",
+      "op": "conv",
+      "inputs": [
+        "inundation19"
+      ],
+      "out": 5,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "neighbours20",
+      "op": "reshape",
+      "inputs": [
+        "adjacent20"
+      ],
+      "shape": [
+        1,
+        5,
+        196
+      ]
+    },
+    {
+      "name": "escape20",
+      "op": "maxpool",
+      "inputs": [
+        "neighbours20"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "barrier20",
+      "op": "reshape",
+      "inputs": [
+        "escape20"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "flood_residual20",
+      "op": "add",
+      "inputs": [
+        "barrier20",
+        "small_image"
+      ]
+    },
+    {
+      "name": "barrier_excess20",
+      "op": "relu",
+      "inputs": [
+        "flood_residual20"
+      ]
+    },
+    {
+      "name": "neg_excess20",
+      "op": "conv",
+      "inputs": [
+        "barrier_excess20"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "inundation20",
+      "op": "add",
+      "inputs": [
+        "barrier20",
+        "neg_excess20"
+      ]
+    },
+    {
+      "name": "filled_basins",
+      "op": "conv",
+      "inputs": [
+        "inundation20"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "hole_depth",
+      "op": "add",
+      "inputs": [
+        "filled_basins",
+        "minus_ink"
+      ]
+    },
+    {
+      "name": "loop_sectors",
+      "op": "maxpool",
+      "inputs": [
+        "hole_depth"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "loop_levels",
+      "op": "conv",
+      "inputs": [
+        "loop_sectors"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "loop_level_responses",
+      "op": "relu",
+      "inputs": [
+        "loop_levels"
+      ]
+    },
+    {
+      "name": "shape_edge_matches",
+      "op": "dense",
+      "inputs": [
+        "edge_contrast"
+      ],
+      "out": 40960
+    },
+    {
+      "name": "shape_ink_matches",
+      "op": "dense",
+      "inputs": [
+        "ink_contrast"
+      ],
+      "out": 40960
+    },
+    {
+      "name": "shape_loop_matches",
+      "op": "dense",
+      "inputs": [
+        "loop_level_responses"
+      ],
+      "out": 40960
+    },
+    {
+      "name": "pen_agreement",
+      "op": "add",
+      "inputs": [
+        "shape_edge_matches",
+        "shape_ink_matches",
+        "shape_loop_matches"
+      ]
+    },
+    {
+      "name": "whole_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "pen_agreement"
+      ],
+      "shape": [
+        10,
+        16,
+        256
+      ]
+    },
+    {
+      "name": "whole_best_in_families",
+      "op": "maxpool",
+      "inputs": [
+        "whole_hypotheses"
+      ],
+      "size": [
+        1,
+        256
+      ],
+      "stride": [
+        1,
+        256
+      ]
+    },
+    {
+      "name": "whole_best_pen",
+      "op": "maxpool",
+      "inputs": [
+        "whole_best_in_families"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "whole_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "whole_best_in_families"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "whole_best_score",
+      "op": "reshape",
+      "inputs": [
+        "whole_best_pen"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "whole_support_score",
+      "op": "dense",
+      "inputs": [
+        "whole_consensus"
+      ],
+      "out": 10
+    },
+    {
+      "name": "whole_vote",
+      "op": "add",
+      "inputs": [
+        "whole_best_score",
+        "whole_support_score"
+      ]
+    },
+    {
+      "name": "part_metric0",
+      "op": "dense",
+      "inputs": [
+        "local_contrast0"
+      ],
+      "out": 51200
+    },
+    {
+      "name": "placements0",
+      "op": "reshape",
+      "inputs": [
+        "part_metric0"
+      ],
+      "shape": [
+        10,
+        1024,
+        5
+      ]
+    },
+    {
+      "name": "part_deform0",
+      "op": "maxpool",
+      "inputs": [
+        "placements0"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "part_score0",
+      "op": "reshape",
+      "inputs": [
+        "part_deform0"
+      ],
+      "shape": [
+        10240
+      ]
+    },
+    {
+      "name": "part_metric1",
+      "op": "dense",
+      "inputs": [
+        "local_contrast1"
+      ],
+      "out": 51200
+    },
+    {
+      "name": "placements1",
+      "op": "reshape",
+      "inputs": [
+        "part_metric1"
+      ],
+      "shape": [
+        10,
+        1024,
+        5
+      ]
+    },
+    {
+      "name": "part_deform1",
+      "op": "maxpool",
+      "inputs": [
+        "placements1"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "part_score1",
+      "op": "reshape",
+      "inputs": [
+        "part_deform1"
+      ],
+      "shape": [
+        10240
+      ]
+    },
+    {
+      "name": "part_loop_matches",
+      "op": "dense",
+      "inputs": [
+        "loop_level_responses"
+      ],
+      "out": 10240
+    },
+    {
+      "name": "part_agreement",
+      "op": "add",
+      "inputs": [
+        "part_score0",
+        "part_score1",
+        "part_loop_matches"
+      ]
+    },
+    {
+      "name": "articulated_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "part_agreement"
+      ],
+      "shape": [
+        10,
+        16,
+        64
+      ]
+    },
+    {
+      "name": "articulated_best_in_families",
+      "op": "maxpool",
+      "inputs": [
+        "articulated_hypotheses"
+      ],
+      "size": [
+        1,
+        64
+      ],
+      "stride": [
+        1,
+        64
+      ]
+    },
+    {
+      "name": "articulated_best_pen",
+      "op": "maxpool",
+      "inputs": [
+        "articulated_best_in_families"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "articulated_consensus",
+      "op": "avgpool",
+      "inputs": [
+        "articulated_best_in_families"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "articulated_best_score",
+      "op": "reshape",
+      "inputs": [
+        "articulated_best_pen"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "articulated_support_score",
+      "op": "dense",
+      "inputs": [
+        "articulated_consensus"
+      ],
+      "out": 10
+    },
+    {
+      "name": "articulated_vote",
+      "op": "add",
+      "inputs": [
+        "articulated_best_score",
+        "articulated_support_score"
+      ]
+    },
+    {
+      "name": "articulated_vote_strength",
+      "op": "dense",
+      "inputs": [
+        "articulated_vote"
+      ],
+      "out": 10
+    },
+    {
+      "name": "digit_scores",
+      "op": "add",
+      "inputs": [
+        "whole_vote",
+        "articulated_vote_strength"
+      ]
+    }
+  ]
+}

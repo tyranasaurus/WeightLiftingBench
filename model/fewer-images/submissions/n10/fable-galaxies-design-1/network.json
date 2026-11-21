@@ -1,0 +1,99 @@
+{
+ "layers": [
+  {
+   "name": "pool",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "pool"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "dS",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dM",
+   "op": "dense",
+   "inputs": [
+    "r1"
+   ],
+   "out": 48
+  },
+  {
+   "name": "mr",
+   "op": "reshape",
+   "inputs": [
+    "dM"
+   ],
+   "shape": [
+    3,
+    16,
+    1
+   ]
+  },
+  {
+   "name": "mx",
+   "op": "maxpool",
+   "inputs": [
+    "mr"
+   ],
+   "size": [
+    16,
+    1
+   ],
+   "stride": [
+    16,
+    1
+   ]
+  },
+  {
+   "name": "dR",
+   "op": "dense",
+   "inputs": [
+    "mx"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "dS",
+    "dR"
+   ]
+  }
+ ]
+}

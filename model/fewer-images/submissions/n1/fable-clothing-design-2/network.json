@@ -1,0 +1,202 @@
+{
+ "layers": [
+  {
+   "name": "ramp",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ramp_relu",
+   "op": "relu",
+   "inputs": [
+    "ramp"
+   ]
+  },
+  {
+   "name": "inv",
+   "op": "conv",
+   "inputs": [
+    "ramp_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inv_relu",
+   "op": "relu",
+   "inputs": [
+    "inv"
+   ]
+  },
+  {
+   "name": "mask",
+   "op": "conv",
+   "inputs": [
+    "inv_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 1,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "std",
+   "op": "norm",
+   "inputs": [
+    "blur"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "std"
+   ],
+   "out": 60000
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    6000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    6000
+   ],
+   "stride": [
+    1,
+    6000
+   ]
+  },
+  {
+   "name": "template_scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "rough",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "rough_relu",
+   "op": "relu",
+   "inputs": [
+    "rough"
+   ]
+  },
+  {
+   "name": "patchy",
+   "op": "dense",
+   "inputs": [
+    "rough_relu"
+   ],
+   "out": 2
+  },
+  {
+   "name": "mass",
+   "op": "dense",
+   "inputs": [
+    "image"
+   ],
+   "out": 2
+  },
+  {
+   "name": "openness",
+   "op": "add",
+   "inputs": [
+    "patchy",
+    "mass"
+   ]
+  },
+  {
+   "name": "open",
+   "op": "dense",
+   "inputs": [
+    "openness"
+   ],
+   "out": 4
+  },
+  {
+   "name": "open_relu",
+   "op": "relu",
+   "inputs": [
+    "open"
+   ]
+  },
+  {
+   "name": "bonus",
+   "op": "dense",
+   "inputs": [
+    "open_relu"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "template_scores",
+    "bonus"
+   ]
+  }
+ ]
+}

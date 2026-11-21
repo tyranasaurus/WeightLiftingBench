@@ -1,0 +1,66 @@
+{
+  "layers": [
+    {
+      "name": "n1",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "r1",
+      "op": "reshape",
+      "inputs": [
+        "n1"
+      ],
+      "shape": [
+        784
+      ]
+    },
+    {
+      "name": "tmpl",
+      "op": "dense",
+      "inputs": [
+        "r1"
+      ],
+      "out": 60
+    },
+    {
+      "name": "r2",
+      "op": "reshape",
+      "inputs": [
+        "tmpl"
+      ],
+      "shape": [
+        10,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "mp",
+      "op": "maxpool",
+      "inputs": [
+        "r2"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "mp"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

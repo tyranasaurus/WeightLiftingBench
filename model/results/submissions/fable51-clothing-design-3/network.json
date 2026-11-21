@@ -1,0 +1,614 @@
+{
+ "layers": [
+  {
+   "name": "mask_p",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mask_r",
+   "op": "relu",
+   "inputs": [
+    "mask_p"
+   ]
+  },
+  {
+   "name": "mask",
+   "op": "conv",
+   "inputs": [
+    "mask_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "deep_p",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "deep_r",
+   "op": "relu",
+   "inputs": [
+    "deep_p"
+   ]
+  },
+  {
+   "name": "deep",
+   "op": "conv",
+   "inputs": [
+    "deep_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "nb",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "nbr",
+   "op": "relu",
+   "inputs": [
+    "nb"
+   ]
+  },
+  {
+   "name": "interior",
+   "op": "conv",
+   "inputs": [
+    "nbr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "thin",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "thinr",
+   "op": "relu",
+   "inputs": [
+    "thin"
+   ]
+  },
+  {
+   "name": "hole",
+   "op": "conv",
+   "inputs": [
+    "deep"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "holer",
+   "op": "relu",
+   "inputs": [
+    "hole"
+   ]
+  },
+  {
+   "name": "hole2",
+   "op": "conv",
+   "inputs": [
+    "deep"
+   ],
+   "out": 2,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 6
+  },
+  {
+   "name": "holer2",
+   "op": "relu",
+   "inputs": [
+    "hole2"
+   ]
+  },
+  {
+   "name": "edge",
+   "op": "conv",
+   "inputs": [
+    "mask"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edger",
+   "op": "relu",
+   "inputs": [
+    "edge"
+   ]
+  },
+  {
+   "name": "cv",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "cvr",
+   "op": "relu",
+   "inputs": [
+    "cv"
+   ]
+  },
+  {
+   "name": "cv2",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "cv2r",
+   "op": "relu",
+   "inputs": [
+    "cv2"
+   ]
+  },
+  {
+   "name": "dx",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "dxr",
+   "op": "relu",
+   "inputs": [
+    "dx"
+   ]
+  },
+  {
+   "name": "absdx",
+   "op": "conv",
+   "inputs": [
+    "dxr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ig",
+   "op": "conv",
+   "inputs": [
+    "interior"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "texm",
+   "op": "add",
+   "inputs": [
+    "absdx",
+    "ig"
+   ]
+  },
+  {
+   "name": "texr",
+   "op": "relu",
+   "inputs": [
+    "texm"
+   ]
+  },
+  {
+   "name": "bwp",
+   "op": "maxpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "bwp2",
+   "op": "maxpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "bhp",
+   "op": "maxpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "rowmax",
+   "op": "maxpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "colmax",
+   "op": "maxpool",
+   "inputs": [
+    "mask"
+   ],
+   "size": [
+    28,
+    1
+   ],
+   "stride": [
+    28,
+    1
+   ]
+  },
+  {
+   "name": "bhp7",
+   "op": "maxpool",
+   "inputs": [
+    "bhp"
+   ],
+   "size": [
+    7,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rowmax7",
+   "op": "maxpool",
+   "inputs": [
+    "rowmax"
+   ],
+   "size": [
+    7,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "f_mask",
+   "op": "dense",
+   "inputs": [
+    "mask"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_int",
+   "op": "dense",
+   "inputs": [
+    "interior"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_thin",
+   "op": "dense",
+   "inputs": [
+    "thinr"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_bw",
+   "op": "dense",
+   "inputs": [
+    "bwp"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_bw2",
+   "op": "dense",
+   "inputs": [
+    "bwp2"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_bh",
+   "op": "dense",
+   "inputs": [
+    "bhp"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_row",
+   "op": "dense",
+   "inputs": [
+    "rowmax"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_row7",
+   "op": "dense",
+   "inputs": [
+    "rowmax7"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_bh7",
+   "op": "dense",
+   "inputs": [
+    "bhp7"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_col",
+   "op": "dense",
+   "inputs": [
+    "colmax"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_cv",
+   "op": "dense",
+   "inputs": [
+    "cvr"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_cv2",
+   "op": "dense",
+   "inputs": [
+    "cv2r"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_tex",
+   "op": "dense",
+   "inputs": [
+    "texr"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_hole",
+   "op": "dense",
+   "inputs": [
+    "holer"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_hole2",
+   "op": "dense",
+   "inputs": [
+    "holer2"
+   ],
+   "out": 93
+  },
+  {
+   "name": "f_edge",
+   "op": "dense",
+   "inputs": [
+    "edger"
+   ],
+   "out": 93
+  },
+  {
+   "name": "F1",
+   "op": "add",
+   "inputs": [
+    "f_mask",
+    "f_int",
+    "f_thin",
+    "f_bw",
+    "f_bw2",
+    "f_bh",
+    "f_row",
+    "f_row7",
+    "f_bh7",
+    "f_col",
+    "f_cv",
+    "f_cv2",
+    "f_tex",
+    "f_hole",
+    "f_hole2",
+    "f_edge"
+   ]
+  },
+  {
+   "name": "F1r",
+   "op": "relu",
+   "inputs": [
+    "F1"
+   ]
+  },
+  {
+   "name": "S2",
+   "op": "dense",
+   "inputs": [
+    "F1r"
+   ],
+   "out": 72
+  },
+  {
+   "name": "S2r",
+   "op": "relu",
+   "inputs": [
+    "S2"
+   ]
+  },
+  {
+   "name": "S3",
+   "op": "dense",
+   "inputs": [
+    "S2r"
+   ],
+   "out": 36
+  },
+  {
+   "name": "S3r",
+   "op": "relu",
+   "inputs": [
+    "S3"
+   ]
+  },
+  {
+   "name": "S4",
+   "op": "dense",
+   "inputs": [
+    "S3r"
+   ],
+   "out": 60
+  },
+  {
+   "name": "S4r",
+   "op": "relu",
+   "inputs": [
+    "S4"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "dense",
+   "inputs": [
+    "S4r"
+   ],
+   "out": 10
+  }
+ ]
+}

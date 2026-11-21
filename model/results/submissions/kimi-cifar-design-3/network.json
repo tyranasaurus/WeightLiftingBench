@@ -1,0 +1,181 @@
+{
+  "layers": [
+    {
+      "name": "luma",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "small",
+      "op": "avgpool",
+      "inputs": [
+        "luma"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "standard",
+      "op": "norm",
+      "inputs": [
+        "small"
+      ]
+    },
+    {
+      "name": "color",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "color_relu",
+      "op": "relu",
+      "inputs": [
+        "color"
+      ]
+    },
+    {
+      "name": "color_cells",
+      "op": "avgpool",
+      "inputs": [
+        "color_relu"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "color_score",
+      "op": "dense",
+      "inputs": [
+        "color_cells"
+      ],
+      "out": 10
+    },
+    {
+      "name": "edges",
+      "op": "conv",
+      "inputs": [
+        "standard"
+      ],
+      "out": 12,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "edges_relu",
+      "op": "relu",
+      "inputs": [
+        "edges"
+      ]
+    },
+    {
+      "name": "edge_cells",
+      "op": "avgpool",
+      "inputs": [
+        "edges_relu"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "edge_score",
+      "op": "dense",
+      "inputs": [
+        "edge_cells"
+      ],
+      "out": 10
+    },
+    {
+      "name": "templates",
+      "op": "conv",
+      "inputs": [
+        "standard"
+      ],
+      "out": 160,
+      "kernel": [
+        12,
+        12
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "template_relu",
+      "op": "relu",
+      "inputs": [
+        "templates"
+      ]
+    },
+    {
+      "name": "template_pool",
+      "op": "maxpool",
+      "inputs": [
+        "template_relu"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        5,
+        5
+      ]
+    },
+    {
+      "name": "template_score",
+      "op": "dense",
+      "inputs": [
+        "template_pool"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "color_score",
+        "edge_score",
+        "template_score"
+      ]
+    }
+  ]
+}

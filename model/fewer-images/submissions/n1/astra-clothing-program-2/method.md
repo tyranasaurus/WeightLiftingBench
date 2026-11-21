@@ -1,0 +1,3 @@
+`build.py` draws individual garment silhouettes from geometric parts: for example, a torso with sleeves, tapered trouser legs, a bag with a handle, or a sole with straps. A fixed seed varies the proportions within hand-specified ranges. Each drawing contributes only its own normalized mask, outline profiles, and aspect ratio; no drawings are averaged and no model is fitted.
+
+For each input, `predict` extracts soft foreground coverage, compares its outline with the drawings, and adjusts the class scores using hand-written cues for features such as plackets, collars, leg separation, and holes between straps. The design and constants were fixed before the single labeled sanity check. That check classified 6 of 10 examples correctly; held-out accuracy is unknown.

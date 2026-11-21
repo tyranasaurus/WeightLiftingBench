@@ -1,0 +1,140 @@
+{
+ "layers": [
+  {
+   "name": "g",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "g_r",
+   "op": "relu",
+   "inputs": [
+    "g"
+   ]
+  },
+  {
+   "name": "d",
+   "op": "conv",
+   "inputs": [
+    "g_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "d_r",
+   "op": "relu",
+   "inputs": [
+    "d"
+   ]
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "d_r"
+   ],
+   "out": 8,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 3,
+   "padding": 3
+  },
+  {
+   "name": "e",
+   "op": "conv",
+   "inputs": [
+    "blur"
+   ],
+   "out": 80,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "e_r",
+   "op": "relu",
+   "inputs": [
+    "e"
+   ]
+  },
+  {
+   "name": "f",
+   "op": "conv",
+   "inputs": [
+    "e_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "t",
+   "op": "dense",
+   "inputs": [
+    "f"
+   ],
+   "out": 230000
+  },
+  {
+   "name": "t_m",
+   "op": "reshape",
+   "inputs": [
+    "t"
+   ],
+   "shape": [
+    1,
+    10,
+    23000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "t_m"
+   ],
+   "size": [
+    1,
+    23000
+   ],
+   "stride": [
+    1,
+    23000
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

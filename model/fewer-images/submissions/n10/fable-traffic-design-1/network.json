@@ -1,0 +1,344 @@
+{
+ "layers": [
+  {
+   "name": "lum",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lumn",
+   "op": "norm",
+   "inputs": [
+    "lum"
+   ]
+  },
+  {
+   "name": "rgbn",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "grad",
+   "op": "conv",
+   "inputs": [
+    "lumn"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gradr",
+   "op": "relu",
+   "inputs": [
+    "grad"
+   ]
+  },
+  {
+   "name": "sharp",
+   "op": "conv",
+   "inputs": [
+    "gradr"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ori",
+   "op": "relu",
+   "inputs": [
+    "sharp"
+   ]
+  },
+  {
+   "name": "ocell",
+   "op": "conv",
+   "inputs": [
+    "ori"
+   ],
+   "out": 8,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "ogather",
+   "op": "dense",
+   "inputs": [
+    "ocell"
+   ],
+   "out": 6272
+  },
+  {
+   "name": "oblock",
+   "op": "reshape",
+   "inputs": [
+    "ogather"
+   ],
+   "shape": [
+    49,
+    128,
+    1
+   ]
+  },
+  {
+   "name": "oblockn",
+   "op": "norm",
+   "inputs": [
+    "oblock"
+   ]
+  },
+  {
+   "name": "oblend",
+   "op": "dense",
+   "inputs": [
+    "oblockn"
+   ],
+   "out": 2048
+  },
+  {
+   "name": "omap",
+   "op": "reshape",
+   "inputs": [
+    "oblend"
+   ],
+   "shape": [
+    8,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "icell",
+   "op": "conv",
+   "inputs": [
+    "lumn"
+   ],
+   "out": 1,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 2,
+   "padding": 1
+  },
+  {
+   "name": "igather",
+   "op": "dense",
+   "inputs": [
+    "icell"
+   ],
+   "out": 784
+  },
+  {
+   "name": "iblock",
+   "op": "reshape",
+   "inputs": [
+    "igather"
+   ],
+   "shape": [
+    49,
+    16,
+    1
+   ]
+  },
+  {
+   "name": "iblockn",
+   "op": "norm",
+   "inputs": [
+    "iblock"
+   ]
+  },
+  {
+   "name": "iblend",
+   "op": "dense",
+   "inputs": [
+    "iblockn"
+   ],
+   "out": 256
+  },
+  {
+   "name": "imap",
+   "op": "reshape",
+   "inputs": [
+    "iblend"
+   ],
+   "shape": [
+    1,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "ccell",
+   "op": "conv",
+   "inputs": [
+    "rgbn"
+   ],
+   "out": 2,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 2,
+   "padding": 1
+  },
+  {
+   "name": "cflat",
+   "op": "reshape",
+   "inputs": [
+    "ccell"
+   ],
+   "shape": [
+    1,
+    32,
+    16
+   ]
+  },
+  {
+   "name": "cflatn",
+   "op": "norm",
+   "inputs": [
+    "cflat"
+   ]
+  },
+  {
+   "name": "cmap",
+   "op": "reshape",
+   "inputs": [
+    "cflatn"
+   ],
+   "shape": [
+    2,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "mo",
+   "op": "conv",
+   "inputs": [
+    "omap"
+   ],
+   "out": 12040,
+   "kernel": [
+    16,
+    16
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "mi",
+   "op": "conv",
+   "inputs": [
+    "imap"
+   ],
+   "out": 12040,
+   "kernel": [
+    16,
+    16
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "mc",
+   "op": "conv",
+   "inputs": [
+    "cmap"
+   ],
+   "out": 12040,
+   "kernel": [
+    16,
+    16
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "match",
+   "op": "add",
+   "inputs": [
+    "mo",
+    "mi",
+    "mc"
+   ]
+  },
+  {
+   "name": "best_shift",
+   "op": "maxpool",
+   "inputs": [
+    "match"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "best_shift"
+   ],
+   "shape": [
+    1,
+    43,
+    280
+   ]
+  },
+  {
+   "name": "best_pose",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    280
+   ],
+   "stride": [
+    1,
+    280
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best_pose"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

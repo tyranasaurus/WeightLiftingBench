@@ -1,0 +1,7885 @@
+{
+ "layers": [
+  {
+   "name": "photometry",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "exposure",
+   "op": "norm",
+   "inputs": [
+    "photometry"
+   ]
+  },
+  {
+   "name": "robustRamp",
+   "op": "conv",
+   "inputs": [
+    "exposure"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "robustRect",
+   "op": "relu",
+   "inputs": [
+    "robustRamp"
+   ]
+  },
+  {
+   "name": "robust",
+   "op": "conv",
+   "inputs": [
+    "robustRect"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gray",
+   "op": "conv",
+   "inputs": [
+    "robust"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "detail",
+   "op": "conv",
+   "inputs": [
+    "gray"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "detailGain",
+   "op": "norm",
+   "inputs": [
+    "detail"
+   ]
+  },
+  {
+   "name": "detailClipRamp",
+   "op": "conv",
+   "inputs": [
+    "detailGain"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "detailClipRect",
+   "op": "relu",
+   "inputs": [
+    "detailClipRamp"
+   ]
+  },
+  {
+   "name": "detailClip",
+   "op": "conv",
+   "inputs": [
+    "detailClipRect"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tonalHinges",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tonalRect",
+   "op": "relu",
+   "inputs": [
+    "tonalHinges"
+   ]
+  },
+  {
+   "name": "logOpponents",
+   "op": "conv",
+   "inputs": [
+    "tonalRect"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logGain",
+   "op": "norm",
+   "inputs": [
+    "logOpponents"
+   ]
+  },
+  {
+   "name": "logClipRamp",
+   "op": "conv",
+   "inputs": [
+    "logGain"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logClipRect",
+   "op": "relu",
+   "inputs": [
+    "logClipRamp"
+   ]
+  },
+  {
+   "name": "logClip",
+   "op": "conv",
+   "inputs": [
+    "logClipRect"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logGray",
+   "op": "conv",
+   "inputs": [
+    "logClip"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logDetail",
+   "op": "conv",
+   "inputs": [
+    "logGray"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "logDetailGain",
+   "op": "norm",
+   "inputs": [
+    "logDetail"
+   ]
+  },
+  {
+   "name": "logDetailClipRamp",
+   "op": "conv",
+   "inputs": [
+    "logDetailGain"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logDetailClipRect",
+   "op": "relu",
+   "inputs": [
+    "logDetailClipRamp"
+   ]
+  },
+  {
+   "name": "logDetailClip",
+   "op": "conv",
+   "inputs": [
+    "logDetailClipRect"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "linBase",
+   "op": "conv",
+   "inputs": [
+    "robust"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logBase",
+   "op": "conv",
+   "inputs": [
+    "logClip"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "linEdge",
+   "op": "conv",
+   "inputs": [
+    "detailClip"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "logEdge",
+   "op": "conv",
+   "inputs": [
+    "logDetailClip"
+   ],
+   "out": 5,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "planes",
+   "op": "add",
+   "inputs": [
+    "linBase",
+    "logBase",
+    "linEdge",
+    "logEdge"
+   ]
+  },
+  {
+   "name": "polarities",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "halfWaves",
+   "op": "relu",
+   "inputs": [
+    "polarities"
+   ]
+  },
+  {
+   "name": "energy",
+   "op": "conv",
+   "inputs": [
+    "halfWaves"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAbsolute",
+   "op": "conv",
+   "inputs": [
+    "tonalRect"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAmountRamp",
+   "op": "conv",
+   "inputs": [
+    "colourAbsolute"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAmountRect",
+   "op": "relu",
+   "inputs": [
+    "colourAmountRamp"
+   ]
+  },
+  {
+   "name": "colourAmount",
+   "op": "conv",
+   "inputs": [
+    "colourAmountRect"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colouredInk",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "contourSource",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "derivatives",
+   "op": "conv",
+   "inputs": [
+    "contourSource"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "slopeSign",
+   "op": "relu",
+   "inputs": [
+    "derivatives"
+   ]
+  },
+  {
+   "name": "unsignedSlope",
+   "op": "conv",
+   "inputs": [
+    "slopeSign"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "orientationBins",
+   "op": "conv",
+   "inputs": [
+    "unsignedSlope"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "positiveVotes",
+   "op": "relu",
+   "inputs": [
+    "orientationBins"
+   ]
+  },
+  {
+   "name": "edgeGain",
+   "op": "norm",
+   "inputs": [
+    "positiveVotes"
+   ]
+  },
+  {
+   "name": "softOrientationRamp",
+   "op": "conv",
+   "inputs": [
+    "edgeGain"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "softOrientationRect",
+   "op": "relu",
+   "inputs": [
+    "softOrientationRamp"
+   ]
+  },
+  {
+   "name": "softOrientation",
+   "op": "conv",
+   "inputs": [
+    "softOrientationRect"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fineStrokes",
+   "op": "conv",
+   "inputs": [
+    "contourSource"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "fineGain",
+   "op": "norm",
+   "inputs": [
+    "fineStrokes"
+   ]
+  },
+  {
+   "name": "fineClipRamp",
+   "op": "conv",
+   "inputs": [
+    "fineGain"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fineClipRect",
+   "op": "relu",
+   "inputs": [
+    "fineClipRamp"
+   ]
+  },
+  {
+   "name": "fineClip",
+   "op": "conv",
+   "inputs": [
+    "fineClipRect"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sectorInk",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "frame0",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour0",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture0",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol0",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid0",
+   "op": "reshape",
+   "inputs": [
+    "symbol0"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle0",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid0"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles0",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle0"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol0",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour0",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk0",
+   "op": "add",
+   "inputs": [
+    "styles0",
+    "whichColour0"
+   ]
+  },
+  {
+   "name": "stripeEnds0",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds0",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem0",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis0",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem0"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle0",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis0"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid0",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle0"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote0",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy0",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField0",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate0",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis0",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate0"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle0",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis0"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid0",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle0"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote0",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits0",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis0",
+   "op": "reshape",
+   "inputs": [
+    "readDigits0"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch0",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis0"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid0",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch0"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote0",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup0",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels0",
+   "op": "reshape",
+   "inputs": [
+    "partLookup0"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge0",
+   "op": "conv",
+   "inputs": [
+    "partChannels0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate0",
+   "op": "relu",
+   "inputs": [
+    "partHinge0"
+   ]
+  },
+  {
+   "name": "negateExcess0",
+   "op": "conv",
+   "inputs": [
+    "partSaturate0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes0",
+   "op": "add",
+   "inputs": [
+    "partChannels0",
+    "negateExcess0"
+   ]
+  },
+  {
+   "name": "partAxis0",
+   "op": "reshape",
+   "inputs": [
+    "partVotes0"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree0",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis0"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles0",
+   "op": "reshape",
+   "inputs": [
+    "partAgree0"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote0",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles0"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid0",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote0"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk0",
+   "op": "conv",
+   "inputs": [
+    "partGrid0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap0",
+   "op": "conv",
+   "inputs": [
+    "frame0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour0",
+   "op": "add",
+   "inputs": [
+    "shapeMap0",
+    "colour0"
+   ]
+  },
+  {
+   "name": "padInk0",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby0",
+   "op": "maxpool",
+   "inputs": [
+    "padInk0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction0",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction0",
+   "op": "conv",
+   "inputs": [
+    "inkNearby0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch0",
+   "op": "add",
+   "inputs": [
+    "rigidFraction0",
+    "flexFraction0"
+   ]
+  },
+  {
+   "name": "textureCost0",
+   "op": "conv",
+   "inputs": [
+    "texture0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote0",
+   "op": "conv",
+   "inputs": [
+    "inkMatch0"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint0",
+   "op": "add",
+   "inputs": [
+    "symbolVote0",
+    "shapeColour0",
+    "textureCost0",
+    "whichEnds0",
+    "emblemVote0",
+    "emptyField0",
+    "edgeVote0",
+    "digitsVote0",
+    "distributedInk0"
+   ]
+  },
+  {
+   "name": "poseMax0",
+   "op": "maxpool",
+   "inputs": [
+    "joint0"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax0",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour0"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame1",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour1",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture1",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol1",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid1",
+   "op": "reshape",
+   "inputs": [
+    "symbol1"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle1",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid1"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles1",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle1"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol1",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour1",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk1",
+   "op": "add",
+   "inputs": [
+    "styles1",
+    "whichColour1"
+   ]
+  },
+  {
+   "name": "stripeEnds1",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds1",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem1",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis1",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem1"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle1",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis1"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid1",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle1"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote1",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy1",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField1",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate1",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis1",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate1"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle1",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis1"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid1",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle1"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote1",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits1",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis1",
+   "op": "reshape",
+   "inputs": [
+    "readDigits1"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch1",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis1"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid1",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch1"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote1",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup1",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels1",
+   "op": "reshape",
+   "inputs": [
+    "partLookup1"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge1",
+   "op": "conv",
+   "inputs": [
+    "partChannels1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate1",
+   "op": "relu",
+   "inputs": [
+    "partHinge1"
+   ]
+  },
+  {
+   "name": "negateExcess1",
+   "op": "conv",
+   "inputs": [
+    "partSaturate1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes1",
+   "op": "add",
+   "inputs": [
+    "partChannels1",
+    "negateExcess1"
+   ]
+  },
+  {
+   "name": "partAxis1",
+   "op": "reshape",
+   "inputs": [
+    "partVotes1"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree1",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis1"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles1",
+   "op": "reshape",
+   "inputs": [
+    "partAgree1"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote1",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles1"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid1",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote1"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk1",
+   "op": "conv",
+   "inputs": [
+    "partGrid1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap1",
+   "op": "conv",
+   "inputs": [
+    "frame1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour1",
+   "op": "add",
+   "inputs": [
+    "shapeMap1",
+    "colour1"
+   ]
+  },
+  {
+   "name": "padInk1",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby1",
+   "op": "maxpool",
+   "inputs": [
+    "padInk1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction1",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction1",
+   "op": "conv",
+   "inputs": [
+    "inkNearby1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch1",
+   "op": "add",
+   "inputs": [
+    "rigidFraction1",
+    "flexFraction1"
+   ]
+  },
+  {
+   "name": "textureCost1",
+   "op": "conv",
+   "inputs": [
+    "texture1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote1",
+   "op": "conv",
+   "inputs": [
+    "inkMatch1"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint1",
+   "op": "add",
+   "inputs": [
+    "symbolVote1",
+    "shapeColour1",
+    "textureCost1",
+    "whichEnds1",
+    "emblemVote1",
+    "emptyField1",
+    "edgeVote1",
+    "digitsVote1",
+    "distributedInk1"
+   ]
+  },
+  {
+   "name": "poseMax1",
+   "op": "maxpool",
+   "inputs": [
+    "joint1"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax1",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour1"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame2",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour2",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture2",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol2",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid2",
+   "op": "reshape",
+   "inputs": [
+    "symbol2"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle2",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid2"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles2",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle2"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol2",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour2",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk2",
+   "op": "add",
+   "inputs": [
+    "styles2",
+    "whichColour2"
+   ]
+  },
+  {
+   "name": "stripeEnds2",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds2",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem2",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis2",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem2"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle2",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis2"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid2",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle2"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote2",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy2",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField2",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate2",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis2",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate2"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle2",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis2"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid2",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle2"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote2",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits2",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis2",
+   "op": "reshape",
+   "inputs": [
+    "readDigits2"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch2",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis2"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid2",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch2"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote2",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup2",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels2",
+   "op": "reshape",
+   "inputs": [
+    "partLookup2"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge2",
+   "op": "conv",
+   "inputs": [
+    "partChannels2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate2",
+   "op": "relu",
+   "inputs": [
+    "partHinge2"
+   ]
+  },
+  {
+   "name": "negateExcess2",
+   "op": "conv",
+   "inputs": [
+    "partSaturate2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes2",
+   "op": "add",
+   "inputs": [
+    "partChannels2",
+    "negateExcess2"
+   ]
+  },
+  {
+   "name": "partAxis2",
+   "op": "reshape",
+   "inputs": [
+    "partVotes2"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree2",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis2"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles2",
+   "op": "reshape",
+   "inputs": [
+    "partAgree2"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote2",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles2"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid2",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote2"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk2",
+   "op": "conv",
+   "inputs": [
+    "partGrid2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap2",
+   "op": "conv",
+   "inputs": [
+    "frame2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour2",
+   "op": "add",
+   "inputs": [
+    "shapeMap2",
+    "colour2"
+   ]
+  },
+  {
+   "name": "padInk2",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby2",
+   "op": "maxpool",
+   "inputs": [
+    "padInk2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction2",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction2",
+   "op": "conv",
+   "inputs": [
+    "inkNearby2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch2",
+   "op": "add",
+   "inputs": [
+    "rigidFraction2",
+    "flexFraction2"
+   ]
+  },
+  {
+   "name": "textureCost2",
+   "op": "conv",
+   "inputs": [
+    "texture2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote2",
+   "op": "conv",
+   "inputs": [
+    "inkMatch2"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint2",
+   "op": "add",
+   "inputs": [
+    "symbolVote2",
+    "shapeColour2",
+    "textureCost2",
+    "whichEnds2",
+    "emblemVote2",
+    "emptyField2",
+    "edgeVote2",
+    "digitsVote2",
+    "distributedInk2"
+   ]
+  },
+  {
+   "name": "poseMax2",
+   "op": "maxpool",
+   "inputs": [
+    "joint2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax2",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame3",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour3",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture3",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol3",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid3",
+   "op": "reshape",
+   "inputs": [
+    "symbol3"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle3",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid3"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles3",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle3"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol3",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour3",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk3",
+   "op": "add",
+   "inputs": [
+    "styles3",
+    "whichColour3"
+   ]
+  },
+  {
+   "name": "stripeEnds3",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds3",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem3",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis3",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem3"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle3",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid3",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle3"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote3",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy3",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField3",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate3",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis3",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate3"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle3",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid3",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle3"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote3",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits3",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis3",
+   "op": "reshape",
+   "inputs": [
+    "readDigits3"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch3",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis3"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid3",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch3"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote3",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup3",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels3",
+   "op": "reshape",
+   "inputs": [
+    "partLookup3"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge3",
+   "op": "conv",
+   "inputs": [
+    "partChannels3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate3",
+   "op": "relu",
+   "inputs": [
+    "partHinge3"
+   ]
+  },
+  {
+   "name": "negateExcess3",
+   "op": "conv",
+   "inputs": [
+    "partSaturate3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes3",
+   "op": "add",
+   "inputs": [
+    "partChannels3",
+    "negateExcess3"
+   ]
+  },
+  {
+   "name": "partAxis3",
+   "op": "reshape",
+   "inputs": [
+    "partVotes3"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree3",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles3",
+   "op": "reshape",
+   "inputs": [
+    "partAgree3"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote3",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles3"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid3",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote3"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk3",
+   "op": "conv",
+   "inputs": [
+    "partGrid3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap3",
+   "op": "conv",
+   "inputs": [
+    "frame3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour3",
+   "op": "add",
+   "inputs": [
+    "shapeMap3",
+    "colour3"
+   ]
+  },
+  {
+   "name": "padInk3",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby3",
+   "op": "maxpool",
+   "inputs": [
+    "padInk3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction3",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction3",
+   "op": "conv",
+   "inputs": [
+    "inkNearby3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch3",
+   "op": "add",
+   "inputs": [
+    "rigidFraction3",
+    "flexFraction3"
+   ]
+  },
+  {
+   "name": "textureCost3",
+   "op": "conv",
+   "inputs": [
+    "texture3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote3",
+   "op": "conv",
+   "inputs": [
+    "inkMatch3"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint3",
+   "op": "add",
+   "inputs": [
+    "symbolVote3",
+    "shapeColour3",
+    "textureCost3",
+    "whichEnds3",
+    "emblemVote3",
+    "emptyField3",
+    "edgeVote3",
+    "digitsVote3",
+    "distributedInk3"
+   ]
+  },
+  {
+   "name": "poseMax3",
+   "op": "maxpool",
+   "inputs": [
+    "joint3"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax3",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour3"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame4",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour4",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture4",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol4",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid4",
+   "op": "reshape",
+   "inputs": [
+    "symbol4"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle4",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid4"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles4",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle4"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol4",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour4",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk4",
+   "op": "add",
+   "inputs": [
+    "styles4",
+    "whichColour4"
+   ]
+  },
+  {
+   "name": "stripeEnds4",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds4",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem4",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis4",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem4"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle4",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid4",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle4"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote4",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy4",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField4",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate4",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis4",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate4"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle4",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid4",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle4"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote4",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits4",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis4",
+   "op": "reshape",
+   "inputs": [
+    "readDigits4"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch4",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis4"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid4",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch4"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote4",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup4",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels4",
+   "op": "reshape",
+   "inputs": [
+    "partLookup4"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge4",
+   "op": "conv",
+   "inputs": [
+    "partChannels4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate4",
+   "op": "relu",
+   "inputs": [
+    "partHinge4"
+   ]
+  },
+  {
+   "name": "negateExcess4",
+   "op": "conv",
+   "inputs": [
+    "partSaturate4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes4",
+   "op": "add",
+   "inputs": [
+    "partChannels4",
+    "negateExcess4"
+   ]
+  },
+  {
+   "name": "partAxis4",
+   "op": "reshape",
+   "inputs": [
+    "partVotes4"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree4",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles4",
+   "op": "reshape",
+   "inputs": [
+    "partAgree4"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote4",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles4"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid4",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote4"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk4",
+   "op": "conv",
+   "inputs": [
+    "partGrid4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap4",
+   "op": "conv",
+   "inputs": [
+    "frame4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour4",
+   "op": "add",
+   "inputs": [
+    "shapeMap4",
+    "colour4"
+   ]
+  },
+  {
+   "name": "padInk4",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby4",
+   "op": "maxpool",
+   "inputs": [
+    "padInk4"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction4",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction4",
+   "op": "conv",
+   "inputs": [
+    "inkNearby4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch4",
+   "op": "add",
+   "inputs": [
+    "rigidFraction4",
+    "flexFraction4"
+   ]
+  },
+  {
+   "name": "textureCost4",
+   "op": "conv",
+   "inputs": [
+    "texture4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote4",
+   "op": "conv",
+   "inputs": [
+    "inkMatch4"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint4",
+   "op": "add",
+   "inputs": [
+    "symbolVote4",
+    "shapeColour4",
+    "textureCost4",
+    "whichEnds4",
+    "emblemVote4",
+    "emptyField4",
+    "edgeVote4",
+    "digitsVote4",
+    "distributedInk4"
+   ]
+  },
+  {
+   "name": "poseMax4",
+   "op": "maxpool",
+   "inputs": [
+    "joint4"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax4",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour4"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame5",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour5",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture5",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol5",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid5",
+   "op": "reshape",
+   "inputs": [
+    "symbol5"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle5",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid5"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles5",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle5"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol5",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour5",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk5",
+   "op": "add",
+   "inputs": [
+    "styles5",
+    "whichColour5"
+   ]
+  },
+  {
+   "name": "stripeEnds5",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds5",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem5",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis5",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem5"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle5",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis5"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid5",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle5"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote5",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy5",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField5",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate5",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis5",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate5"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle5",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis5"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid5",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle5"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote5",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits5",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis5",
+   "op": "reshape",
+   "inputs": [
+    "readDigits5"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch5",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis5"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid5",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch5"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote5",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup5",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels5",
+   "op": "reshape",
+   "inputs": [
+    "partLookup5"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge5",
+   "op": "conv",
+   "inputs": [
+    "partChannels5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate5",
+   "op": "relu",
+   "inputs": [
+    "partHinge5"
+   ]
+  },
+  {
+   "name": "negateExcess5",
+   "op": "conv",
+   "inputs": [
+    "partSaturate5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes5",
+   "op": "add",
+   "inputs": [
+    "partChannels5",
+    "negateExcess5"
+   ]
+  },
+  {
+   "name": "partAxis5",
+   "op": "reshape",
+   "inputs": [
+    "partVotes5"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree5",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis5"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles5",
+   "op": "reshape",
+   "inputs": [
+    "partAgree5"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote5",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles5"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid5",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote5"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk5",
+   "op": "conv",
+   "inputs": [
+    "partGrid5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap5",
+   "op": "conv",
+   "inputs": [
+    "frame5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour5",
+   "op": "add",
+   "inputs": [
+    "shapeMap5",
+    "colour5"
+   ]
+  },
+  {
+   "name": "padInk5",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby5",
+   "op": "maxpool",
+   "inputs": [
+    "padInk5"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction5",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction5",
+   "op": "conv",
+   "inputs": [
+    "inkNearby5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch5",
+   "op": "add",
+   "inputs": [
+    "rigidFraction5",
+    "flexFraction5"
+   ]
+  },
+  {
+   "name": "textureCost5",
+   "op": "conv",
+   "inputs": [
+    "texture5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote5",
+   "op": "conv",
+   "inputs": [
+    "inkMatch5"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint5",
+   "op": "add",
+   "inputs": [
+    "symbolVote5",
+    "shapeColour5",
+    "textureCost5",
+    "whichEnds5",
+    "emblemVote5",
+    "emptyField5",
+    "edgeVote5",
+    "digitsVote5",
+    "distributedInk5"
+   ]
+  },
+  {
+   "name": "poseMax5",
+   "op": "maxpool",
+   "inputs": [
+    "joint5"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax5",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour5"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame6",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour6",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture6",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol6",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid6",
+   "op": "reshape",
+   "inputs": [
+    "symbol6"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle6",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid6"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles6",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle6"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol6",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour6",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk6",
+   "op": "add",
+   "inputs": [
+    "styles6",
+    "whichColour6"
+   ]
+  },
+  {
+   "name": "stripeEnds6",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds6",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem6",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis6",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem6"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle6",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis6"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid6",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle6"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote6",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy6",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField6",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate6",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis6",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate6"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle6",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis6"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid6",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle6"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote6",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits6",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis6",
+   "op": "reshape",
+   "inputs": [
+    "readDigits6"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch6",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis6"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid6",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch6"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote6",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup6",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels6",
+   "op": "reshape",
+   "inputs": [
+    "partLookup6"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge6",
+   "op": "conv",
+   "inputs": [
+    "partChannels6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate6",
+   "op": "relu",
+   "inputs": [
+    "partHinge6"
+   ]
+  },
+  {
+   "name": "negateExcess6",
+   "op": "conv",
+   "inputs": [
+    "partSaturate6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes6",
+   "op": "add",
+   "inputs": [
+    "partChannels6",
+    "negateExcess6"
+   ]
+  },
+  {
+   "name": "partAxis6",
+   "op": "reshape",
+   "inputs": [
+    "partVotes6"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree6",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis6"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles6",
+   "op": "reshape",
+   "inputs": [
+    "partAgree6"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote6",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles6"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid6",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote6"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk6",
+   "op": "conv",
+   "inputs": [
+    "partGrid6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap6",
+   "op": "conv",
+   "inputs": [
+    "frame6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour6",
+   "op": "add",
+   "inputs": [
+    "shapeMap6",
+    "colour6"
+   ]
+  },
+  {
+   "name": "padInk6",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby6",
+   "op": "maxpool",
+   "inputs": [
+    "padInk6"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction6",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction6",
+   "op": "conv",
+   "inputs": [
+    "inkNearby6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch6",
+   "op": "add",
+   "inputs": [
+    "rigidFraction6",
+    "flexFraction6"
+   ]
+  },
+  {
+   "name": "textureCost6",
+   "op": "conv",
+   "inputs": [
+    "texture6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote6",
+   "op": "conv",
+   "inputs": [
+    "inkMatch6"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint6",
+   "op": "add",
+   "inputs": [
+    "symbolVote6",
+    "shapeColour6",
+    "textureCost6",
+    "whichEnds6",
+    "emblemVote6",
+    "emptyField6",
+    "edgeVote6",
+    "digitsVote6",
+    "distributedInk6"
+   ]
+  },
+  {
+   "name": "poseMax6",
+   "op": "maxpool",
+   "inputs": [
+    "joint6"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax6",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour6"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame7",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour7",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture7",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol7",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid7",
+   "op": "reshape",
+   "inputs": [
+    "symbol7"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle7",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid7"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles7",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle7"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol7",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour7",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk7",
+   "op": "add",
+   "inputs": [
+    "styles7",
+    "whichColour7"
+   ]
+  },
+  {
+   "name": "stripeEnds7",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds7",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem7",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis7",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem7"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle7",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis7"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid7",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle7"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote7",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy7",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField7",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate7",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis7",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate7"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle7",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis7"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid7",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle7"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote7",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits7",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis7",
+   "op": "reshape",
+   "inputs": [
+    "readDigits7"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch7",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis7"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid7",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch7"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote7",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup7",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels7",
+   "op": "reshape",
+   "inputs": [
+    "partLookup7"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge7",
+   "op": "conv",
+   "inputs": [
+    "partChannels7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate7",
+   "op": "relu",
+   "inputs": [
+    "partHinge7"
+   ]
+  },
+  {
+   "name": "negateExcess7",
+   "op": "conv",
+   "inputs": [
+    "partSaturate7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes7",
+   "op": "add",
+   "inputs": [
+    "partChannels7",
+    "negateExcess7"
+   ]
+  },
+  {
+   "name": "partAxis7",
+   "op": "reshape",
+   "inputs": [
+    "partVotes7"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree7",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis7"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles7",
+   "op": "reshape",
+   "inputs": [
+    "partAgree7"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote7",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles7"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid7",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote7"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk7",
+   "op": "conv",
+   "inputs": [
+    "partGrid7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap7",
+   "op": "conv",
+   "inputs": [
+    "frame7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour7",
+   "op": "add",
+   "inputs": [
+    "shapeMap7",
+    "colour7"
+   ]
+  },
+  {
+   "name": "padInk7",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby7",
+   "op": "maxpool",
+   "inputs": [
+    "padInk7"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction7",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction7",
+   "op": "conv",
+   "inputs": [
+    "inkNearby7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch7",
+   "op": "add",
+   "inputs": [
+    "rigidFraction7",
+    "flexFraction7"
+   ]
+  },
+  {
+   "name": "textureCost7",
+   "op": "conv",
+   "inputs": [
+    "texture7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote7",
+   "op": "conv",
+   "inputs": [
+    "inkMatch7"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint7",
+   "op": "add",
+   "inputs": [
+    "symbolVote7",
+    "shapeColour7",
+    "textureCost7",
+    "whichEnds7",
+    "emblemVote7",
+    "emptyField7",
+    "edgeVote7",
+    "digitsVote7",
+    "distributedInk7"
+   ]
+  },
+  {
+   "name": "poseMax7",
+   "op": "maxpool",
+   "inputs": [
+    "joint7"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax7",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour7"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame8",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour8",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture8",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol8",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid8",
+   "op": "reshape",
+   "inputs": [
+    "symbol8"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle8",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid8"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles8",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle8"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol8",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour8",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk8",
+   "op": "add",
+   "inputs": [
+    "styles8",
+    "whichColour8"
+   ]
+  },
+  {
+   "name": "stripeEnds8",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds8",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem8",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis8",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem8"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle8",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis8"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid8",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle8"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote8",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy8",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField8",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate8",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis8",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate8"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle8",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis8"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid8",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle8"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote8",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits8",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis8",
+   "op": "reshape",
+   "inputs": [
+    "readDigits8"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch8",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis8"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid8",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch8"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote8",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup8",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels8",
+   "op": "reshape",
+   "inputs": [
+    "partLookup8"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge8",
+   "op": "conv",
+   "inputs": [
+    "partChannels8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate8",
+   "op": "relu",
+   "inputs": [
+    "partHinge8"
+   ]
+  },
+  {
+   "name": "negateExcess8",
+   "op": "conv",
+   "inputs": [
+    "partSaturate8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes8",
+   "op": "add",
+   "inputs": [
+    "partChannels8",
+    "negateExcess8"
+   ]
+  },
+  {
+   "name": "partAxis8",
+   "op": "reshape",
+   "inputs": [
+    "partVotes8"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree8",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis8"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles8",
+   "op": "reshape",
+   "inputs": [
+    "partAgree8"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote8",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles8"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid8",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote8"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk8",
+   "op": "conv",
+   "inputs": [
+    "partGrid8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap8",
+   "op": "conv",
+   "inputs": [
+    "frame8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour8",
+   "op": "add",
+   "inputs": [
+    "shapeMap8",
+    "colour8"
+   ]
+  },
+  {
+   "name": "padInk8",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby8",
+   "op": "maxpool",
+   "inputs": [
+    "padInk8"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction8",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction8",
+   "op": "conv",
+   "inputs": [
+    "inkNearby8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch8",
+   "op": "add",
+   "inputs": [
+    "rigidFraction8",
+    "flexFraction8"
+   ]
+  },
+  {
+   "name": "textureCost8",
+   "op": "conv",
+   "inputs": [
+    "texture8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote8",
+   "op": "conv",
+   "inputs": [
+    "inkMatch8"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint8",
+   "op": "add",
+   "inputs": [
+    "symbolVote8",
+    "shapeColour8",
+    "textureCost8",
+    "whichEnds8",
+    "emblemVote8",
+    "emptyField8",
+    "edgeVote8",
+    "digitsVote8",
+    "distributedInk8"
+   ]
+  },
+  {
+   "name": "poseMax8",
+   "op": "maxpool",
+   "inputs": [
+    "joint8"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax8",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour8"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frame9",
+   "op": "conv",
+   "inputs": [
+    "planes"
+   ],
+   "out": 8,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "colour9",
+   "op": "conv",
+   "inputs": [
+    "colourAmount"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "texture9",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 43,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "symbol9",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 344,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "styleGrid9",
+   "op": "reshape",
+   "inputs": [
+    "symbol9"
+   ],
+   "shape": [
+    43,
+    8,
+    25
+   ]
+  },
+  {
+   "name": "bestStyle9",
+   "op": "maxpool",
+   "inputs": [
+    "styleGrid9"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "styles9",
+   "op": "reshape",
+   "inputs": [
+    "bestStyle9"
+   ],
+   "shape": [
+    43,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "colourSymbol9",
+   "op": "conv",
+   "inputs": [
+    "colouredInk"
+   ],
+   "out": 11,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichColour9",
+   "op": "conv",
+   "inputs": [
+    "colourSymbol9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colourAndInk9",
+   "op": "add",
+   "inputs": [
+    "styles9",
+    "whichColour9"
+   ]
+  },
+  {
+   "name": "stripeEnds9",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 1,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "whichEnds9",
+   "op": "conv",
+   "inputs": [
+    "stripeEnds9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cancelledEmblem9",
+   "op": "conv",
+   "inputs": [
+    "ink"
+   ],
+   "out": 16,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emblemStyleAxis9",
+   "op": "reshape",
+   "inputs": [
+    "cancelledEmblem9"
+   ],
+   "shape": [
+    4,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "emblemStyle9",
+   "op": "maxpool",
+   "inputs": [
+    "emblemStyleAxis9"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "emblemGrid9",
+   "op": "reshape",
+   "inputs": [
+    "emblemStyle9"
+   ],
+   "shape": [
+    4,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "emblemVote9",
+   "op": "conv",
+   "inputs": [
+    "emblemGrid9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fieldEnergy9",
+   "op": "conv",
+   "inputs": [
+    "energy"
+   ],
+   "out": 2,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "emptyField9",
+   "op": "conv",
+   "inputs": [
+    "fieldEnergy9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edgeTemplate9",
+   "op": "conv",
+   "inputs": [
+    "softOrientation"
+   ],
+   "out": 124,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "edgeAxis9",
+   "op": "reshape",
+   "inputs": [
+    "edgeTemplate9"
+   ],
+   "shape": [
+    31,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "edgeStyle9",
+   "op": "maxpool",
+   "inputs": [
+    "edgeAxis9"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "edgeGrid9",
+   "op": "reshape",
+   "inputs": [
+    "edgeStyle9"
+   ],
+   "shape": [
+    31,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edgeVote9",
+   "op": "conv",
+   "inputs": [
+    "edgeGrid9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "readDigits9",
+   "op": "conv",
+   "inputs": [
+    "fineClip"
+   ],
+   "out": 384,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "digitsAxis9",
+   "op": "reshape",
+   "inputs": [
+    "readDigits9"
+   ],
+   "shape": [
+    8,
+    48,
+    25
+   ]
+  },
+  {
+   "name": "digitsMatch9",
+   "op": "maxpool",
+   "inputs": [
+    "digitsAxis9"
+   ],
+   "size": [
+    48,
+    1
+   ],
+   "stride": [
+    48,
+    1
+   ]
+  },
+  {
+   "name": "digitsGrid9",
+   "op": "reshape",
+   "inputs": [
+    "digitsMatch9"
+   ],
+   "shape": [
+    8,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "digitsVote9",
+   "op": "conv",
+   "inputs": [
+    "digitsGrid9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partLookup9",
+   "op": "conv",
+   "inputs": [
+    "sectorInk"
+   ],
+   "out": 240,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partChannels9",
+   "op": "reshape",
+   "inputs": [
+    "partLookup9"
+   ],
+   "shape": [
+    1,
+    240,
+    25
+   ]
+  },
+  {
+   "name": "partHinge9",
+   "op": "conv",
+   "inputs": [
+    "partChannels9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partSaturate9",
+   "op": "relu",
+   "inputs": [
+    "partHinge9"
+   ]
+  },
+  {
+   "name": "negateExcess9",
+   "op": "conv",
+   "inputs": [
+    "partSaturate9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "partVotes9",
+   "op": "add",
+   "inputs": [
+    "partChannels9",
+    "negateExcess9"
+   ]
+  },
+  {
+   "name": "partAxis9",
+   "op": "reshape",
+   "inputs": [
+    "partVotes9"
+   ],
+   "shape": [
+    60,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partAgree9",
+   "op": "avgpool",
+   "inputs": [
+    "partAxis9"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partStyles9",
+   "op": "reshape",
+   "inputs": [
+    "partAgree9"
+   ],
+   "shape": [
+    15,
+    4,
+    25
+   ]
+  },
+  {
+   "name": "partStyleVote9",
+   "op": "maxpool",
+   "inputs": [
+    "partStyles9"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "partGrid9",
+   "op": "reshape",
+   "inputs": [
+    "partStyleVote9"
+   ],
+   "shape": [
+    15,
+    5,
+    5
+   ]
+  },
+  {
+   "name": "distributedInk9",
+   "op": "conv",
+   "inputs": [
+    "partGrid9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeMap9",
+   "op": "conv",
+   "inputs": [
+    "frame9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shapeColour9",
+   "op": "add",
+   "inputs": [
+    "shapeMap9",
+    "colour9"
+   ]
+  },
+  {
+   "name": "padInk9",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "inkNearby9",
+   "op": "maxpool",
+   "inputs": [
+    "padInk9"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "rigidFraction9",
+   "op": "conv",
+   "inputs": [
+    "colourAndInk9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flexFraction9",
+   "op": "conv",
+   "inputs": [
+    "inkNearby9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "inkMatch9",
+   "op": "add",
+   "inputs": [
+    "rigidFraction9",
+    "flexFraction9"
+   ]
+  },
+  {
+   "name": "textureCost9",
+   "op": "conv",
+   "inputs": [
+    "texture9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbolVote9",
+   "op": "conv",
+   "inputs": [
+    "inkMatch9"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "joint9",
+   "op": "add",
+   "inputs": [
+    "symbolVote9",
+    "shapeColour9",
+    "textureCost9",
+    "whichEnds9",
+    "emblemVote9",
+    "emptyField9",
+    "edgeVote9",
+    "digitsVote9",
+    "distributedInk9"
+   ]
+  },
+  {
+   "name": "poseMax9",
+   "op": "maxpool",
+   "inputs": [
+    "joint9"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "frameMax9",
+   "op": "maxpool",
+   "inputs": [
+    "shapeColour9"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "jointplace0",
+   "op": "dense",
+   "inputs": [
+    "poseMax0"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace1",
+   "op": "dense",
+   "inputs": [
+    "poseMax1"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace2",
+   "op": "dense",
+   "inputs": [
+    "poseMax2"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace3",
+   "op": "dense",
+   "inputs": [
+    "poseMax3"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace4",
+   "op": "dense",
+   "inputs": [
+    "poseMax4"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace5",
+   "op": "dense",
+   "inputs": [
+    "poseMax5"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace6",
+   "op": "dense",
+   "inputs": [
+    "poseMax6"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace7",
+   "op": "dense",
+   "inputs": [
+    "poseMax7"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace8",
+   "op": "dense",
+   "inputs": [
+    "poseMax8"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointplace9",
+   "op": "dense",
+   "inputs": [
+    "poseMax9"
+   ],
+   "out": 430
+  },
+  {
+   "name": "jointcollect",
+   "op": "add",
+   "inputs": [
+    "jointplace0",
+    "jointplace1",
+    "jointplace2",
+    "jointplace3",
+    "jointplace4",
+    "jointplace5",
+    "jointplace6",
+    "jointplace7",
+    "jointplace8",
+    "jointplace9"
+   ]
+  },
+  {
+   "name": "jointaxis",
+   "op": "reshape",
+   "inputs": [
+    "jointcollect"
+   ],
+   "shape": [
+    43,
+    1,
+    10
+   ]
+  },
+  {
+   "name": "jointmax",
+   "op": "maxpool",
+   "inputs": [
+    "jointaxis"
+   ],
+   "size": [
+    1,
+    10
+   ],
+   "stride": [
+    1,
+    10
+   ]
+  },
+  {
+   "name": "shapeplace0",
+   "op": "dense",
+   "inputs": [
+    "frameMax0"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace1",
+   "op": "dense",
+   "inputs": [
+    "frameMax1"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace2",
+   "op": "dense",
+   "inputs": [
+    "frameMax2"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace3",
+   "op": "dense",
+   "inputs": [
+    "frameMax3"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace4",
+   "op": "dense",
+   "inputs": [
+    "frameMax4"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace5",
+   "op": "dense",
+   "inputs": [
+    "frameMax5"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace6",
+   "op": "dense",
+   "inputs": [
+    "frameMax6"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace7",
+   "op": "dense",
+   "inputs": [
+    "frameMax7"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace8",
+   "op": "dense",
+   "inputs": [
+    "frameMax8"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapeplace9",
+   "op": "dense",
+   "inputs": [
+    "frameMax9"
+   ],
+   "out": 430
+  },
+  {
+   "name": "shapecollect",
+   "op": "add",
+   "inputs": [
+    "shapeplace0",
+    "shapeplace1",
+    "shapeplace2",
+    "shapeplace3",
+    "shapeplace4",
+    "shapeplace5",
+    "shapeplace6",
+    "shapeplace7",
+    "shapeplace8",
+    "shapeplace9"
+   ]
+  },
+  {
+   "name": "shapeaxis",
+   "op": "reshape",
+   "inputs": [
+    "shapecollect"
+   ],
+   "shape": [
+    43,
+    1,
+    10
+   ]
+  },
+  {
+   "name": "shapemax",
+   "op": "maxpool",
+   "inputs": [
+    "shapeaxis"
+   ],
+   "size": [
+    1,
+    10
+   ],
+   "stride": [
+    1,
+    10
+   ]
+  },
+  {
+   "name": "shapeConfidence",
+   "op": "conv",
+   "inputs": [
+    "shapemax"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "classEvidence",
+   "op": "add",
+   "inputs": [
+    "jointmax",
+    "shapeConfidence"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "classEvidence"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

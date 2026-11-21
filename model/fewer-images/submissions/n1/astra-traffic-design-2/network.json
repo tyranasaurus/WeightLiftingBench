@@ -1,0 +1,1697 @@
+{
+ "layers": [
+  {
+   "name": "exposure_knots",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 21,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "exposure_basis",
+   "op": "relu",
+   "inputs": [
+    "exposure_knots"
+   ]
+  },
+  {
+   "name": "opponent",
+   "op": "conv",
+   "inputs": [
+    "exposure_basis"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "white_balance",
+   "op": "norm",
+   "inputs": [
+    "opponent"
+   ]
+  },
+  {
+   "name": "absolute_tint",
+   "op": "conv",
+   "inputs": [
+    "opponent"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "surfaces",
+   "op": "add",
+   "inputs": [
+    "white_balance",
+    "absolute_tint"
+   ]
+  },
+  {
+   "name": "range_limits",
+   "op": "conv",
+   "inputs": [
+    "surfaces"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 8,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "range_hinges",
+   "op": "relu",
+   "inputs": [
+    "range_limits"
+   ]
+  },
+  {
+   "name": "surface_maps",
+   "op": "conv",
+   "inputs": [
+    "range_hinges"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse",
+   "op": "avgpool",
+   "inputs": [
+    "surface_maps"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "green",
+   "op": "conv",
+   "inputs": [
+    "opponent"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_g",
+   "op": "conv",
+   "inputs": [
+    "coarse"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_red",
+   "op": "conv",
+   "inputs": [
+    "coarse"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink_detail",
+   "op": "conv",
+   "inputs": [
+    "green"
+   ],
+   "kernel": [
+    9,
+    9
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "plate_match",
+   "op": "dense",
+   "inputs": [
+    "coarse"
+   ],
+   "out": 1440
+  },
+  {
+   "name": "plate_grid",
+   "op": "reshape",
+   "inputs": [
+    "plate_match"
+   ],
+   "shape": [
+    8,
+    1,
+    180
+   ]
+  },
+  {
+   "name": "plate_best",
+   "op": "maxpool",
+   "inputs": [
+    "plate_grid"
+   ],
+   "size": [
+    1,
+    180
+   ],
+   "stride": [
+    1,
+    180
+   ]
+  },
+  {
+   "name": "plate_scores",
+   "op": "dense",
+   "inputs": [
+    "plate_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "whole_match",
+   "op": "dense",
+   "inputs": [
+    "coarse_g"
+   ],
+   "out": 7740
+  },
+  {
+   "name": "whole_grid",
+   "op": "reshape",
+   "inputs": [
+    "whole_match"
+   ],
+   "shape": [
+    43,
+    1,
+    180
+   ]
+  },
+  {
+   "name": "whole_best",
+   "op": "maxpool",
+   "inputs": [
+    "whole_grid"
+   ],
+   "size": [
+    1,
+    180
+   ],
+   "stride": [
+    1,
+    180
+   ]
+  },
+  {
+   "name": "whole_scores",
+   "op": "dense",
+   "inputs": [
+    "whole_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "text_contrast_crop",
+   "op": "conv",
+   "inputs": [
+    "green"
+   ],
+   "kernel": [
+    17,
+    17
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "text_contrast",
+   "op": "norm",
+   "inputs": [
+    "text_contrast_crop"
+   ]
+  },
+  {
+   "name": "speed_match",
+   "op": "dense",
+   "inputs": [
+    "text_contrast"
+   ],
+   "out": 12000
+  },
+  {
+   "name": "speed_grid",
+   "op": "reshape",
+   "inputs": [
+    "speed_match"
+   ],
+   "shape": [
+    8,
+    1,
+    1500
+   ]
+  },
+  {
+   "name": "speed_best",
+   "op": "maxpool",
+   "inputs": [
+    "speed_grid"
+   ],
+   "size": [
+    1,
+    1500
+   ],
+   "stride": [
+    1,
+    1500
+   ]
+  },
+  {
+   "name": "numeral_scores",
+   "op": "dense",
+   "inputs": [
+    "speed_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "stroke_contrast_crop",
+   "op": "conv",
+   "inputs": [
+    "ink_detail"
+   ],
+   "kernel": [
+    17,
+    17
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "stroke_contrast",
+   "op": "norm",
+   "inputs": [
+    "stroke_contrast_crop"
+   ]
+  },
+  {
+   "name": "speed_prefix_match",
+   "op": "dense",
+   "inputs": [
+    "stroke_contrast"
+   ],
+   "out": 10000
+  },
+  {
+   "name": "speed_prefix_grid",
+   "op": "reshape",
+   "inputs": [
+    "speed_prefix_match"
+   ],
+   "shape": [
+    8,
+    1,
+    1250
+   ]
+  },
+  {
+   "name": "speed_prefix_best",
+   "op": "maxpool",
+   "inputs": [
+    "speed_prefix_grid"
+   ],
+   "size": [
+    1,
+    1250
+   ],
+   "stride": [
+    1,
+    1250
+   ]
+  },
+  {
+   "name": "digit_detail_scores",
+   "op": "dense",
+   "inputs": [
+    "speed_prefix_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "symbol_contrast_crop",
+   "op": "conv",
+   "inputs": [
+    "green"
+   ],
+   "kernel": [
+    13,
+    13
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "symbol_contrast",
+   "op": "norm",
+   "inputs": [
+    "symbol_contrast_crop"
+   ]
+  },
+  {
+   "name": "warning_sign_match",
+   "op": "dense",
+   "inputs": [
+    "symbol_contrast"
+   ],
+   "out": 11250
+  },
+  {
+   "name": "warning_sign_grid",
+   "op": "reshape",
+   "inputs": [
+    "warning_sign_match"
+   ],
+   "shape": [
+    15,
+    1,
+    750
+   ]
+  },
+  {
+   "name": "warning_sign_best",
+   "op": "maxpool",
+   "inputs": [
+    "warning_sign_grid"
+   ],
+   "size": [
+    1,
+    750
+   ],
+   "stride": [
+    1,
+    750
+   ]
+  },
+  {
+   "name": "warning_scores",
+   "op": "dense",
+   "inputs": [
+    "warning_sign_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "pictogram_detail_crop",
+   "op": "conv",
+   "inputs": [
+    "ink_detail"
+   ],
+   "kernel": [
+    13,
+    13
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pictogram_detail",
+   "op": "norm",
+   "inputs": [
+    "pictogram_detail_crop"
+   ]
+  },
+  {
+   "name": "pictogram_strokes_match",
+   "op": "dense",
+   "inputs": [
+    "pictogram_detail"
+   ],
+   "out": 11250
+  },
+  {
+   "name": "pictogram_strokes_grid",
+   "op": "reshape",
+   "inputs": [
+    "pictogram_strokes_match"
+   ],
+   "shape": [
+    15,
+    1,
+    750
+   ]
+  },
+  {
+   "name": "pictogram_strokes_best",
+   "op": "maxpool",
+   "inputs": [
+    "pictogram_strokes_grid"
+   ],
+   "size": [
+    1,
+    750
+   ],
+   "stride": [
+    1,
+    750
+   ]
+  },
+  {
+   "name": "warning_detail_scores",
+   "op": "dense",
+   "inputs": [
+    "pictogram_strokes_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "white_field_views",
+   "op": "dense",
+   "inputs": [
+    "green"
+   ],
+   "out": 2352
+  },
+  {
+   "name": "white_fields",
+   "op": "reshape",
+   "inputs": [
+    "white_field_views"
+   ],
+   "shape": [
+    12,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "white_field_contrast",
+   "op": "norm",
+   "inputs": [
+    "white_fields"
+   ]
+  },
+  {
+   "name": "field_0",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_0",
+   "op": "dense",
+   "inputs": [
+    "field_0"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_0",
+   "op": "reshape",
+   "inputs": [
+    "field_match_0"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_0",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_0"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_1",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_1",
+   "op": "dense",
+   "inputs": [
+    "field_1"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_1",
+   "op": "reshape",
+   "inputs": [
+    "field_match_1"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_1",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_1"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_2",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_2",
+   "op": "dense",
+   "inputs": [
+    "field_2"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_2",
+   "op": "reshape",
+   "inputs": [
+    "field_match_2"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_2",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_2"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_3",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_3",
+   "op": "dense",
+   "inputs": [
+    "field_3"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_3",
+   "op": "reshape",
+   "inputs": [
+    "field_match_3"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_3",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_3"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_4",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_4",
+   "op": "dense",
+   "inputs": [
+    "field_4"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_4",
+   "op": "reshape",
+   "inputs": [
+    "field_match_4"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_4",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_4"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_5",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_5",
+   "op": "dense",
+   "inputs": [
+    "field_5"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_5",
+   "op": "reshape",
+   "inputs": [
+    "field_match_5"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_5",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_5"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_6",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_6",
+   "op": "dense",
+   "inputs": [
+    "field_6"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_6",
+   "op": "reshape",
+   "inputs": [
+    "field_match_6"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_6",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_6"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_7",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_7",
+   "op": "dense",
+   "inputs": [
+    "field_7"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_7",
+   "op": "reshape",
+   "inputs": [
+    "field_match_7"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_7",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_7"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_8",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_8",
+   "op": "dense",
+   "inputs": [
+    "field_8"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_8",
+   "op": "reshape",
+   "inputs": [
+    "field_match_8"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_8",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_8"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_9",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_9",
+   "op": "dense",
+   "inputs": [
+    "field_9"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_9",
+   "op": "reshape",
+   "inputs": [
+    "field_match_9"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_9",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_9"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_10",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_10",
+   "op": "dense",
+   "inputs": [
+    "field_10"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_10",
+   "op": "reshape",
+   "inputs": [
+    "field_match_10"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_10",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_10"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_11",
+   "op": "conv",
+   "inputs": [
+    "white_field_contrast"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_match_11",
+   "op": "dense",
+   "inputs": [
+    "field_11"
+   ],
+   "out": 525
+  },
+  {
+   "name": "field_grid_11",
+   "op": "reshape",
+   "inputs": [
+    "field_match_11"
+   ],
+   "shape": [
+    15,
+    1,
+    35
+   ]
+  },
+  {
+   "name": "field_best_11",
+   "op": "maxpool",
+   "inputs": [
+    "field_grid_11"
+   ],
+   "size": [
+    1,
+    35
+   ],
+   "stride": [
+    1,
+    35
+   ]
+  },
+  {
+   "name": "view_max_0_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_0"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_0_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_1",
+    "view_max_0_neg"
+   ]
+  },
+  {
+   "name": "view_max_0_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_0_difference"
+   ]
+  },
+  {
+   "name": "view_max_0",
+   "op": "add",
+   "inputs": [
+    "field_best_0",
+    "view_max_0_positive"
+   ]
+  },
+  {
+   "name": "view_max_1_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_2"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_1_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_3",
+    "view_max_1_neg"
+   ]
+  },
+  {
+   "name": "view_max_1_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_1_difference"
+   ]
+  },
+  {
+   "name": "view_max_1",
+   "op": "add",
+   "inputs": [
+    "field_best_2",
+    "view_max_1_positive"
+   ]
+  },
+  {
+   "name": "view_max_2_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_4"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_2_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_5",
+    "view_max_2_neg"
+   ]
+  },
+  {
+   "name": "view_max_2_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_2_difference"
+   ]
+  },
+  {
+   "name": "view_max_2",
+   "op": "add",
+   "inputs": [
+    "field_best_4",
+    "view_max_2_positive"
+   ]
+  },
+  {
+   "name": "view_max_3_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_6"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_3_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_7",
+    "view_max_3_neg"
+   ]
+  },
+  {
+   "name": "view_max_3_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_3_difference"
+   ]
+  },
+  {
+   "name": "view_max_3",
+   "op": "add",
+   "inputs": [
+    "field_best_6",
+    "view_max_3_positive"
+   ]
+  },
+  {
+   "name": "view_max_4_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_8"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_4_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_9",
+    "view_max_4_neg"
+   ]
+  },
+  {
+   "name": "view_max_4_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_4_difference"
+   ]
+  },
+  {
+   "name": "view_max_4",
+   "op": "add",
+   "inputs": [
+    "field_best_8",
+    "view_max_4_positive"
+   ]
+  },
+  {
+   "name": "view_max_5_neg",
+   "op": "conv",
+   "inputs": [
+    "field_best_10"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_5_difference",
+   "op": "add",
+   "inputs": [
+    "field_best_11",
+    "view_max_5_neg"
+   ]
+  },
+  {
+   "name": "view_max_5_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_5_difference"
+   ]
+  },
+  {
+   "name": "view_max_5",
+   "op": "add",
+   "inputs": [
+    "field_best_10",
+    "view_max_5_positive"
+   ]
+  },
+  {
+   "name": "view_max_6_neg",
+   "op": "conv",
+   "inputs": [
+    "view_max_0"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_6_difference",
+   "op": "add",
+   "inputs": [
+    "view_max_1",
+    "view_max_6_neg"
+   ]
+  },
+  {
+   "name": "view_max_6_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_6_difference"
+   ]
+  },
+  {
+   "name": "view_max_6",
+   "op": "add",
+   "inputs": [
+    "view_max_0",
+    "view_max_6_positive"
+   ]
+  },
+  {
+   "name": "view_max_7_neg",
+   "op": "conv",
+   "inputs": [
+    "view_max_2"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_7_difference",
+   "op": "add",
+   "inputs": [
+    "view_max_3",
+    "view_max_7_neg"
+   ]
+  },
+  {
+   "name": "view_max_7_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_7_difference"
+   ]
+  },
+  {
+   "name": "view_max_7",
+   "op": "add",
+   "inputs": [
+    "view_max_2",
+    "view_max_7_positive"
+   ]
+  },
+  {
+   "name": "view_max_8_neg",
+   "op": "conv",
+   "inputs": [
+    "view_max_4"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_8_difference",
+   "op": "add",
+   "inputs": [
+    "view_max_5",
+    "view_max_8_neg"
+   ]
+  },
+  {
+   "name": "view_max_8_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_8_difference"
+   ]
+  },
+  {
+   "name": "view_max_8",
+   "op": "add",
+   "inputs": [
+    "view_max_4",
+    "view_max_8_positive"
+   ]
+  },
+  {
+   "name": "view_max_9_neg",
+   "op": "conv",
+   "inputs": [
+    "view_max_6"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_9_difference",
+   "op": "add",
+   "inputs": [
+    "view_max_7",
+    "view_max_9_neg"
+   ]
+  },
+  {
+   "name": "view_max_9_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_9_difference"
+   ]
+  },
+  {
+   "name": "view_max_9",
+   "op": "add",
+   "inputs": [
+    "view_max_6",
+    "view_max_9_positive"
+   ]
+  },
+  {
+   "name": "view_max_10_neg",
+   "op": "conv",
+   "inputs": [
+    "view_max_9"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 15,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "view_max_10_difference",
+   "op": "add",
+   "inputs": [
+    "view_max_8",
+    "view_max_10_neg"
+   ]
+  },
+  {
+   "name": "view_max_10_positive",
+   "op": "relu",
+   "inputs": [
+    "view_max_10_difference"
+   ]
+  },
+  {
+   "name": "view_max_10",
+   "op": "add",
+   "inputs": [
+    "view_max_9",
+    "view_max_10_positive"
+   ]
+  },
+  {
+   "name": "white_field_scores",
+   "op": "dense",
+   "inputs": [
+    "view_max_10"
+   ],
+   "out": 43
+  },
+  {
+   "name": "disc_symbol_match",
+   "op": "dense",
+   "inputs": [
+    "symbol_contrast"
+   ],
+   "out": 11250
+  },
+  {
+   "name": "disc_symbol_grid",
+   "op": "reshape",
+   "inputs": [
+    "disc_symbol_match"
+   ],
+   "shape": [
+    15,
+    1,
+    750
+   ]
+  },
+  {
+   "name": "disc_symbol_best",
+   "op": "maxpool",
+   "inputs": [
+    "disc_symbol_grid"
+   ],
+   "size": [
+    1,
+    750
+   ],
+   "stride": [
+    1,
+    750
+   ]
+  },
+  {
+   "name": "disc_scores",
+   "op": "dense",
+   "inputs": [
+    "disc_symbol_best"
+   ],
+   "out": 43
+  },
+  {
+   "name": "plate_light",
+   "op": "conv",
+   "inputs": [
+    "surface_maps"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "spatial_difference",
+   "op": "conv",
+   "inputs": [
+    "plate_light"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "one_sided_difference",
+   "op": "relu",
+   "inputs": [
+    "spatial_difference"
+   ]
+  },
+  {
+   "name": "empty_centre",
+   "op": "dense",
+   "inputs": [
+    "one_sided_difference"
+   ],
+   "out": 43
+  },
+  {
+   "name": "vehicle_colours",
+   "op": "dense",
+   "inputs": [
+    "coarse_red"
+   ],
+   "out": 43
+  },
+  {
+   "name": "coarse_yellowness",
+   "op": "conv",
+   "inputs": [
+    "coarse"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "red_areas",
+   "op": "dense",
+   "inputs": [
+    "coarse_red"
+   ],
+   "out": 43
+  },
+  {
+   "name": "white_bar",
+   "op": "dense",
+   "inputs": [
+    "coarse_g"
+   ],
+   "out": 43
+  },
+  {
+   "name": "gold_centre",
+   "op": "dense",
+   "inputs": [
+    "coarse_yellowness"
+   ],
+   "out": 43
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "plate_scores",
+    "whole_scores",
+    "numeral_scores",
+    "digit_detail_scores",
+    "warning_scores",
+    "warning_detail_scores",
+    "white_field_scores",
+    "disc_scores",
+    "empty_centre",
+    "vehicle_colours",
+    "red_areas",
+    "white_bar",
+    "gold_centre"
+   ]
+  }
+ ]
+}

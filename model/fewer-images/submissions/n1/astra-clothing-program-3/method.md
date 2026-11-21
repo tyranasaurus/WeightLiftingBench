@@ -1,0 +1,3 @@
+The builder draws clothing from geometric parts: bodices and sleeves, two joined trouser legs, bag bodies and handles, and footwear uppers, straps and soles. It varies their proportions with a fixed seed. Each drawing supplies one template, measured in its own bounding box; no feature or calibration constant is estimated across drawings or from training photos.
+
+For each input, the classifier estimates a soft foreground mask and compares its occupancy, boundary profiles and aspect ratio with the templates in either orientation. Handwritten rules add evidence from details that silhouettes miss, such as a central fastening, collar edges, skirt flare, an inseam or gaps in a shoe upper. Every decision uses only the current image and the fixed data-free design.

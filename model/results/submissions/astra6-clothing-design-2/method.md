@@ -1,0 +1,7 @@
+# Analytic clothing network
+
+The network combines fixed brightness-normalized foreground extraction, morphological closing, and maximum compatibility with formula-generated garment, trouser, dress, bag, and footwear silhouettes. Every silhouette is constructed from generic polygons, ellipses, and line segments in `build.py`; none is traced, copied, averaged, clustered, or otherwise extracted from training images. Additional hand-written ReLU rules detect leg separation, sleeve and skirt structure, continuous garment openings, V-shaped collars, and open sandal straps.
+
+All 832,247 float32 weight entries are generated directly from these formulas and hand-chosen constants, with no gradient descent, fitted readout, or image-derived weights. The build program opens no input files and uses no randomness. A class montage was viewed, and five checks were run through the supplied runner; revisions between checks were manual rule-design changes, not parameter-search or variant-selection runs.
+
+The fifth and final check achieved **61.67%** accuracy on training examples 6,000 through 15,999, a disjoint subset from the 6,000 examples used for the first four checks. This is not hidden-test accuracy and does not demonstrate superiority to either competing answer; coat/shirt/pullover discrimination remains a substantial limitation. The final design was retained without further weight changes after that check.

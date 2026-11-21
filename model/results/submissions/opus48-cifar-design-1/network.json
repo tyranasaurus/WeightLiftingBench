@@ -1,0 +1,168 @@
+{
+ "layers": [
+  {
+   "name": "col",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colband",
+   "op": "avgpool",
+   "inputs": [
+    "col"
+   ],
+   "size": [
+    8,
+    32
+   ],
+   "stride": [
+    8,
+    32
+   ]
+  },
+  {
+   "name": "colvec",
+   "op": "reshape",
+   "inputs": [
+    "colband"
+   ],
+   "shape": [
+    16
+   ]
+  },
+  {
+   "name": "satc",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "satr",
+   "op": "relu",
+   "inputs": [
+    "satc"
+   ]
+  },
+  {
+   "name": "satp",
+   "op": "avgpool",
+   "inputs": [
+    "satr"
+   ],
+   "size": [
+    32,
+    32
+   ],
+   "stride": [
+    32,
+    32
+   ]
+  },
+  {
+   "name": "satvec",
+   "op": "reshape",
+   "inputs": [
+    "satp"
+   ],
+   "shape": [
+    6
+   ]
+  },
+  {
+   "name": "edgec",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "edger",
+   "op": "relu",
+   "inputs": [
+    "edgec"
+   ]
+  },
+  {
+   "name": "edgep",
+   "op": "avgpool",
+   "inputs": [
+    "edger"
+   ],
+   "size": [
+    32,
+    32
+   ],
+   "stride": [
+    32,
+    32
+   ]
+  },
+  {
+   "name": "edgevec",
+   "op": "reshape",
+   "inputs": [
+    "edgep"
+   ],
+   "shape": [
+    4
+   ]
+  },
+  {
+   "name": "dband",
+   "op": "dense",
+   "inputs": [
+    "colvec"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dsat",
+   "op": "dense",
+   "inputs": [
+    "satvec"
+   ],
+   "out": 10
+  },
+  {
+   "name": "dedge",
+   "op": "dense",
+   "inputs": [
+    "edgevec"
+   ],
+   "out": 10
+  },
+  {
+   "name": "score",
+   "op": "add",
+   "inputs": [
+    "dband",
+    "dsat",
+    "dedge"
+   ]
+  }
+ ]
+}

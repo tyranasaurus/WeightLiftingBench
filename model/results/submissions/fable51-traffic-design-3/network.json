@@ -1,0 +1,251 @@
+{
+ "layers": [
+  {
+   "name": "rs1",
+   "op": "reshape",
+   "inputs": [
+    "image"
+   ],
+   "shape": [
+    1,
+    96,
+    32
+   ]
+  },
+  {
+   "name": "n1",
+   "op": "norm",
+   "inputs": [
+    "rs1"
+   ]
+  },
+  {
+   "name": "rs2",
+   "op": "reshape",
+   "inputs": [
+    "n1"
+   ],
+   "shape": [
+    3,
+    32,
+    32
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "rs2"
+   ],
+   "out": 13,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "n2",
+   "op": "norm",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c1b",
+   "op": "conv",
+   "inputs": [
+    "n2"
+   ],
+   "out": 26,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "c1u",
+   "op": "conv",
+   "inputs": [
+    "rs2"
+   ],
+   "out": 26,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "a1",
+   "op": "add",
+   "inputs": [
+    "c1b",
+    "c1u"
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "a1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 14,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "c3w",
+   "op": "conv",
+   "inputs": [
+    "c2"
+   ],
+   "out": 430,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "c3i",
+   "op": "conv",
+   "inputs": [
+    "c2"
+   ],
+   "out": 430,
+   "kernel": [
+    32,
+    32
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "p3i",
+   "op": "maxpool",
+   "inputs": [
+    "c3i"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "c4",
+   "op": "conv",
+   "inputs": [
+    "p3i"
+   ],
+   "out": 860,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r4",
+   "op": "relu",
+   "inputs": [
+    "c4"
+   ]
+  },
+  {
+   "name": "c5",
+   "op": "conv",
+   "inputs": [
+    "r4"
+   ],
+   "out": 430,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "a2",
+   "op": "add",
+   "inputs": [
+    "c3w",
+    "c5"
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "maxpool",
+   "inputs": [
+    "a2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "rs3",
+   "op": "reshape",
+   "inputs": [
+    "p1"
+   ],
+   "shape": [
+    1,
+    43,
+    10
+   ]
+  },
+  {
+   "name": "p2",
+   "op": "maxpool",
+   "inputs": [
+    "rs3"
+   ],
+   "size": [
+    1,
+    10
+   ],
+   "stride": [
+    1,
+    10
+   ]
+  },
+  {
+   "name": "rs4",
+   "op": "reshape",
+   "inputs": [
+    "p2"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

@@ -1,0 +1,3 @@
+The network scans an image pyramid with Gaussian probes for eye sockets, nose and mouth shading, localized skin color, a head above shoulders, and torso and leg contrast. Some streams use only luminance so they can respond to grayscale photos and faces in poor lighting. A separate branch checks whether face shading and torso evidence align spatially. The readout pools credible hits across positions and scales and adds weaker votes from scene color and edge structure.
+
+`build.py` turns those geometric probes and hand-written color and scoring rules into convolution and dense tensors. It reads no data and uses no learned parameters or image-derived templates.

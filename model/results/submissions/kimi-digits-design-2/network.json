@@ -1,0 +1,277 @@
+{
+  "layers": [
+    {
+      "name": "blur",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "fine_norm",
+      "op": "norm",
+      "inputs": [
+        "blur"
+      ]
+    },
+    {
+      "name": "fine",
+      "op": "dense",
+      "inputs": [
+        "fine_norm"
+      ],
+      "out": 3840
+    },
+    {
+      "name": "fine_grid",
+      "op": "reshape",
+      "inputs": [
+        "fine"
+      ],
+      "shape": [
+        10,
+        1,
+        384
+      ]
+    },
+    {
+      "name": "fine_best",
+      "op": "maxpool",
+      "inputs": [
+        "fine_grid"
+      ],
+      "size": [
+        1,
+        384
+      ],
+      "stride": [
+        1,
+        384
+      ]
+    },
+    {
+      "name": "fine_score",
+      "op": "reshape",
+      "inputs": [
+        "fine_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "coarse_pool",
+      "op": "avgpool",
+      "inputs": [
+        "blur"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "coarse_norm",
+      "op": "norm",
+      "inputs": [
+        "coarse_pool"
+      ]
+    },
+    {
+      "name": "coarse",
+      "op": "dense",
+      "inputs": [
+        "coarse_norm"
+      ],
+      "out": 3840
+    },
+    {
+      "name": "coarse_grid",
+      "op": "reshape",
+      "inputs": [
+        "coarse"
+      ],
+      "shape": [
+        10,
+        1,
+        384
+      ]
+    },
+    {
+      "name": "coarse_best",
+      "op": "maxpool",
+      "inputs": [
+        "coarse_grid"
+      ],
+      "size": [
+        1,
+        384
+      ],
+      "stride": [
+        1,
+        384
+      ]
+    },
+    {
+      "name": "coarse_score",
+      "op": "reshape",
+      "inputs": [
+        "coarse_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "grad",
+      "op": "conv",
+      "inputs": [
+        "blur"
+      ],
+      "out": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "hog_pos",
+      "op": "conv",
+      "inputs": [
+        "grad"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "hog_neg",
+      "op": "conv",
+      "inputs": [
+        "grad"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "hog_pos_r",
+      "op": "relu",
+      "inputs": [
+        "hog_pos"
+      ]
+    },
+    {
+      "name": "hog_neg_r",
+      "op": "relu",
+      "inputs": [
+        "hog_neg"
+      ]
+    },
+    {
+      "name": "hog_abs",
+      "op": "add",
+      "inputs": [
+        "hog_pos_r",
+        "hog_neg_r"
+      ]
+    },
+    {
+      "name": "hog_pool",
+      "op": "avgpool",
+      "inputs": [
+        "hog_abs"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "hog_norm",
+      "op": "norm",
+      "inputs": [
+        "hog_pool"
+      ]
+    },
+    {
+      "name": "hog",
+      "op": "dense",
+      "inputs": [
+        "hog_norm"
+      ],
+      "out": 3840
+    },
+    {
+      "name": "hog_grid",
+      "op": "reshape",
+      "inputs": [
+        "hog"
+      ],
+      "shape": [
+        10,
+        1,
+        384
+      ]
+    },
+    {
+      "name": "hog_best",
+      "op": "maxpool",
+      "inputs": [
+        "hog_grid"
+      ],
+      "size": [
+        1,
+        384
+      ],
+      "stride": [
+        1,
+        384
+      ]
+    },
+    {
+      "name": "hog_score",
+      "op": "reshape",
+      "inputs": [
+        "hog_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "fine_score",
+        "coarse_score",
+        "hog_score"
+      ]
+    }
+  ]
+}

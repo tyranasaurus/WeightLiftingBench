@@ -1,0 +1,191 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "cI",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "nI",
+   "op": "norm",
+   "inputs": [
+    "cI"
+   ]
+  },
+  {
+   "name": "cE",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "rE",
+   "op": "relu",
+   "inputs": [
+    "cE"
+   ]
+  },
+  {
+   "name": "bE",
+   "op": "conv",
+   "inputs": [
+    "rE"
+   ],
+   "out": 4,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "nE",
+   "op": "norm",
+   "inputs": [
+    "bE"
+   ]
+  },
+  {
+   "name": "tE",
+   "op": "conv",
+   "inputs": [
+    "nE"
+   ],
+   "out": 1152,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "tIp",
+   "op": "conv",
+   "inputs": [
+    "nI"
+   ],
+   "out": 1152,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "tIn",
+   "op": "conv",
+   "inputs": [
+    "nI"
+   ],
+   "out": 1152,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "rIp",
+   "op": "relu",
+   "inputs": [
+    "tIp"
+   ]
+  },
+  {
+   "name": "rIn",
+   "op": "relu",
+   "inputs": [
+    "tIn"
+   ]
+  },
+  {
+   "name": "s",
+   "op": "add",
+   "inputs": [
+    "tE",
+    "rIp",
+    "rIn"
+   ]
+  },
+  {
+   "name": "m1",
+   "op": "maxpool",
+   "inputs": [
+    "s"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "r1",
+   "op": "reshape",
+   "inputs": [
+    "m1"
+   ],
+   "shape": [
+    1,
+    24,
+    48
+   ]
+  },
+  {
+   "name": "m2",
+   "op": "maxpool",
+   "inputs": [
+    "r1"
+   ],
+   "size": [
+    1,
+    48
+   ],
+   "stride": [
+    1,
+    48
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "m2"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

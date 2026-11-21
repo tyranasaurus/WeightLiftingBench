@@ -1,0 +1,309 @@
+{
+  "layers": [
+    {
+      "name": "sample2",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "sky_subtracted",
+      "op": "conv",
+      "inputs": [
+        "sample2"
+      ],
+      "out": 3,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "local_contrasts",
+      "op": "conv",
+      "inputs": [
+        "sky_subtracted"
+      ],
+      "out": 11,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "isophote_magnitudes",
+      "op": "relu",
+      "inputs": [
+        "local_contrasts"
+      ]
+    },
+    {
+      "name": "photometric_maps",
+      "op": "conv",
+      "inputs": [
+        "isophote_magnitudes"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "radial_angular_photometry",
+      "op": "dense",
+      "inputs": [
+        "photometric_maps"
+      ],
+      "out": 705
+    },
+    {
+      "name": "geometry_01",
+      "op": "dense",
+      "inputs": [
+        "radial_angular_photometry"
+      ],
+      "out": 1980
+    },
+    {
+      "name": "geometry_01_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_01"
+      ]
+    },
+    {
+      "name": "geometry_02",
+      "op": "dense",
+      "inputs": [
+        "geometry_01_hinges"
+      ],
+      "out": 3232
+    },
+    {
+      "name": "geometry_02_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_02"
+      ]
+    },
+    {
+      "name": "geometry_03",
+      "op": "dense",
+      "inputs": [
+        "geometry_02_hinges"
+      ],
+      "out": 3704
+    },
+    {
+      "name": "geometry_03_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_03"
+      ]
+    },
+    {
+      "name": "geometry_04",
+      "op": "dense",
+      "inputs": [
+        "geometry_03_hinges"
+      ],
+      "out": 2503
+    },
+    {
+      "name": "geometry_04_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_04"
+      ]
+    },
+    {
+      "name": "geometry_05",
+      "op": "dense",
+      "inputs": [
+        "geometry_04_hinges"
+      ],
+      "out": 1985
+    },
+    {
+      "name": "geometry_05_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_05"
+      ]
+    },
+    {
+      "name": "geometry_06",
+      "op": "dense",
+      "inputs": [
+        "geometry_05_hinges"
+      ],
+      "out": 1099
+    },
+    {
+      "name": "geometry_06_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_06"
+      ]
+    },
+    {
+      "name": "geometry_07",
+      "op": "dense",
+      "inputs": [
+        "geometry_06_hinges"
+      ],
+      "out": 970
+    },
+    {
+      "name": "geometry_07_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_07"
+      ]
+    },
+    {
+      "name": "geometry_08",
+      "op": "dense",
+      "inputs": [
+        "geometry_07_hinges"
+      ],
+      "out": 277
+    },
+    {
+      "name": "geometry_08_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_08"
+      ]
+    },
+    {
+      "name": "geometry_09",
+      "op": "dense",
+      "inputs": [
+        "geometry_08_hinges"
+      ],
+      "out": 202
+    },
+    {
+      "name": "geometry_09_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_09"
+      ]
+    },
+    {
+      "name": "geometry_10",
+      "op": "dense",
+      "inputs": [
+        "geometry_09_hinges"
+      ],
+      "out": 239
+    },
+    {
+      "name": "geometry_10_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_10"
+      ]
+    },
+    {
+      "name": "geometry_11",
+      "op": "dense",
+      "inputs": [
+        "geometry_10_hinges"
+      ],
+      "out": 182
+    },
+    {
+      "name": "geometry_11_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_11"
+      ]
+    },
+    {
+      "name": "geometry_12",
+      "op": "dense",
+      "inputs": [
+        "geometry_11_hinges"
+      ],
+      "out": 141
+    },
+    {
+      "name": "geometry_12_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_12"
+      ]
+    },
+    {
+      "name": "geometry_13",
+      "op": "dense",
+      "inputs": [
+        "geometry_12_hinges"
+      ],
+      "out": 136
+    },
+    {
+      "name": "geometry_13_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_13"
+      ]
+    },
+    {
+      "name": "geometry_14",
+      "op": "dense",
+      "inputs": [
+        "geometry_13_hinges"
+      ],
+      "out": 130
+    },
+    {
+      "name": "geometry_14_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_14"
+      ]
+    },
+    {
+      "name": "geometry_15",
+      "op": "dense",
+      "inputs": [
+        "geometry_14_hinges"
+      ],
+      "out": 123
+    },
+    {
+      "name": "geometry_15_hinges",
+      "op": "relu",
+      "inputs": [
+        "geometry_15"
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "geometry_15_hinges"
+      ],
+      "out": 10
+    }
+  ]
+}

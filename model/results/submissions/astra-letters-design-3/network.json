@@ -1,0 +1,1852 @@
+{
+  "layers": [
+    {
+      "name": "contrast",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "extend_rim",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "extended_frame",
+      "op": "reshape",
+      "inputs": [
+        "extend_rim"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "gradient",
+      "op": "conv",
+      "inputs": [
+        "extended_frame"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "half_wave",
+      "op": "relu",
+      "inputs": [
+        "gradient"
+      ]
+    },
+    {
+      "name": "oriented_cells",
+      "op": "avgpool",
+      "inputs": [
+        "half_wave"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_excess",
+      "op": "conv",
+      "inputs": [
+        "oriented_cells"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "supra_threshold",
+      "op": "relu",
+      "inputs": [
+        "edge_excess"
+      ]
+    },
+    {
+      "name": "compress_high_contrast",
+      "op": "conv",
+      "inputs": [
+        "supra_threshold"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compressed_gradients",
+      "op": "add",
+      "inputs": [
+        "oriented_cells",
+        "compress_high_contrast"
+      ]
+    },
+    {
+      "name": "edge_contrast",
+      "op": "norm",
+      "inputs": [
+        "compressed_gradients"
+      ]
+    },
+    {
+      "name": "lowpass",
+      "op": "avgpool",
+      "inputs": [
+        "contrast"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "material_tests",
+      "op": "dense",
+      "inputs": [
+        "lowpass"
+      ],
+      "out": 784
+    },
+    {
+      "name": "positive_tests",
+      "op": "relu",
+      "inputs": [
+        "material_tests"
+      ]
+    },
+    {
+      "name": "other_material",
+      "op": "dense",
+      "inputs": [
+        "positive_tests"
+      ],
+      "out": 196
+    },
+    {
+      "name": "material_map",
+      "op": "reshape",
+      "inputs": [
+        "other_material"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "material_contrast",
+      "op": "norm",
+      "inputs": [
+        "material_map"
+      ]
+    },
+    {
+      "name": "barrier_0",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "four_steps_0",
+      "op": "reshape",
+      "inputs": [
+        "barrier_0"
+      ],
+      "shape": [
+        1,
+        196,
+        4
+      ]
+    },
+    {
+      "name": "step_max_0",
+      "op": "maxpool",
+      "inputs": [
+        "four_steps_0"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "barrier_field_0",
+      "op": "reshape",
+      "inputs": [
+        "step_max_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_0_0",
+      "op": "dense",
+      "inputs": [
+        "barrier_field_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_0_0",
+      "op": "reshape",
+      "inputs": [
+        "shift_0_0"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_0_0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_0_0"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_0_0",
+      "op": "reshape",
+      "inputs": [
+        "farthest_0_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_0_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_0_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_0_1",
+      "op": "reshape",
+      "inputs": [
+        "shift_0_1"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_0_1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_0_1"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_0_1",
+      "op": "reshape",
+      "inputs": [
+        "farthest_0_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_0_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_0_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_0_2",
+      "op": "reshape",
+      "inputs": [
+        "shift_0_2"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_0_2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_0_2"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_0_2",
+      "op": "reshape",
+      "inputs": [
+        "farthest_0_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_0_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_0_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_0_3",
+      "op": "reshape",
+      "inputs": [
+        "shift_0_3"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_0_3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_0_3"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_0_3",
+      "op": "reshape",
+      "inputs": [
+        "farthest_0_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "view_0",
+      "op": "reshape",
+      "inputs": [
+        "prefix_0_3"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "view_contrast_0",
+      "op": "norm",
+      "inputs": [
+        "view_0"
+      ]
+    },
+    {
+      "name": "escape_0",
+      "op": "dense",
+      "inputs": [
+        "prefix_0_3"
+      ],
+      "out": 980
+    },
+    {
+      "name": "barrier_1",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "four_steps_1",
+      "op": "reshape",
+      "inputs": [
+        "barrier_1"
+      ],
+      "shape": [
+        1,
+        196,
+        4
+      ]
+    },
+    {
+      "name": "step_max_1",
+      "op": "maxpool",
+      "inputs": [
+        "four_steps_1"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "barrier_field_1",
+      "op": "reshape",
+      "inputs": [
+        "step_max_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_1_0",
+      "op": "dense",
+      "inputs": [
+        "barrier_field_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_1_0",
+      "op": "reshape",
+      "inputs": [
+        "shift_1_0"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_1_0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_1_0"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_1_0",
+      "op": "reshape",
+      "inputs": [
+        "farthest_1_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_1_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_1_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_1_1",
+      "op": "reshape",
+      "inputs": [
+        "shift_1_1"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_1_1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_1_1"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_1_1",
+      "op": "reshape",
+      "inputs": [
+        "farthest_1_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_1_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_1_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_1_2",
+      "op": "reshape",
+      "inputs": [
+        "shift_1_2"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_1_2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_1_2"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_1_2",
+      "op": "reshape",
+      "inputs": [
+        "farthest_1_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_1_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_1_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_1_3",
+      "op": "reshape",
+      "inputs": [
+        "shift_1_3"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_1_3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_1_3"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_1_3",
+      "op": "reshape",
+      "inputs": [
+        "farthest_1_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "view_1",
+      "op": "reshape",
+      "inputs": [
+        "prefix_1_3"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "view_contrast_1",
+      "op": "norm",
+      "inputs": [
+        "view_1"
+      ]
+    },
+    {
+      "name": "escape_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_1_3"
+      ],
+      "out": 980
+    },
+    {
+      "name": "barrier_2",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "four_steps_2",
+      "op": "reshape",
+      "inputs": [
+        "barrier_2"
+      ],
+      "shape": [
+        1,
+        196,
+        4
+      ]
+    },
+    {
+      "name": "step_max_2",
+      "op": "maxpool",
+      "inputs": [
+        "four_steps_2"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "barrier_field_2",
+      "op": "reshape",
+      "inputs": [
+        "step_max_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_2_0",
+      "op": "dense",
+      "inputs": [
+        "barrier_field_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_2_0",
+      "op": "reshape",
+      "inputs": [
+        "shift_2_0"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_2_0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_2_0"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_2_0",
+      "op": "reshape",
+      "inputs": [
+        "farthest_2_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_2_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_2_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_2_1",
+      "op": "reshape",
+      "inputs": [
+        "shift_2_1"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_2_1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_2_1"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_2_1",
+      "op": "reshape",
+      "inputs": [
+        "farthest_2_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_2_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_2_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_2_2",
+      "op": "reshape",
+      "inputs": [
+        "shift_2_2"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_2_2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_2_2"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_2_2",
+      "op": "reshape",
+      "inputs": [
+        "farthest_2_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_2_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_2_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_2_3",
+      "op": "reshape",
+      "inputs": [
+        "shift_2_3"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_2_3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_2_3"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_2_3",
+      "op": "reshape",
+      "inputs": [
+        "farthest_2_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "view_2",
+      "op": "reshape",
+      "inputs": [
+        "prefix_2_3"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "view_contrast_2",
+      "op": "norm",
+      "inputs": [
+        "view_2"
+      ]
+    },
+    {
+      "name": "escape_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_2_3"
+      ],
+      "out": 980
+    },
+    {
+      "name": "barrier_3",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "four_steps_3",
+      "op": "reshape",
+      "inputs": [
+        "barrier_3"
+      ],
+      "shape": [
+        1,
+        196,
+        4
+      ]
+    },
+    {
+      "name": "step_max_3",
+      "op": "maxpool",
+      "inputs": [
+        "four_steps_3"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "barrier_field_3",
+      "op": "reshape",
+      "inputs": [
+        "step_max_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_3_0",
+      "op": "dense",
+      "inputs": [
+        "barrier_field_3"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_3_0",
+      "op": "reshape",
+      "inputs": [
+        "shift_3_0"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_3_0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_3_0"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_3_0",
+      "op": "reshape",
+      "inputs": [
+        "farthest_3_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_3_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_3_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_3_1",
+      "op": "reshape",
+      "inputs": [
+        "shift_3_1"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_3_1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_3_1"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_3_1",
+      "op": "reshape",
+      "inputs": [
+        "farthest_3_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_3_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_3_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_3_2",
+      "op": "reshape",
+      "inputs": [
+        "shift_3_2"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_3_2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_3_2"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_3_2",
+      "op": "reshape",
+      "inputs": [
+        "farthest_3_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_3_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_3_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_3_3",
+      "op": "reshape",
+      "inputs": [
+        "shift_3_3"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_3_3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_3_3"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_3_3",
+      "op": "reshape",
+      "inputs": [
+        "farthest_3_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "escape_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_3_3"
+      ],
+      "out": 980
+    },
+    {
+      "name": "barrier_4",
+      "op": "dense",
+      "inputs": [
+        "contrast"
+      ],
+      "out": 784
+    },
+    {
+      "name": "four_steps_4",
+      "op": "reshape",
+      "inputs": [
+        "barrier_4"
+      ],
+      "shape": [
+        1,
+        196,
+        4
+      ]
+    },
+    {
+      "name": "step_max_4",
+      "op": "maxpool",
+      "inputs": [
+        "four_steps_4"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "barrier_field_4",
+      "op": "reshape",
+      "inputs": [
+        "step_max_4"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_4_0",
+      "op": "dense",
+      "inputs": [
+        "barrier_field_4"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_4_0",
+      "op": "reshape",
+      "inputs": [
+        "shift_4_0"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_4_0",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_4_0"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_4_0",
+      "op": "reshape",
+      "inputs": [
+        "farthest_4_0"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_4_1",
+      "op": "dense",
+      "inputs": [
+        "prefix_4_0"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_4_1",
+      "op": "reshape",
+      "inputs": [
+        "shift_4_1"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_4_1",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_4_1"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_4_1",
+      "op": "reshape",
+      "inputs": [
+        "farthest_4_1"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_4_2",
+      "op": "dense",
+      "inputs": [
+        "prefix_4_1"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_4_2",
+      "op": "reshape",
+      "inputs": [
+        "shift_4_2"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_4_2",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_4_2"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_4_2",
+      "op": "reshape",
+      "inputs": [
+        "farthest_4_2"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "shift_4_3",
+      "op": "dense",
+      "inputs": [
+        "prefix_4_2"
+      ],
+      "out": 392
+    },
+    {
+      "name": "neighbors_4_3",
+      "op": "reshape",
+      "inputs": [
+        "shift_4_3"
+      ],
+      "shape": [
+        1,
+        196,
+        2
+      ]
+    },
+    {
+      "name": "farthest_4_3",
+      "op": "maxpool",
+      "inputs": [
+        "neighbors_4_3"
+      ],
+      "size": [
+        1,
+        2
+      ],
+      "stride": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "prefix_4_3",
+      "op": "reshape",
+      "inputs": [
+        "farthest_4_3"
+      ],
+      "shape": [
+        196
+      ]
+    },
+    {
+      "name": "escape_4",
+      "op": "dense",
+      "inputs": [
+        "prefix_4_3"
+      ],
+      "out": 980
+    },
+    {
+      "name": "escape_rays",
+      "op": "add",
+      "inputs": [
+        "escape_0",
+        "escape_1",
+        "escape_2",
+        "escape_3",
+        "escape_4"
+      ]
+    },
+    {
+      "name": "ray_choices",
+      "op": "reshape",
+      "inputs": [
+        "escape_rays"
+      ],
+      "shape": [
+        1,
+        196,
+        5
+      ]
+    },
+    {
+      "name": "easiest_ray",
+      "op": "maxpool",
+      "inputs": [
+        "ray_choices"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "inside",
+      "op": "reshape",
+      "inputs": [
+        "easiest_ray"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "enclosure_contrast",
+      "op": "norm",
+      "inputs": [
+        "inside"
+      ]
+    },
+    {
+      "name": "enclosed_material",
+      "op": "add",
+      "inputs": [
+        "material_contrast",
+        "enclosure_contrast"
+      ]
+    },
+    {
+      "name": "hand_neighborhood",
+      "op": "dense",
+      "inputs": [
+        "enclosed_material"
+      ],
+      "out": 1764
+    },
+    {
+      "name": "hand_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "hand_neighborhood"
+      ],
+      "shape": [
+        1,
+        196,
+        9
+      ]
+    },
+    {
+      "name": "hand_near",
+      "op": "maxpool",
+      "inputs": [
+        "hand_alternatives"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "hand_field",
+      "op": "reshape",
+      "inputs": [
+        "hand_near"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "hand_contrast",
+      "op": "norm",
+      "inputs": [
+        "hand_field"
+      ]
+    },
+    {
+      "name": "background_neighborhood",
+      "op": "dense",
+      "inputs": [
+        "enclosed_material"
+      ],
+      "out": 1764
+    },
+    {
+      "name": "background_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "background_neighborhood"
+      ],
+      "shape": [
+        1,
+        196,
+        9
+      ]
+    },
+    {
+      "name": "background_near",
+      "op": "maxpool",
+      "inputs": [
+        "background_alternatives"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "background_field",
+      "op": "reshape",
+      "inputs": [
+        "background_near"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "background_contrast",
+      "op": "norm",
+      "inputs": [
+        "background_field"
+      ]
+    },
+    {
+      "name": "contour_agreement",
+      "op": "dense",
+      "inputs": [
+        "edge_contrast"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "figure_agreement",
+      "op": "dense",
+      "inputs": [
+        "enclosed_material"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "finger_strips",
+      "op": "dense",
+      "inputs": [
+        "hand_contrast"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "interdigital_gaps",
+      "op": "dense",
+      "inputs": [
+        "background_contrast"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "skyline_0",
+      "op": "dense",
+      "inputs": [
+        "view_contrast_0"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "skyline_1",
+      "op": "dense",
+      "inputs": [
+        "view_contrast_1"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "skyline_2",
+      "op": "dense",
+      "inputs": [
+        "view_contrast_2"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "agreement",
+      "op": "add",
+      "inputs": [
+        "contour_agreement",
+        "figure_agreement",
+        "finger_strips",
+        "interdigital_gaps",
+        "skyline_0",
+        "skyline_1",
+        "skyline_2"
+      ]
+    },
+    {
+      "name": "by_pose",
+      "op": "reshape",
+      "inputs": [
+        "agreement"
+      ],
+      "shape": [
+        24,
+        128,
+        9
+      ]
+    },
+    {
+      "name": "best_alignment",
+      "op": "maxpool",
+      "inputs": [
+        "by_pose"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "approximation",
+      "op": "dense",
+      "inputs": [
+        "lowpass"
+      ],
+      "out": 196
+    },
+    {
+      "name": "local_dc",
+      "op": "reshape",
+      "inputs": [
+        "approximation"
+      ],
+      "shape": [
+        1,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "bandpass",
+      "op": "add",
+      "inputs": [
+        "local_dc",
+        "lowpass"
+      ]
+    },
+    {
+      "name": "detail_contrast",
+      "op": "norm",
+      "inputs": [
+        "bandpass"
+      ]
+    },
+    {
+      "name": "knuckles_detail",
+      "op": "dense",
+      "inputs": [
+        "detail_contrast"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "knuckles_index",
+      "op": "reshape",
+      "inputs": [
+        "knuckles_detail"
+      ],
+      "shape": [
+        24,
+        128,
+        9
+      ]
+    },
+    {
+      "name": "knuckles_alignment",
+      "op": "maxpool",
+      "inputs": [
+        "knuckles_index"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "digits_detail",
+      "op": "dense",
+      "inputs": [
+        "detail_contrast"
+      ],
+      "out": 27648
+    },
+    {
+      "name": "digits_index",
+      "op": "reshape",
+      "inputs": [
+        "digits_detail"
+      ],
+      "shape": [
+        24,
+        128,
+        9
+      ]
+    },
+    {
+      "name": "digits_alignment",
+      "op": "maxpool",
+      "inputs": [
+        "digits_index"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "whole_and_parts",
+      "op": "add",
+      "inputs": [
+        "best_alignment",
+        "knuckles_alignment",
+        "digits_alignment"
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "whole_and_parts"
+      ],
+      "size": [
+        128,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "peak",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        24
+      ]
+    },
+    {
+      "name": "group_peaks",
+      "op": "maxpool",
+      "inputs": [
+        "whole_and_parts"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "pose_support",
+      "op": "avgpool",
+      "inputs": [
+        "group_peaks"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "support",
+      "op": "reshape",
+      "inputs": [
+        "pose_support"
+      ],
+      "shape": [
+        24
+      ]
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "peak",
+        "support"
+      ]
+    }
+  ]
+}

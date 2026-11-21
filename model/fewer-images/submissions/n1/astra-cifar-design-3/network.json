@@ -1,0 +1,1033 @@
+{
+ "layers": [
+  {
+   "name": "two_pixel_cells",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luminance",
+   "op": "conv",
+   "inputs": [
+    "two_pixel_cells"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "differences",
+   "op": "conv",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "positive_edges",
+   "op": "relu",
+   "inputs": [
+    "differences"
+   ]
+  },
+  {
+   "name": "luma_grid",
+   "op": "avgpool",
+   "inputs": [
+    "luminance"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luma_contrast",
+   "op": "norm",
+   "inputs": [
+    "luma_grid"
+   ]
+  },
+  {
+   "name": "cell_edges",
+   "op": "avgpool",
+   "inputs": [
+    "positive_edges"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "edge_polarities",
+   "op": "conv",
+   "inputs": [
+    "cell_edges"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_cap_delta",
+   "op": "conv",
+   "inputs": [
+    "edge_polarities"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "above_edge_cap",
+   "op": "relu",
+   "inputs": [
+    "edge_cap_delta"
+   ]
+  },
+  {
+   "name": "negative_excess",
+   "op": "conv",
+   "inputs": [
+    "above_edge_cap"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bounded_edges",
+   "op": "add",
+   "inputs": [
+    "edge_polarities",
+    "negative_excess"
+   ]
+  },
+  {
+   "name": "one_edge_field",
+   "op": "reshape",
+   "inputs": [
+    "bounded_edges"
+   ],
+   "shape": [
+    1,
+    56,
+    7
+   ]
+  },
+  {
+   "name": "edge_contrast",
+   "op": "norm",
+   "inputs": [
+    "one_edge_field"
+   ]
+  },
+  {
+   "name": "silhouette_agreement",
+   "op": "dense",
+   "inputs": [
+    "luma_contrast"
+   ],
+   "out": 6400
+  },
+  {
+   "name": "contour_agreement",
+   "op": "dense",
+   "inputs": [
+    "edge_contrast"
+   ],
+   "out": 6400
+  },
+  {
+   "name": "object_colour_grid",
+   "op": "avgpool",
+   "inputs": [
+    "two_pixel_cells"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "object_opponents",
+   "op": "conv",
+   "inputs": [
+    "object_colour_grid"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "normalized_object_colour",
+   "op": "norm",
+   "inputs": [
+    "object_opponents"
+   ]
+  },
+  {
+   "name": "chromatic_shape_contrasts",
+   "op": "dense",
+   "inputs": [
+    "normalized_object_colour"
+   ],
+   "out": 25600
+  },
+  {
+   "name": "opponent_mask_channels",
+   "op": "reshape",
+   "inputs": [
+    "chromatic_shape_contrasts"
+   ],
+   "shape": [
+    1,
+    4,
+    6400
+   ]
+  },
+  {
+   "name": "stronger_colour_axis",
+   "op": "maxpool",
+   "inputs": [
+    "opponent_mask_channels"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "chromatic_agreement",
+   "op": "reshape",
+   "inputs": [
+    "stronger_colour_axis"
+   ],
+   "shape": [
+    6400
+   ]
+  },
+  {
+   "name": "joint_agreement",
+   "op": "add",
+   "inputs": [
+    "silhouette_agreement",
+    "contour_agreement",
+    "chromatic_agreement"
+   ]
+  },
+  {
+   "name": "shape_families",
+   "op": "reshape",
+   "inputs": [
+    "joint_agreement"
+   ],
+   "shape": [
+    10,
+    1,
+    640
+   ]
+  },
+  {
+   "name": "best_in_each_group",
+   "op": "maxpool",
+   "inputs": [
+    "shape_families"
+   ],
+   "size": [
+    1,
+    160
+   ],
+   "stride": [
+    1,
+    160
+   ]
+  },
+  {
+   "name": "shape_vote",
+   "op": "avgpool",
+   "inputs": [
+    "best_in_each_group"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_shape",
+   "op": "maxpool",
+   "inputs": [
+    "best_in_each_group"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "several_matches",
+   "op": "dense",
+   "inputs": [
+    "shape_vote"
+   ],
+   "out": 10
+  },
+  {
+   "name": "strongest_match",
+   "op": "dense",
+   "inputs": [
+    "best_shape"
+   ],
+   "out": 10
+  },
+  {
+   "name": "shape_consensus",
+   "op": "add",
+   "inputs": [
+    "several_matches",
+    "strongest_match"
+   ]
+  },
+  {
+   "name": "colour_tests",
+   "op": "conv",
+   "inputs": [
+    "two_pixel_cells"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_min_terms",
+   "op": "conv",
+   "inputs": [
+    "colour_tests"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "first_two_tests",
+   "op": "relu",
+   "inputs": [
+    "colour_min_terms"
+   ]
+  },
+  {
+   "name": "first_intersection",
+   "op": "conv",
+   "inputs": [
+    "first_two_tests"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "third_colour_test",
+   "op": "relu",
+   "inputs": [
+    "first_intersection"
+   ]
+  },
+  {
+   "name": "positive_colour_margins",
+   "op": "conv",
+   "inputs": [
+    "third_colour_test"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_cap",
+   "op": "conv",
+   "inputs": [
+    "positive_colour_margins"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_cap_excess",
+   "op": "relu",
+   "inputs": [
+    "colour_cap"
+   ]
+  },
+  {
+   "name": "colour_cap_subtract",
+   "op": "conv",
+   "inputs": [
+    "colour_cap_excess"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_membership",
+   "op": "add",
+   "inputs": [
+    "positive_colour_margins",
+    "colour_cap_subtract"
+   ]
+  },
+  {
+   "name": "colour_regions",
+   "op": "avgpool",
+   "inputs": [
+    "colour_membership"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "pixel_light",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fine_differences",
+   "op": "conv",
+   "inputs": [
+    "pixel_light"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fine_edge_halves",
+   "op": "relu",
+   "inputs": [
+    "fine_differences"
+   ]
+  },
+  {
+   "name": "fine_activity",
+   "op": "conv",
+   "inputs": [
+    "fine_edge_halves"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fine_regions",
+   "op": "avgpool",
+   "inputs": [
+    "fine_activity"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "edge_magnitude",
+   "op": "conv",
+   "inputs": [
+    "positive_edges"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "tangent_integration",
+   "op": "conv",
+   "inputs": [
+    "positive_edges"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coherent_sign",
+   "op": "relu",
+   "inputs": [
+    "tangent_integration"
+   ]
+  },
+  {
+   "name": "straight_activity",
+   "op": "conv",
+   "inputs": [
+    "coherent_sign"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "line_regions",
+   "op": "avgpool",
+   "inputs": [
+    "straight_activity"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "coarse_regions",
+   "op": "avgpool",
+   "inputs": [
+    "edge_magnitude"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "colour_blocks",
+   "op": "avgpool",
+   "inputs": [
+    "two_pixel_cells"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "block_light",
+   "op": "conv",
+   "inputs": [
+    "colour_blocks"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "strip_light_changes",
+   "op": "dense",
+   "inputs": [
+    "block_light"
+   ],
+   "out": 128
+  },
+  {
+   "name": "rectified_light_changes",
+   "op": "relu",
+   "inputs": [
+    "strip_light_changes"
+   ]
+  },
+  {
+   "name": "absolute_light_changes",
+   "op": "dense",
+   "inputs": [
+    "rectified_light_changes"
+   ],
+   "out": 64
+  },
+  {
+   "name": "light_variation",
+   "op": "reshape",
+   "inputs": [
+    "absolute_light_changes"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "block_chroma",
+   "op": "conv",
+   "inputs": [
+    "colour_blocks"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "strip_chroma_changes",
+   "op": "dense",
+   "inputs": [
+    "block_chroma"
+   ],
+   "out": 128
+  },
+  {
+   "name": "rectified_chroma_changes",
+   "op": "relu",
+   "inputs": [
+    "strip_chroma_changes"
+   ]
+  },
+  {
+   "name": "absolute_chroma_changes",
+   "op": "dense",
+   "inputs": [
+    "rectified_chroma_changes"
+   ],
+   "out": 64
+  },
+  {
+   "name": "chroma_variation",
+   "op": "reshape",
+   "inputs": [
+    "absolute_chroma_changes"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "dark_discs",
+   "op": "conv",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 2,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "compact_dark_parts",
+   "op": "relu",
+   "inputs": [
+    "dark_discs"
+   ]
+  },
+  {
+   "name": "axle_offsets",
+   "op": "dense",
+   "inputs": [
+    "compact_dark_parts"
+   ],
+   "out": 160
+  },
+  {
+   "name": "paired_wheel_terms",
+   "op": "relu",
+   "inputs": [
+    "axle_offsets"
+   ]
+  },
+  {
+   "name": "both_wheels",
+   "op": "dense",
+   "inputs": [
+    "paired_wheel_terms"
+   ],
+   "out": 80
+  },
+  {
+   "name": "axle_positions",
+   "op": "reshape",
+   "inputs": [
+    "both_wheels"
+   ],
+   "shape": [
+    1,
+    1,
+    80
+   ]
+  },
+  {
+   "name": "visible_axle",
+   "op": "maxpool",
+   "inputs": [
+    "axle_positions"
+   ],
+   "size": [
+    1,
+    80
+   ],
+   "stride": [
+    1,
+    80
+   ]
+  },
+  {
+   "name": "measure_colour_regions",
+   "op": "dense",
+   "inputs": [
+    "colour_regions"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_fine_regions",
+   "op": "dense",
+   "inputs": [
+    "fine_regions"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_coarse_regions",
+   "op": "dense",
+   "inputs": [
+    "coarse_regions"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_line_regions",
+   "op": "dense",
+   "inputs": [
+    "line_regions"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_luma_grid",
+   "op": "dense",
+   "inputs": [
+    "luma_grid"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_two_pixel_cells",
+   "op": "dense",
+   "inputs": [
+    "two_pixel_cells"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_light_variation",
+   "op": "dense",
+   "inputs": [
+    "light_variation"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_chroma_variation",
+   "op": "dense",
+   "inputs": [
+    "chroma_variation"
+   ],
+   "out": 110
+  },
+  {
+   "name": "measure_visible_axle",
+   "op": "dense",
+   "inputs": [
+    "visible_axle"
+   ],
+   "out": 110
+  },
+  {
+   "name": "photographic_evidence",
+   "op": "add",
+   "inputs": [
+    "measure_colour_regions",
+    "measure_fine_regions",
+    "measure_coarse_regions",
+    "measure_line_regions",
+    "measure_luma_grid",
+    "measure_two_pixel_cells",
+    "measure_light_variation",
+    "measure_chroma_variation",
+    "measure_visible_axle"
+   ]
+  },
+  {
+   "name": "cue_thresholds",
+   "op": "dense",
+   "inputs": [
+    "photographic_evidence"
+   ],
+   "out": 94
+  },
+  {
+   "name": "soft_thresholds",
+   "op": "relu",
+   "inputs": [
+    "cue_thresholds"
+   ]
+  },
+  {
+   "name": "visual_cues",
+   "op": "dense",
+   "inputs": [
+    "soft_thresholds"
+   ],
+   "out": 47
+  },
+  {
+   "name": "scene_rules",
+   "op": "dense",
+   "inputs": [
+    "visual_cues"
+   ],
+   "out": 20
+  },
+  {
+   "name": "scene_interpretations",
+   "op": "relu",
+   "inputs": [
+    "scene_rules"
+   ]
+  },
+  {
+   "name": "colour_and_texture_votes",
+   "op": "dense",
+   "inputs": [
+    "visual_cues"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scene_votes",
+   "op": "dense",
+   "inputs": [
+    "scene_interpretations"
+   ],
+   "out": 10
+  },
+  {
+   "name": "form_votes",
+   "op": "dense",
+   "inputs": [
+    "shape_consensus"
+   ],
+   "out": 10
+  },
+  {
+   "name": "part_illumination",
+   "op": "norm",
+   "inputs": [
+    "luminance"
+   ]
+  },
+  {
+   "name": "facial_geometry",
+   "op": "dense",
+   "inputs": [
+    "part_illumination"
+   ],
+   "out": 560
+  },
+  {
+   "name": "part_configurations",
+   "op": "reshape",
+   "inputs": [
+    "facial_geometry"
+   ],
+   "shape": [
+    5,
+    4,
+    28
+   ]
+  },
+  {
+   "name": "part_best_in_group",
+   "op": "maxpool",
+   "inputs": [
+    "part_configurations"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "part_family_evidence",
+   "op": "avgpool",
+   "inputs": [
+    "part_best_in_group"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "part_votes",
+   "op": "dense",
+   "inputs": [
+    "part_family_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "class_scores",
+   "op": "add",
+   "inputs": [
+    "form_votes",
+    "colour_and_texture_votes",
+    "scene_votes",
+    "part_votes"
+   ]
+  }
+ ]
+}

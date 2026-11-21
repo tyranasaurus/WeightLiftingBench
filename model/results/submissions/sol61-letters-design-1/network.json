@@ -1,0 +1,220 @@
+{
+  "layers": [
+    {
+      "name": "illumination",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "illumination"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "half_waves",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "edge_energy",
+      "op": "conv",
+      "inputs": [
+        "half_waves"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cap_shift",
+      "op": "conv",
+      "inputs": [
+        "edge_energy"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cap_excess",
+      "op": "relu",
+      "inputs": [
+        "cap_shift"
+      ]
+    },
+    {
+      "name": "negative_excess",
+      "op": "conv",
+      "inputs": [
+        "cap_excess"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "capped_edges",
+      "op": "add",
+      "inputs": [
+        "edge_energy",
+        "negative_excess"
+      ]
+    },
+    {
+      "name": "local_tolerance",
+      "op": "maxpool",
+      "inputs": [
+        "capped_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_contrast",
+      "op": "norm",
+      "inputs": [
+        "local_tolerance"
+      ]
+    },
+    {
+      "name": "low_shift",
+      "op": "conv",
+      "inputs": [
+        "edge_contrast"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "low_clip",
+      "op": "relu",
+      "inputs": [
+        "low_shift"
+      ]
+    },
+    {
+      "name": "high_shift",
+      "op": "conv",
+      "inputs": [
+        "low_clip"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "high_clip",
+      "op": "relu",
+      "inputs": [
+        "high_shift"
+      ]
+    },
+    {
+      "name": "high_neg",
+      "op": "conv",
+      "inputs": [
+        "high_clip"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "robust_edges",
+      "op": "add",
+      "inputs": [
+        "low_clip",
+        "high_neg"
+      ]
+    },
+    {
+      "name": "anatomical_matches",
+      "op": "dense",
+      "inputs": [
+        "robust_edges"
+      ],
+      "out": 115200
+    },
+    {
+      "name": "pose_axis",
+      "op": "reshape",
+      "inputs": [
+        "anatomical_matches"
+      ],
+      "shape": [
+        24,
+        1,
+        4800
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "pose_axis"
+      ],
+      "size": [
+        1,
+        4800
+      ],
+      "stride": [
+        1,
+        4800
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

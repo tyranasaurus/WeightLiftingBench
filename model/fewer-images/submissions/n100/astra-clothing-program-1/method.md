@@ -1,0 +1,3 @@
+`build.py` draws individual garment silhouettes from polygonal sewing-pattern pieces, shoe soles and uppers, sandal straps, and bag bodies and handles. A fixed seed varies their proportions. Each drawing is normalized independently and stored as its own quantized template of foreground occupancy, horizontal and vertical extents, outline profiles, and aspect ratio.
+
+`predict` extracts the same shape measurements from each photo. It combines agreement with individual templates with hand-written rules for details that a silhouette can miss, including a trouser-leg split, an open sandal, a coat closure, lapels, and patterned shirt fabric. No training image, fitted parameter, or statistic across generated drawings is used to build the classifier.

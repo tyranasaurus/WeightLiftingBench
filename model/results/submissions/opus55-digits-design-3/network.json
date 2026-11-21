@@ -1,0 +1,2246 @@
+{
+ "layers": [
+  {
+   "name": "edge",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "edge_r",
+   "op": "relu",
+   "inputs": [
+    "edge"
+   ]
+  },
+  {
+   "name": "orient",
+   "op": "conv",
+   "inputs": [
+    "edge_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "orient_r",
+   "op": "relu",
+   "inputs": [
+    "orient"
+   ]
+  },
+  {
+   "name": "E",
+   "op": "maxpool",
+   "inputs": [
+    "orient_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "ink_pad",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "ink_dil",
+   "op": "maxpool",
+   "inputs": [
+    "ink_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "ink_dil_s",
+   "op": "conv",
+   "inputs": [
+    "ink_dil"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ink_neg",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gap",
+   "op": "add",
+   "inputs": [
+    "ink_dil_s",
+    "ink_neg"
+   ]
+  },
+  {
+   "name": "gap_r",
+   "op": "relu",
+   "inputs": [
+    "gap"
+   ]
+  },
+  {
+   "name": "barrier",
+   "op": "add",
+   "inputs": [
+    "image",
+    "gap_r"
+   ]
+  },
+  {
+   "name": "v0",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl0_pad",
+   "op": "conv",
+   "inputs": [
+    "v0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl0_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl0_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl0_z",
+   "op": "add",
+   "inputs": [
+    "fl0_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl0_zr",
+   "op": "relu",
+   "inputs": [
+    "fl0_z"
+   ]
+  },
+  {
+   "name": "fl0_zn",
+   "op": "conv",
+   "inputs": [
+    "fl0_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl0_v",
+   "op": "add",
+   "inputs": [
+    "fl0_max",
+    "fl0_zn"
+   ]
+  },
+  {
+   "name": "fl1_pad",
+   "op": "conv",
+   "inputs": [
+    "fl0_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl1_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl1_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl1_z",
+   "op": "add",
+   "inputs": [
+    "fl1_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl1_zr",
+   "op": "relu",
+   "inputs": [
+    "fl1_z"
+   ]
+  },
+  {
+   "name": "fl1_zn",
+   "op": "conv",
+   "inputs": [
+    "fl1_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl1_v",
+   "op": "add",
+   "inputs": [
+    "fl1_max",
+    "fl1_zn"
+   ]
+  },
+  {
+   "name": "fl2_pad",
+   "op": "conv",
+   "inputs": [
+    "fl1_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl2_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl2_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl2_z",
+   "op": "add",
+   "inputs": [
+    "fl2_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl2_zr",
+   "op": "relu",
+   "inputs": [
+    "fl2_z"
+   ]
+  },
+  {
+   "name": "fl2_zn",
+   "op": "conv",
+   "inputs": [
+    "fl2_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl2_v",
+   "op": "add",
+   "inputs": [
+    "fl2_max",
+    "fl2_zn"
+   ]
+  },
+  {
+   "name": "fl3_pad",
+   "op": "conv",
+   "inputs": [
+    "fl2_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl3_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl3_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl3_z",
+   "op": "add",
+   "inputs": [
+    "fl3_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl3_zr",
+   "op": "relu",
+   "inputs": [
+    "fl3_z"
+   ]
+  },
+  {
+   "name": "fl3_zn",
+   "op": "conv",
+   "inputs": [
+    "fl3_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl3_v",
+   "op": "add",
+   "inputs": [
+    "fl3_max",
+    "fl3_zn"
+   ]
+  },
+  {
+   "name": "fl4_pad",
+   "op": "conv",
+   "inputs": [
+    "fl3_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl4_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl4_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl4_z",
+   "op": "add",
+   "inputs": [
+    "fl4_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl4_zr",
+   "op": "relu",
+   "inputs": [
+    "fl4_z"
+   ]
+  },
+  {
+   "name": "fl4_zn",
+   "op": "conv",
+   "inputs": [
+    "fl4_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl4_v",
+   "op": "add",
+   "inputs": [
+    "fl4_max",
+    "fl4_zn"
+   ]
+  },
+  {
+   "name": "fl5_pad",
+   "op": "conv",
+   "inputs": [
+    "fl4_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl5_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl5_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl5_z",
+   "op": "add",
+   "inputs": [
+    "fl5_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl5_zr",
+   "op": "relu",
+   "inputs": [
+    "fl5_z"
+   ]
+  },
+  {
+   "name": "fl5_zn",
+   "op": "conv",
+   "inputs": [
+    "fl5_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl5_v",
+   "op": "add",
+   "inputs": [
+    "fl5_max",
+    "fl5_zn"
+   ]
+  },
+  {
+   "name": "fl6_pad",
+   "op": "conv",
+   "inputs": [
+    "fl5_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl6_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl6_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl6_z",
+   "op": "add",
+   "inputs": [
+    "fl6_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl6_zr",
+   "op": "relu",
+   "inputs": [
+    "fl6_z"
+   ]
+  },
+  {
+   "name": "fl6_zn",
+   "op": "conv",
+   "inputs": [
+    "fl6_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl6_v",
+   "op": "add",
+   "inputs": [
+    "fl6_max",
+    "fl6_zn"
+   ]
+  },
+  {
+   "name": "fl7_pad",
+   "op": "conv",
+   "inputs": [
+    "fl6_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl7_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl7_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl7_z",
+   "op": "add",
+   "inputs": [
+    "fl7_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl7_zr",
+   "op": "relu",
+   "inputs": [
+    "fl7_z"
+   ]
+  },
+  {
+   "name": "fl7_zn",
+   "op": "conv",
+   "inputs": [
+    "fl7_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl7_v",
+   "op": "add",
+   "inputs": [
+    "fl7_max",
+    "fl7_zn"
+   ]
+  },
+  {
+   "name": "fl8_pad",
+   "op": "conv",
+   "inputs": [
+    "fl7_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl8_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl8_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl8_z",
+   "op": "add",
+   "inputs": [
+    "fl8_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl8_zr",
+   "op": "relu",
+   "inputs": [
+    "fl8_z"
+   ]
+  },
+  {
+   "name": "fl8_zn",
+   "op": "conv",
+   "inputs": [
+    "fl8_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl8_v",
+   "op": "add",
+   "inputs": [
+    "fl8_max",
+    "fl8_zn"
+   ]
+  },
+  {
+   "name": "fl9_pad",
+   "op": "conv",
+   "inputs": [
+    "fl8_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl9_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl9_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl9_z",
+   "op": "add",
+   "inputs": [
+    "fl9_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl9_zr",
+   "op": "relu",
+   "inputs": [
+    "fl9_z"
+   ]
+  },
+  {
+   "name": "fl9_zn",
+   "op": "conv",
+   "inputs": [
+    "fl9_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl9_v",
+   "op": "add",
+   "inputs": [
+    "fl9_max",
+    "fl9_zn"
+   ]
+  },
+  {
+   "name": "fl10_pad",
+   "op": "conv",
+   "inputs": [
+    "fl9_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl10_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl10_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl10_z",
+   "op": "add",
+   "inputs": [
+    "fl10_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl10_zr",
+   "op": "relu",
+   "inputs": [
+    "fl10_z"
+   ]
+  },
+  {
+   "name": "fl10_zn",
+   "op": "conv",
+   "inputs": [
+    "fl10_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl10_v",
+   "op": "add",
+   "inputs": [
+    "fl10_max",
+    "fl10_zn"
+   ]
+  },
+  {
+   "name": "fl11_pad",
+   "op": "conv",
+   "inputs": [
+    "fl10_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl11_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl11_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl11_z",
+   "op": "add",
+   "inputs": [
+    "fl11_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl11_zr",
+   "op": "relu",
+   "inputs": [
+    "fl11_z"
+   ]
+  },
+  {
+   "name": "fl11_zn",
+   "op": "conv",
+   "inputs": [
+    "fl11_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl11_v",
+   "op": "add",
+   "inputs": [
+    "fl11_max",
+    "fl11_zn"
+   ]
+  },
+  {
+   "name": "fl12_pad",
+   "op": "conv",
+   "inputs": [
+    "fl11_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl12_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl12_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl12_z",
+   "op": "add",
+   "inputs": [
+    "fl12_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl12_zr",
+   "op": "relu",
+   "inputs": [
+    "fl12_z"
+   ]
+  },
+  {
+   "name": "fl12_zn",
+   "op": "conv",
+   "inputs": [
+    "fl12_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl12_v",
+   "op": "add",
+   "inputs": [
+    "fl12_max",
+    "fl12_zn"
+   ]
+  },
+  {
+   "name": "fl13_pad",
+   "op": "conv",
+   "inputs": [
+    "fl12_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl13_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl13_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl13_z",
+   "op": "add",
+   "inputs": [
+    "fl13_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl13_zr",
+   "op": "relu",
+   "inputs": [
+    "fl13_z"
+   ]
+  },
+  {
+   "name": "fl13_zn",
+   "op": "conv",
+   "inputs": [
+    "fl13_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl13_v",
+   "op": "add",
+   "inputs": [
+    "fl13_max",
+    "fl13_zn"
+   ]
+  },
+  {
+   "name": "fl14_pad",
+   "op": "conv",
+   "inputs": [
+    "fl13_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl14_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl14_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl14_z",
+   "op": "add",
+   "inputs": [
+    "fl14_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl14_zr",
+   "op": "relu",
+   "inputs": [
+    "fl14_z"
+   ]
+  },
+  {
+   "name": "fl14_zn",
+   "op": "conv",
+   "inputs": [
+    "fl14_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl14_v",
+   "op": "add",
+   "inputs": [
+    "fl14_max",
+    "fl14_zn"
+   ]
+  },
+  {
+   "name": "fl15_pad",
+   "op": "conv",
+   "inputs": [
+    "fl14_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl15_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl15_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl15_z",
+   "op": "add",
+   "inputs": [
+    "fl15_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl15_zr",
+   "op": "relu",
+   "inputs": [
+    "fl15_z"
+   ]
+  },
+  {
+   "name": "fl15_zn",
+   "op": "conv",
+   "inputs": [
+    "fl15_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl15_v",
+   "op": "add",
+   "inputs": [
+    "fl15_max",
+    "fl15_zn"
+   ]
+  },
+  {
+   "name": "fl16_pad",
+   "op": "conv",
+   "inputs": [
+    "fl15_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl16_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl16_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl16_z",
+   "op": "add",
+   "inputs": [
+    "fl16_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl16_zr",
+   "op": "relu",
+   "inputs": [
+    "fl16_z"
+   ]
+  },
+  {
+   "name": "fl16_zn",
+   "op": "conv",
+   "inputs": [
+    "fl16_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl16_v",
+   "op": "add",
+   "inputs": [
+    "fl16_max",
+    "fl16_zn"
+   ]
+  },
+  {
+   "name": "fl17_pad",
+   "op": "conv",
+   "inputs": [
+    "fl16_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl17_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl17_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl17_z",
+   "op": "add",
+   "inputs": [
+    "fl17_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl17_zr",
+   "op": "relu",
+   "inputs": [
+    "fl17_z"
+   ]
+  },
+  {
+   "name": "fl17_zn",
+   "op": "conv",
+   "inputs": [
+    "fl17_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl17_v",
+   "op": "add",
+   "inputs": [
+    "fl17_max",
+    "fl17_zn"
+   ]
+  },
+  {
+   "name": "fl18_pad",
+   "op": "conv",
+   "inputs": [
+    "fl17_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl18_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl18_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl18_z",
+   "op": "add",
+   "inputs": [
+    "fl18_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl18_zr",
+   "op": "relu",
+   "inputs": [
+    "fl18_z"
+   ]
+  },
+  {
+   "name": "fl18_zn",
+   "op": "conv",
+   "inputs": [
+    "fl18_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl18_v",
+   "op": "add",
+   "inputs": [
+    "fl18_max",
+    "fl18_zn"
+   ]
+  },
+  {
+   "name": "fl19_pad",
+   "op": "conv",
+   "inputs": [
+    "fl18_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl19_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl19_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl19_z",
+   "op": "add",
+   "inputs": [
+    "fl19_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl19_zr",
+   "op": "relu",
+   "inputs": [
+    "fl19_z"
+   ]
+  },
+  {
+   "name": "fl19_zn",
+   "op": "conv",
+   "inputs": [
+    "fl19_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl19_v",
+   "op": "add",
+   "inputs": [
+    "fl19_max",
+    "fl19_zn"
+   ]
+  },
+  {
+   "name": "fl20_pad",
+   "op": "conv",
+   "inputs": [
+    "fl19_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl20_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl20_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl20_z",
+   "op": "add",
+   "inputs": [
+    "fl20_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl20_zr",
+   "op": "relu",
+   "inputs": [
+    "fl20_z"
+   ]
+  },
+  {
+   "name": "fl20_zn",
+   "op": "conv",
+   "inputs": [
+    "fl20_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl20_v",
+   "op": "add",
+   "inputs": [
+    "fl20_max",
+    "fl20_zn"
+   ]
+  },
+  {
+   "name": "fl21_pad",
+   "op": "conv",
+   "inputs": [
+    "fl20_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl21_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl21_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl21_z",
+   "op": "add",
+   "inputs": [
+    "fl21_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl21_zr",
+   "op": "relu",
+   "inputs": [
+    "fl21_z"
+   ]
+  },
+  {
+   "name": "fl21_zn",
+   "op": "conv",
+   "inputs": [
+    "fl21_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl21_v",
+   "op": "add",
+   "inputs": [
+    "fl21_max",
+    "fl21_zn"
+   ]
+  },
+  {
+   "name": "fl22_pad",
+   "op": "conv",
+   "inputs": [
+    "fl21_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl22_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl22_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl22_z",
+   "op": "add",
+   "inputs": [
+    "fl22_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl22_zr",
+   "op": "relu",
+   "inputs": [
+    "fl22_z"
+   ]
+  },
+  {
+   "name": "fl22_zn",
+   "op": "conv",
+   "inputs": [
+    "fl22_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl22_v",
+   "op": "add",
+   "inputs": [
+    "fl22_max",
+    "fl22_zn"
+   ]
+  },
+  {
+   "name": "fl23_pad",
+   "op": "conv",
+   "inputs": [
+    "fl22_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl23_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl23_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl23_z",
+   "op": "add",
+   "inputs": [
+    "fl23_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl23_zr",
+   "op": "relu",
+   "inputs": [
+    "fl23_z"
+   ]
+  },
+  {
+   "name": "fl23_zn",
+   "op": "conv",
+   "inputs": [
+    "fl23_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl23_v",
+   "op": "add",
+   "inputs": [
+    "fl23_max",
+    "fl23_zn"
+   ]
+  },
+  {
+   "name": "fl24_pad",
+   "op": "conv",
+   "inputs": [
+    "fl23_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl24_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl24_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl24_z",
+   "op": "add",
+   "inputs": [
+    "fl24_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl24_zr",
+   "op": "relu",
+   "inputs": [
+    "fl24_z"
+   ]
+  },
+  {
+   "name": "fl24_zn",
+   "op": "conv",
+   "inputs": [
+    "fl24_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl24_v",
+   "op": "add",
+   "inputs": [
+    "fl24_max",
+    "fl24_zn"
+   ]
+  },
+  {
+   "name": "fl25_pad",
+   "op": "conv",
+   "inputs": [
+    "fl24_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl25_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl25_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl25_z",
+   "op": "add",
+   "inputs": [
+    "fl25_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl25_zr",
+   "op": "relu",
+   "inputs": [
+    "fl25_z"
+   ]
+  },
+  {
+   "name": "fl25_zn",
+   "op": "conv",
+   "inputs": [
+    "fl25_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl25_v",
+   "op": "add",
+   "inputs": [
+    "fl25_max",
+    "fl25_zn"
+   ]
+  },
+  {
+   "name": "fl26_pad",
+   "op": "conv",
+   "inputs": [
+    "fl25_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl26_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl26_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl26_z",
+   "op": "add",
+   "inputs": [
+    "fl26_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl26_zr",
+   "op": "relu",
+   "inputs": [
+    "fl26_z"
+   ]
+  },
+  {
+   "name": "fl26_zn",
+   "op": "conv",
+   "inputs": [
+    "fl26_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl26_v",
+   "op": "add",
+   "inputs": [
+    "fl26_max",
+    "fl26_zn"
+   ]
+  },
+  {
+   "name": "fl27_pad",
+   "op": "conv",
+   "inputs": [
+    "fl26_v"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "fl27_max",
+   "op": "maxpool",
+   "inputs": [
+    "fl27_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "fl27_z",
+   "op": "add",
+   "inputs": [
+    "fl27_max",
+    "barrier"
+   ]
+  },
+  {
+   "name": "fl27_zr",
+   "op": "relu",
+   "inputs": [
+    "fl27_z"
+   ]
+  },
+  {
+   "name": "fl27_zn",
+   "op": "conv",
+   "inputs": [
+    "fl27_zr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fl27_v",
+   "op": "add",
+   "inputs": [
+    "fl27_max",
+    "fl27_zn"
+   ]
+  },
+  {
+   "name": "hole_s",
+   "op": "add",
+   "inputs": [
+    "fl27_v",
+    "barrier"
+   ]
+  },
+  {
+   "name": "hole_n",
+   "op": "conv",
+   "inputs": [
+    "hole_s"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "hole",
+   "op": "relu",
+   "inputs": [
+    "hole_n"
+   ]
+  },
+  {
+   "name": "H",
+   "op": "maxpool",
+   "inputs": [
+    "hole"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "F_e",
+   "op": "conv",
+   "inputs": [
+    "E"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F_h",
+   "op": "conv",
+   "inputs": [
+    "H"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "F",
+   "op": "add",
+   "inputs": [
+    "F_e",
+    "F_h"
+   ]
+  },
+  {
+   "name": "F_pad",
+   "op": "conv",
+   "inputs": [
+    "F"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "D",
+   "op": "maxpool",
+   "inputs": [
+    "F_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "F_flat",
+   "op": "reshape",
+   "inputs": [
+    "F"
+   ],
+   "shape": [
+    1,
+    126,
+    14
+   ]
+  },
+  {
+   "name": "F_n",
+   "op": "norm",
+   "inputs": [
+    "F_flat"
+   ]
+  },
+  {
+   "name": "D_flat",
+   "op": "reshape",
+   "inputs": [
+    "D"
+   ],
+   "shape": [
+    1,
+    126,
+    14
+   ]
+  },
+  {
+   "name": "D_n",
+   "op": "norm",
+   "inputs": [
+    "D_flat"
+   ]
+  },
+  {
+   "name": "match_A",
+   "op": "dense",
+   "inputs": [
+    "D_n"
+   ],
+   "out": 33300
+  },
+  {
+   "name": "match_B",
+   "op": "dense",
+   "inputs": [
+    "F_n"
+   ],
+   "out": 33300
+  },
+  {
+   "name": "match",
+   "op": "add",
+   "inputs": [
+    "match_A",
+    "match_B"
+   ]
+  },
+  {
+   "name": "match_blocks",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    333,
+    100
+   ]
+  },
+  {
+   "name": "block_best",
+   "op": "maxpool",
+   "inputs": [
+    "match_blocks"
+   ],
+   "size": [
+    1,
+    100
+   ],
+   "stride": [
+    1,
+    100
+   ]
+  },
+  {
+   "name": "class_blocks",
+   "op": "dense",
+   "inputs": [
+    "block_best"
+   ],
+   "out": 350
+  },
+  {
+   "name": "class_3d",
+   "op": "reshape",
+   "inputs": [
+    "class_blocks"
+   ],
+   "shape": [
+    10,
+    35,
+    1
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "class_3d"
+   ],
+   "size": [
+    35,
+    1
+   ],
+   "stride": [
+    35,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

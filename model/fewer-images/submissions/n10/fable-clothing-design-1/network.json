@@ -1,0 +1,346 @@
+{
+ "layers": [
+  {
+   "name": "mk",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mkr",
+   "op": "relu",
+   "inputs": [
+    "mk"
+   ]
+  },
+  {
+   "name": "m",
+   "op": "conv",
+   "inputs": [
+    "mkr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cum",
+   "op": "dense",
+   "inputs": [
+    "m"
+   ],
+   "out": 7056
+  },
+  {
+   "name": "cumr",
+   "op": "relu",
+   "inputs": [
+    "cum"
+   ]
+  },
+  {
+   "name": "cumm",
+   "op": "reshape",
+   "inputs": [
+    "cumr"
+   ],
+   "shape": [
+    9,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "maps",
+   "op": "conv",
+   "inputs": [
+    "cumm"
+   ],
+   "out": 17,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "mapsr",
+   "op": "relu",
+   "inputs": [
+    "maps"
+   ]
+  },
+  {
+   "name": "hb",
+   "op": "conv",
+   "inputs": [
+    "mapsr"
+   ],
+   "out": 1,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "hbr",
+   "op": "relu",
+   "inputs": [
+    "hb"
+   ]
+  },
+  {
+   "name": "er",
+   "op": "conv",
+   "inputs": [
+    "m"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "err",
+   "op": "relu",
+   "inputs": [
+    "er"
+   ]
+  },
+  {
+   "name": "vc",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "vcr",
+   "op": "relu",
+   "inputs": [
+    "vc"
+   ]
+  },
+  {
+   "name": "vm",
+   "op": "conv",
+   "inputs": [
+    "vcr"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vmm",
+   "op": "relu",
+   "inputs": [
+    "vm"
+   ]
+  },
+  {
+   "name": "vb",
+   "op": "conv",
+   "inputs": [
+    "vmm"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vmr",
+   "op": "relu",
+   "inputs": [
+    "vb"
+   ]
+  },
+  {
+   "name": "tc",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tcr",
+   "op": "relu",
+   "inputs": [
+    "tc"
+   ]
+  },
+  {
+   "name": "f1m",
+   "op": "dense",
+   "inputs": [
+    "mapsr"
+   ],
+   "out": 231
+  },
+  {
+   "name": "f1e",
+   "op": "dense",
+   "inputs": [
+    "err"
+   ],
+   "out": 231
+  },
+  {
+   "name": "f1t",
+   "op": "dense",
+   "inputs": [
+    "tcr"
+   ],
+   "out": 231
+  },
+  {
+   "name": "f1v",
+   "op": "dense",
+   "inputs": [
+    "vmr"
+   ],
+   "out": 231
+  },
+  {
+   "name": "f1h",
+   "op": "dense",
+   "inputs": [
+    "hbr"
+   ],
+   "out": 231
+  },
+  {
+   "name": "f1",
+   "op": "add",
+   "inputs": [
+    "f1m",
+    "f1e",
+    "f1t",
+    "f1v",
+    "f1h"
+   ]
+  },
+  {
+   "name": "f1r",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "f2",
+   "op": "dense",
+   "inputs": [
+    "f1r"
+   ],
+   "out": 259
+  },
+  {
+   "name": "f2r",
+   "op": "relu",
+   "inputs": [
+    "f2"
+   ]
+  },
+  {
+   "name": "prn",
+   "op": "dense",
+   "inputs": [
+    "f2r"
+   ],
+   "out": 60
+  },
+  {
+   "name": "prnr",
+   "op": "relu",
+   "inputs": [
+    "prn"
+   ]
+  },
+  {
+   "name": "pr",
+   "op": "dense",
+   "inputs": [
+    "prnr"
+   ],
+   "out": 60
+  },
+  {
+   "name": "prm",
+   "op": "reshape",
+   "inputs": [
+    "pr"
+   ],
+   "shape": [
+    1,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "prx",
+   "op": "maxpool",
+   "inputs": [
+    "prm"
+   ],
+   "size": [
+    1,
+    6
+   ],
+   "stride": [
+    1,
+    6
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "prx"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

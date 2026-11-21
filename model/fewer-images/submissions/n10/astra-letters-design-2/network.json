@@ -1,0 +1,424 @@
+{
+ "layers": [
+  {
+   "name": "compass_derivative",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "half_waves",
+   "op": "relu",
+   "inputs": [
+    "compass_derivative"
+   ]
+  },
+  {
+   "name": "nearby_peak",
+   "op": "maxpool",
+   "inputs": [
+    "half_waves"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "nearby_mean",
+   "op": "avgpool",
+   "inputs": [
+    "half_waves"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "scale_peak",
+   "op": "conv",
+   "inputs": [
+    "nearby_peak"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "scale_mean",
+   "op": "conv",
+   "inputs": [
+    "nearby_mean"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "local_edges",
+   "op": "add",
+   "inputs": [
+    "scale_peak",
+    "scale_mean"
+   ]
+  },
+  {
+   "name": "signed_directions",
+   "op": "norm",
+   "inputs": [
+    "local_edges"
+   ]
+  },
+  {
+   "name": "axis_energy",
+   "op": "conv",
+   "inputs": [
+    "local_edges"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "unsigned_directions",
+   "op": "norm",
+   "inputs": [
+    "axis_energy"
+   ]
+  },
+  {
+   "name": "orientation_competition",
+   "op": "conv",
+   "inputs": [
+    "half_waves"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "narrow_axes",
+   "op": "relu",
+   "inputs": [
+    "orientation_competition"
+   ]
+  },
+  {
+   "name": "fine_pool",
+   "op": "avgpool",
+   "inputs": [
+    "narrow_axes"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "breakpoints",
+   "op": "conv",
+   "inputs": [
+    "fine_pool"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "above_breakpoints",
+   "op": "relu",
+   "inputs": [
+    "breakpoints"
+   ]
+  },
+  {
+   "name": "compress_contrast",
+   "op": "conv",
+   "inputs": [
+    "above_breakpoints"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "fine_directions",
+   "op": "norm",
+   "inputs": [
+    "compress_contrast"
+   ]
+  },
+  {
+   "name": "antialias_photo",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luminance",
+   "op": "norm",
+   "inputs": [
+    "antialias_photo"
+   ]
+  },
+  {
+   "name": "center_surround",
+   "op": "conv",
+   "inputs": [
+    "antialias_photo"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "local_luminance",
+   "op": "norm",
+   "inputs": [
+    "center_surround"
+   ]
+  },
+  {
+   "name": "finger_bars",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bar_halfwaves",
+   "op": "relu",
+   "inputs": [
+    "finger_bars"
+   ]
+  },
+  {
+   "name": "bar_polarity_invariance",
+   "op": "conv",
+   "inputs": [
+    "bar_halfwaves"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "nearby_ridge",
+   "op": "maxpool",
+   "inputs": [
+    "bar_polarity_invariance"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "ridge_directions",
+   "op": "norm",
+   "inputs": [
+    "nearby_ridge"
+   ]
+  },
+  {
+   "name": "shape_agreement",
+   "op": "dense",
+   "inputs": [
+    "unsigned_directions"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "relief_agreement",
+   "op": "dense",
+   "inputs": [
+    "signed_directions"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "edge_alignment",
+   "op": "dense",
+   "inputs": [
+    "fine_directions"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "hand_tone",
+   "op": "dense",
+   "inputs": [
+    "luminance"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "cavity_and_highlight",
+   "op": "dense",
+   "inputs": [
+    "local_luminance"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "match_finger_ridges",
+   "op": "dense",
+   "inputs": [
+    "ridge_directions"
+   ],
+   "out": 49152
+  },
+  {
+   "name": "agreement",
+   "op": "add",
+   "inputs": [
+    "shape_agreement",
+    "relief_agreement",
+    "edge_alignment",
+    "hand_tone",
+    "cavity_and_highlight",
+    "match_finger_ridges"
+   ]
+  },
+  {
+   "name": "by_letter",
+   "op": "reshape",
+   "inputs": [
+    "agreement"
+   ],
+   "shape": [
+    24,
+    512,
+    4
+   ]
+  },
+  {
+   "name": "best_framing",
+   "op": "maxpool",
+   "inputs": [
+    "by_letter"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "best_handshape",
+   "op": "maxpool",
+   "inputs": [
+    "best_framing"
+   ],
+   "size": [
+    128,
+    1
+   ],
+   "stride": [
+    128,
+    1
+   ]
+  },
+  {
+   "name": "bank_consensus",
+   "op": "avgpool",
+   "inputs": [
+    "best_handshape"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "class_scores",
+   "op": "reshape",
+   "inputs": [
+    "bank_consensus"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

@@ -1,0 +1,149 @@
+{
+  "layers": [
+    {
+      "name": "gray",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "lum",
+      "op": "norm",
+      "inputs": [
+        "gray"
+      ]
+    },
+    {
+      "name": "opponents",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "positive",
+      "op": "relu",
+      "inputs": [
+        "opponents"
+      ]
+    },
+    {
+      "name": "color_norm",
+      "op": "norm",
+      "inputs": [
+        "positive"
+      ]
+    },
+    {
+      "name": "color_stack",
+      "op": "conv",
+      "inputs": [
+        "color_norm"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "luma_stack",
+      "op": "conv",
+      "inputs": [
+        "lum"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "features",
+      "op": "add",
+      "inputs": [
+        "color_stack",
+        "luma_stack"
+      ]
+    },
+    {
+      "name": "cells",
+      "op": "avgpool",
+      "inputs": [
+        "features"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "matched",
+      "op": "dense",
+      "inputs": [
+        "cells"
+      ],
+      "out": 7740
+    },
+    {
+      "name": "by_class",
+      "op": "reshape",
+      "inputs": [
+        "matched"
+      ],
+      "shape": [
+        1,
+        43,
+        180
+      ]
+    },
+    {
+      "name": "best_view",
+      "op": "maxpool",
+      "inputs": [
+        "by_class"
+      ],
+      "size": [
+        1,
+        180
+      ],
+      "stride": [
+        1,
+        180
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_view"
+      ],
+      "shape": [
+        43
+      ]
+    }
+  ]
+}

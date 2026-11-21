@@ -1,0 +1,113 @@
+{
+  "layers": [
+    {
+      "name": "derivative",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 8,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "half_wave",
+      "op": "relu",
+      "inputs": [
+        "derivative"
+      ]
+    },
+    {
+      "name": "orientation",
+      "op": "conv",
+      "inputs": [
+        "half_wave"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "oriented_edges",
+      "op": "relu",
+      "inputs": [
+        "orientation"
+      ]
+    },
+    {
+      "name": "soft_spatial_bins",
+      "op": "avgpool",
+      "inputs": [
+        "oriented_edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "contrast_equalization",
+      "op": "norm",
+      "inputs": [
+        "soft_spatial_bins"
+      ]
+    },
+    {
+      "name": "shape_similarity",
+      "op": "dense",
+      "inputs": [
+        "contrast_equalization"
+      ],
+      "out": 12288
+    },
+    {
+      "name": "class_by_pose",
+      "op": "reshape",
+      "inputs": [
+        "shape_similarity"
+      ],
+      "shape": [
+        24,
+        1,
+        512
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "class_by_pose"
+      ],
+      "size": [
+        1,
+        512
+      ],
+      "stride": [
+        1,
+        512
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1206 @@
+{
+ "layers": [
+  {
+   "name": "soft_thresholds",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "above_thresholds",
+   "op": "relu",
+   "inputs": [
+    "soft_thresholds"
+   ]
+  },
+  {
+   "name": "albedo_subtraction",
+   "op": "conv",
+   "inputs": [
+    "above_thresholds"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shadow_gain",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "silhouette",
+   "op": "add",
+   "inputs": [
+    "shadow_gain",
+    "albedo_subtraction"
+   ]
+  },
+  {
+   "name": "antialiased_mask",
+   "op": "avgpool",
+   "inputs": [
+    "silhouette"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "outline_norm",
+   "op": "norm",
+   "inputs": [
+    "antialiased_mask"
+   ]
+  },
+  {
+   "name": "surround_contrast",
+   "op": "conv",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 1,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "contour_norm",
+   "op": "norm",
+   "inputs": [
+    "surround_contrast"
+   ]
+  },
+  {
+   "name": "mask_channel",
+   "op": "conv",
+   "inputs": [
+    "outline_norm"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_channel",
+   "op": "conv",
+   "inputs": [
+    "contour_norm"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "shape_descriptor",
+   "op": "add",
+   "inputs": [
+    "mask_channel",
+    "edge_channel"
+   ]
+  },
+  {
+   "name": "pattern_correlations",
+   "op": "dense",
+   "inputs": [
+    "shape_descriptor"
+   ],
+   "out": 27648
+  },
+  {
+   "name": "pattern_book",
+   "op": "reshape",
+   "inputs": [
+    "pattern_correlations"
+   ],
+   "shape": [
+    1,
+    27,
+    1024
+   ]
+  },
+  {
+   "name": "match_alternatives",
+   "op": "maxpool",
+   "inputs": [
+    "pattern_book"
+   ],
+   "size": [
+    1,
+    1024
+   ],
+   "stride": [
+    1,
+    1024
+   ]
+  },
+  {
+   "name": "best_each_style",
+   "op": "reshape",
+   "inputs": [
+    "match_alternatives"
+   ],
+   "shape": [
+    27
+   ]
+  },
+  {
+   "name": "photo_contrast",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "small_detail_filters",
+   "op": "conv",
+   "inputs": [
+    "photo_contrast"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_wave_details",
+   "op": "relu",
+   "inputs": [
+    "small_detail_filters"
+   ]
+  },
+  {
+   "name": "observe_half_wave_details",
+   "op": "dense",
+   "inputs": [
+    "half_wave_details"
+   ],
+   "out": 5
+  },
+  {
+   "name": "observe_silhouette",
+   "op": "dense",
+   "inputs": [
+    "silhouette"
+   ],
+   "out": 3
+  },
+  {
+   "name": "observe_photo_contrast",
+   "op": "dense",
+   "inputs": [
+    "photo_contrast"
+   ],
+   "out": 1
+  },
+  {
+   "name": "line_integrals",
+   "op": "dense",
+   "inputs": [
+    "photo_contrast"
+   ],
+   "out": 188
+  },
+  {
+   "name": "line_polarities",
+   "op": "reshape",
+   "inputs": [
+    "line_integrals"
+   ],
+   "shape": [
+    1,
+    2,
+    94
+   ]
+  },
+  {
+   "name": "line_magnitude",
+   "op": "maxpool",
+   "inputs": [
+    "line_polarities"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "organize_lines",
+   "op": "dense",
+   "inputs": [
+    "line_magnitude"
+   ],
+   "out": 90
+  },
+  {
+   "name": "paired_operators",
+   "op": "reshape",
+   "inputs": [
+    "organize_lines"
+   ],
+   "shape": [
+    1,
+    45,
+    2
+   ]
+  },
+  {
+   "name": "ridge_or_step",
+   "op": "maxpool",
+   "inputs": [
+    "paired_operators"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "segment_responses",
+   "op": "reshape",
+   "inputs": [
+    "ridge_or_step"
+   ],
+   "shape": [
+    1,
+    15,
+    3
+   ]
+  },
+  {
+   "name": "placket_by_pose",
+   "op": "dense",
+   "inputs": [
+    "segment_responses"
+   ],
+   "out": 15
+  },
+  {
+   "name": "placket_positions",
+   "op": "reshape",
+   "inputs": [
+    "placket_by_pose"
+   ],
+   "shape": [
+    1,
+    1,
+    15
+   ]
+  },
+  {
+   "name": "placket_max",
+   "op": "maxpool",
+   "inputs": [
+    "placket_positions"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "observe_placket_max",
+   "op": "dense",
+   "inputs": [
+    "placket_max"
+   ],
+   "out": 1
+  },
+  {
+   "name": "upper_line_by_pose",
+   "op": "dense",
+   "inputs": [
+    "segment_responses"
+   ],
+   "out": 15
+  },
+  {
+   "name": "upper_line_positions",
+   "op": "reshape",
+   "inputs": [
+    "upper_line_by_pose"
+   ],
+   "shape": [
+    1,
+    1,
+    15
+   ]
+  },
+  {
+   "name": "upper_line_max",
+   "op": "maxpool",
+   "inputs": [
+    "upper_line_positions"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "observe_upper_line_max",
+   "op": "dense",
+   "inputs": [
+    "upper_line_max"
+   ],
+   "out": 1
+  },
+  {
+   "name": "lower_line_by_pose",
+   "op": "dense",
+   "inputs": [
+    "segment_responses"
+   ],
+   "out": 15
+  },
+  {
+   "name": "lower_line_positions",
+   "op": "reshape",
+   "inputs": [
+    "lower_line_by_pose"
+   ],
+   "shape": [
+    1,
+    1,
+    15
+   ]
+  },
+  {
+   "name": "lower_line_max",
+   "op": "maxpool",
+   "inputs": [
+    "lower_line_positions"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "observe_lower_line_max",
+   "op": "dense",
+   "inputs": [
+    "lower_line_max"
+   ],
+   "out": 1
+  },
+  {
+   "name": "observe_line_magnitude",
+   "op": "dense",
+   "inputs": [
+    "line_magnitude"
+   ],
+   "out": 1
+  },
+  {
+   "name": "ribbing_test",
+   "op": "dense",
+   "inputs": [
+    "photo_contrast"
+   ],
+   "out": 14
+  },
+  {
+   "name": "ribbing_signs",
+   "op": "reshape",
+   "inputs": [
+    "ribbing_test"
+   ],
+   "shape": [
+    1,
+    2,
+    7
+   ]
+  },
+  {
+   "name": "ribbing_magnitude",
+   "op": "maxpool",
+   "inputs": [
+    "ribbing_signs"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "ribbing_inside",
+   "op": "dense",
+   "inputs": [
+    "silhouette"
+   ],
+   "out": 7
+  },
+  {
+   "name": "rib_strength",
+   "op": "reshape",
+   "inputs": [
+    "ribbing_magnitude"
+   ],
+   "shape": [
+    7
+   ]
+  },
+  {
+   "name": "ribbing_candidates",
+   "op": "add",
+   "inputs": [
+    "rib_strength",
+    "ribbing_inside"
+   ]
+  },
+  {
+   "name": "hem_positions",
+   "op": "reshape",
+   "inputs": [
+    "ribbing_candidates"
+   ],
+   "shape": [
+    1,
+    1,
+    7
+   ]
+  },
+  {
+   "name": "hem_rib",
+   "op": "maxpool",
+   "inputs": [
+    "hem_positions"
+   ],
+   "size": [
+    1,
+    7
+   ],
+   "stride": [
+    1,
+    7
+   ]
+  },
+  {
+   "name": "observe_hem_rib",
+   "op": "dense",
+   "inputs": [
+    "hem_rib"
+   ],
+   "out": 1
+  },
+  {
+   "name": "lapel_ridge",
+   "op": "dense",
+   "inputs": [
+    "photo_contrast"
+   ],
+   "out": 64
+  },
+  {
+   "name": "lapel_halves",
+   "op": "reshape",
+   "inputs": [
+    "lapel_ridge"
+   ],
+   "shape": [
+    1,
+    2,
+    32
+   ]
+  },
+  {
+   "name": "lapel_polarity",
+   "op": "maxpool",
+   "inputs": [
+    "lapel_halves"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "check_fold_interior",
+   "op": "dense",
+   "inputs": [
+    "silhouette"
+   ],
+   "out": 64
+  },
+  {
+   "name": "missing_lapel_material",
+   "op": "relu",
+   "inputs": [
+    "check_fold_interior"
+   ]
+  },
+  {
+   "name": "seam_at_boundary",
+   "op": "dense",
+   "inputs": [
+    "missing_lapel_material"
+   ],
+   "out": 32
+  },
+  {
+   "name": "fold_strength",
+   "op": "reshape",
+   "inputs": [
+    "lapel_polarity"
+   ],
+   "shape": [
+    32
+   ]
+  },
+  {
+   "name": "inner_lapel",
+   "op": "add",
+   "inputs": [
+    "fold_strength",
+    "seam_at_boundary"
+   ]
+  },
+  {
+   "name": "weaker_pair_sign",
+   "op": "dense",
+   "inputs": [
+    "inner_lapel"
+   ],
+   "out": 32
+  },
+  {
+   "name": "collar_pairs",
+   "op": "reshape",
+   "inputs": [
+    "weaker_pair_sign"
+   ],
+   "shape": [
+    1,
+    16,
+    2
+   ]
+  },
+  {
+   "name": "weakest_pair",
+   "op": "maxpool",
+   "inputs": [
+    "collar_pairs"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "symmetrical_folds",
+   "op": "dense",
+   "inputs": [
+    "weakest_pair"
+   ],
+   "out": 16
+  },
+  {
+   "name": "collar_choices",
+   "op": "reshape",
+   "inputs": [
+    "symmetrical_folds"
+   ],
+   "shape": [
+    1,
+    1,
+    16
+   ]
+  },
+  {
+   "name": "collar_found",
+   "op": "maxpool",
+   "inputs": [
+    "collar_choices"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "observe_collar_found",
+   "op": "dense",
+   "inputs": [
+    "collar_found"
+   ],
+   "out": 1
+  },
+  {
+   "name": "empty_rays_test",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 784
+  },
+  {
+   "name": "empty_rays",
+   "op": "relu",
+   "inputs": [
+    "empty_rays_test"
+   ]
+  },
+  {
+   "name": "opposing_ray_support",
+   "op": "dense",
+   "inputs": [
+    "empty_rays"
+   ],
+   "out": 588
+  },
+  {
+   "name": "exclude_object",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 588
+  },
+  {
+   "name": "test_gaps",
+   "op": "add",
+   "inputs": [
+    "opposing_ray_support",
+    "exclude_object"
+   ]
+  },
+  {
+   "name": "between_material",
+   "op": "relu",
+   "inputs": [
+    "test_gaps"
+   ]
+  },
+  {
+   "name": "observe_between_material",
+   "op": "dense",
+   "inputs": [
+    "between_material"
+   ],
+   "out": 4
+  },
+  {
+   "name": "compare_mirrors",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 196
+  },
+  {
+   "name": "asymmetric_mass",
+   "op": "relu",
+   "inputs": [
+    "compare_mirrors"
+   ]
+  },
+  {
+   "name": "observe_asymmetric_mass",
+   "op": "dense",
+   "inputs": [
+    "asymmetric_mass"
+   ],
+   "out": 1
+  },
+  {
+   "name": "observe_antialiased_mask",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 8
+  },
+  {
+   "name": "column_up",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 196
+  },
+  {
+   "name": "no_material_above",
+   "op": "relu",
+   "inputs": [
+    "column_up"
+   ]
+  },
+  {
+   "name": "column_down",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 196
+  },
+  {
+   "name": "no_material_below",
+   "op": "relu",
+   "inputs": [
+    "column_down"
+   ]
+  },
+  {
+   "name": "column_exterior",
+   "op": "add",
+   "inputs": [
+    "no_material_above",
+    "no_material_below"
+   ]
+  },
+  {
+   "name": "column_occupied",
+   "op": "dense",
+   "inputs": [
+    "column_exterior"
+   ],
+   "out": 196
+  },
+  {
+   "name": "column_extent",
+   "op": "relu",
+   "inputs": [
+    "column_occupied"
+   ]
+  },
+  {
+   "name": "observe_column_extent",
+   "op": "dense",
+   "inputs": [
+    "column_extent"
+   ],
+   "out": 3
+  },
+  {
+   "name": "end_heights",
+   "op": "dense",
+   "inputs": [
+    "column_extent"
+   ],
+   "out": 2
+  },
+  {
+   "name": "both_ends",
+   "op": "reshape",
+   "inputs": [
+    "end_heights"
+   ],
+   "shape": [
+    1,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "taller_end",
+   "op": "maxpool",
+   "inputs": [
+    "both_ends"
+   ],
+   "size": [
+    1,
+    2
+   ],
+   "stride": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "observe_taller_end",
+   "op": "dense",
+   "inputs": [
+    "taller_end"
+   ],
+   "out": 1
+  },
+  {
+   "name": "row_coverage",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 14
+  },
+  {
+   "name": "rows_without_item",
+   "op": "relu",
+   "inputs": [
+    "row_coverage"
+   ]
+  },
+  {
+   "name": "item_height",
+   "op": "dense",
+   "inputs": [
+    "rows_without_item"
+   ],
+   "out": 1
+  },
+  {
+   "name": "observe_item_height",
+   "op": "dense",
+   "inputs": [
+    "item_height"
+   ],
+   "out": 1
+  },
+  {
+   "name": "fork_sides",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 392
+  },
+  {
+   "name": "one_side_empty",
+   "op": "relu",
+   "inputs": [
+    "fork_sides"
+   ]
+  },
+  {
+   "name": "fork_coverage",
+   "op": "dense",
+   "inputs": [
+    "one_side_empty"
+   ],
+   "out": 196
+  },
+  {
+   "name": "fork_empty",
+   "op": "dense",
+   "inputs": [
+    "antialiased_mask"
+   ],
+   "out": 196
+  },
+  {
+   "name": "fork_candidates",
+   "op": "add",
+   "inputs": [
+    "fork_coverage",
+    "fork_empty"
+   ]
+  },
+  {
+   "name": "forks",
+   "op": "relu",
+   "inputs": [
+    "fork_candidates"
+   ]
+  },
+  {
+   "name": "observe_forks",
+   "op": "dense",
+   "inputs": [
+    "forks"
+   ],
+   "out": 1
+  },
+  {
+   "name": "index_observe_half_wave_details",
+   "op": "dense",
+   "inputs": [
+    "observe_half_wave_details"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_silhouette",
+   "op": "dense",
+   "inputs": [
+    "observe_silhouette"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_photo_contrast",
+   "op": "dense",
+   "inputs": [
+    "observe_photo_contrast"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_placket_max",
+   "op": "dense",
+   "inputs": [
+    "observe_placket_max"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_upper_line_max",
+   "op": "dense",
+   "inputs": [
+    "observe_upper_line_max"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_lower_line_max",
+   "op": "dense",
+   "inputs": [
+    "observe_lower_line_max"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_line_magnitude",
+   "op": "dense",
+   "inputs": [
+    "observe_line_magnitude"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_hem_rib",
+   "op": "dense",
+   "inputs": [
+    "observe_hem_rib"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_collar_found",
+   "op": "dense",
+   "inputs": [
+    "observe_collar_found"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_between_material",
+   "op": "dense",
+   "inputs": [
+    "observe_between_material"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_asymmetric_mass",
+   "op": "dense",
+   "inputs": [
+    "observe_asymmetric_mass"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_antialiased_mask",
+   "op": "dense",
+   "inputs": [
+    "observe_antialiased_mask"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_column_extent",
+   "op": "dense",
+   "inputs": [
+    "observe_column_extent"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_taller_end",
+   "op": "dense",
+   "inputs": [
+    "observe_taller_end"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_item_height",
+   "op": "dense",
+   "inputs": [
+    "observe_item_height"
+   ],
+   "out": 34
+  },
+  {
+   "name": "index_observe_forks",
+   "op": "dense",
+   "inputs": [
+    "observe_forks"
+   ],
+   "out": 34
+  },
+  {
+   "name": "observations",
+   "op": "add",
+   "inputs": [
+    "index_observe_half_wave_details",
+    "index_observe_silhouette",
+    "index_observe_photo_contrast",
+    "index_observe_placket_max",
+    "index_observe_upper_line_max",
+    "index_observe_lower_line_max",
+    "index_observe_line_magnitude",
+    "index_observe_hem_rib",
+    "index_observe_collar_found",
+    "index_observe_between_material",
+    "index_observe_asymmetric_mass",
+    "index_observe_antialiased_mask",
+    "index_observe_column_extent",
+    "index_observe_taller_end",
+    "index_observe_item_height",
+    "index_observe_forks"
+   ]
+  },
+  {
+   "name": "cue_thresholds",
+   "op": "dense",
+   "inputs": [
+    "observations"
+   ],
+   "out": 54
+  },
+  {
+   "name": "condition_ramps",
+   "op": "relu",
+   "inputs": [
+    "cue_thresholds"
+   ]
+  },
+  {
+   "name": "construction_evidence",
+   "op": "dense",
+   "inputs": [
+    "condition_ramps"
+   ],
+   "out": 27
+  },
+  {
+   "name": "style_scores",
+   "op": "add",
+   "inputs": [
+    "best_each_style",
+    "construction_evidence"
+   ]
+  },
+  {
+   "name": "group_styles",
+   "op": "dense",
+   "inputs": [
+    "style_scores"
+   ],
+   "out": 40
+  },
+  {
+   "name": "classes_and_styles",
+   "op": "reshape",
+   "inputs": [
+    "group_styles"
+   ],
+   "shape": [
+    1,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "best_construction",
+   "op": "maxpool",
+   "inputs": [
+    "classes_and_styles"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best_construction"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

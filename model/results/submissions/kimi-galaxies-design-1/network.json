@@ -1,0 +1,226 @@
+{
+  "layers": [
+    {
+      "name": "p2",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "zn",
+      "op": "norm",
+      "inputs": [
+        "p2"
+      ]
+    },
+    {
+      "name": "lum",
+      "op": "conv",
+      "inputs": [
+        "zn"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ln",
+      "op": "norm",
+      "inputs": [
+        "lum"
+      ]
+    },
+    {
+      "name": "thresholds",
+      "op": "conv",
+      "inputs": [
+        "ln"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "tr",
+      "op": "relu",
+      "inputs": [
+        "thresholds"
+      ]
+    },
+    {
+      "name": "clips",
+      "op": "conv",
+      "inputs": [
+        "tr"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "local",
+      "op": "conv",
+      "inputs": [
+        "clips"
+      ],
+      "out": 6,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "local_relu",
+      "op": "relu",
+      "inputs": [
+        "local"
+      ]
+    },
+    {
+      "name": "fmaps",
+      "op": "avgpool",
+      "inputs": [
+        "local_relu"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "cmaps",
+      "op": "avgpool",
+      "inputs": [
+        "zn"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "radial",
+      "op": "dense",
+      "inputs": [
+        "fmaps"
+      ],
+      "out": 88
+    },
+    {
+      "name": "color",
+      "op": "dense",
+      "inputs": [
+        "cmaps"
+      ],
+      "out": 88
+    },
+    {
+      "name": "angular",
+      "op": "dense",
+      "inputs": [
+        "fmaps"
+      ],
+      "out": 1408
+    },
+    {
+      "name": "angular_reshape",
+      "op": "reshape",
+      "inputs": [
+        "angular"
+      ],
+      "shape": [
+        88,
+        16,
+        1
+      ]
+    },
+    {
+      "name": "angular_max",
+      "op": "maxpool",
+      "inputs": [
+        "angular_reshape"
+      ],
+      "size": [
+        16,
+        1
+      ],
+      "stride": [
+        16,
+        1
+      ]
+    },
+    {
+      "name": "angular_flat",
+      "op": "reshape",
+      "inputs": [
+        "angular_max"
+      ],
+      "shape": [
+        88
+      ]
+    },
+    {
+      "name": "features",
+      "op": "add",
+      "inputs": [
+        "radial",
+        "color",
+        "angular_flat"
+      ]
+    },
+    {
+      "name": "rules",
+      "op": "dense",
+      "inputs": [
+        "features"
+      ],
+      "out": 322
+    },
+    {
+      "name": "rule_relu",
+      "op": "relu",
+      "inputs": [
+        "rules"
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "rule_relu"
+      ],
+      "out": 10
+    }
+  ]
+}

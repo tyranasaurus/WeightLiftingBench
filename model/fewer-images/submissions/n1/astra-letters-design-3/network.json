@@ -1,0 +1,3130 @@
+{
+  "layers": [
+    {
+      "name": "exposure",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "contrast",
+      "op": "conv",
+      "inputs": [
+        "exposure"
+      ],
+      "out": 10,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "half_wave",
+      "op": "relu",
+      "inputs": [
+        "contrast"
+      ]
+    },
+    {
+      "name": "orientation",
+      "op": "conv",
+      "inputs": [
+        "half_wave"
+      ],
+      "out": 16,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "orientation_gate",
+      "op": "relu",
+      "inputs": [
+        "orientation"
+      ]
+    },
+    {
+      "name": "bounded",
+      "op": "conv",
+      "inputs": [
+        "orientation_gate"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "spatial_bins",
+      "op": "avgpool",
+      "inputs": [
+        "bounded"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "contrast_maps",
+      "op": "norm",
+      "inputs": [
+        "spatial_bins"
+      ]
+    },
+    {
+      "name": "broad_contrast",
+      "op": "conv",
+      "inputs": [
+        "exposure"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_bounds",
+      "op": "conv",
+      "inputs": [
+        "broad_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_gate",
+      "op": "relu",
+      "inputs": [
+        "broad_bounds"
+      ]
+    },
+    {
+      "name": "broad_bounded",
+      "op": "conv",
+      "inputs": [
+        "broad_gate"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_bins",
+      "op": "avgpool",
+      "inputs": [
+        "broad_bounded"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "broad_map",
+      "op": "norm",
+      "inputs": [
+        "broad_bins"
+      ]
+    },
+    {
+      "name": "gradient_slots",
+      "op": "conv",
+      "inputs": [
+        "contrast_maps"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "shading_slot",
+      "op": "conv",
+      "inputs": [
+        "broad_map"
+      ],
+      "out": 9,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "mixed_maps",
+      "op": "add",
+      "inputs": [
+        "gradient_slots",
+        "shading_slot"
+      ]
+    },
+    {
+      "name": "letter_A",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_A_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_A"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_A_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_A_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_A_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_A_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_A_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_A_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_A_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_A_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_A_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_A_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_A_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_A_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_A_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_A_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_B",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_B_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_B"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_B_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_B_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_B_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_B_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_B_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_B_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_B_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_B_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_B_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_B_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_B_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_B_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_B_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_B_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_C",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_C_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_C"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_C_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_C_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_C_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_C_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_C_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_C_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_C_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_C_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_C_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_C_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_C_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_C_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_C_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_C_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_D",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_D_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_D"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_D_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_D_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_D_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_D_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_D_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_D_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_D_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_D_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_D_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_D_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_D_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_D_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_D_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_D_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_E",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_E_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_E"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_E_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_E_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_E_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_E_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_E_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_E_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_E_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_E_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_E_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_E_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_E_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_E_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_E_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_E_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_F",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_F_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_F"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_F_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_F_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_F_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_F_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_F_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_F_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_F_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_F_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_F_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_F_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_F_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_F_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_F_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_F_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_G",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_G_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_G"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_G_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_G_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_G_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_G_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_G_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_G_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_G_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_G_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_G_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_G_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_G_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_G_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_G_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_G_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_H",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_H_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_H"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_H_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_H_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_H_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_H_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_H_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_H_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_H_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_H_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_H_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_H_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_H_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_H_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_H_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_H_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_I",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_I_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_I"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_I_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_I_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_I_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_I_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_I_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_I_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_I_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_I_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_I_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_I_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_I_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_I_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_I_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_I_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_K",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_K_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_K"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_K_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_K_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_K_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_K_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_K_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_K_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_K_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_K_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_K_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_K_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_K_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_K_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_K_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_K_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_L",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_L_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_L"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_L_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_L_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_L_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_L_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_L_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_L_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_L_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_L_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_L_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_L_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_L_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_L_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_L_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_L_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_M",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_M_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_M"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_M_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_M_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_M_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_M_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_M_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_M_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_M_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_M_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_M_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_M_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_M_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_M_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_M_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_M_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_N",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_N_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_N"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_N_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_N_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_N_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_N_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_N_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_N_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_N_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_N_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_N_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_N_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_N_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_N_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_N_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_N_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_O",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_O_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_O"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_O_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_O_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_O_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_O_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_O_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_O_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_O_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_O_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_O_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_O_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_O_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_O_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_O_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_O_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_P",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_P_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_P"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_P_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_P_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_P_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_P_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_P_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_P_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_P_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_P_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_P_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_P_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_P_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_P_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_P_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_P_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_Q",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_Q_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_Q"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_Q_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Q_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Q_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Q_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Q_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Q_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Q_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Q_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_Q_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_Q_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_Q_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_Q_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_Q_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_Q_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_R",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_R_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_R"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_R_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_R_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_R_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_R_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_R_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_R_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_R_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_R_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_R_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_R_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_R_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_R_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_R_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_R_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_S",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_S_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_S"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_S_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_S_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_S_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_S_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_S_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_S_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_S_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_S_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_S_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_S_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_S_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_S_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_S_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_S_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_T",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_T_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_T"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_T_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_T_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_T_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_T_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_T_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_T_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_T_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_T_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_T_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_T_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_T_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_T_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_T_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_T_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_U",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_U_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_U"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_U_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_U_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_U_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_U_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_U_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_U_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_U_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_U_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_U_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_U_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_U_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_U_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_U_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_U_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_V",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_V_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_V"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_V_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_V_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_V_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_V_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_V_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_V_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_V_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_V_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_V_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_V_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_V_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_V_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_V_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_V_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_W",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_W_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_W"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_W_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_W_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_W_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_W_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_W_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_W_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_W_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_W_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_W_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_W_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_W_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_W_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_W_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_W_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_X",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_X_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_X"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_X_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_X_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_X_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_X_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_X_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_X_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_X_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_X_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_X_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_X_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_X_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_X_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_X_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_X_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter_Y",
+      "op": "conv",
+      "inputs": [
+        "mixed_maps"
+      ],
+      "out": 2048,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "letter_Y_group",
+      "op": "reshape",
+      "inputs": [
+        "letter_Y"
+      ],
+      "shape": [
+        4,
+        512,
+        9
+      ]
+    },
+    {
+      "name": "letter_Y_group_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Y_group"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Y_group_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Y_group_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Y_group_reduce_reduce_reduce",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Y_group_reduce_reduce"
+      ],
+      "size": [
+        8,
+        1
+      ],
+      "stride": [
+        8,
+        1
+      ]
+    },
+    {
+      "name": "letter_Y_aligned",
+      "op": "maxpool",
+      "inputs": [
+        "letter_Y_group_reduce_reduce_reduce"
+      ],
+      "size": [
+        1,
+        9
+      ],
+      "stride": [
+        1,
+        9
+      ]
+    },
+    {
+      "name": "letter_Y_groups",
+      "op": "reshape",
+      "inputs": [
+        "letter_Y_aligned"
+      ],
+      "shape": [
+        1,
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_Y_score",
+      "op": "avgpool",
+      "inputs": [
+        "letter_Y_groups"
+      ],
+      "size": [
+        1,
+        4
+      ],
+      "stride": [
+        1,
+        4
+      ]
+    },
+    {
+      "name": "letter_Y_slot",
+      "op": "dense",
+      "inputs": [
+        "letter_Y_score"
+      ],
+      "out": 24
+    },
+    {
+      "name": "letter",
+      "op": "add",
+      "inputs": [
+        "letter_A_slot",
+        "letter_B_slot",
+        "letter_C_slot",
+        "letter_D_slot",
+        "letter_E_slot",
+        "letter_F_slot",
+        "letter_G_slot",
+        "letter_H_slot",
+        "letter_I_slot",
+        "letter_K_slot",
+        "letter_L_slot",
+        "letter_M_slot",
+        "letter_N_slot",
+        "letter_O_slot",
+        "letter_P_slot",
+        "letter_Q_slot",
+        "letter_R_slot",
+        "letter_S_slot",
+        "letter_T_slot",
+        "letter_U_slot",
+        "letter_V_slot",
+        "letter_W_slot",
+        "letter_X_slot",
+        "letter_Y_slot"
+      ]
+    }
+  ]
+}

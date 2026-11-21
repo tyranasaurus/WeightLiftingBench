@@ -1,0 +1,318 @@
+{
+ "layers": [
+  {
+   "name": "z",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "grad",
+   "op": "conv",
+   "inputs": [
+    "z"
+   ],
+   "out": 12,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "grad_r",
+   "op": "relu",
+   "inputs": [
+    "grad"
+   ]
+  },
+  {
+   "name": "sharp",
+   "op": "conv",
+   "inputs": [
+    "grad_r"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sharp_r",
+   "op": "relu",
+   "inputs": [
+    "sharp"
+   ]
+  },
+  {
+   "name": "knee",
+   "op": "conv",
+   "inputs": [
+    "sharp_r"
+   ],
+   "out": 36,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "knee_r",
+   "op": "relu",
+   "inputs": [
+    "knee"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "conv",
+   "inputs": [
+    "knee_r"
+   ],
+   "out": 12,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 2,
+   "padding": 5
+  },
+  {
+   "name": "opp",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "opp_flat",
+   "op": "reshape",
+   "inputs": [
+    "opp"
+   ],
+   "shape": [
+    1,
+    144,
+    12
+   ]
+  },
+  {
+   "name": "opp_norm",
+   "op": "norm",
+   "inputs": [
+    "opp_flat"
+   ]
+  },
+  {
+   "name": "edge",
+   "op": "reshape",
+   "inputs": [
+    "opp_norm"
+   ],
+   "shape": [
+    12,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "wall",
+   "op": "dense",
+   "inputs": [
+    "z"
+   ],
+   "out": 784
+  },
+  {
+   "name": "resid",
+   "op": "reshape",
+   "inputs": [
+    "wall"
+   ],
+   "shape": [
+    1,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "fig1",
+   "op": "conv",
+   "inputs": [
+    "resid"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fig1_r",
+   "op": "relu",
+   "inputs": [
+    "fig1"
+   ]
+  },
+  {
+   "name": "fig2",
+   "op": "conv",
+   "inputs": [
+    "fig1_r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fig2_r",
+   "op": "relu",
+   "inputs": [
+    "fig2"
+   ]
+  },
+  {
+   "name": "fig3",
+   "op": "conv",
+   "inputs": [
+    "fig2_r"
+   ],
+   "out": 1,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 2,
+   "padding": 3
+  },
+  {
+   "name": "fig",
+   "op": "norm",
+   "inputs": [
+    "fig3"
+   ]
+  },
+  {
+   "name": "cat_e",
+   "op": "conv",
+   "inputs": [
+    "edge"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cat_f",
+   "op": "conv",
+   "inputs": [
+    "fig"
+   ],
+   "out": 13,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "maps",
+   "op": "add",
+   "inputs": [
+    "cat_e",
+    "cat_f"
+   ]
+  },
+  {
+   "name": "match",
+   "op": "conv",
+   "inputs": [
+    "maps"
+   ],
+   "out": 9600,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "best_shift",
+   "op": "maxpool",
+   "inputs": [
+    "match"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "by_class",
+   "op": "reshape",
+   "inputs": [
+    "best_shift"
+   ],
+   "shape": [
+    1,
+    24,
+    400
+   ]
+  },
+  {
+   "name": "best_var",
+   "op": "maxpool",
+   "inputs": [
+    "by_class"
+   ],
+   "size": [
+    1,
+    400
+   ],
+   "stride": [
+    1,
+    400
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best_var"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

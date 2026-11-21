@@ -1,0 +1,1902 @@
+{
+ "layers": [
+  {
+   "name": "photon_bins",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "white_light",
+   "op": "conv",
+   "inputs": [
+    "photon_bins"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "ellipse_integrals",
+   "op": "dense",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 2240
+  },
+  {
+   "name": "ellipse_grid",
+   "op": "reshape",
+   "inputs": [
+    "ellipse_integrals"
+   ],
+   "shape": [
+    10,
+    16,
+    14
+   ]
+  },
+  {
+   "name": "profile_search",
+   "op": "maxpool",
+   "inputs": [
+    "ellipse_grid"
+   ],
+   "size": [
+    1,
+    14
+   ],
+   "stride": [
+    1,
+    14
+   ]
+  },
+  {
+   "name": "ellipse_peaks",
+   "op": "maxpool",
+   "inputs": [
+    "profile_search"
+   ],
+   "size": [
+    16,
+    1
+   ],
+   "stride": [
+    16,
+    1
+   ]
+  },
+  {
+   "name": "isophote_levels",
+   "op": "conv",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "isophote_light",
+   "op": "relu",
+   "inputs": [
+    "isophote_levels"
+   ]
+  },
+  {
+   "name": "angular_light_integrals",
+   "op": "dense",
+   "inputs": [
+    "isophote_light"
+   ],
+   "out": 36
+  },
+  {
+   "name": "aperture_photometry",
+   "op": "dense",
+   "inputs": [
+    "photon_bins"
+   ],
+   "out": 15
+  },
+  {
+   "name": "nuclear_surrounds",
+   "op": "conv",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 16,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "nuclear_direction_grid",
+   "op": "reshape",
+   "inputs": [
+    "nuclear_surrounds"
+   ],
+   "shape": [
+    2,
+    8,
+    729
+   ]
+  },
+  {
+   "name": "least_peak_contrast",
+   "op": "maxpool",
+   "inputs": [
+    "nuclear_direction_grid"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "nuclear_field",
+   "op": "reshape",
+   "inputs": [
+    "least_peak_contrast"
+   ],
+   "shape": [
+    2,
+    27,
+    27
+   ]
+  },
+  {
+   "name": "companion_candidates",
+   "op": "dense",
+   "inputs": [
+    "nuclear_field"
+   ],
+   "out": 432
+  },
+  {
+   "name": "companion_locations",
+   "op": "reshape",
+   "inputs": [
+    "companion_candidates"
+   ],
+   "shape": [
+    6,
+    1,
+    72
+   ]
+  },
+  {
+   "name": "companion_peaks",
+   "op": "maxpool",
+   "inputs": [
+    "companion_locations"
+   ],
+   "size": [
+    1,
+    72
+   ],
+   "stride": [
+    1,
+    72
+   ]
+  },
+  {
+   "name": "polar_intensity_levels",
+   "op": "conv",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "polar_emission",
+   "op": "relu",
+   "inputs": [
+    "polar_intensity_levels"
+   ]
+  },
+  {
+   "name": "bounded_polar_light",
+   "op": "conv",
+   "inputs": [
+    "polar_emission"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "disk_rows",
+   "op": "reshape",
+   "inputs": [
+    "bounded_polar_light"
+   ],
+   "shape": [
+    64,
+    64,
+    1
+   ]
+  },
+  {
+   "name": "disk_cut_rows",
+   "op": "conv",
+   "inputs": [
+    "disk_rows"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "disk_row_stack",
+   "op": "reshape",
+   "inputs": [
+    "disk_cut_rows"
+   ],
+   "shape": [
+    1,
+    48,
+    64
+   ]
+  },
+  {
+   "name": "disk_plane_fourier",
+   "op": "dense",
+   "inputs": [
+    "disk_row_stack"
+   ],
+   "out": 1800
+  },
+  {
+   "name": "arm_interarm_samples",
+   "op": "dense",
+   "inputs": [
+    "disk_row_stack"
+   ],
+   "out": 1600
+  },
+  {
+   "name": "arm_interarm_grid",
+   "op": "reshape",
+   "inputs": [
+    "arm_interarm_samples"
+   ],
+   "shape": [
+    64,
+    25,
+    1
+   ]
+  },
+  {
+   "name": "annuli_by_inclination",
+   "op": "reshape",
+   "inputs": [
+    "disk_plane_fourier"
+   ],
+   "shape": [
+    72,
+    25,
+    1
+   ]
+  },
+  {
+   "name": "azimuthal_profiles_affine1",
+   "op": "conv",
+   "inputs": [
+    "arm_interarm_grid"
+   ],
+   "out": 352,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "azimuthal_profiles_hinges1",
+   "op": "relu",
+   "inputs": [
+    "azimuthal_profiles_affine1"
+   ]
+  },
+  {
+   "name": "azimuthal_profiles_affine2",
+   "op": "conv",
+   "inputs": [
+    "azimuthal_profiles_hinges1"
+   ],
+   "out": 320,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "azimuthal_profiles_hinges2",
+   "op": "relu",
+   "inputs": [
+    "azimuthal_profiles_affine2"
+   ]
+  },
+  {
+   "name": "azimuthal_profiles_affine3",
+   "op": "conv",
+   "inputs": [
+    "azimuthal_profiles_hinges2"
+   ],
+   "out": 288,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "azimuthal_profiles_hinges3",
+   "op": "relu",
+   "inputs": [
+    "azimuthal_profiles_affine3"
+   ]
+  },
+  {
+   "name": "azimuthal_profiles_summary",
+   "op": "conv",
+   "inputs": [
+    "azimuthal_profiles_hinges3"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "angular_channels",
+   "op": "conv",
+   "inputs": [
+    "annuli_by_inclination"
+   ],
+   "out": 75,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "profile_channels",
+   "op": "conv",
+   "inputs": [
+    "azimuthal_profiles_summary"
+   ],
+   "out": 75,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "disk_planes",
+   "op": "add",
+   "inputs": [
+    "angular_channels",
+    "profile_channels"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine1",
+   "op": "conv",
+   "inputs": [
+    "disk_planes"
+   ],
+   "out": 860,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges1",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine1"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine2",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges1"
+   ],
+   "out": 954,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges2",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine2"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine3",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges2"
+   ],
+   "out": 1008,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges3",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine3"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine4",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges3"
+   ],
+   "out": 649,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges4",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine4"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine5",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges4"
+   ],
+   "out": 441,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges5",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine5"
+   ]
+  },
+  {
+   "name": "polar_analysis_affine6",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges5"
+   ],
+   "out": 394,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "polar_analysis_hinges6",
+   "op": "relu",
+   "inputs": [
+    "polar_analysis_affine6"
+   ]
+  },
+  {
+   "name": "polar_analysis_summary",
+   "op": "conv",
+   "inputs": [
+    "polar_analysis_hinges6"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "choose_affine1",
+   "op": "dense",
+   "inputs": [
+    "polar_analysis_summary"
+   ],
+   "out": 764
+  },
+  {
+   "name": "choose_hinges1",
+   "op": "relu",
+   "inputs": [
+    "choose_affine1"
+   ]
+  },
+  {
+   "name": "choose_affine2",
+   "op": "dense",
+   "inputs": [
+    "choose_hinges1"
+   ],
+   "out": 584
+  },
+  {
+   "name": "choose_hinges2",
+   "op": "relu",
+   "inputs": [
+    "choose_affine2"
+   ]
+  },
+  {
+   "name": "choose_affine3",
+   "op": "dense",
+   "inputs": [
+    "choose_hinges2"
+   ],
+   "out": 401
+  },
+  {
+   "name": "choose_hinges3",
+   "op": "relu",
+   "inputs": [
+    "choose_affine3"
+   ]
+  },
+  {
+   "name": "choose_affine4",
+   "op": "dense",
+   "inputs": [
+    "choose_hinges3"
+   ],
+   "out": 217
+  },
+  {
+   "name": "choose_hinges4",
+   "op": "relu",
+   "inputs": [
+    "choose_affine4"
+   ]
+  },
+  {
+   "name": "choose_affine5",
+   "op": "dense",
+   "inputs": [
+    "choose_hinges4"
+   ],
+   "out": 92
+  },
+  {
+   "name": "choose_hinges5",
+   "op": "relu",
+   "inputs": [
+    "choose_affine5"
+   ]
+  },
+  {
+   "name": "selected_disk_plane",
+   "op": "dense",
+   "inputs": [
+    "choose_hinges5"
+   ],
+   "out": 16
+  },
+  {
+   "name": "bisector_differences",
+   "op": "dense",
+   "inputs": [
+    "disk_row_stack"
+   ],
+   "out": 1080
+  },
+  {
+   "name": "bisector_absolute_parts",
+   "op": "relu",
+   "inputs": [
+    "bisector_differences"
+   ]
+  },
+  {
+   "name": "half_turn_integrals",
+   "op": "dense",
+   "inputs": [
+    "bisector_absolute_parts"
+   ],
+   "out": 10
+  },
+  {
+   "name": "opposite_pixels",
+   "op": "dense",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 858
+  },
+  {
+   "name": "positive_differences",
+   "op": "relu",
+   "inputs": [
+    "opposite_pixels"
+   ]
+  },
+  {
+   "name": "rectified_apertures",
+   "op": "dense",
+   "inputs": [
+    "positive_differences"
+   ],
+   "out": 3
+  },
+  {
+   "name": "signed_apertures",
+   "op": "dense",
+   "inputs": [
+    "opposite_pixels"
+   ],
+   "out": 3
+  },
+  {
+   "name": "background_corrected_residuals",
+   "op": "add",
+   "inputs": [
+    "rectified_apertures",
+    "signed_apertures"
+   ]
+  },
+  {
+   "name": "asymmetry_denominators",
+   "op": "dense",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 3
+  },
+  {
+   "name": "cas_inputs_part0",
+   "op": "dense",
+   "inputs": [
+    "background_corrected_residuals"
+   ],
+   "out": 6
+  },
+  {
+   "name": "cas_inputs_part1",
+   "op": "dense",
+   "inputs": [
+    "asymmetry_denominators"
+   ],
+   "out": 6
+  },
+  {
+   "name": "cas_inputs",
+   "op": "add",
+   "inputs": [
+    "cas_inputs_part0",
+    "cas_inputs_part1"
+   ]
+  },
+  {
+   "name": "cas_affine1",
+   "op": "dense",
+   "inputs": [
+    "cas_inputs"
+   ],
+   "out": 6
+  },
+  {
+   "name": "cas_hinges1",
+   "op": "relu",
+   "inputs": [
+    "cas_affine1"
+   ]
+  },
+  {
+   "name": "cas_affine2",
+   "op": "dense",
+   "inputs": [
+    "cas_hinges1"
+   ],
+   "out": 168
+  },
+  {
+   "name": "cas_hinges2",
+   "op": "relu",
+   "inputs": [
+    "cas_affine2"
+   ]
+  },
+  {
+   "name": "cas_affine3",
+   "op": "dense",
+   "inputs": [
+    "cas_hinges2"
+   ],
+   "out": 69
+  },
+  {
+   "name": "cas_hinges3",
+   "op": "relu",
+   "inputs": [
+    "cas_affine3"
+   ]
+  },
+  {
+   "name": "cas_asymmetry",
+   "op": "dense",
+   "inputs": [
+    "cas_hinges3"
+   ],
+   "out": 3
+  },
+  {
+   "name": "local_peak_test",
+   "op": "conv",
+   "inputs": [
+    "white_light"
+   ],
+   "out": 16,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "local_direction_grid",
+   "op": "reshape",
+   "inputs": [
+    "local_peak_test"
+   ],
+   "shape": [
+    2,
+    8,
+    3364
+   ]
+  },
+  {
+   "name": "local_least_contrast",
+   "op": "maxpool",
+   "inputs": [
+    "local_direction_grid"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "local_peak_maps",
+   "op": "reshape",
+   "inputs": [
+    "local_least_contrast"
+   ],
+   "shape": [
+    2,
+    58,
+    58
+   ]
+  },
+  {
+   "name": "companion_mask",
+   "op": "dense",
+   "inputs": [
+    "background_corrected_residuals"
+   ],
+   "out": 6728
+  },
+  {
+   "name": "companion_mask_map",
+   "op": "reshape",
+   "inputs": [
+    "companion_mask"
+   ],
+   "shape": [
+    2,
+    58,
+    58
+   ]
+  },
+  {
+   "name": "off_center_peak_maps",
+   "op": "add",
+   "inputs": [
+    "local_peak_maps",
+    "companion_mask_map"
+   ]
+  },
+  {
+   "name": "off_center_prominence",
+   "op": "conv",
+   "inputs": [
+    "off_center_peak_maps"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "off_center_pairs",
+   "op": "maxpool",
+   "inputs": [
+    "off_center_prominence"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "off_center_max",
+   "op": "maxpool",
+   "inputs": [
+    "off_center_pairs"
+   ],
+   "size": [
+    29,
+    29
+   ],
+   "stride": [
+    29,
+    29
+   ]
+  },
+  {
+   "name": "shape_inputs_part0",
+   "op": "dense",
+   "inputs": [
+    "ellipse_peaks"
+   ],
+   "out": 46
+  },
+  {
+   "name": "shape_inputs_part1",
+   "op": "dense",
+   "inputs": [
+    "angular_light_integrals"
+   ],
+   "out": 46
+  },
+  {
+   "name": "shape_inputs",
+   "op": "add",
+   "inputs": [
+    "shape_inputs_part0",
+    "shape_inputs_part1"
+   ]
+  },
+  {
+   "name": "shape_affine1",
+   "op": "dense",
+   "inputs": [
+    "shape_inputs"
+   ],
+   "out": 639
+  },
+  {
+   "name": "shape_hinges1",
+   "op": "relu",
+   "inputs": [
+    "shape_affine1"
+   ]
+  },
+  {
+   "name": "shape_affine2",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges1"
+   ],
+   "out": 663
+  },
+  {
+   "name": "shape_hinges2",
+   "op": "relu",
+   "inputs": [
+    "shape_affine2"
+   ]
+  },
+  {
+   "name": "shape_affine3",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges2"
+   ],
+   "out": 1154
+  },
+  {
+   "name": "shape_hinges3",
+   "op": "relu",
+   "inputs": [
+    "shape_affine3"
+   ]
+  },
+  {
+   "name": "shape_affine4",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges3"
+   ],
+   "out": 300
+  },
+  {
+   "name": "shape_hinges4",
+   "op": "relu",
+   "inputs": [
+    "shape_affine4"
+   ]
+  },
+  {
+   "name": "shape_affine5",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges4"
+   ],
+   "out": 114
+  },
+  {
+   "name": "shape_hinges5",
+   "op": "relu",
+   "inputs": [
+    "shape_affine5"
+   ]
+  },
+  {
+   "name": "shape_affine6",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges5"
+   ],
+   "out": 200
+  },
+  {
+   "name": "shape_hinges6",
+   "op": "relu",
+   "inputs": [
+    "shape_affine6"
+   ]
+  },
+  {
+   "name": "shape_affine7",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges6"
+   ],
+   "out": 127
+  },
+  {
+   "name": "shape_hinges7",
+   "op": "relu",
+   "inputs": [
+    "shape_affine7"
+   ]
+  },
+  {
+   "name": "shape_affine8",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges7"
+   ],
+   "out": 131
+  },
+  {
+   "name": "shape_hinges8",
+   "op": "relu",
+   "inputs": [
+    "shape_affine8"
+   ]
+  },
+  {
+   "name": "ellipse_measurements",
+   "op": "dense",
+   "inputs": [
+    "shape_hinges8"
+   ],
+   "out": 6
+  },
+  {
+   "name": "light_inputs_part0",
+   "op": "dense",
+   "inputs": [
+    "aperture_photometry"
+   ],
+   "out": 33
+  },
+  {
+   "name": "light_inputs_part1",
+   "op": "dense",
+   "inputs": [
+    "companion_peaks"
+   ],
+   "out": 33
+  },
+  {
+   "name": "light_inputs_part2",
+   "op": "dense",
+   "inputs": [
+    "half_turn_integrals"
+   ],
+   "out": 33
+  },
+  {
+   "name": "light_inputs_part3",
+   "op": "dense",
+   "inputs": [
+    "off_center_max"
+   ],
+   "out": 33
+  },
+  {
+   "name": "light_inputs",
+   "op": "add",
+   "inputs": [
+    "light_inputs_part0",
+    "light_inputs_part1",
+    "light_inputs_part2",
+    "light_inputs_part3"
+   ]
+  },
+  {
+   "name": "light_affine1",
+   "op": "dense",
+   "inputs": [
+    "light_inputs"
+   ],
+   "out": 398
+  },
+  {
+   "name": "light_hinges1",
+   "op": "relu",
+   "inputs": [
+    "light_affine1"
+   ]
+  },
+  {
+   "name": "light_affine2",
+   "op": "dense",
+   "inputs": [
+    "light_hinges1"
+   ],
+   "out": 923
+  },
+  {
+   "name": "light_hinges2",
+   "op": "relu",
+   "inputs": [
+    "light_affine2"
+   ]
+  },
+  {
+   "name": "light_affine3",
+   "op": "dense",
+   "inputs": [
+    "light_hinges2"
+   ],
+   "out": 515
+  },
+  {
+   "name": "light_hinges3",
+   "op": "relu",
+   "inputs": [
+    "light_affine3"
+   ]
+  },
+  {
+   "name": "light_affine4",
+   "op": "dense",
+   "inputs": [
+    "light_hinges3"
+   ],
+   "out": 492
+  },
+  {
+   "name": "light_hinges4",
+   "op": "relu",
+   "inputs": [
+    "light_affine4"
+   ]
+  },
+  {
+   "name": "light_affine5",
+   "op": "dense",
+   "inputs": [
+    "light_hinges4"
+   ],
+   "out": 468
+  },
+  {
+   "name": "light_hinges5",
+   "op": "relu",
+   "inputs": [
+    "light_affine5"
+   ]
+  },
+  {
+   "name": "stellar_light_measurements",
+   "op": "dense",
+   "inputs": [
+    "light_hinges5"
+   ],
+   "out": 19
+  },
+  {
+   "name": "strip_inertias",
+   "op": "dense",
+   "inputs": [
+    "isophote_light"
+   ],
+   "out": 108
+  },
+  {
+   "name": "strip_inertia_grid",
+   "op": "reshape",
+   "inputs": [
+    "strip_inertias"
+   ],
+   "shape": [
+    9,
+    12,
+    1
+   ]
+  },
+  {
+   "name": "strip_widths_affine1",
+   "op": "conv",
+   "inputs": [
+    "strip_inertia_grid"
+   ],
+   "out": 455,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "strip_widths_hinges1",
+   "op": "relu",
+   "inputs": [
+    "strip_widths_affine1"
+   ]
+  },
+  {
+   "name": "strip_widths_summary",
+   "op": "conv",
+   "inputs": [
+    "strip_widths_hinges1"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "align_affine1",
+   "op": "dense",
+   "inputs": [
+    "strip_widths_summary"
+   ],
+   "out": 132
+  },
+  {
+   "name": "align_hinges1",
+   "op": "relu",
+   "inputs": [
+    "align_affine1"
+   ]
+  },
+  {
+   "name": "align_affine2",
+   "op": "dense",
+   "inputs": [
+    "align_hinges1"
+   ],
+   "out": 90
+  },
+  {
+   "name": "align_hinges2",
+   "op": "relu",
+   "inputs": [
+    "align_affine2"
+   ]
+  },
+  {
+   "name": "align_affine3",
+   "op": "dense",
+   "inputs": [
+    "align_hinges2"
+   ],
+   "out": 68
+  },
+  {
+   "name": "align_hinges3",
+   "op": "relu",
+   "inputs": [
+    "align_affine3"
+   ]
+  },
+  {
+   "name": "align_affine4",
+   "op": "dense",
+   "inputs": [
+    "align_hinges3"
+   ],
+   "out": 38
+  },
+  {
+   "name": "align_hinges4",
+   "op": "relu",
+   "inputs": [
+    "align_affine4"
+   ]
+  },
+  {
+   "name": "align_affine5",
+   "op": "dense",
+   "inputs": [
+    "align_hinges4"
+   ],
+   "out": 101
+  },
+  {
+   "name": "align_hinges5",
+   "op": "relu",
+   "inputs": [
+    "align_affine5"
+   ]
+  },
+  {
+   "name": "major_axis_measurements",
+   "op": "dense",
+   "inputs": [
+    "align_hinges5"
+   ],
+   "out": 6
+  },
+  {
+   "name": "young_minus_old",
+   "op": "conv",
+   "inputs": [
+    "photon_bins"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "populations_rows",
+   "op": "reshape",
+   "inputs": [
+    "young_minus_old"
+   ],
+   "shape": [
+    64,
+    64,
+    1
+   ]
+  },
+  {
+   "name": "populations_cut_rows",
+   "op": "conv",
+   "inputs": [
+    "populations_rows"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "populations_row_stack",
+   "op": "reshape",
+   "inputs": [
+    "populations_cut_rows"
+   ],
+   "shape": [
+    1,
+    48,
+    64
+   ]
+  },
+  {
+   "name": "blue_luminosity",
+   "op": "conv",
+   "inputs": [
+    "photon_bins"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blue_disk_rows",
+   "op": "reshape",
+   "inputs": [
+    "blue_luminosity"
+   ],
+   "shape": [
+    64,
+    64,
+    1
+   ]
+  },
+  {
+   "name": "blue_disk_cut_rows",
+   "op": "conv",
+   "inputs": [
+    "blue_disk_rows"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blue_disk_row_stack",
+   "op": "reshape",
+   "inputs": [
+    "blue_disk_cut_rows"
+   ],
+   "shape": [
+    1,
+    48,
+    64
+   ]
+  },
+  {
+   "name": "chromatic_harmonics",
+   "op": "dense",
+   "inputs": [
+    "populations_row_stack"
+   ],
+   "out": 600
+  },
+  {
+   "name": "local_blue_photometry",
+   "op": "dense",
+   "inputs": [
+    "blue_disk_row_stack"
+   ],
+   "out": 100
+  },
+  {
+   "name": "chromatic_grid",
+   "op": "reshape",
+   "inputs": [
+    "chromatic_harmonics"
+   ],
+   "shape": [
+    24,
+    25,
+    1
+   ]
+  },
+  {
+   "name": "blue_grid",
+   "op": "reshape",
+   "inputs": [
+    "local_blue_photometry"
+   ],
+   "shape": [
+    4,
+    25,
+    1
+   ]
+  },
+  {
+   "name": "chromatic_channels",
+   "op": "conv",
+   "inputs": [
+    "chromatic_grid"
+   ],
+   "out": 28,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "local_blue_channels",
+   "op": "conv",
+   "inputs": [
+    "blue_grid"
+   ],
+   "out": 28,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "stellar_population_field",
+   "op": "add",
+   "inputs": [
+    "chromatic_channels",
+    "local_blue_channels"
+   ]
+  },
+  {
+   "name": "color_patterns_affine1",
+   "op": "conv",
+   "inputs": [
+    "stellar_population_field"
+   ],
+   "out": 52,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_patterns_hinges1",
+   "op": "relu",
+   "inputs": [
+    "color_patterns_affine1"
+   ]
+  },
+  {
+   "name": "color_patterns_affine2",
+   "op": "conv",
+   "inputs": [
+    "color_patterns_hinges1"
+   ],
+   "out": 156,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_patterns_hinges2",
+   "op": "relu",
+   "inputs": [
+    "color_patterns_affine2"
+   ]
+  },
+  {
+   "name": "color_patterns_affine3",
+   "op": "conv",
+   "inputs": [
+    "color_patterns_hinges2"
+   ],
+   "out": 168,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_patterns_hinges3",
+   "op": "relu",
+   "inputs": [
+    "color_patterns_affine3"
+   ]
+  },
+  {
+   "name": "color_patterns_affine4",
+   "op": "conv",
+   "inputs": [
+    "color_patterns_hinges3"
+   ],
+   "out": 69,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_patterns_hinges4",
+   "op": "relu",
+   "inputs": [
+    "color_patterns_affine4"
+   ]
+  },
+  {
+   "name": "color_patterns_summary",
+   "op": "conv",
+   "inputs": [
+    "color_patterns_hinges4"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "adopt_inputs_part0",
+   "op": "dense",
+   "inputs": [
+    "color_patterns_summary"
+   ],
+   "out": 450
+  },
+  {
+   "name": "adopt_inputs_part1",
+   "op": "dense",
+   "inputs": [
+    "polar_analysis_summary"
+   ],
+   "out": 450
+  },
+  {
+   "name": "adopt_inputs",
+   "op": "add",
+   "inputs": [
+    "adopt_inputs_part0",
+    "adopt_inputs_part1"
+   ]
+  },
+  {
+   "name": "adopt_affine1",
+   "op": "dense",
+   "inputs": [
+    "adopt_inputs"
+   ],
+   "out": 254
+  },
+  {
+   "name": "adopt_hinges1",
+   "op": "relu",
+   "inputs": [
+    "adopt_affine1"
+   ]
+  },
+  {
+   "name": "adopt_affine2",
+   "op": "dense",
+   "inputs": [
+    "adopt_hinges1"
+   ],
+   "out": 170
+  },
+  {
+   "name": "adopt_hinges2",
+   "op": "relu",
+   "inputs": [
+    "adopt_affine2"
+   ]
+  },
+  {
+   "name": "adopt_affine3",
+   "op": "dense",
+   "inputs": [
+    "adopt_hinges2"
+   ],
+   "out": 110
+  },
+  {
+   "name": "adopt_hinges3",
+   "op": "relu",
+   "inputs": [
+    "adopt_affine3"
+   ]
+  },
+  {
+   "name": "adopt_affine4",
+   "op": "dense",
+   "inputs": [
+    "adopt_hinges3"
+   ],
+   "out": 58
+  },
+  {
+   "name": "adopt_hinges4",
+   "op": "relu",
+   "inputs": [
+    "adopt_affine4"
+   ]
+  },
+  {
+   "name": "adopt_affine5",
+   "op": "dense",
+   "inputs": [
+    "adopt_hinges4"
+   ],
+   "out": 18
+  },
+  {
+   "name": "adopt_hinges5",
+   "op": "relu",
+   "inputs": [
+    "adopt_affine5"
+   ]
+  },
+  {
+   "name": "deprojected_color_patterns",
+   "op": "dense",
+   "inputs": [
+    "adopt_hinges5"
+   ],
+   "out": 3
+  },
+  {
+   "name": "morphology_inputs_part0",
+   "op": "dense",
+   "inputs": [
+    "ellipse_measurements"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs_part1",
+   "op": "dense",
+   "inputs": [
+    "stellar_light_measurements"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs_part2",
+   "op": "dense",
+   "inputs": [
+    "selected_disk_plane"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs_part3",
+   "op": "dense",
+   "inputs": [
+    "major_axis_measurements"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs_part4",
+   "op": "dense",
+   "inputs": [
+    "cas_asymmetry"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs_part5",
+   "op": "dense",
+   "inputs": [
+    "deprojected_color_patterns"
+   ],
+   "out": 53
+  },
+  {
+   "name": "morphology_inputs",
+   "op": "add",
+   "inputs": [
+    "morphology_inputs_part0",
+    "morphology_inputs_part1",
+    "morphology_inputs_part2",
+    "morphology_inputs_part3",
+    "morphology_inputs_part4",
+    "morphology_inputs_part5"
+   ]
+  },
+  {
+   "name": "morphology_affine1",
+   "op": "dense",
+   "inputs": [
+    "morphology_inputs"
+   ],
+   "out": 117
+  },
+  {
+   "name": "morphology_hinges1",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine1"
+   ]
+  },
+  {
+   "name": "morphology_affine2",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges1"
+   ],
+   "out": 127
+  },
+  {
+   "name": "morphology_hinges2",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine2"
+   ]
+  },
+  {
+   "name": "morphology_affine3",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges2"
+   ],
+   "out": 102
+  },
+  {
+   "name": "morphology_hinges3",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine3"
+   ]
+  },
+  {
+   "name": "morphology_affine4",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges3"
+   ],
+   "out": 89
+  },
+  {
+   "name": "morphology_hinges4",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine4"
+   ]
+  },
+  {
+   "name": "morphology_affine5",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges4"
+   ],
+   "out": 88
+  },
+  {
+   "name": "morphology_hinges5",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine5"
+   ]
+  },
+  {
+   "name": "morphology_affine6",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges5"
+   ],
+   "out": 85
+  },
+  {
+   "name": "morphology_hinges6",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine6"
+   ]
+  },
+  {
+   "name": "morphology_affine7",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges6"
+   ],
+   "out": 76
+  },
+  {
+   "name": "morphology_hinges7",
+   "op": "relu",
+   "inputs": [
+    "morphology_affine7"
+   ]
+  },
+  {
+   "name": "class_scores",
+   "op": "dense",
+   "inputs": [
+    "morphology_hinges7"
+   ],
+   "out": 10
+  }
+ ]
+}

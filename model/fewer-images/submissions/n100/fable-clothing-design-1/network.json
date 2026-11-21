@@ -1,0 +1,499 @@
+{
+ "layers": [
+  {
+   "name": "sil1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sil1r",
+   "op": "relu",
+   "inputs": [
+    "sil1"
+   ]
+  },
+  {
+   "name": "sil2",
+   "op": "conv",
+   "inputs": [
+    "sil1r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sil2r",
+   "op": "relu",
+   "inputs": [
+    "sil2"
+   ]
+  },
+  {
+   "name": "sil3",
+   "op": "conv",
+   "inputs": [
+    "sil2r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "blur",
+   "op": "conv",
+   "inputs": [
+    "sil3"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "match",
+   "op": "dense",
+   "inputs": [
+    "blur"
+   ],
+   "out": 100000
+  },
+  {
+   "name": "bank",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    1,
+    10,
+    10000
+   ]
+  },
+  {
+   "name": "best",
+   "op": "maxpool",
+   "inputs": [
+    "bank"
+   ],
+   "size": [
+    1,
+    10000
+   ],
+   "stride": [
+    1,
+    10000
+   ]
+  },
+  {
+   "name": "shape_scores",
+   "op": "reshape",
+   "inputs": [
+    "best"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "nrm",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "ld",
+   "op": "conv",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 2,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ldr",
+   "op": "relu",
+   "inputs": [
+    "ld"
+   ]
+  },
+  {
+   "name": "lc1",
+   "op": "conv",
+   "inputs": [
+    "ldr"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lc1r",
+   "op": "relu",
+   "inputs": [
+    "lc1"
+   ]
+  },
+  {
+   "name": "lc2",
+   "op": "conv",
+   "inputs": [
+    "lc1r"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lv",
+   "op": "conv",
+   "inputs": [
+    "lc2"
+   ],
+   "out": 2,
+   "kernel": [
+    15,
+    15
+   ],
+   "stride": 1,
+   "padding": 7
+  },
+  {
+   "name": "roi",
+   "op": "dense",
+   "inputs": [
+    "lv"
+   ],
+   "out": 112
+  },
+  {
+   "name": "roi_r",
+   "op": "reshape",
+   "inputs": [
+    "roi"
+   ],
+   "shape": [
+    4,
+    1,
+    28
+   ]
+  },
+  {
+   "name": "roi_m",
+   "op": "maxpool",
+   "inputs": [
+    "roi_r"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "lq",
+   "op": "dense",
+   "inputs": [
+    "roi_m"
+   ],
+   "out": 2
+  },
+  {
+   "name": "lqr",
+   "op": "relu",
+   "inputs": [
+    "lq"
+   ]
+  },
+  {
+   "name": "lw",
+   "op": "dense",
+   "inputs": [
+    "lqr"
+   ],
+   "out": 1
+  },
+  {
+   "name": "lwr",
+   "op": "relu",
+   "inputs": [
+    "lw"
+   ]
+  },
+  {
+   "name": "cue",
+   "op": "dense",
+   "inputs": [
+    "lwr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "gp",
+   "op": "conv",
+   "inputs": [
+    "nrm"
+   ],
+   "out": 9,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "gpr",
+   "op": "relu",
+   "inputs": [
+    "gp"
+   ]
+  },
+  {
+   "name": "gm",
+   "op": "conv",
+   "inputs": [
+    "gpr"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gmr",
+   "op": "relu",
+   "inputs": [
+    "gm"
+   ]
+  },
+  {
+   "name": "ga",
+   "op": "conv",
+   "inputs": [
+    "gmr"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gar",
+   "op": "relu",
+   "inputs": [
+    "ga"
+   ]
+  },
+  {
+   "name": "gb",
+   "op": "conv",
+   "inputs": [
+    "gar"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gbr",
+   "op": "relu",
+   "inputs": [
+    "gb"
+   ]
+  },
+  {
+   "name": "gc1",
+   "op": "conv",
+   "inputs": [
+    "gbr"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gc1r",
+   "op": "relu",
+   "inputs": [
+    "gc1"
+   ]
+  },
+  {
+   "name": "gc2",
+   "op": "conv",
+   "inputs": [
+    "gc1r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gmx",
+   "op": "maxpool",
+   "inputs": [
+    "gc2"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "gv",
+   "op": "conv",
+   "inputs": [
+    "gmx"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "groi",
+   "op": "dense",
+   "inputs": [
+    "gv"
+   ],
+   "out": 42
+  },
+  {
+   "name": "groi_r",
+   "op": "reshape",
+   "inputs": [
+    "groi"
+   ],
+   "shape": [
+    1,
+    1,
+    42
+   ]
+  },
+  {
+   "name": "groi_m",
+   "op": "maxpool",
+   "inputs": [
+    "groi_r"
+   ],
+   "size": [
+    1,
+    42
+   ],
+   "stride": [
+    1,
+    42
+   ]
+  },
+  {
+   "name": "gq",
+   "op": "dense",
+   "inputs": [
+    "groi_m"
+   ],
+   "out": 1
+  },
+  {
+   "name": "gqr",
+   "op": "relu",
+   "inputs": [
+    "gq"
+   ]
+  },
+  {
+   "name": "gw",
+   "op": "dense",
+   "inputs": [
+    "gqr"
+   ],
+   "out": 1
+  },
+  {
+   "name": "gwr",
+   "op": "relu",
+   "inputs": [
+    "gw"
+   ]
+  },
+  {
+   "name": "gcue",
+   "op": "dense",
+   "inputs": [
+    "gwr"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "shape_scores",
+    "cue",
+    "gcue"
+   ]
+  }
+ ]
+}

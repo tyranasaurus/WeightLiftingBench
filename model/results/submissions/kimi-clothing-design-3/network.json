@@ -1,0 +1,663 @@
+{
+  "layers": [
+    {
+      "name": "ink_positive",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "ink_relu",
+      "op": "relu",
+      "inputs": [
+        "ink_positive"
+      ]
+    },
+    {
+      "name": "above_one",
+      "op": "conv",
+      "inputs": [
+        "ink_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "above_relu",
+      "op": "relu",
+      "inputs": [
+        "above_one"
+      ]
+    },
+    {
+      "name": "subtract_clip",
+      "op": "conv",
+      "inputs": [
+        "above_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "silhouette",
+      "op": "add",
+      "inputs": [
+        "ink_relu",
+        "subtract_clip"
+      ]
+    },
+    {
+      "name": "grid14",
+      "op": "avgpool",
+      "inputs": [
+        "silhouette"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "grid7",
+      "op": "avgpool",
+      "inputs": [
+        "silhouette"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "raw7",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "full_intersection",
+      "op": "dense",
+      "inputs": [
+        "silhouette"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "full_over",
+      "op": "dense",
+      "inputs": [
+        "silhouette"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "full_over_relu",
+      "op": "relu",
+      "inputs": [
+        "full_over"
+      ]
+    },
+    {
+      "name": "full_under",
+      "op": "dense",
+      "inputs": [
+        "silhouette"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "full_under_relu",
+      "op": "relu",
+      "inputs": [
+        "full_under"
+      ]
+    },
+    {
+      "name": "full_penalty",
+      "op": "add",
+      "inputs": [
+        "full_over_relu",
+        "full_under_relu"
+      ]
+    },
+    {
+      "name": "full_penalty_spatial",
+      "op": "reshape",
+      "inputs": [
+        "full_penalty"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "full_negative_penalty",
+      "op": "conv",
+      "inputs": [
+        "full_penalty_spatial"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "full_penalty_vector",
+      "op": "reshape",
+      "inputs": [
+        "full_negative_penalty"
+      ],
+      "shape": [
+        1200
+      ]
+    },
+    {
+      "name": "full_overlap",
+      "op": "add",
+      "inputs": [
+        "full_intersection",
+        "full_penalty_vector"
+      ]
+    },
+    {
+      "name": "full_spatial",
+      "op": "reshape",
+      "inputs": [
+        "full_overlap"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "full_best",
+      "op": "maxpool",
+      "inputs": [
+        "full_spatial"
+      ],
+      "size": [
+        1,
+        120
+      ],
+      "stride": [
+        1,
+        120
+      ]
+    },
+    {
+      "name": "full_flat",
+      "op": "reshape",
+      "inputs": [
+        "full_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "full_scaled",
+      "op": "dense",
+      "inputs": [
+        "full_flat"
+      ],
+      "out": 10
+    },
+    {
+      "name": "medium_intersection",
+      "op": "dense",
+      "inputs": [
+        "grid14"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "medium_over",
+      "op": "dense",
+      "inputs": [
+        "grid14"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "medium_over_relu",
+      "op": "relu",
+      "inputs": [
+        "medium_over"
+      ]
+    },
+    {
+      "name": "medium_under",
+      "op": "dense",
+      "inputs": [
+        "grid14"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "medium_under_relu",
+      "op": "relu",
+      "inputs": [
+        "medium_under"
+      ]
+    },
+    {
+      "name": "medium_penalty",
+      "op": "add",
+      "inputs": [
+        "medium_over_relu",
+        "medium_under_relu"
+      ]
+    },
+    {
+      "name": "medium_penalty_spatial",
+      "op": "reshape",
+      "inputs": [
+        "medium_penalty"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "medium_negative_penalty",
+      "op": "conv",
+      "inputs": [
+        "medium_penalty_spatial"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "medium_penalty_vector",
+      "op": "reshape",
+      "inputs": [
+        "medium_negative_penalty"
+      ],
+      "shape": [
+        1200
+      ]
+    },
+    {
+      "name": "medium_overlap",
+      "op": "add",
+      "inputs": [
+        "medium_intersection",
+        "medium_penalty_vector"
+      ]
+    },
+    {
+      "name": "medium_spatial",
+      "op": "reshape",
+      "inputs": [
+        "medium_overlap"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "medium_best",
+      "op": "maxpool",
+      "inputs": [
+        "medium_spatial"
+      ],
+      "size": [
+        1,
+        120
+      ],
+      "stride": [
+        1,
+        120
+      ]
+    },
+    {
+      "name": "medium_flat",
+      "op": "reshape",
+      "inputs": [
+        "medium_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "medium_scaled",
+      "op": "dense",
+      "inputs": [
+        "medium_flat"
+      ],
+      "out": 10
+    },
+    {
+      "name": "coarse_intersection",
+      "op": "dense",
+      "inputs": [
+        "grid7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "coarse_over",
+      "op": "dense",
+      "inputs": [
+        "grid7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "coarse_over_relu",
+      "op": "relu",
+      "inputs": [
+        "coarse_over"
+      ]
+    },
+    {
+      "name": "coarse_under",
+      "op": "dense",
+      "inputs": [
+        "grid7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "coarse_under_relu",
+      "op": "relu",
+      "inputs": [
+        "coarse_under"
+      ]
+    },
+    {
+      "name": "coarse_penalty",
+      "op": "add",
+      "inputs": [
+        "coarse_over_relu",
+        "coarse_under_relu"
+      ]
+    },
+    {
+      "name": "coarse_penalty_spatial",
+      "op": "reshape",
+      "inputs": [
+        "coarse_penalty"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "coarse_negative_penalty",
+      "op": "conv",
+      "inputs": [
+        "coarse_penalty_spatial"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coarse_penalty_vector",
+      "op": "reshape",
+      "inputs": [
+        "coarse_negative_penalty"
+      ],
+      "shape": [
+        1200
+      ]
+    },
+    {
+      "name": "coarse_overlap",
+      "op": "add",
+      "inputs": [
+        "coarse_intersection",
+        "coarse_penalty_vector"
+      ]
+    },
+    {
+      "name": "coarse_spatial",
+      "op": "reshape",
+      "inputs": [
+        "coarse_overlap"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "coarse_best",
+      "op": "maxpool",
+      "inputs": [
+        "coarse_spatial"
+      ],
+      "size": [
+        1,
+        120
+      ],
+      "stride": [
+        1,
+        120
+      ]
+    },
+    {
+      "name": "coarse_flat",
+      "op": "reshape",
+      "inputs": [
+        "coarse_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "coarse_scaled",
+      "op": "dense",
+      "inputs": [
+        "coarse_flat"
+      ],
+      "out": 10
+    },
+    {
+      "name": "raw_intersection",
+      "op": "dense",
+      "inputs": [
+        "raw7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "raw_over",
+      "op": "dense",
+      "inputs": [
+        "raw7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "raw_over_relu",
+      "op": "relu",
+      "inputs": [
+        "raw_over"
+      ]
+    },
+    {
+      "name": "raw_under",
+      "op": "dense",
+      "inputs": [
+        "raw7"
+      ],
+      "out": 1200
+    },
+    {
+      "name": "raw_under_relu",
+      "op": "relu",
+      "inputs": [
+        "raw_under"
+      ]
+    },
+    {
+      "name": "raw_penalty",
+      "op": "add",
+      "inputs": [
+        "raw_over_relu",
+        "raw_under_relu"
+      ]
+    },
+    {
+      "name": "raw_penalty_spatial",
+      "op": "reshape",
+      "inputs": [
+        "raw_penalty"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "raw_negative_penalty",
+      "op": "conv",
+      "inputs": [
+        "raw_penalty_spatial"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "raw_penalty_vector",
+      "op": "reshape",
+      "inputs": [
+        "raw_negative_penalty"
+      ],
+      "shape": [
+        1200
+      ]
+    },
+    {
+      "name": "raw_overlap",
+      "op": "add",
+      "inputs": [
+        "raw_intersection",
+        "raw_penalty_vector"
+      ]
+    },
+    {
+      "name": "raw_spatial",
+      "op": "reshape",
+      "inputs": [
+        "raw_overlap"
+      ],
+      "shape": [
+        1,
+        1,
+        1200
+      ]
+    },
+    {
+      "name": "raw_best",
+      "op": "maxpool",
+      "inputs": [
+        "raw_spatial"
+      ],
+      "size": [
+        1,
+        120
+      ],
+      "stride": [
+        1,
+        120
+      ]
+    },
+    {
+      "name": "raw_flat",
+      "op": "reshape",
+      "inputs": [
+        "raw_best"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "raw_scaled",
+      "op": "dense",
+      "inputs": [
+        "raw_flat"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "full_scaled",
+        "medium_scaled",
+        "coarse_scaled",
+        "raw_scaled"
+      ]
+    }
+  ]
+}

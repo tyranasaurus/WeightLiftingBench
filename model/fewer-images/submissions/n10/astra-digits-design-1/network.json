@@ -1,0 +1,1485 @@
+{
+ "layers": [
+  {
+   "name": "edge_and_ridge",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 10,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "edge_energy",
+   "op": "relu",
+   "inputs": [
+    "edge_and_ridge"
+   ]
+  },
+  {
+   "name": "spatial_histograms",
+   "op": "conv",
+   "inputs": [
+    "edge_energy"
+   ],
+   "out": 10,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 4,
+   "padding": 2
+  },
+  {
+   "name": "feature_vector",
+   "op": "reshape",
+   "inputs": [
+    "spatial_histograms"
+   ],
+   "shape": [
+    1,
+    10,
+    49
+   ]
+  },
+  {
+   "name": "standardized_histograms",
+   "op": "norm",
+   "inputs": [
+    "feature_vector"
+   ]
+  },
+  {
+   "name": "individual_stroke_templates",
+   "op": "dense",
+   "inputs": [
+    "standardized_histograms"
+   ],
+   "out": 40960
+  },
+  {
+   "name": "style_groups",
+   "op": "reshape",
+   "inputs": [
+    "individual_stroke_templates"
+   ],
+   "shape": [
+    10,
+    8,
+    512
+   ]
+  },
+  {
+   "name": "best_in_group",
+   "op": "maxpool",
+   "inputs": [
+    "style_groups"
+   ],
+   "size": [
+    1,
+    512
+   ],
+   "stride": [
+    1,
+    512
+   ]
+  },
+  {
+   "name": "best_overall",
+   "op": "maxpool",
+   "inputs": [
+    "best_in_group"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "mean_of_group_bests",
+   "op": "avgpool",
+   "inputs": [
+    "best_in_group"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "template_evidence",
+   "op": "add",
+   "inputs": [
+    "best_overall",
+    "mean_of_group_bests"
+   ]
+  },
+  {
+   "name": "group_vote",
+   "op": "conv",
+   "inputs": [
+    "template_evidence"
+   ],
+   "out": 10,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "coarse_ink",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 2,
+   "padding": 1
+  },
+  {
+   "name": "barrier_ramp",
+   "op": "conv",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "barrier_start",
+   "op": "relu",
+   "inputs": [
+    "barrier_ramp"
+   ]
+  },
+  {
+   "name": "above_one",
+   "op": "conv",
+   "inputs": [
+    "barrier_start"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "barrier_excess",
+   "op": "relu",
+   "inputs": [
+    "above_one"
+   ]
+  },
+  {
+   "name": "remove_excess",
+   "op": "conv",
+   "inputs": [
+    "barrier_excess"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "barrier",
+   "op": "add",
+   "inputs": [
+    "barrier_start",
+    "remove_excess"
+   ]
+  },
+  {
+   "name": "free_space",
+   "op": "conv",
+   "inputs": [
+    "barrier"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "negative_barrier",
+   "op": "conv",
+   "inputs": [
+    "barrier"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "field_mean",
+   "op": "avgpool",
+   "inputs": [
+    "coarse_ink"
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "stride": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "seed_mask",
+   "op": "dense",
+   "inputs": [
+    "field_mean"
+   ],
+   "out": 196
+  },
+  {
+   "name": "border",
+   "op": "reshape",
+   "inputs": [
+    "seed_mask"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_shifts_0",
+   "op": "conv",
+   "inputs": [
+    "border"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_0",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_0"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_0",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_0"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_0",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_0"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_0",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_0",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_0",
+   "op": "relu",
+   "inputs": [
+    "flood_step_0"
+   ]
+  },
+  {
+   "name": "flood_shifts_1",
+   "op": "conv",
+   "inputs": [
+    "reachable_0"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_1",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_1"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_1",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_1"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_1",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_1"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_1",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_1",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_1",
+   "op": "relu",
+   "inputs": [
+    "flood_step_1"
+   ]
+  },
+  {
+   "name": "flood_shifts_2",
+   "op": "conv",
+   "inputs": [
+    "reachable_1"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_2",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_2"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_2",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_2"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_2",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_2"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_2",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_2",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_2",
+   "op": "relu",
+   "inputs": [
+    "flood_step_2"
+   ]
+  },
+  {
+   "name": "flood_shifts_3",
+   "op": "conv",
+   "inputs": [
+    "reachable_2"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_3",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_3"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_3",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_3"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_3",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_3"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_3",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_3",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_3",
+   "op": "relu",
+   "inputs": [
+    "flood_step_3"
+   ]
+  },
+  {
+   "name": "flood_shifts_4",
+   "op": "conv",
+   "inputs": [
+    "reachable_3"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_4",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_4"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_4",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_4"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_4",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_4"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_4",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_4",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_4",
+   "op": "relu",
+   "inputs": [
+    "flood_step_4"
+   ]
+  },
+  {
+   "name": "flood_shifts_5",
+   "op": "conv",
+   "inputs": [
+    "reachable_4"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_5",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_5"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_5",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_5"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_5",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_5"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_5",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_5",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_5",
+   "op": "relu",
+   "inputs": [
+    "flood_step_5"
+   ]
+  },
+  {
+   "name": "flood_shifts_6",
+   "op": "conv",
+   "inputs": [
+    "reachable_5"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_6",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_6"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_6",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_6"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_6",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_6"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_6",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_6",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_6",
+   "op": "relu",
+   "inputs": [
+    "flood_step_6"
+   ]
+  },
+  {
+   "name": "flood_shifts_7",
+   "op": "conv",
+   "inputs": [
+    "reachable_6"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_7",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_7"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_7",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_7"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_7",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_7"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_7",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_7",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_7",
+   "op": "relu",
+   "inputs": [
+    "flood_step_7"
+   ]
+  },
+  {
+   "name": "flood_shifts_8",
+   "op": "conv",
+   "inputs": [
+    "reachable_7"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_8",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_8"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_8",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_8"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_8",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_8"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_8",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_8",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_8",
+   "op": "relu",
+   "inputs": [
+    "flood_step_8"
+   ]
+  },
+  {
+   "name": "flood_shifts_9",
+   "op": "conv",
+   "inputs": [
+    "reachable_8"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_9",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_9"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_9",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_9"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_9",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_9"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_9",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_9",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_9",
+   "op": "relu",
+   "inputs": [
+    "flood_step_9"
+   ]
+  },
+  {
+   "name": "flood_shifts_10",
+   "op": "conv",
+   "inputs": [
+    "reachable_9"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_10",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_10"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_10",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_10"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_10",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_10"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_10",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_10",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_10",
+   "op": "relu",
+   "inputs": [
+    "flood_step_10"
+   ]
+  },
+  {
+   "name": "flood_shifts_11",
+   "op": "conv",
+   "inputs": [
+    "reachable_10"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_11",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_11"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_11",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_11"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_11",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_11"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_11",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_11",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_11",
+   "op": "relu",
+   "inputs": [
+    "flood_step_11"
+   ]
+  },
+  {
+   "name": "flood_shifts_12",
+   "op": "conv",
+   "inputs": [
+    "reachable_11"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_12",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_12"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_12",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_12"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_12",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_12"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_12",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_12",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_12",
+   "op": "relu",
+   "inputs": [
+    "flood_step_12"
+   ]
+  },
+  {
+   "name": "flood_shifts_13",
+   "op": "conv",
+   "inputs": [
+    "reachable_12"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_13",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_13"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_13",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_13"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_13",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_13"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_13",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_13",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_13",
+   "op": "relu",
+   "inputs": [
+    "flood_step_13"
+   ]
+  },
+  {
+   "name": "flood_shifts_14",
+   "op": "conv",
+   "inputs": [
+    "reachable_13"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_14",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_14"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_14",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_14"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_14",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_14"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_14",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_14",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_14",
+   "op": "relu",
+   "inputs": [
+    "flood_step_14"
+   ]
+  },
+  {
+   "name": "flood_shifts_15",
+   "op": "conv",
+   "inputs": [
+    "reachable_14"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flood_planes_15",
+   "op": "reshape",
+   "inputs": [
+    "flood_shifts_15"
+   ],
+   "shape": [
+    1,
+    3,
+    196
+   ]
+  },
+  {
+   "name": "flood_max_15",
+   "op": "maxpool",
+   "inputs": [
+    "flood_planes_15"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "flood_neighborhood_15",
+   "op": "reshape",
+   "inputs": [
+    "flood_max_15"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "flood_step_15",
+   "op": "add",
+   "inputs": [
+    "flood_neighborhood_15",
+    "negative_barrier"
+   ]
+  },
+  {
+   "name": "reachable_15",
+   "op": "relu",
+   "inputs": [
+    "flood_step_15"
+   ]
+  },
+  {
+   "name": "negative_exterior",
+   "op": "conv",
+   "inputs": [
+    "reachable_15"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "unreached_space",
+   "op": "add",
+   "inputs": [
+    "free_space",
+    "negative_exterior"
+   ]
+  },
+  {
+   "name": "cavities",
+   "op": "relu",
+   "inputs": [
+    "unreached_space"
+   ]
+  },
+  {
+   "name": "interior_gate",
+   "op": "conv",
+   "inputs": [
+    "cavities"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "clear_interiors",
+   "op": "relu",
+   "inputs": [
+    "interior_gate"
+   ]
+  },
+  {
+   "name": "cavity_areas",
+   "op": "dense",
+   "inputs": [
+    "clear_interiors"
+   ],
+   "out": 3
+  },
+  {
+   "name": "cavity_ramps",
+   "op": "dense",
+   "inputs": [
+    "cavity_areas"
+   ],
+   "out": 6
+  },
+  {
+   "name": "positive_areas",
+   "op": "relu",
+   "inputs": [
+    "cavity_ramps"
+   ]
+  },
+  {
+   "name": "cavity_votes",
+   "op": "dense",
+   "inputs": [
+    "positive_areas"
+   ],
+   "out": 10
+  },
+  {
+   "name": "structural_scores",
+   "op": "reshape",
+   "inputs": [
+    "cavity_votes"
+   ],
+   "shape": [
+    10,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "combine_evidence",
+   "op": "add",
+   "inputs": [
+    "group_vote",
+    "structural_scores"
+   ]
+  },
+  {
+   "name": "digit_scores",
+   "op": "reshape",
+   "inputs": [
+    "combine_evidence"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

@@ -1,0 +1,6773 @@
+{
+ "layers": [
+  {
+   "name": "rgb_half",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "skin_halfplanes",
+   "op": "conv",
+   "inputs": [
+    "rgb_half"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin_outside",
+   "op": "relu",
+   "inputs": [
+    "skin_halfplanes"
+   ]
+  },
+  {
+   "name": "skin_intersection",
+   "op": "conv",
+   "inputs": [
+    "skin_outside"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin",
+   "op": "relu",
+   "inputs": [
+    "skin_intersection"
+   ]
+  },
+  {
+   "name": "lightness",
+   "op": "conv",
+   "inputs": [
+    "rgb_half"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rgb_24",
+   "op": "avgpool",
+   "inputs": [
+    "rgb_half"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "skin_24",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "luma_24",
+   "op": "conv",
+   "inputs": [
+    "rgb_24"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rgb_16",
+   "op": "avgpool",
+   "inputs": [
+    "rgb_half"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "skin_16",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "luma_16",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rgb_12",
+   "op": "avgpool",
+   "inputs": [
+    "rgb_half"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "skin_12",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "luma_12",
+   "op": "conv",
+   "inputs": [
+    "rgb_12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rgb_8",
+   "op": "avgpool",
+   "inputs": [
+    "rgb_half"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "skin_8",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "luma_8",
+   "op": "conv",
+   "inputs": [
+    "rgb_8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_skin_samples",
+   "op": "conv",
+   "inputs": [
+    "skin"
+   ],
+   "out": 12,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head48_light_samples",
+   "op": "conv",
+   "inputs": [
+    "lightness"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head48_hair_intervals",
+   "op": "conv",
+   "inputs": [
+    "head48_light_samples"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_hair_ramps",
+   "op": "relu",
+   "inputs": [
+    "head48_hair_intervals"
+   ]
+  },
+  {
+   "name": "head48_hair",
+   "op": "conv",
+   "inputs": [
+    "head48_hair_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_minimums",
+   "op": "conv",
+   "inputs": [
+    "head48_skin_samples"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_deficits",
+   "op": "relu",
+   "inputs": [
+    "head48_minimums"
+   ]
+  },
+  {
+   "name": "head48_core_rule",
+   "op": "conv",
+   "inputs": [
+    "head48_skin_samples"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_penalties",
+   "op": "conv",
+   "inputs": [
+    "head48_deficits"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_hair_rule",
+   "op": "conv",
+   "inputs": [
+    "head48_hair"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head48_variants",
+   "op": "add",
+   "inputs": [
+    "head48_core_rule",
+    "head48_penalties",
+    "head48_hair_rule"
+   ]
+  },
+  {
+   "name": "head48_best_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "head48_variants"
+   ],
+   "shape": [
+    1,
+    2,
+    2304
+   ]
+  },
+  {
+   "name": "head48_best_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "head48_best_shape_stack"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "head48_best_shape",
+   "op": "reshape",
+   "inputs": [
+    "head48_best_shape_max"
+   ],
+   "shape": [
+    1,
+    48,
+    48
+   ]
+  },
+  {
+   "name": "head48_positive",
+   "op": "relu",
+   "inputs": [
+    "head48_best_shape"
+   ]
+  },
+  {
+   "name": "head48_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "head48_positive"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "head24_skin_samples",
+   "op": "conv",
+   "inputs": [
+    "skin_24"
+   ],
+   "out": 18,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head24_light_samples",
+   "op": "conv",
+   "inputs": [
+    "luma_24"
+   ],
+   "out": 9,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head24_hair_intervals",
+   "op": "conv",
+   "inputs": [
+    "head24_light_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_hair_ramps",
+   "op": "relu",
+   "inputs": [
+    "head24_hair_intervals"
+   ]
+  },
+  {
+   "name": "head24_hair",
+   "op": "conv",
+   "inputs": [
+    "head24_hair_ramps"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_minimums",
+   "op": "conv",
+   "inputs": [
+    "head24_skin_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_deficits",
+   "op": "relu",
+   "inputs": [
+    "head24_minimums"
+   ]
+  },
+  {
+   "name": "head24_core_rule",
+   "op": "conv",
+   "inputs": [
+    "head24_skin_samples"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_penalties",
+   "op": "conv",
+   "inputs": [
+    "head24_deficits"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_hair_rule",
+   "op": "conv",
+   "inputs": [
+    "head24_hair"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head24_variants",
+   "op": "add",
+   "inputs": [
+    "head24_core_rule",
+    "head24_penalties",
+    "head24_hair_rule"
+   ]
+  },
+  {
+   "name": "head24_best_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "head24_variants"
+   ],
+   "shape": [
+    1,
+    3,
+    576
+   ]
+  },
+  {
+   "name": "head24_best_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "head24_best_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "head24_best_shape",
+   "op": "reshape",
+   "inputs": [
+    "head24_best_shape_max"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "head24_positive",
+   "op": "relu",
+   "inputs": [
+    "head24_best_shape"
+   ]
+  },
+  {
+   "name": "head24_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "head24_positive"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "head16_skin_samples",
+   "op": "conv",
+   "inputs": [
+    "skin_16"
+   ],
+   "out": 18,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head16_light_samples",
+   "op": "conv",
+   "inputs": [
+    "luma_16"
+   ],
+   "out": 9,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head16_hair_intervals",
+   "op": "conv",
+   "inputs": [
+    "head16_light_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_hair_ramps",
+   "op": "relu",
+   "inputs": [
+    "head16_hair_intervals"
+   ]
+  },
+  {
+   "name": "head16_hair",
+   "op": "conv",
+   "inputs": [
+    "head16_hair_ramps"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_minimums",
+   "op": "conv",
+   "inputs": [
+    "head16_skin_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_deficits",
+   "op": "relu",
+   "inputs": [
+    "head16_minimums"
+   ]
+  },
+  {
+   "name": "head16_core_rule",
+   "op": "conv",
+   "inputs": [
+    "head16_skin_samples"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_penalties",
+   "op": "conv",
+   "inputs": [
+    "head16_deficits"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_hair_rule",
+   "op": "conv",
+   "inputs": [
+    "head16_hair"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head16_variants",
+   "op": "add",
+   "inputs": [
+    "head16_core_rule",
+    "head16_penalties",
+    "head16_hair_rule"
+   ]
+  },
+  {
+   "name": "head16_best_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "head16_variants"
+   ],
+   "shape": [
+    1,
+    3,
+    256
+   ]
+  },
+  {
+   "name": "head16_best_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "head16_best_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "head16_best_shape",
+   "op": "reshape",
+   "inputs": [
+    "head16_best_shape_max"
+   ],
+   "shape": [
+    1,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "head16_positive",
+   "op": "relu",
+   "inputs": [
+    "head16_best_shape"
+   ]
+  },
+  {
+   "name": "head16_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "head16_positive"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "head8_skin_samples",
+   "op": "conv",
+   "inputs": [
+    "skin_8"
+   ],
+   "out": 18,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head8_light_samples",
+   "op": "conv",
+   "inputs": [
+    "luma_8"
+   ],
+   "out": 9,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "head8_hair_intervals",
+   "op": "conv",
+   "inputs": [
+    "head8_light_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_hair_ramps",
+   "op": "relu",
+   "inputs": [
+    "head8_hair_intervals"
+   ]
+  },
+  {
+   "name": "head8_hair",
+   "op": "conv",
+   "inputs": [
+    "head8_hair_ramps"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_minimums",
+   "op": "conv",
+   "inputs": [
+    "head8_skin_samples"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_deficits",
+   "op": "relu",
+   "inputs": [
+    "head8_minimums"
+   ]
+  },
+  {
+   "name": "head8_core_rule",
+   "op": "conv",
+   "inputs": [
+    "head8_skin_samples"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_penalties",
+   "op": "conv",
+   "inputs": [
+    "head8_deficits"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_hair_rule",
+   "op": "conv",
+   "inputs": [
+    "head8_hair"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head8_variants",
+   "op": "add",
+   "inputs": [
+    "head8_core_rule",
+    "head8_penalties",
+    "head8_hair_rule"
+   ]
+  },
+  {
+   "name": "head8_best_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "head8_variants"
+   ],
+   "shape": [
+    1,
+    3,
+    64
+   ]
+  },
+  {
+   "name": "head8_best_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "head8_best_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "head8_best_shape",
+   "op": "reshape",
+   "inputs": [
+    "head8_best_shape_max"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "head8_positive",
+   "op": "relu",
+   "inputs": [
+    "head8_best_shape"
+   ]
+  },
+  {
+   "name": "head8_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "head8_positive"
+   ],
+   "size": [
+    1,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "face48_parts",
+   "op": "conv",
+   "inputs": [
+    "lightness"
+   ],
+   "out": 21,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face48_bounded_intervals",
+   "op": "conv",
+   "inputs": [
+    "face48_parts"
+   ],
+   "out": 42,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face48_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face48_bounded_intervals"
+   ]
+  },
+  {
+   "name": "face48_bounded",
+   "op": "conv",
+   "inputs": [
+    "face48_bounded_ramps"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face48_colour",
+   "op": "conv",
+   "inputs": [
+    "skin"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face48_constellation",
+   "op": "conv",
+   "inputs": [
+    "face48_bounded"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face48_complexion",
+   "op": "conv",
+   "inputs": [
+    "face48_colour"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face48_evidence",
+   "op": "add",
+   "inputs": [
+    "face48_constellation",
+    "face48_complexion"
+   ]
+  },
+  {
+   "name": "face48_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "face48_evidence"
+   ],
+   "shape": [
+    1,
+    3,
+    2304
+   ]
+  },
+  {
+   "name": "face48_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "face48_best_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "face48_best",
+   "op": "reshape",
+   "inputs": [
+    "face48_best_max"
+   ],
+   "shape": [
+    1,
+    48,
+    48
+   ]
+  },
+  {
+   "name": "face48_positive",
+   "op": "relu",
+   "inputs": [
+    "face48_best"
+   ]
+  },
+  {
+   "name": "face48_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "face48_positive"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "face24_parts",
+   "op": "conv",
+   "inputs": [
+    "luma_24"
+   ],
+   "out": 21,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face24_bounded_intervals",
+   "op": "conv",
+   "inputs": [
+    "face24_parts"
+   ],
+   "out": 42,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face24_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face24_bounded_intervals"
+   ]
+  },
+  {
+   "name": "face24_bounded",
+   "op": "conv",
+   "inputs": [
+    "face24_bounded_ramps"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face24_colour",
+   "op": "conv",
+   "inputs": [
+    "skin_24"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face24_constellation",
+   "op": "conv",
+   "inputs": [
+    "face24_bounded"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face24_complexion",
+   "op": "conv",
+   "inputs": [
+    "face24_colour"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face24_evidence",
+   "op": "add",
+   "inputs": [
+    "face24_constellation",
+    "face24_complexion"
+   ]
+  },
+  {
+   "name": "face24_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "face24_evidence"
+   ],
+   "shape": [
+    1,
+    3,
+    576
+   ]
+  },
+  {
+   "name": "face24_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "face24_best_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "face24_best",
+   "op": "reshape",
+   "inputs": [
+    "face24_best_max"
+   ],
+   "shape": [
+    1,
+    24,
+    24
+   ]
+  },
+  {
+   "name": "face24_positive",
+   "op": "relu",
+   "inputs": [
+    "face24_best"
+   ]
+  },
+  {
+   "name": "face24_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "face24_positive"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    3,
+    3
+   ]
+  },
+  {
+   "name": "face16_parts",
+   "op": "conv",
+   "inputs": [
+    "luma_16"
+   ],
+   "out": 21,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face16_bounded_intervals",
+   "op": "conv",
+   "inputs": [
+    "face16_parts"
+   ],
+   "out": 42,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face16_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face16_bounded_intervals"
+   ]
+  },
+  {
+   "name": "face16_bounded",
+   "op": "conv",
+   "inputs": [
+    "face16_bounded_ramps"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face16_colour",
+   "op": "conv",
+   "inputs": [
+    "skin_16"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face16_constellation",
+   "op": "conv",
+   "inputs": [
+    "face16_bounded"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face16_complexion",
+   "op": "conv",
+   "inputs": [
+    "face16_colour"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face16_evidence",
+   "op": "add",
+   "inputs": [
+    "face16_constellation",
+    "face16_complexion"
+   ]
+  },
+  {
+   "name": "face16_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "face16_evidence"
+   ],
+   "shape": [
+    1,
+    3,
+    256
+   ]
+  },
+  {
+   "name": "face16_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "face16_best_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "face16_best",
+   "op": "reshape",
+   "inputs": [
+    "face16_best_max"
+   ],
+   "shape": [
+    1,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "face16_positive",
+   "op": "relu",
+   "inputs": [
+    "face16_best"
+   ]
+  },
+  {
+   "name": "face16_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "face16_positive"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "face8_parts",
+   "op": "conv",
+   "inputs": [
+    "luma_8"
+   ],
+   "out": 21,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face8_bounded_intervals",
+   "op": "conv",
+   "inputs": [
+    "face8_parts"
+   ],
+   "out": 42,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face8_bounded_ramps",
+   "op": "relu",
+   "inputs": [
+    "face8_bounded_intervals"
+   ]
+  },
+  {
+   "name": "face8_bounded",
+   "op": "conv",
+   "inputs": [
+    "face8_bounded_ramps"
+   ],
+   "out": 21,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face8_colour",
+   "op": "conv",
+   "inputs": [
+    "skin_8"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "face8_constellation",
+   "op": "conv",
+   "inputs": [
+    "face8_bounded"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face8_complexion",
+   "op": "conv",
+   "inputs": [
+    "face8_colour"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face8_evidence",
+   "op": "add",
+   "inputs": [
+    "face8_constellation",
+    "face8_complexion"
+   ]
+  },
+  {
+   "name": "face8_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "face8_evidence"
+   ],
+   "shape": [
+    1,
+    3,
+    64
+   ]
+  },
+  {
+   "name": "face8_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "face8_best_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "face8_best",
+   "op": "reshape",
+   "inputs": [
+    "face8_best_max"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "face8_positive",
+   "op": "relu",
+   "inputs": [
+    "face8_best"
+   ]
+  },
+  {
+   "name": "face8_nearby",
+   "op": "maxpool",
+   "inputs": [
+    "face8_positive"
+   ],
+   "size": [
+    1,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "direction_24",
+   "op": "conv",
+   "inputs": [
+    "luma_24"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_edges_24",
+   "op": "relu",
+   "inputs": [
+    "direction_24"
+   ]
+  },
+  {
+   "name": "edge_select_24",
+   "op": "conv",
+   "inputs": [
+    "half_edges_24"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_24",
+   "op": "relu",
+   "inputs": [
+    "edge_select_24"
+   ]
+  },
+  {
+   "name": "edge_over_24",
+   "op": "conv",
+   "inputs": [
+    "oriented_24"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_saturation_24",
+   "op": "relu",
+   "inputs": [
+    "edge_over_24"
+   ]
+  },
+  {
+   "name": "edge_strength_24",
+   "op": "conv",
+   "inputs": [
+    "oriented_24"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_subtract_24",
+   "op": "conv",
+   "inputs": [
+    "edge_saturation_24"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_24",
+   "op": "add",
+   "inputs": [
+    "edge_strength_24",
+    "edge_subtract_24"
+   ]
+  },
+  {
+   "name": "direction_16",
+   "op": "conv",
+   "inputs": [
+    "luma_16"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_edges_16",
+   "op": "relu",
+   "inputs": [
+    "direction_16"
+   ]
+  },
+  {
+   "name": "edge_select_16",
+   "op": "conv",
+   "inputs": [
+    "half_edges_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_16",
+   "op": "relu",
+   "inputs": [
+    "edge_select_16"
+   ]
+  },
+  {
+   "name": "edge_over_16",
+   "op": "conv",
+   "inputs": [
+    "oriented_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_saturation_16",
+   "op": "relu",
+   "inputs": [
+    "edge_over_16"
+   ]
+  },
+  {
+   "name": "edge_strength_16",
+   "op": "conv",
+   "inputs": [
+    "oriented_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_subtract_16",
+   "op": "conv",
+   "inputs": [
+    "edge_saturation_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_16",
+   "op": "add",
+   "inputs": [
+    "edge_strength_16",
+    "edge_subtract_16"
+   ]
+  },
+  {
+   "name": "direction_12",
+   "op": "conv",
+   "inputs": [
+    "luma_12"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_edges_12",
+   "op": "relu",
+   "inputs": [
+    "direction_12"
+   ]
+  },
+  {
+   "name": "edge_select_12",
+   "op": "conv",
+   "inputs": [
+    "half_edges_12"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_12",
+   "op": "relu",
+   "inputs": [
+    "edge_select_12"
+   ]
+  },
+  {
+   "name": "edge_over_12",
+   "op": "conv",
+   "inputs": [
+    "oriented_12"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_saturation_12",
+   "op": "relu",
+   "inputs": [
+    "edge_over_12"
+   ]
+  },
+  {
+   "name": "edge_strength_12",
+   "op": "conv",
+   "inputs": [
+    "oriented_12"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_subtract_12",
+   "op": "conv",
+   "inputs": [
+    "edge_saturation_12"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_12",
+   "op": "add",
+   "inputs": [
+    "edge_strength_12",
+    "edge_subtract_12"
+   ]
+  },
+  {
+   "name": "figure24_contours",
+   "op": "conv",
+   "inputs": [
+    "edge_24"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "figure24_garment",
+   "op": "conv",
+   "inputs": [
+    "rgb_24"
+   ],
+   "out": 36,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure24_contrast_pos",
+   "op": "relu",
+   "inputs": [
+    "figure24_garment"
+   ]
+  },
+  {
+   "name": "figure24_dist_positive",
+   "op": "conv",
+   "inputs": [
+    "figure24_contrast_pos"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_dist_signed",
+   "op": "conv",
+   "inputs": [
+    "figure24_garment"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_distance",
+   "op": "add",
+   "inputs": [
+    "figure24_dist_positive",
+    "figure24_dist_signed"
+   ]
+  },
+  {
+   "name": "figure24_left_minus_right",
+   "op": "conv",
+   "inputs": [
+    "figure24_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_flank_difference",
+   "op": "relu",
+   "inputs": [
+    "figure24_left_minus_right"
+   ]
+  },
+  {
+   "name": "figure24_left",
+   "op": "conv",
+   "inputs": [
+    "figure24_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_minus_diff",
+   "op": "conv",
+   "inputs": [
+    "figure24_flank_difference"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_both_flanks",
+   "op": "add",
+   "inputs": [
+    "figure24_left",
+    "figure24_minus_diff"
+   ]
+  },
+  {
+   "name": "figure24_over",
+   "op": "conv",
+   "inputs": [
+    "figure24_both_flanks"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_bright_limit",
+   "op": "relu",
+   "inputs": [
+    "figure24_over"
+   ]
+  },
+  {
+   "name": "figure24_subtract_over",
+   "op": "conv",
+   "inputs": [
+    "figure24_bright_limit"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_bounded_contrast",
+   "op": "add",
+   "inputs": [
+    "figure24_both_flanks",
+    "figure24_subtract_over"
+   ]
+  },
+  {
+   "name": "figure24_exposed_head",
+   "op": "conv",
+   "inputs": [
+    "skin_24"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure24_contrast_vote",
+   "op": "conv",
+   "inputs": [
+    "figure24_bounded_contrast"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_skin_vote",
+   "op": "conv",
+   "inputs": [
+    "figure24_exposed_head"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure24_votes",
+   "op": "add",
+   "inputs": [
+    "figure24_contours",
+    "figure24_contrast_vote",
+    "figure24_skin_vote"
+   ]
+  },
+  {
+   "name": "figure24_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "figure24_votes"
+   ],
+   "shape": [
+    1,
+    6,
+    484
+   ]
+  },
+  {
+   "name": "figure24_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "figure24_best_stack"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure24_best",
+   "op": "reshape",
+   "inputs": [
+    "figure24_best_max"
+   ],
+   "shape": [
+    1,
+    22,
+    22
+   ]
+  },
+  {
+   "name": "figure24_positive",
+   "op": "relu",
+   "inputs": [
+    "figure24_best"
+   ]
+  },
+  {
+   "name": "figure24_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "figure24_positive"
+   ],
+   "size": [
+    22,
+    22
+   ],
+   "stride": [
+    22,
+    22
+   ]
+  },
+  {
+   "name": "figure24_quadrants",
+   "op": "maxpool",
+   "inputs": [
+    "figure24_positive"
+   ],
+   "size": [
+    11,
+    11
+   ],
+   "stride": [
+    11,
+    11
+   ]
+  },
+  {
+   "name": "figure24_multiple",
+   "op": "avgpool",
+   "inputs": [
+    "figure24_quadrants"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "figure16_contours",
+   "op": "conv",
+   "inputs": [
+    "edge_16"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "figure16_garment",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 36,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure16_contrast_pos",
+   "op": "relu",
+   "inputs": [
+    "figure16_garment"
+   ]
+  },
+  {
+   "name": "figure16_dist_positive",
+   "op": "conv",
+   "inputs": [
+    "figure16_contrast_pos"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_dist_signed",
+   "op": "conv",
+   "inputs": [
+    "figure16_garment"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_distance",
+   "op": "add",
+   "inputs": [
+    "figure16_dist_positive",
+    "figure16_dist_signed"
+   ]
+  },
+  {
+   "name": "figure16_left_minus_right",
+   "op": "conv",
+   "inputs": [
+    "figure16_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_flank_difference",
+   "op": "relu",
+   "inputs": [
+    "figure16_left_minus_right"
+   ]
+  },
+  {
+   "name": "figure16_left",
+   "op": "conv",
+   "inputs": [
+    "figure16_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_minus_diff",
+   "op": "conv",
+   "inputs": [
+    "figure16_flank_difference"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_both_flanks",
+   "op": "add",
+   "inputs": [
+    "figure16_left",
+    "figure16_minus_diff"
+   ]
+  },
+  {
+   "name": "figure16_over",
+   "op": "conv",
+   "inputs": [
+    "figure16_both_flanks"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_bright_limit",
+   "op": "relu",
+   "inputs": [
+    "figure16_over"
+   ]
+  },
+  {
+   "name": "figure16_subtract_over",
+   "op": "conv",
+   "inputs": [
+    "figure16_bright_limit"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_bounded_contrast",
+   "op": "add",
+   "inputs": [
+    "figure16_both_flanks",
+    "figure16_subtract_over"
+   ]
+  },
+  {
+   "name": "figure16_exposed_head",
+   "op": "conv",
+   "inputs": [
+    "skin_16"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure16_contrast_vote",
+   "op": "conv",
+   "inputs": [
+    "figure16_bounded_contrast"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_skin_vote",
+   "op": "conv",
+   "inputs": [
+    "figure16_exposed_head"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure16_votes",
+   "op": "add",
+   "inputs": [
+    "figure16_contours",
+    "figure16_contrast_vote",
+    "figure16_skin_vote"
+   ]
+  },
+  {
+   "name": "figure16_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "figure16_votes"
+   ],
+   "shape": [
+    1,
+    6,
+    196
+   ]
+  },
+  {
+   "name": "figure16_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "figure16_best_stack"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure16_best",
+   "op": "reshape",
+   "inputs": [
+    "figure16_best_max"
+   ],
+   "shape": [
+    1,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "figure16_positive",
+   "op": "relu",
+   "inputs": [
+    "figure16_best"
+   ]
+  },
+  {
+   "name": "figure16_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "figure16_positive"
+   ],
+   "size": [
+    14,
+    14
+   ],
+   "stride": [
+    14,
+    14
+   ]
+  },
+  {
+   "name": "figure16_quadrants",
+   "op": "maxpool",
+   "inputs": [
+    "figure16_positive"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    7,
+    7
+   ]
+  },
+  {
+   "name": "figure16_multiple",
+   "op": "avgpool",
+   "inputs": [
+    "figure16_quadrants"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "figure12_contours",
+   "op": "conv",
+   "inputs": [
+    "edge_12"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "figure12_garment",
+   "op": "conv",
+   "inputs": [
+    "rgb_12"
+   ],
+   "out": 36,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure12_contrast_pos",
+   "op": "relu",
+   "inputs": [
+    "figure12_garment"
+   ]
+  },
+  {
+   "name": "figure12_dist_positive",
+   "op": "conv",
+   "inputs": [
+    "figure12_contrast_pos"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_dist_signed",
+   "op": "conv",
+   "inputs": [
+    "figure12_garment"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_distance",
+   "op": "add",
+   "inputs": [
+    "figure12_dist_positive",
+    "figure12_dist_signed"
+   ]
+  },
+  {
+   "name": "figure12_left_minus_right",
+   "op": "conv",
+   "inputs": [
+    "figure12_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_flank_difference",
+   "op": "relu",
+   "inputs": [
+    "figure12_left_minus_right"
+   ]
+  },
+  {
+   "name": "figure12_left",
+   "op": "conv",
+   "inputs": [
+    "figure12_distance"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_minus_diff",
+   "op": "conv",
+   "inputs": [
+    "figure12_flank_difference"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_both_flanks",
+   "op": "add",
+   "inputs": [
+    "figure12_left",
+    "figure12_minus_diff"
+   ]
+  },
+  {
+   "name": "figure12_over",
+   "op": "conv",
+   "inputs": [
+    "figure12_both_flanks"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_bright_limit",
+   "op": "relu",
+   "inputs": [
+    "figure12_over"
+   ]
+  },
+  {
+   "name": "figure12_subtract_over",
+   "op": "conv",
+   "inputs": [
+    "figure12_bright_limit"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_bounded_contrast",
+   "op": "add",
+   "inputs": [
+    "figure12_both_flanks",
+    "figure12_subtract_over"
+   ]
+  },
+  {
+   "name": "figure12_exposed_head",
+   "op": "conv",
+   "inputs": [
+    "skin_12"
+   ],
+   "out": 6,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "figure12_contrast_vote",
+   "op": "conv",
+   "inputs": [
+    "figure12_bounded_contrast"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_skin_vote",
+   "op": "conv",
+   "inputs": [
+    "figure12_exposed_head"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "figure12_votes",
+   "op": "add",
+   "inputs": [
+    "figure12_contours",
+    "figure12_contrast_vote",
+    "figure12_skin_vote"
+   ]
+  },
+  {
+   "name": "figure12_best_stack",
+   "op": "reshape",
+   "inputs": [
+    "figure12_votes"
+   ],
+   "shape": [
+    1,
+    6,
+    100
+   ]
+  },
+  {
+   "name": "figure12_best_max",
+   "op": "maxpool",
+   "inputs": [
+    "figure12_best_stack"
+   ],
+   "size": [
+    6,
+    1
+   ],
+   "stride": [
+    6,
+    1
+   ]
+  },
+  {
+   "name": "figure12_best",
+   "op": "reshape",
+   "inputs": [
+    "figure12_best_max"
+   ],
+   "shape": [
+    1,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "figure12_positive",
+   "op": "relu",
+   "inputs": [
+    "figure12_best"
+   ]
+  },
+  {
+   "name": "figure12_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "figure12_positive"
+   ],
+   "size": [
+    10,
+    10
+   ],
+   "stride": [
+    10,
+    10
+   ]
+  },
+  {
+   "name": "figure12_quadrants",
+   "op": "maxpool",
+   "inputs": [
+    "figure12_positive"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "figure12_multiple",
+   "op": "avgpool",
+   "inputs": [
+    "figure12_quadrants"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "head_summary_any_scale_ch0",
+   "op": "conv",
+   "inputs": [
+    "head48_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_summary_any_scale_ch1",
+   "op": "conv",
+   "inputs": [
+    "head24_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_summary_any_scale_ch2",
+   "op": "conv",
+   "inputs": [
+    "head16_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_summary_any_scale_ch3",
+   "op": "conv",
+   "inputs": [
+    "head8_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_summary_any_scale_bank",
+   "op": "add",
+   "inputs": [
+    "head_summary_any_scale_ch0",
+    "head_summary_any_scale_ch1",
+    "head_summary_any_scale_ch2",
+    "head_summary_any_scale_ch3"
+   ]
+  },
+  {
+   "name": "head_summary_any_scale_stack",
+   "op": "reshape",
+   "inputs": [
+    "head_summary_any_scale_bank"
+   ],
+   "shape": [
+    1,
+    4,
+    64
+   ]
+  },
+  {
+   "name": "head_summary_any_scale_max",
+   "op": "maxpool",
+   "inputs": [
+    "head_summary_any_scale_stack"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "head_summary_any_scale",
+   "op": "reshape",
+   "inputs": [
+    "head_summary_any_scale_max"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "head_summary_prior",
+   "op": "dense",
+   "inputs": [
+    "head_summary_any_scale"
+   ],
+   "out": 64
+  },
+  {
+   "name": "head_summary_located",
+   "op": "reshape",
+   "inputs": [
+    "head_summary_prior"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "head_summary_strongest",
+   "op": "maxpool",
+   "inputs": [
+    "head_summary_located"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "head_summary_regional",
+   "op": "maxpool",
+   "inputs": [
+    "head_summary_located"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "head_summary_coverage",
+   "op": "avgpool",
+   "inputs": [
+    "head_summary_regional"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "face_summary_any_scale_ch0",
+   "op": "conv",
+   "inputs": [
+    "face48_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_summary_any_scale_ch1",
+   "op": "conv",
+   "inputs": [
+    "face24_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_summary_any_scale_ch2",
+   "op": "conv",
+   "inputs": [
+    "face16_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_summary_any_scale_ch3",
+   "op": "conv",
+   "inputs": [
+    "face8_nearby"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "face_summary_any_scale_bank",
+   "op": "add",
+   "inputs": [
+    "face_summary_any_scale_ch0",
+    "face_summary_any_scale_ch1",
+    "face_summary_any_scale_ch2",
+    "face_summary_any_scale_ch3"
+   ]
+  },
+  {
+   "name": "face_summary_any_scale_stack",
+   "op": "reshape",
+   "inputs": [
+    "face_summary_any_scale_bank"
+   ],
+   "shape": [
+    1,
+    4,
+    64
+   ]
+  },
+  {
+   "name": "face_summary_any_scale_max",
+   "op": "maxpool",
+   "inputs": [
+    "face_summary_any_scale_stack"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "face_summary_any_scale",
+   "op": "reshape",
+   "inputs": [
+    "face_summary_any_scale_max"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "face_summary_prior",
+   "op": "dense",
+   "inputs": [
+    "face_summary_any_scale"
+   ],
+   "out": 64
+  },
+  {
+   "name": "face_summary_located",
+   "op": "reshape",
+   "inputs": [
+    "face_summary_prior"
+   ],
+   "shape": [
+    1,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "face_summary_strongest",
+   "op": "maxpool",
+   "inputs": [
+    "face_summary_located"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "face_summary_regional",
+   "op": "maxpool",
+   "inputs": [
+    "face_summary_located"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "face_summary_coverage",
+   "op": "avgpool",
+   "inputs": [
+    "face_summary_regional"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "local_agreement",
+   "op": "add",
+   "inputs": [
+    "head_summary_located",
+    "face_summary_located"
+   ]
+  },
+  {
+   "name": "best_agreement",
+   "op": "maxpool",
+   "inputs": [
+    "local_agreement"
+   ],
+   "size": [
+    8,
+    8
+   ],
+   "stride": [
+    8,
+    8
+   ]
+  },
+  {
+   "name": "body_max_ch0",
+   "op": "conv",
+   "inputs": [
+    "figure24_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_max_ch1",
+   "op": "conv",
+   "inputs": [
+    "figure16_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_max_ch2",
+   "op": "conv",
+   "inputs": [
+    "figure12_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_max_bank",
+   "op": "add",
+   "inputs": [
+    "body_max_ch0",
+    "body_max_ch1",
+    "body_max_ch2"
+   ]
+  },
+  {
+   "name": "body_max_stack",
+   "op": "reshape",
+   "inputs": [
+    "body_max_bank"
+   ],
+   "shape": [
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "body_max_max",
+   "op": "maxpool",
+   "inputs": [
+    "body_max_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "body_max",
+   "op": "reshape",
+   "inputs": [
+    "body_max_max"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "body_coverage_ch0",
+   "op": "conv",
+   "inputs": [
+    "figure24_multiple"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_coverage_ch1",
+   "op": "conv",
+   "inputs": [
+    "figure16_multiple"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_coverage_ch2",
+   "op": "conv",
+   "inputs": [
+    "figure12_multiple"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "body_coverage_bank",
+   "op": "add",
+   "inputs": [
+    "body_coverage_ch0",
+    "body_coverage_ch1",
+    "body_coverage_ch2"
+   ]
+  },
+  {
+   "name": "body_coverage_stack",
+   "op": "reshape",
+   "inputs": [
+    "body_coverage_bank"
+   ],
+   "shape": [
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "body_coverage_max",
+   "op": "maxpool",
+   "inputs": [
+    "body_coverage_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "body_coverage",
+   "op": "reshape",
+   "inputs": [
+    "body_coverage_max"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "colour_halfplanes",
+   "op": "conv",
+   "inputs": [
+    "rgb_24"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_threshold",
+   "op": "relu",
+   "inputs": [
+    "colour_halfplanes"
+   ]
+  },
+  {
+   "name": "colour_min_parts",
+   "op": "conv",
+   "inputs": [
+    "colour_threshold"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_min_slacks",
+   "op": "relu",
+   "inputs": [
+    "colour_min_parts"
+   ]
+  },
+  {
+   "name": "colour_warm_cool",
+   "op": "conv",
+   "inputs": [
+    "colour_threshold"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "colour_min_subtract",
+   "op": "conv",
+   "inputs": [
+    "colour_min_slacks"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vivid_cloth",
+   "op": "add",
+   "inputs": [
+    "colour_warm_cool",
+    "colour_min_subtract"
+   ]
+  },
+  {
+   "name": "cloth_regions",
+   "op": "avgpool",
+   "inputs": [
+    "vivid_cloth"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cloth_surround",
+   "op": "conv",
+   "inputs": [
+    "cloth_regions"
+   ],
+   "out": 1,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "cloth_islands",
+   "op": "relu",
+   "inputs": [
+    "cloth_surround"
+   ]
+  },
+  {
+   "name": "cloth_peak",
+   "op": "maxpool",
+   "inputs": [
+    "cloth_islands"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "cloth_amount",
+   "op": "avgpool",
+   "inputs": [
+    "vivid_cloth"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "skin_amount",
+   "op": "avgpool",
+   "inputs": [
+    "skin"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "skin_extent",
+   "op": "conv",
+   "inputs": [
+    "skin_amount"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "widespread_skin",
+   "op": "relu",
+   "inputs": [
+    "skin_extent"
+   ]
+  },
+  {
+   "name": "vertical_edge",
+   "op": "conv",
+   "inputs": [
+    "edge_24"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "horizontal_edge",
+   "op": "conv",
+   "inputs": [
+    "edge_24"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lines0",
+   "op": "avgpool",
+   "inputs": [
+    "vertical_edge"
+   ],
+   "size": [
+    5,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "line_threshold0",
+   "op": "conv",
+   "inputs": [
+    "lines0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sustained0",
+   "op": "relu",
+   "inputs": [
+    "line_threshold0"
+   ]
+  },
+  {
+   "name": "line_density0",
+   "op": "avgpool",
+   "inputs": [
+    "sustained0"
+   ],
+   "size": [
+    18,
+    22
+   ],
+   "stride": [
+    18,
+    22
+   ]
+  },
+  {
+   "name": "lines1",
+   "op": "avgpool",
+   "inputs": [
+    "horizontal_edge"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "line_threshold1",
+   "op": "conv",
+   "inputs": [
+    "lines1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "sustained1",
+   "op": "relu",
+   "inputs": [
+    "line_threshold1"
+   ]
+  },
+  {
+   "name": "line_density1",
+   "op": "avgpool",
+   "inputs": [
+    "sustained1"
+   ],
+   "size": [
+    22,
+    18
+   ],
+   "stride": [
+    22,
+    18
+   ]
+  },
+  {
+   "name": "orientation_histogram",
+   "op": "avgpool",
+   "inputs": [
+    "edge_24"
+   ],
+   "size": [
+    22,
+    22
+   ],
+   "stride": [
+    22,
+    22
+   ]
+  },
+  {
+   "name": "oblique_detail",
+   "op": "conv",
+   "inputs": [
+    "orientation_histogram"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_part_differences",
+   "op": "conv",
+   "inputs": [
+    "rgb_half"
+   ],
+   "out": 54,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_above_zero",
+   "op": "relu",
+   "inputs": [
+    "dressed48_part_differences"
+   ]
+  },
+  {
+   "name": "dressed48_absolutes",
+   "op": "conv",
+   "inputs": [
+    "dressed48_above_zero"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_negative",
+   "op": "conv",
+   "inputs": [
+    "dressed48_part_differences"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_opponent_distances",
+   "op": "add",
+   "inputs": [
+    "dressed48_absolutes",
+    "dressed48_negative"
+   ]
+  },
+  {
+   "name": "dressed48_boundaries",
+   "op": "conv",
+   "inputs": [
+    "dressed48_opponent_distances"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_distance_excess",
+   "op": "relu",
+   "inputs": [
+    "dressed48_boundaries"
+   ]
+  },
+  {
+   "name": "dressed48_remove_excess",
+   "op": "conv",
+   "inputs": [
+    "dressed48_distance_excess"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_bounded_distances",
+   "op": "add",
+   "inputs": [
+    "dressed48_opponent_distances",
+    "dressed48_remove_excess"
+   ]
+  },
+  {
+   "name": "dressed48_warmth",
+   "op": "conv",
+   "inputs": [
+    "skin"
+   ],
+   "out": 15,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_shading",
+   "op": "conv",
+   "inputs": [
+    "lightness"
+   ],
+   "out": 6,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_cap_intervals",
+   "op": "conv",
+   "inputs": [
+    "dressed48_shading"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_cap_ramps",
+   "op": "relu",
+   "inputs": [
+    "dressed48_cap_intervals"
+   ]
+  },
+  {
+   "name": "dressed48_cap",
+   "op": "conv",
+   "inputs": [
+    "dressed48_cap_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_min_warmth",
+   "op": "conv",
+   "inputs": [
+    "dressed48_warmth"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_missing_parts",
+   "op": "relu",
+   "inputs": [
+    "dressed48_min_warmth"
+   ]
+  },
+  {
+   "name": "direction_48",
+   "op": "conv",
+   "inputs": [
+    "lightness"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "half_edges_48",
+   "op": "relu",
+   "inputs": [
+    "direction_48"
+   ]
+  },
+  {
+   "name": "edge_select_48",
+   "op": "conv",
+   "inputs": [
+    "half_edges_48"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "oriented_48",
+   "op": "relu",
+   "inputs": [
+    "edge_select_48"
+   ]
+  },
+  {
+   "name": "edge_over_48",
+   "op": "conv",
+   "inputs": [
+    "oriented_48"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_saturation_48",
+   "op": "relu",
+   "inputs": [
+    "edge_over_48"
+   ]
+  },
+  {
+   "name": "edge_strength_48",
+   "op": "conv",
+   "inputs": [
+    "oriented_48"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_subtract_48",
+   "op": "conv",
+   "inputs": [
+    "edge_saturation_48"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_48",
+   "op": "add",
+   "inputs": [
+    "edge_strength_48",
+    "edge_subtract_48"
+   ]
+  },
+  {
+   "name": "dressed48_shoulders",
+   "op": "conv",
+   "inputs": [
+    "edge_48"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_wardrobe",
+   "op": "conv",
+   "inputs": [
+    "dressed48_bounded_distances"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_head",
+   "op": "conv",
+   "inputs": [
+    "dressed48_warmth"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_missing_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed48_missing_parts"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_shadow",
+   "op": "conv",
+   "inputs": [
+    "dressed48_cap"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_outline_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed48_shoulders"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed48_scores",
+   "op": "add",
+   "inputs": [
+    "dressed48_wardrobe",
+    "dressed48_head",
+    "dressed48_missing_vote",
+    "dressed48_shadow",
+    "dressed48_outline_vote"
+   ]
+  },
+  {
+   "name": "dressed48_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "dressed48_scores"
+   ],
+   "shape": [
+    1,
+    3,
+    324
+   ]
+  },
+  {
+   "name": "dressed48_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "dressed48_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "dressed48_shape",
+   "op": "reshape",
+   "inputs": [
+    "dressed48_shape_max"
+   ],
+   "shape": [
+    1,
+    18,
+    18
+   ]
+  },
+  {
+   "name": "dressed48_best",
+   "op": "maxpool",
+   "inputs": [
+    "dressed48_shape"
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "stride": [
+    18,
+    18
+   ]
+  },
+  {
+   "name": "dressed24_part_differences",
+   "op": "conv",
+   "inputs": [
+    "rgb_24"
+   ],
+   "out": 54,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_above_zero",
+   "op": "relu",
+   "inputs": [
+    "dressed24_part_differences"
+   ]
+  },
+  {
+   "name": "dressed24_absolutes",
+   "op": "conv",
+   "inputs": [
+    "dressed24_above_zero"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_negative",
+   "op": "conv",
+   "inputs": [
+    "dressed24_part_differences"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_opponent_distances",
+   "op": "add",
+   "inputs": [
+    "dressed24_absolutes",
+    "dressed24_negative"
+   ]
+  },
+  {
+   "name": "dressed24_boundaries",
+   "op": "conv",
+   "inputs": [
+    "dressed24_opponent_distances"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_distance_excess",
+   "op": "relu",
+   "inputs": [
+    "dressed24_boundaries"
+   ]
+  },
+  {
+   "name": "dressed24_remove_excess",
+   "op": "conv",
+   "inputs": [
+    "dressed24_distance_excess"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_bounded_distances",
+   "op": "add",
+   "inputs": [
+    "dressed24_opponent_distances",
+    "dressed24_remove_excess"
+   ]
+  },
+  {
+   "name": "dressed24_warmth",
+   "op": "conv",
+   "inputs": [
+    "skin_24"
+   ],
+   "out": 15,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_shading",
+   "op": "conv",
+   "inputs": [
+    "luma_24"
+   ],
+   "out": 6,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_cap_intervals",
+   "op": "conv",
+   "inputs": [
+    "dressed24_shading"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_cap_ramps",
+   "op": "relu",
+   "inputs": [
+    "dressed24_cap_intervals"
+   ]
+  },
+  {
+   "name": "dressed24_cap",
+   "op": "conv",
+   "inputs": [
+    "dressed24_cap_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_min_warmth",
+   "op": "conv",
+   "inputs": [
+    "dressed24_warmth"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_missing_parts",
+   "op": "relu",
+   "inputs": [
+    "dressed24_min_warmth"
+   ]
+  },
+  {
+   "name": "dressed24_shoulders",
+   "op": "conv",
+   "inputs": [
+    "edge_24"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_wardrobe",
+   "op": "conv",
+   "inputs": [
+    "dressed24_bounded_distances"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_head",
+   "op": "conv",
+   "inputs": [
+    "dressed24_warmth"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_missing_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed24_missing_parts"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_shadow",
+   "op": "conv",
+   "inputs": [
+    "dressed24_cap"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_outline_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed24_shoulders"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed24_scores",
+   "op": "add",
+   "inputs": [
+    "dressed24_wardrobe",
+    "dressed24_head",
+    "dressed24_missing_vote",
+    "dressed24_shadow",
+    "dressed24_outline_vote"
+   ]
+  },
+  {
+   "name": "dressed24_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "dressed24_scores"
+   ],
+   "shape": [
+    1,
+    3,
+    144
+   ]
+  },
+  {
+   "name": "dressed24_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "dressed24_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "dressed24_shape",
+   "op": "reshape",
+   "inputs": [
+    "dressed24_shape_max"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "dressed24_best",
+   "op": "maxpool",
+   "inputs": [
+    "dressed24_shape"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "dressed16_part_differences",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 54,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_above_zero",
+   "op": "relu",
+   "inputs": [
+    "dressed16_part_differences"
+   ]
+  },
+  {
+   "name": "dressed16_absolutes",
+   "op": "conv",
+   "inputs": [
+    "dressed16_above_zero"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_negative",
+   "op": "conv",
+   "inputs": [
+    "dressed16_part_differences"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_opponent_distances",
+   "op": "add",
+   "inputs": [
+    "dressed16_absolutes",
+    "dressed16_negative"
+   ]
+  },
+  {
+   "name": "dressed16_boundaries",
+   "op": "conv",
+   "inputs": [
+    "dressed16_opponent_distances"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_distance_excess",
+   "op": "relu",
+   "inputs": [
+    "dressed16_boundaries"
+   ]
+  },
+  {
+   "name": "dressed16_remove_excess",
+   "op": "conv",
+   "inputs": [
+    "dressed16_distance_excess"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_bounded_distances",
+   "op": "add",
+   "inputs": [
+    "dressed16_opponent_distances",
+    "dressed16_remove_excess"
+   ]
+  },
+  {
+   "name": "dressed16_warmth",
+   "op": "conv",
+   "inputs": [
+    "skin_16"
+   ],
+   "out": 15,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_shading",
+   "op": "conv",
+   "inputs": [
+    "luma_16"
+   ],
+   "out": 6,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_cap_intervals",
+   "op": "conv",
+   "inputs": [
+    "dressed16_shading"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_cap_ramps",
+   "op": "relu",
+   "inputs": [
+    "dressed16_cap_intervals"
+   ]
+  },
+  {
+   "name": "dressed16_cap",
+   "op": "conv",
+   "inputs": [
+    "dressed16_cap_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_min_warmth",
+   "op": "conv",
+   "inputs": [
+    "dressed16_warmth"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_missing_parts",
+   "op": "relu",
+   "inputs": [
+    "dressed16_min_warmth"
+   ]
+  },
+  {
+   "name": "dressed16_shoulders",
+   "op": "conv",
+   "inputs": [
+    "edge_16"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_wardrobe",
+   "op": "conv",
+   "inputs": [
+    "dressed16_bounded_distances"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_head",
+   "op": "conv",
+   "inputs": [
+    "dressed16_warmth"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_missing_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed16_missing_parts"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_shadow",
+   "op": "conv",
+   "inputs": [
+    "dressed16_cap"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_outline_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed16_shoulders"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed16_scores",
+   "op": "add",
+   "inputs": [
+    "dressed16_wardrobe",
+    "dressed16_head",
+    "dressed16_missing_vote",
+    "dressed16_shadow",
+    "dressed16_outline_vote"
+   ]
+  },
+  {
+   "name": "dressed16_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "dressed16_scores"
+   ],
+   "shape": [
+    1,
+    3,
+    16
+   ]
+  },
+  {
+   "name": "dressed16_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "dressed16_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "dressed16_shape",
+   "op": "reshape",
+   "inputs": [
+    "dressed16_shape_max"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "dressed16_best",
+   "op": "maxpool",
+   "inputs": [
+    "dressed16_shape"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "dressed12_part_differences",
+   "op": "conv",
+   "inputs": [
+    "rgb_12"
+   ],
+   "out": 54,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "dressed12_above_zero",
+   "op": "relu",
+   "inputs": [
+    "dressed12_part_differences"
+   ]
+  },
+  {
+   "name": "dressed12_absolutes",
+   "op": "conv",
+   "inputs": [
+    "dressed12_above_zero"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_negative",
+   "op": "conv",
+   "inputs": [
+    "dressed12_part_differences"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_opponent_distances",
+   "op": "add",
+   "inputs": [
+    "dressed12_absolutes",
+    "dressed12_negative"
+   ]
+  },
+  {
+   "name": "dressed12_boundaries",
+   "op": "conv",
+   "inputs": [
+    "dressed12_opponent_distances"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_distance_excess",
+   "op": "relu",
+   "inputs": [
+    "dressed12_boundaries"
+   ]
+  },
+  {
+   "name": "dressed12_remove_excess",
+   "op": "conv",
+   "inputs": [
+    "dressed12_distance_excess"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_bounded_distances",
+   "op": "add",
+   "inputs": [
+    "dressed12_opponent_distances",
+    "dressed12_remove_excess"
+   ]
+  },
+  {
+   "name": "dressed12_warmth",
+   "op": "conv",
+   "inputs": [
+    "skin_12"
+   ],
+   "out": 15,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "dressed12_shading",
+   "op": "conv",
+   "inputs": [
+    "luma_12"
+   ],
+   "out": 6,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "dressed12_cap_intervals",
+   "op": "conv",
+   "inputs": [
+    "dressed12_shading"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_cap_ramps",
+   "op": "relu",
+   "inputs": [
+    "dressed12_cap_intervals"
+   ]
+  },
+  {
+   "name": "dressed12_cap",
+   "op": "conv",
+   "inputs": [
+    "dressed12_cap_ramps"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_min_warmth",
+   "op": "conv",
+   "inputs": [
+    "dressed12_warmth"
+   ],
+   "out": 15,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_missing_parts",
+   "op": "relu",
+   "inputs": [
+    "dressed12_min_warmth"
+   ]
+  },
+  {
+   "name": "dressed12_shoulders",
+   "op": "conv",
+   "inputs": [
+    "edge_12"
+   ],
+   "out": 6,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "dressed12_wardrobe",
+   "op": "conv",
+   "inputs": [
+    "dressed12_bounded_distances"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_head",
+   "op": "conv",
+   "inputs": [
+    "dressed12_warmth"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_missing_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed12_missing_parts"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_shadow",
+   "op": "conv",
+   "inputs": [
+    "dressed12_cap"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_outline_vote",
+   "op": "conv",
+   "inputs": [
+    "dressed12_shoulders"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dressed12_scores",
+   "op": "add",
+   "inputs": [
+    "dressed12_wardrobe",
+    "dressed12_head",
+    "dressed12_missing_vote",
+    "dressed12_shadow",
+    "dressed12_outline_vote"
+   ]
+  },
+  {
+   "name": "dressed12_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "dressed12_scores"
+   ],
+   "shape": [
+    1,
+    3,
+    16
+   ]
+  },
+  {
+   "name": "dressed12_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "dressed12_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "dressed12_shape",
+   "op": "reshape",
+   "inputs": [
+    "dressed12_shape_max"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "dressed12_best",
+   "op": "maxpool",
+   "inputs": [
+    "dressed12_shape"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "head_on_garment_ch0",
+   "op": "conv",
+   "inputs": [
+    "dressed48_best"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_on_garment_ch1",
+   "op": "conv",
+   "inputs": [
+    "dressed24_best"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_on_garment_ch2",
+   "op": "conv",
+   "inputs": [
+    "dressed16_best"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_on_garment_ch3",
+   "op": "conv",
+   "inputs": [
+    "dressed12_best"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "head_on_garment_bank",
+   "op": "add",
+   "inputs": [
+    "head_on_garment_ch0",
+    "head_on_garment_ch1",
+    "head_on_garment_ch2",
+    "head_on_garment_ch3"
+   ]
+  },
+  {
+   "name": "head_on_garment_stack",
+   "op": "reshape",
+   "inputs": [
+    "head_on_garment_bank"
+   ],
+   "shape": [
+    1,
+    4,
+    1
+   ]
+  },
+  {
+   "name": "head_on_garment_max",
+   "op": "maxpool",
+   "inputs": [
+    "head_on_garment_stack"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "head_on_garment",
+   "op": "reshape",
+   "inputs": [
+    "head_on_garment_max"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "green_ground_planes",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lawn_minimum",
+   "op": "conv",
+   "inputs": [
+    "green_ground_planes"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lawn_violations",
+   "op": "relu",
+   "inputs": [
+    "lawn_minimum"
+   ]
+  },
+  {
+   "name": "lawn_intersection",
+   "op": "conv",
+   "inputs": [
+    "lawn_violations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "lawn",
+   "op": "relu",
+   "inputs": [
+    "lawn_intersection"
+   ]
+  },
+  {
+   "name": "ground_plane",
+   "op": "dense",
+   "inputs": [
+    "lawn"
+   ],
+   "out": 1
+  },
+  {
+   "name": "field_context",
+   "op": "relu",
+   "inputs": [
+    "ground_plane"
+   ]
+  },
+  {
+   "name": "field_context_map",
+   "op": "reshape",
+   "inputs": [
+    "field_context"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "snow_planes",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "snow_boundaries",
+   "op": "conv",
+   "inputs": [
+    "snow_planes"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "snow_violations",
+   "op": "relu",
+   "inputs": [
+    "snow_boundaries"
+   ]
+  },
+  {
+   "name": "snow_intersection",
+   "op": "conv",
+   "inputs": [
+    "snow_violations"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "pale_ground",
+   "op": "relu",
+   "inputs": [
+    "snow_intersection"
+   ]
+  },
+  {
+   "name": "snow_plane",
+   "op": "dense",
+   "inputs": [
+    "pale_ground"
+   ],
+   "out": 1
+  },
+  {
+   "name": "snow_context",
+   "op": "relu",
+   "inputs": [
+    "snow_plane"
+   ]
+  },
+  {
+   "name": "snow_context_map",
+   "op": "reshape",
+   "inputs": [
+    "snow_context"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "backlit48_comparisons",
+   "op": "conv",
+   "inputs": [
+    "lightness"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "backlit48_contrasts",
+   "op": "conv",
+   "inputs": [
+    "backlit48_comparisons"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit48_levels",
+   "op": "conv",
+   "inputs": [
+    "backlit48_contrasts"
+   ],
+   "out": 144,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit48_ramps",
+   "op": "relu",
+   "inputs": [
+    "backlit48_levels"
+   ]
+  },
+  {
+   "name": "backlit48_figure_rule",
+   "op": "conv",
+   "inputs": [
+    "backlit48_ramps"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit48_pose_stack",
+   "op": "reshape",
+   "inputs": [
+    "backlit48_figure_rule"
+   ],
+   "shape": [
+    1,
+    8,
+    324
+   ]
+  },
+  {
+   "name": "backlit48_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "backlit48_pose_stack"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "backlit48_pose",
+   "op": "reshape",
+   "inputs": [
+    "backlit48_pose_max"
+   ],
+   "shape": [
+    1,
+    18,
+    18
+   ]
+  },
+  {
+   "name": "backlit48_prior",
+   "op": "dense",
+   "inputs": [
+    "backlit48_pose"
+   ],
+   "out": 324
+  },
+  {
+   "name": "backlit48_spatial",
+   "op": "reshape",
+   "inputs": [
+    "backlit48_prior"
+   ],
+   "shape": [
+    1,
+    18,
+    18
+   ]
+  },
+  {
+   "name": "backlit48_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "backlit48_spatial"
+   ],
+   "size": [
+    18,
+    18
+   ],
+   "stride": [
+    18,
+    18
+   ]
+  },
+  {
+   "name": "backlit24_comparisons",
+   "op": "conv",
+   "inputs": [
+    "luma_24"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit24_contrasts",
+   "op": "conv",
+   "inputs": [
+    "backlit24_comparisons"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit24_levels",
+   "op": "conv",
+   "inputs": [
+    "backlit24_contrasts"
+   ],
+   "out": 144,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit24_ramps",
+   "op": "relu",
+   "inputs": [
+    "backlit24_levels"
+   ]
+  },
+  {
+   "name": "backlit24_figure_rule",
+   "op": "conv",
+   "inputs": [
+    "backlit24_ramps"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit24_pose_stack",
+   "op": "reshape",
+   "inputs": [
+    "backlit24_figure_rule"
+   ],
+   "shape": [
+    1,
+    8,
+    144
+   ]
+  },
+  {
+   "name": "backlit24_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "backlit24_pose_stack"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "backlit24_pose",
+   "op": "reshape",
+   "inputs": [
+    "backlit24_pose_max"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "backlit24_prior",
+   "op": "dense",
+   "inputs": [
+    "backlit24_pose"
+   ],
+   "out": 144
+  },
+  {
+   "name": "backlit24_spatial",
+   "op": "reshape",
+   "inputs": [
+    "backlit24_prior"
+   ],
+   "shape": [
+    1,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "backlit24_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "backlit24_spatial"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "backlit16_comparisons",
+   "op": "conv",
+   "inputs": [
+    "luma_16"
+   ],
+   "out": 24,
+   "kernel": [
+    13,
+    13
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit16_contrasts",
+   "op": "conv",
+   "inputs": [
+    "backlit16_comparisons"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit16_levels",
+   "op": "conv",
+   "inputs": [
+    "backlit16_contrasts"
+   ],
+   "out": 144,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit16_ramps",
+   "op": "relu",
+   "inputs": [
+    "backlit16_levels"
+   ]
+  },
+  {
+   "name": "backlit16_figure_rule",
+   "op": "conv",
+   "inputs": [
+    "backlit16_ramps"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit16_pose_stack",
+   "op": "reshape",
+   "inputs": [
+    "backlit16_figure_rule"
+   ],
+   "shape": [
+    1,
+    8,
+    16
+   ]
+  },
+  {
+   "name": "backlit16_pose_max",
+   "op": "maxpool",
+   "inputs": [
+    "backlit16_pose_stack"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "backlit16_pose",
+   "op": "reshape",
+   "inputs": [
+    "backlit16_pose_max"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "backlit16_prior",
+   "op": "dense",
+   "inputs": [
+    "backlit16_pose"
+   ],
+   "out": 16
+  },
+  {
+   "name": "backlit16_spatial",
+   "op": "reshape",
+   "inputs": [
+    "backlit16_prior"
+   ],
+   "shape": [
+    1,
+    4,
+    4
+   ]
+  },
+  {
+   "name": "backlit16_anywhere",
+   "op": "maxpool",
+   "inputs": [
+    "backlit16_spatial"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "backlit_body_ch0",
+   "op": "conv",
+   "inputs": [
+    "backlit48_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit_body_ch1",
+   "op": "conv",
+   "inputs": [
+    "backlit24_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit_body_ch2",
+   "op": "conv",
+   "inputs": [
+    "backlit16_anywhere"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "backlit_body_bank",
+   "op": "add",
+   "inputs": [
+    "backlit_body_ch0",
+    "backlit_body_ch1",
+    "backlit_body_ch2"
+   ]
+  },
+  {
+   "name": "backlit_body_stack",
+   "op": "reshape",
+   "inputs": [
+    "backlit_body_bank"
+   ],
+   "shape": [
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "backlit_body_max",
+   "op": "maxpool",
+   "inputs": [
+    "backlit_body_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "backlit_body",
+   "op": "reshape",
+   "inputs": [
+    "backlit_body_max"
+   ],
+   "shape": [
+    1,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "dye_margins",
+   "op": "conv",
+   "inputs": [
+    "rgb_24"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dye_halfplanes",
+   "op": "relu",
+   "inputs": [
+    "dye_margins"
+   ]
+  },
+  {
+   "name": "dye_intersection",
+   "op": "conv",
+   "inputs": [
+    "dye_halfplanes"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dye_membership",
+   "op": "relu",
+   "inputs": [
+    "dye_intersection"
+   ]
+  },
+  {
+   "name": "dye_regions",
+   "op": "avgpool",
+   "inputs": [
+    "dye_membership"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "dye_isolation",
+   "op": "conv",
+   "inputs": [
+    "dye_regions"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dye_hue_stack",
+   "op": "reshape",
+   "inputs": [
+    "dye_isolation"
+   ],
+   "shape": [
+    1,
+    3,
+    81
+   ]
+  },
+  {
+   "name": "dye_hue_max",
+   "op": "maxpool",
+   "inputs": [
+    "dye_hue_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "dye_hue",
+   "op": "reshape",
+   "inputs": [
+    "dye_hue_max"
+   ],
+   "shape": [
+    1,
+    9,
+    9
+   ]
+  },
+  {
+   "name": "dye_location",
+   "op": "dense",
+   "inputs": [
+    "dye_hue"
+   ],
+   "out": 81
+  },
+  {
+   "name": "dye_spatial",
+   "op": "reshape",
+   "inputs": [
+    "dye_location"
+   ],
+   "shape": [
+    1,
+    9,
+    9
+   ]
+  },
+  {
+   "name": "dyed_garment",
+   "op": "maxpool",
+   "inputs": [
+    "dye_spatial"
+   ],
+   "size": [
+    9,
+    9
+   ],
+   "stride": [
+    9,
+    9
+   ]
+  },
+  {
+   "name": "dyed_area",
+   "op": "avgpool",
+   "inputs": [
+    "dye_membership"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "dye_fraction",
+   "op": "conv",
+   "inputs": [
+    "dyed_area"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "porcelain_planes",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "porcelain_limits",
+   "op": "conv",
+   "inputs": [
+    "porcelain_planes"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "porcelain_impurities",
+   "op": "relu",
+   "inputs": [
+    "porcelain_limits"
+   ]
+  },
+  {
+   "name": "porcelain",
+   "op": "conv",
+   "inputs": [
+    "porcelain_impurities"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "light_ceramic",
+   "op": "relu",
+   "inputs": [
+    "porcelain"
+   ]
+  },
+  {
+   "name": "plate_arcs",
+   "op": "conv",
+   "inputs": [
+    "light_ceramic"
+   ],
+   "out": 12,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "meal",
+   "op": "conv",
+   "inputs": [
+    "skin_16"
+   ],
+   "out": 3,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "arc_requirements",
+   "op": "conv",
+   "inputs": [
+    "plate_arcs"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "broken_arcs",
+   "op": "relu",
+   "inputs": [
+    "arc_requirements"
+   ]
+  },
+  {
+   "name": "full_rim",
+   "op": "conv",
+   "inputs": [
+    "plate_arcs"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "borders_missing",
+   "op": "conv",
+   "inputs": [
+    "broken_arcs"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "warm_center",
+   "op": "conv",
+   "inputs": [
+    "meal"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rim_and_meal",
+   "op": "add",
+   "inputs": [
+    "full_rim",
+    "borders_missing",
+    "warm_center"
+   ]
+  },
+  {
+   "name": "plate",
+   "op": "relu",
+   "inputs": [
+    "rim_and_meal"
+   ]
+  },
+  {
+   "name": "plate_shape_stack",
+   "op": "reshape",
+   "inputs": [
+    "plate"
+   ],
+   "shape": [
+    1,
+    3,
+    36
+   ]
+  },
+  {
+   "name": "plate_shape_max",
+   "op": "maxpool",
+   "inputs": [
+    "plate_shape_stack"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "plate_shape",
+   "op": "reshape",
+   "inputs": [
+    "plate_shape_max"
+   ],
+   "shape": [
+    1,
+    6,
+    6
+   ]
+  },
+  {
+   "name": "dinner_plate",
+   "op": "maxpool",
+   "inputs": [
+    "plate_shape"
+   ],
+   "size": [
+    6,
+    6
+   ],
+   "stride": [
+    6,
+    6
+   ]
+  },
+  {
+   "name": "chroma_sign",
+   "op": "conv",
+   "inputs": [
+    "rgb_16"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "absolute_chroma",
+   "op": "relu",
+   "inputs": [
+    "chroma_sign"
+   ]
+  },
+  {
+   "name": "chroma_area",
+   "op": "avgpool",
+   "inputs": [
+    "absolute_chroma"
+   ],
+   "size": [
+    16,
+    16
+   ],
+   "stride": [
+    16,
+    16
+   ]
+  },
+  {
+   "name": "neutral_frame",
+   "op": "conv",
+   "inputs": [
+    "chroma_area"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "monochrome",
+   "op": "relu",
+   "inputs": [
+    "neutral_frame"
+   ]
+  },
+  {
+   "name": "vote_0",
+   "op": "conv",
+   "inputs": [
+    "head_summary_strongest"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_1",
+   "op": "conv",
+   "inputs": [
+    "head_summary_coverage"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_2",
+   "op": "conv",
+   "inputs": [
+    "face_summary_strongest"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_3",
+   "op": "conv",
+   "inputs": [
+    "face_summary_coverage"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_4",
+   "op": "conv",
+   "inputs": [
+    "best_agreement"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_5",
+   "op": "conv",
+   "inputs": [
+    "body_max"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_6",
+   "op": "conv",
+   "inputs": [
+    "body_coverage"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_7",
+   "op": "conv",
+   "inputs": [
+    "cloth_peak"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_8",
+   "op": "conv",
+   "inputs": [
+    "cloth_amount"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_9",
+   "op": "conv",
+   "inputs": [
+    "widespread_skin"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_10",
+   "op": "conv",
+   "inputs": [
+    "line_density0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_11",
+   "op": "conv",
+   "inputs": [
+    "line_density1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_12",
+   "op": "conv",
+   "inputs": [
+    "oblique_detail"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_13",
+   "op": "conv",
+   "inputs": [
+    "head_on_garment"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_14",
+   "op": "conv",
+   "inputs": [
+    "field_context_map"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_15",
+   "op": "conv",
+   "inputs": [
+    "snow_context_map"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_16",
+   "op": "conv",
+   "inputs": [
+    "backlit_body"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_17",
+   "op": "conv",
+   "inputs": [
+    "dyed_garment"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_18",
+   "op": "conv",
+   "inputs": [
+    "dye_fraction"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_19",
+   "op": "conv",
+   "inputs": [
+    "dinner_plate"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "vote_20",
+   "op": "conv",
+   "inputs": [
+    "monochrome"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "combined_score",
+   "op": "add",
+   "inputs": [
+    "vote_0",
+    "vote_1",
+    "vote_2",
+    "vote_3",
+    "vote_4",
+    "vote_5",
+    "vote_6",
+    "vote_7",
+    "vote_8",
+    "vote_9",
+    "vote_10",
+    "vote_11",
+    "vote_12",
+    "vote_13",
+    "vote_14",
+    "vote_15",
+    "vote_16",
+    "vote_17",
+    "vote_18",
+    "vote_19",
+    "vote_20"
+   ]
+  },
+  {
+   "name": "class_scores",
+   "op": "dense",
+   "inputs": [
+    "combined_score"
+   ],
+   "out": 2
+  }
+ ]
+}

@@ -1,0 +1,1488 @@
+{
+ "layers": [
+  {
+   "name": "ink_thresholds",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 3,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "ink_positive",
+   "op": "relu",
+   "inputs": [
+    "ink_thresholds"
+   ]
+  },
+  {
+   "name": "soft_foreground",
+   "op": "conv",
+   "inputs": [
+    "ink_positive"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "occupancy",
+   "op": "avgpool",
+   "inputs": [
+    "soft_foreground"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "fine_ink",
+   "op": "maxpool",
+   "inputs": [
+    "soft_foreground"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "area_part",
+   "op": "conv",
+   "inputs": [
+    "occupancy"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "line_part",
+   "op": "conv",
+   "inputs": [
+    "fine_ink"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "antialiased_occupancy",
+   "op": "add",
+   "inputs": [
+    "area_part",
+    "line_part"
+   ]
+  },
+  {
+   "name": "noise_floor",
+   "op": "conv",
+   "inputs": [
+    "antialiased_occupancy"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ignore_specks",
+   "op": "relu",
+   "inputs": [
+    "noise_floor"
+   ]
+  },
+  {
+   "name": "directional_sweeps",
+   "op": "dense",
+   "inputs": [
+    "ignore_specks"
+   ],
+   "out": 980
+  },
+  {
+   "name": "sweep_planes",
+   "op": "reshape",
+   "inputs": [
+    "directional_sweeps"
+   ],
+   "shape": [
+    1,
+    5,
+    196
+   ]
+  },
+  {
+   "name": "remaining_space",
+   "op": "conv",
+   "inputs": [
+    "sweep_planes"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "empty_space",
+   "op": "relu",
+   "inputs": [
+    "remaining_space"
+   ]
+  },
+  {
+   "name": "cut_and_profile_matches",
+   "op": "dense",
+   "inputs": [
+    "empty_space"
+   ],
+   "out": 15360
+  },
+  {
+   "name": "by_class_and_group",
+   "op": "reshape",
+   "inputs": [
+    "cut_and_profile_matches"
+   ],
+   "shape": [
+    10,
+    4,
+    384
+   ]
+  },
+  {
+   "name": "group_matches",
+   "op": "maxpool",
+   "inputs": [
+    "by_class_and_group"
+   ],
+   "size": [
+    1,
+    384
+   ],
+   "stride": [
+    1,
+    384
+   ]
+  },
+  {
+   "name": "best_match",
+   "op": "maxpool",
+   "inputs": [
+    "group_matches"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "consensus_match",
+   "op": "avgpool",
+   "inputs": [
+    "group_matches"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "best_cut",
+   "op": "dense",
+   "inputs": [
+    "best_match"
+   ],
+   "out": 10
+  },
+  {
+   "name": "consensus_cut",
+   "op": "dense",
+   "inputs": [
+    "consensus_match"
+   ],
+   "out": 10
+  },
+  {
+   "name": "silhouette_evidence",
+   "op": "add",
+   "inputs": [
+    "best_cut",
+    "consensus_cut"
+   ]
+  },
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "tone_levels",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "tone_hinges",
+   "op": "relu",
+   "inputs": [
+    "tone_levels"
+   ]
+  },
+  {
+   "name": "scaled_tone",
+   "op": "conv",
+   "inputs": [
+    "tone_hinges"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cloth_filters",
+   "op": "conv",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 12,
+   "kernel": [
+    7,
+    7
+   ],
+   "padding": 3,
+   "stride": 1
+  },
+  {
+   "name": "oriented_responses",
+   "op": "relu",
+   "inputs": [
+    "cloth_filters"
+   ]
+  },
+  {
+   "name": "absolute_edges",
+   "op": "conv",
+   "inputs": [
+    "oriented_responses"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "material_measurements",
+   "op": "dense",
+   "inputs": [
+    "absolute_edges"
+   ],
+   "out": 8
+  },
+  {
+   "name": "cue_thresholds",
+   "op": "dense",
+   "inputs": [
+    "material_measurements"
+   ],
+   "out": 14
+  },
+  {
+   "name": "material_cues",
+   "op": "relu",
+   "inputs": [
+    "cue_thresholds"
+   ]
+  },
+  {
+   "name": "material_evidence",
+   "op": "dense",
+   "inputs": [
+    "material_cues"
+   ],
+   "out": 10
+  },
+  {
+   "name": "tailoring0",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 126
+  },
+  {
+   "name": "tailoring0_axes",
+   "op": "reshape",
+   "inputs": [
+    "tailoring0"
+   ],
+   "shape": [
+    1,
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring0_max",
+   "op": "maxpool",
+   "inputs": [
+    "tailoring0_axes"
+   ],
+   "size": [
+    1,
+    126
+   ],
+   "stride": [
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring0_place",
+   "op": "dense",
+   "inputs": [
+    "tailoring0_max"
+   ],
+   "out": 5
+  },
+  {
+   "name": "tailoring1",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 126
+  },
+  {
+   "name": "tailoring1_axes",
+   "op": "reshape",
+   "inputs": [
+    "tailoring1"
+   ],
+   "shape": [
+    1,
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring1_max",
+   "op": "maxpool",
+   "inputs": [
+    "tailoring1_axes"
+   ],
+   "size": [
+    1,
+    126
+   ],
+   "stride": [
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring1_place",
+   "op": "dense",
+   "inputs": [
+    "tailoring1_max"
+   ],
+   "out": 5
+  },
+  {
+   "name": "tailoring2",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 126
+  },
+  {
+   "name": "tailoring2_axes",
+   "op": "reshape",
+   "inputs": [
+    "tailoring2"
+   ],
+   "shape": [
+    1,
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring2_max",
+   "op": "maxpool",
+   "inputs": [
+    "tailoring2_axes"
+   ],
+   "size": [
+    1,
+    126
+   ],
+   "stride": [
+    1,
+    126
+   ]
+  },
+  {
+   "name": "tailoring2_place",
+   "op": "dense",
+   "inputs": [
+    "tailoring2_max"
+   ],
+   "out": 5
+  },
+  {
+   "name": "tailoring3",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 54
+  },
+  {
+   "name": "tailoring3_axes",
+   "op": "reshape",
+   "inputs": [
+    "tailoring3"
+   ],
+   "shape": [
+    1,
+    1,
+    54
+   ]
+  },
+  {
+   "name": "tailoring3_max",
+   "op": "maxpool",
+   "inputs": [
+    "tailoring3_axes"
+   ],
+   "size": [
+    1,
+    54
+   ],
+   "stride": [
+    1,
+    54
+   ]
+  },
+  {
+   "name": "tailoring3_place",
+   "op": "dense",
+   "inputs": [
+    "tailoring3_max"
+   ],
+   "out": 5
+  },
+  {
+   "name": "tailoring4",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 54
+  },
+  {
+   "name": "tailoring4_axes",
+   "op": "reshape",
+   "inputs": [
+    "tailoring4"
+   ],
+   "shape": [
+    1,
+    1,
+    54
+   ]
+  },
+  {
+   "name": "tailoring4_max",
+   "op": "maxpool",
+   "inputs": [
+    "tailoring4_axes"
+   ],
+   "size": [
+    1,
+    54
+   ],
+   "stride": [
+    1,
+    54
+   ]
+  },
+  {
+   "name": "tailoring4_place",
+   "op": "dense",
+   "inputs": [
+    "tailoring4_max"
+   ],
+   "out": 5
+  },
+  {
+   "name": "tailoring_strength",
+   "op": "add",
+   "inputs": [
+    "tailoring0_place",
+    "tailoring1_place",
+    "tailoring2_place",
+    "tailoring3_place",
+    "tailoring4_place"
+   ]
+  },
+  {
+   "name": "parallel_fabric_lines",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 24
+  },
+  {
+   "name": "left_right_lines",
+   "op": "reshape",
+   "inputs": [
+    "parallel_fabric_lines"
+   ],
+   "shape": [
+    1,
+    2,
+    12
+   ]
+  },
+  {
+   "name": "strong_flank_lines",
+   "op": "maxpool",
+   "inputs": [
+    "left_right_lines"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    12
+   ]
+  },
+  {
+   "name": "flank_line_strength",
+   "op": "avgpool",
+   "inputs": [
+    "strong_flank_lines"
+   ],
+   "size": [
+    2,
+    1
+   ],
+   "stride": [
+    2,
+    1
+   ]
+  },
+  {
+   "name": "discount_pattern",
+   "op": "dense",
+   "inputs": [
+    "flank_line_strength"
+   ],
+   "out": 5
+  },
+  {
+   "name": "center_specific",
+   "op": "add",
+   "inputs": [
+    "tailoring_strength",
+    "discount_pattern"
+   ]
+  },
+  {
+   "name": "tailoring_thresholds",
+   "op": "dense",
+   "inputs": [
+    "center_specific"
+   ],
+   "out": 8
+  },
+  {
+   "name": "tailoring_cues",
+   "op": "relu",
+   "inputs": [
+    "tailoring_thresholds"
+   ]
+  },
+  {
+   "name": "fastening_and_neck",
+   "op": "dense",
+   "inputs": [
+    "tailoring_cues"
+   ],
+   "out": 10
+  },
+  {
+   "name": "woven_repeats",
+   "op": "dense",
+   "inputs": [
+    "scaled_tone"
+   ],
+   "out": 288
+  },
+  {
+   "name": "warp_and_weft",
+   "op": "reshape",
+   "inputs": [
+    "woven_repeats"
+   ],
+   "shape": [
+    1,
+    2,
+    144
+   ]
+  },
+  {
+   "name": "warp_and_weft_strength",
+   "op": "maxpool",
+   "inputs": [
+    "warp_and_weft"
+   ],
+   "size": [
+    1,
+    144
+   ],
+   "stride": [
+    1,
+    144
+   ]
+  },
+  {
+   "name": "grid_imbalance",
+   "op": "dense",
+   "inputs": [
+    "warp_and_weft_strength"
+   ],
+   "out": 1
+  },
+  {
+   "name": "unbalanced_stripes",
+   "op": "relu",
+   "inputs": [
+    "grid_imbalance"
+   ]
+  },
+  {
+   "name": "warp",
+   "op": "dense",
+   "inputs": [
+    "warp_and_weft_strength"
+   ],
+   "out": 1
+  },
+  {
+   "name": "remove_single_axis",
+   "op": "dense",
+   "inputs": [
+    "unbalanced_stripes"
+   ],
+   "out": 1
+  },
+  {
+   "name": "crosshatch",
+   "op": "add",
+   "inputs": [
+    "warp",
+    "remove_single_axis"
+   ]
+  },
+  {
+   "name": "plaid_filter",
+   "op": "dense",
+   "inputs": [
+    "crosshatch"
+   ],
+   "out": 2
+  },
+  {
+   "name": "plaid_thresholds",
+   "op": "relu",
+   "inputs": [
+    "plaid_filter"
+   ]
+  },
+  {
+   "name": "plaid_evidence",
+   "op": "dense",
+   "inputs": [
+    "plaid_thresholds"
+   ],
+   "out": 10
+  },
+  {
+   "name": "cloth_and_tailoring",
+   "op": "add",
+   "inputs": [
+    "material_evidence",
+    "fastening_and_neck",
+    "plaid_evidence"
+   ]
+  },
+  {
+   "name": "firm_threshold",
+   "op": "conv",
+   "inputs": [
+    "soft_foreground"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "firm_ink",
+   "op": "relu",
+   "inputs": [
+    "firm_threshold"
+   ]
+  },
+  {
+   "name": "full_sweeps",
+   "op": "dense",
+   "inputs": [
+    "firm_ink"
+   ],
+   "out": 3920
+  },
+  {
+   "name": "full_resolution",
+   "op": "reshape",
+   "inputs": [
+    "full_sweeps"
+   ],
+   "shape": [
+    5,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "background_scans",
+   "op": "relu",
+   "inputs": [
+    "full_resolution"
+   ]
+  },
+  {
+   "name": "chord_logic",
+   "op": "conv",
+   "inputs": [
+    "background_scans"
+   ],
+   "out": 7,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "part_maps",
+   "op": "relu",
+   "inputs": [
+    "chord_logic"
+   ]
+  },
+  {
+   "name": "empty_pixel_test",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "near_black",
+   "op": "relu",
+   "inputs": [
+    "empty_pixel_test"
+   ]
+  },
+  {
+   "name": "crotch_to_cuff",
+   "op": "dense",
+   "inputs": [
+    "near_black"
+   ],
+   "out": 27
+  },
+  {
+   "name": "left_leg_spacings",
+   "op": "dense",
+   "inputs": [
+    "near_black"
+   ],
+   "out": 135
+  },
+  {
+   "name": "left_leg_rays",
+   "op": "reshape",
+   "inputs": [
+    "left_leg_spacings"
+   ],
+   "shape": [
+    1,
+    27,
+    5
+   ]
+  },
+  {
+   "name": "left_leg_best",
+   "op": "maxpool",
+   "inputs": [
+    "left_leg_rays"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "left_leg",
+   "op": "reshape",
+   "inputs": [
+    "left_leg_best"
+   ],
+   "shape": [
+    27
+   ]
+  },
+  {
+   "name": "right_leg_spacings",
+   "op": "dense",
+   "inputs": [
+    "near_black"
+   ],
+   "out": 135
+  },
+  {
+   "name": "right_leg_rays",
+   "op": "reshape",
+   "inputs": [
+    "right_leg_spacings"
+   ],
+   "shape": [
+    1,
+    27,
+    5
+   ]
+  },
+  {
+   "name": "right_leg_best",
+   "op": "maxpool",
+   "inputs": [
+    "right_leg_rays"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "right_leg",
+   "op": "reshape",
+   "inputs": [
+    "right_leg_best"
+   ],
+   "shape": [
+    27
+   ]
+  },
+  {
+   "name": "minus_right",
+   "op": "dense",
+   "inputs": [
+    "right_leg"
+   ],
+   "out": 27
+  },
+  {
+   "name": "leg_diff",
+   "op": "add",
+   "inputs": [
+    "left_leg",
+    "minus_right"
+   ]
+  },
+  {
+   "name": "leg_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "leg_diff"
+   ]
+  },
+  {
+   "name": "subtract_asymmetry",
+   "op": "dense",
+   "inputs": [
+    "leg_asymmetry"
+   ],
+   "out": 27
+  },
+  {
+   "name": "both_legs",
+   "op": "add",
+   "inputs": [
+    "left_leg",
+    "subtract_asymmetry"
+   ]
+  },
+  {
+   "name": "require_both_legs",
+   "op": "dense",
+   "inputs": [
+    "both_legs"
+   ],
+   "out": 27
+  },
+  {
+   "name": "bounded_slit",
+   "op": "add",
+   "inputs": [
+    "crotch_to_cuff",
+    "require_both_legs"
+   ]
+  },
+  {
+   "name": "positive_slit",
+   "op": "relu",
+   "inputs": [
+    "bounded_slit"
+   ]
+  },
+  {
+   "name": "leg_ray_bank",
+   "op": "reshape",
+   "inputs": [
+    "positive_slit"
+   ],
+   "shape": [
+    1,
+    1,
+    27
+   ]
+  },
+  {
+   "name": "open_split",
+   "op": "maxpool",
+   "inputs": [
+    "leg_ray_bank"
+   ],
+   "size": [
+    1,
+    27
+   ],
+   "stride": [
+    1,
+    27
+   ]
+  },
+  {
+   "name": "waistband_fabric",
+   "op": "dense",
+   "inputs": [
+    "near_black"
+   ],
+   "out": 27
+  },
+  {
+   "name": "belt_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "waistband_fabric"
+   ],
+   "shape": [
+    1,
+    1,
+    27
+   ]
+  },
+  {
+   "name": "full_waistband",
+   "op": "maxpool",
+   "inputs": [
+    "belt_alternatives"
+   ],
+   "size": [
+    1,
+    27
+   ],
+   "stride": [
+    1,
+    27
+   ]
+  },
+  {
+   "name": "regional_means",
+   "op": "dense",
+   "inputs": [
+    "part_maps"
+   ],
+   "out": 37
+  },
+  {
+   "name": "place_ray",
+   "op": "dense",
+   "inputs": [
+    "open_split"
+   ],
+   "out": 37
+  },
+  {
+   "name": "place_belt",
+   "op": "dense",
+   "inputs": [
+    "full_waistband"
+   ],
+   "out": 37
+  },
+  {
+   "name": "part_measurements",
+   "op": "add",
+   "inputs": [
+    "regional_means",
+    "place_ray",
+    "place_belt"
+   ]
+  },
+  {
+   "name": "part_rule1",
+   "op": "dense",
+   "inputs": [
+    "part_measurements"
+   ],
+   "out": 108
+  },
+  {
+   "name": "logic1",
+   "op": "relu",
+   "inputs": [
+    "part_rule1"
+   ]
+  },
+  {
+   "name": "part_rule2",
+   "op": "dense",
+   "inputs": [
+    "logic1"
+   ],
+   "out": 120
+  },
+  {
+   "name": "logic2",
+   "op": "relu",
+   "inputs": [
+    "part_rule2"
+   ]
+  },
+  {
+   "name": "part_rule3",
+   "op": "dense",
+   "inputs": [
+    "logic2"
+   ],
+   "out": 124
+  },
+  {
+   "name": "logic3",
+   "op": "relu",
+   "inputs": [
+    "part_rule3"
+   ]
+  },
+  {
+   "name": "part_rule4",
+   "op": "dense",
+   "inputs": [
+    "logic3"
+   ],
+   "out": 126
+  },
+  {
+   "name": "logic4",
+   "op": "relu",
+   "inputs": [
+    "part_rule4"
+   ]
+  },
+  {
+   "name": "part_rule5",
+   "op": "dense",
+   "inputs": [
+    "logic4"
+   ],
+   "out": 127
+  },
+  {
+   "name": "logic5",
+   "op": "relu",
+   "inputs": [
+    "part_rule5"
+   ]
+  },
+  {
+   "name": "construction_evidence",
+   "op": "dense",
+   "inputs": [
+    "logic5"
+   ],
+   "out": 10
+  },
+  {
+   "name": "garment_parts",
+   "op": "dense",
+   "inputs": [
+    "construction_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "object_and_cut",
+   "op": "add",
+   "inputs": [
+    "silhouette_evidence",
+    "garment_parts"
+   ]
+  },
+  {
+   "name": "bag_handle_detector",
+   "op": "dense",
+   "inputs": [
+    "soft_foreground"
+   ],
+   "out": 160
+  },
+  {
+   "name": "handle_shapes",
+   "op": "relu",
+   "inputs": [
+    "bag_handle_detector"
+   ]
+  },
+  {
+   "name": "different_handles",
+   "op": "reshape",
+   "inputs": [
+    "handle_shapes"
+   ],
+   "shape": [
+    1,
+    1,
+    160
+   ]
+  },
+  {
+   "name": "best_handle",
+   "op": "maxpool",
+   "inputs": [
+    "different_handles"
+   ],
+   "size": [
+    1,
+    160
+   ],
+   "stride": [
+    1,
+    160
+   ]
+  },
+  {
+   "name": "handle_evidence",
+   "op": "dense",
+   "inputs": [
+    "best_handle"
+   ],
+   "out": 10
+  },
+  {
+   "name": "unconditional_evidence",
+   "op": "add",
+   "inputs": [
+    "silhouette_evidence",
+    "construction_evidence",
+    "cloth_and_tailoring",
+    "handle_evidence"
+   ]
+  },
+  {
+   "name": "upper_coarse_select",
+   "op": "dense",
+   "inputs": [
+    "object_and_cut"
+   ],
+   "out": 4
+  },
+  {
+   "name": "upper_coarse_group",
+   "op": "reshape",
+   "inputs": [
+    "upper_coarse_select"
+   ],
+   "shape": [
+    1,
+    1,
+    4
+   ]
+  },
+  {
+   "name": "upper_coarse_max",
+   "op": "maxpool",
+   "inputs": [
+    "upper_coarse_group"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "upper_coarse_broadcast",
+   "op": "dense",
+   "inputs": [
+    "upper_coarse_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "upper_style_select",
+   "op": "dense",
+   "inputs": [
+    "unconditional_evidence"
+   ],
+   "out": 4
+  },
+  {
+   "name": "upper_style_group",
+   "op": "reshape",
+   "inputs": [
+    "upper_style_select"
+   ],
+   "shape": [
+    1,
+    1,
+    4
+   ]
+  },
+  {
+   "name": "upper_style_max",
+   "op": "maxpool",
+   "inputs": [
+    "upper_style_group"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "upper_style_broadcast",
+   "op": "dense",
+   "inputs": [
+    "upper_style_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "upper_center",
+   "op": "dense",
+   "inputs": [
+    "upper_style_broadcast"
+   ],
+   "out": 10
+  },
+  {
+   "name": "foot_coarse_select",
+   "op": "dense",
+   "inputs": [
+    "object_and_cut"
+   ],
+   "out": 3
+  },
+  {
+   "name": "foot_coarse_group",
+   "op": "reshape",
+   "inputs": [
+    "foot_coarse_select"
+   ],
+   "shape": [
+    1,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_coarse_max",
+   "op": "maxpool",
+   "inputs": [
+    "foot_coarse_group"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_coarse_broadcast",
+   "op": "dense",
+   "inputs": [
+    "foot_coarse_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "foot_style_select",
+   "op": "dense",
+   "inputs": [
+    "unconditional_evidence"
+   ],
+   "out": 3
+  },
+  {
+   "name": "foot_style_group",
+   "op": "reshape",
+   "inputs": [
+    "foot_style_select"
+   ],
+   "shape": [
+    1,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_style_max",
+   "op": "maxpool",
+   "inputs": [
+    "foot_style_group"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_style_broadcast",
+   "op": "dense",
+   "inputs": [
+    "foot_style_max"
+   ],
+   "out": 10
+  },
+  {
+   "name": "foot_center",
+   "op": "dense",
+   "inputs": [
+    "foot_style_broadcast"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "unconditional_evidence",
+    "upper_coarse_broadcast",
+    "upper_center",
+    "foot_coarse_broadcast",
+    "foot_center"
+   ]
+  }
+ ]
+}

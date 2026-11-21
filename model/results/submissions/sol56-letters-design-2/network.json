@@ -1,0 +1,119 @@
+{
+  "layers": [
+    {
+      "name": "inorm",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "oriented",
+      "op": "conv",
+      "inputs": [
+        "inorm"
+      ],
+      "out": 20,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "halfedges",
+      "op": "relu",
+      "inputs": [
+        "oriented"
+      ]
+    },
+    {
+      "name": "features",
+      "op": "conv",
+      "inputs": [
+        "halfedges"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "cells",
+      "op": "avgpool",
+      "inputs": [
+        "features"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "fnorm",
+      "op": "norm",
+      "inputs": [
+        "cells"
+      ]
+    },
+    {
+      "name": "templates",
+      "op": "conv",
+      "inputs": [
+        "fnorm"
+      ],
+      "out": 288,
+      "kernel": [
+        10,
+        10
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "all_matches",
+      "op": "reshape",
+      "inputs": [
+        "templates"
+      ],
+      "shape": [
+        24,
+        60,
+        5
+      ]
+    },
+    {
+      "name": "best_match",
+      "op": "maxpool",
+      "inputs": [
+        "all_matches"
+      ],
+      "size": [
+        60,
+        5
+      ],
+      "stride": [
+        60,
+        5
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_match"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

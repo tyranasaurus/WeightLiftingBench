@@ -1,0 +1,85 @@
+{
+  "layers": [
+    {
+      "name": "color",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "pool",
+      "op": "avgpool",
+      "inputs": [
+        "color"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "norm",
+      "op": "norm",
+      "inputs": [
+        "pool"
+      ]
+    },
+    {
+      "name": "tmpl",
+      "op": "dense",
+      "inputs": [
+        "norm"
+      ],
+      "out": 80
+    },
+    {
+      "name": "rshp",
+      "op": "reshape",
+      "inputs": [
+        "tmpl"
+      ],
+      "shape": [
+        10,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "mpool",
+      "op": "maxpool",
+      "inputs": [
+        "rshp"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "out",
+      "op": "reshape",
+      "inputs": [
+        "mpool"
+      ],
+      "shape": [
+        10
+      ]
+    }
+  ]
+}

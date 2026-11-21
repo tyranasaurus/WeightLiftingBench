@@ -1,0 +1,367 @@
+{
+ "layers": [
+  {
+   "name": "m1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m1r",
+   "op": "relu",
+   "inputs": [
+    "m1"
+   ]
+  },
+  {
+   "name": "nmap1",
+   "op": "dense",
+   "inputs": [
+    "m1r"
+   ],
+   "out": 3920
+  },
+  {
+   "name": "nmap1r",
+   "op": "relu",
+   "inputs": [
+    "nmap1"
+   ]
+  },
+  {
+   "name": "N1",
+   "op": "reshape",
+   "inputs": [
+    "nmap1r"
+   ],
+   "shape": [
+    5,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "codes1",
+   "op": "conv",
+   "inputs": [
+    "N1"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "C1",
+   "op": "relu",
+   "inputs": [
+    "codes1"
+   ]
+  },
+  {
+   "name": "m2",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m2r",
+   "op": "relu",
+   "inputs": [
+    "m2"
+   ]
+  },
+  {
+   "name": "nmap2",
+   "op": "dense",
+   "inputs": [
+    "m2r"
+   ],
+   "out": 3920
+  },
+  {
+   "name": "nmap2r",
+   "op": "relu",
+   "inputs": [
+    "nmap2"
+   ]
+  },
+  {
+   "name": "N2",
+   "op": "reshape",
+   "inputs": [
+    "nmap2r"
+   ],
+   "shape": [
+    5,
+    28,
+    28
+   ]
+  },
+  {
+   "name": "codes2",
+   "op": "conv",
+   "inputs": [
+    "N2"
+   ],
+   "out": 14,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "C2",
+   "op": "relu",
+   "inputs": [
+    "codes2"
+   ]
+  },
+  {
+   "name": "e1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 12,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "e1r",
+   "op": "relu",
+   "inputs": [
+    "e1"
+   ]
+  },
+  {
+   "name": "e2",
+   "op": "conv",
+   "inputs": [
+    "e1r"
+   ],
+   "out": 8,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "e2r",
+   "op": "relu",
+   "inputs": [
+    "e2"
+   ]
+  },
+  {
+   "name": "e3",
+   "op": "conv",
+   "inputs": [
+    "e2r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "E",
+   "op": "relu",
+   "inputs": [
+    "e3"
+   ]
+  },
+  {
+   "name": "Emax",
+   "op": "maxpool",
+   "inputs": [
+    "E"
+   ],
+   "size": [
+    1,
+    6
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "lines",
+   "op": "conv",
+   "inputs": [
+    "Emax"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "linesr",
+   "op": "relu",
+   "inputs": [
+    "lines"
+   ]
+  },
+  {
+   "name": "feat_C1",
+   "op": "dense",
+   "inputs": [
+    "C1"
+   ],
+   "out": 252
+  },
+  {
+   "name": "feat_C2",
+   "op": "dense",
+   "inputs": [
+    "C2"
+   ],
+   "out": 252
+  },
+  {
+   "name": "feat_E",
+   "op": "dense",
+   "inputs": [
+    "E"
+   ],
+   "out": 252
+  },
+  {
+   "name": "feat_N1",
+   "op": "dense",
+   "inputs": [
+    "N1"
+   ],
+   "out": 252
+  },
+  {
+   "name": "feat_linesr",
+   "op": "dense",
+   "inputs": [
+    "linesr"
+   ],
+   "out": 252
+  },
+  {
+   "name": "feat",
+   "op": "add",
+   "inputs": [
+    "feat_C1",
+    "feat_C2",
+    "feat_E",
+    "feat_N1",
+    "feat_linesr"
+   ]
+  },
+  {
+   "name": "pred",
+   "op": "dense",
+   "inputs": [
+    "feat"
+   ],
+   "out": 90
+  },
+  {
+   "name": "predr",
+   "op": "relu",
+   "inputs": [
+    "pred"
+   ]
+  },
+  {
+   "name": "term",
+   "op": "dense",
+   "inputs": [
+    "predr"
+   ],
+   "out": 60
+  },
+  {
+   "name": "termr",
+   "op": "relu",
+   "inputs": [
+    "term"
+   ]
+  },
+  {
+   "name": "subscore",
+   "op": "dense",
+   "inputs": [
+    "termr"
+   ],
+   "out": 40
+  },
+  {
+   "name": "subgrid",
+   "op": "reshape",
+   "inputs": [
+    "subscore"
+   ],
+   "shape": [
+    1,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "classmax",
+   "op": "maxpool",
+   "inputs": [
+    "subgrid"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "classmax"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

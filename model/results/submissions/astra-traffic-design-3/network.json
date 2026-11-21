@@ -1,0 +1,1789 @@
+{
+ "layers": [
+  {
+   "name": "exposure_knots",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 18,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "positive_ramps",
+   "op": "relu",
+   "inputs": [
+    "exposure_knots"
+   ]
+  },
+  {
+   "name": "perceptual_channels",
+   "op": "conv",
+   "inputs": [
+    "positive_ramps"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "adapted_channels",
+   "op": "norm",
+   "inputs": [
+    "perceptual_channels"
+   ]
+  },
+  {
+   "name": "limited_knees",
+   "op": "conv",
+   "inputs": [
+    "adapted_channels"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "limited_ramps",
+   "op": "relu",
+   "inputs": [
+    "limited_knees"
+   ]
+  },
+  {
+   "name": "limited",
+   "op": "conv",
+   "inputs": [
+    "limited_ramps"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "absolute_opponency",
+   "op": "conv",
+   "inputs": [
+    "perceptual_channels"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "color_and_contrast",
+   "op": "add",
+   "inputs": [
+    "limited",
+    "absolute_opponency"
+   ]
+  },
+  {
+   "name": "low_resolution_color",
+   "op": "avgpool",
+   "inputs": [
+    "color_and_contrast"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "frame_evidence",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 288
+  },
+  {
+   "name": "ink_light",
+   "op": "conv",
+   "inputs": [
+    "positive_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ink_adapt",
+   "op": "norm",
+   "inputs": [
+    "ink_light"
+   ]
+  },
+  {
+   "name": "ink_limit_knees",
+   "op": "conv",
+   "inputs": [
+    "ink_adapt"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ink_limit_ramps",
+   "op": "relu",
+   "inputs": [
+    "ink_limit_knees"
+   ]
+  },
+  {
+   "name": "ink_limit",
+   "op": "conv",
+   "inputs": [
+    "ink_limit_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ink_band",
+   "op": "conv",
+   "inputs": [
+    "ink_limit"
+   ],
+   "out": 1,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 1,
+   "padding": 4
+  },
+  {
+   "name": "reading_window_extract",
+   "op": "dense",
+   "inputs": [
+    "ink_band"
+   ],
+   "out": 676
+  },
+  {
+   "name": "reading_window_squares",
+   "op": "reshape",
+   "inputs": [
+    "reading_window_extract"
+   ],
+   "shape": [
+    1,
+    26,
+    26
+   ]
+  },
+  {
+   "name": "local_ink_contrast",
+   "op": "norm",
+   "inputs": [
+    "reading_window_squares"
+   ]
+  },
+  {
+   "name": "symbol_correlations",
+   "op": "dense",
+   "inputs": [
+    "local_ink_contrast"
+   ],
+   "out": 19656
+  },
+  {
+   "name": "symbol_hypotheses",
+   "op": "reshape",
+   "inputs": [
+    "symbol_correlations"
+   ],
+   "shape": [
+    39,
+    36,
+    14
+   ]
+  },
+  {
+   "name": "best_drawing",
+   "op": "maxpool",
+   "inputs": [
+    "symbol_hypotheses"
+   ],
+   "size": [
+    1,
+    14
+   ],
+   "stride": [
+    1,
+    14
+   ]
+  },
+  {
+   "name": "read_symbols",
+   "op": "conv",
+   "inputs": [
+    "best_drawing"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "type_window_extract",
+   "op": "dense",
+   "inputs": [
+    "ink_band"
+   ],
+   "out": 529
+  },
+  {
+   "name": "type_window_squares",
+   "op": "reshape",
+   "inputs": [
+    "type_window_extract"
+   ],
+   "shape": [
+    1,
+    23,
+    23
+   ]
+  },
+  {
+   "name": "type_contrast",
+   "op": "norm",
+   "inputs": [
+    "type_window_squares"
+   ]
+  },
+  {
+   "name": "typeset_words",
+   "op": "conv",
+   "inputs": [
+    "type_contrast"
+   ],
+   "out": 384,
+   "kernel": [
+    21,
+    21
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "horizontal_word_location",
+   "op": "maxpool",
+   "inputs": [
+    "typeset_words"
+   ],
+   "size": [
+    1,
+    9
+   ],
+   "stride": [
+    1,
+    9
+   ]
+  },
+  {
+   "name": "word_location",
+   "op": "maxpool",
+   "inputs": [
+    "horizontal_word_location"
+   ],
+   "size": [
+    9,
+    1
+   ],
+   "stride": [
+    9,
+    1
+   ]
+  },
+  {
+   "name": "fonts_by_word",
+   "op": "reshape",
+   "inputs": [
+    "word_location"
+   ],
+   "shape": [
+    8,
+    1,
+    48
+   ]
+  },
+  {
+   "name": "read_type",
+   "op": "maxpool",
+   "inputs": [
+    "fonts_by_word"
+   ],
+   "size": [
+    1,
+    48
+   ],
+   "stride": [
+    1,
+    48
+   ]
+  },
+  {
+   "name": "distinctive_word_parts",
+   "op": "conv",
+   "inputs": [
+    "read_type"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "share_word_reading",
+   "op": "dense",
+   "inputs": [
+    "distinctive_word_parts"
+   ],
+   "out": 1548
+  },
+  {
+   "name": "word_at_frame",
+   "op": "reshape",
+   "inputs": [
+    "share_word_reading"
+   ],
+   "shape": [
+    43,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "warning_icon_rectify",
+   "op": "dense",
+   "inputs": [
+    "ink_limit"
+   ],
+   "out": 12996
+  },
+  {
+   "name": "warning_icon_images",
+   "op": "reshape",
+   "inputs": [
+    "warning_icon_rectify"
+   ],
+   "shape": [
+    36,
+    19,
+    19
+   ]
+  },
+  {
+   "name": "warning_icon_normalize",
+   "op": "norm",
+   "inputs": [
+    "warning_icon_images"
+   ]
+  },
+  {
+   "name": "warning_icon_columns",
+   "op": "reshape",
+   "inputs": [
+    "warning_icon_normalize"
+   ],
+   "shape": [
+    1,
+    36,
+    361
+   ]
+  },
+  {
+   "name": "warning_icon_tiles",
+   "op": "reshape",
+   "inputs": [
+    "warning_icon_columns"
+   ],
+   "shape": [
+    1,
+    684,
+    19
+   ]
+  },
+  {
+   "name": "warning_icon_inner_products",
+   "op": "conv",
+   "inputs": [
+    "warning_icon_tiles"
+   ],
+   "out": 945,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 19,
+   "padding": 0
+  },
+  {
+   "name": "warning_icon_variants",
+   "op": "reshape",
+   "inputs": [
+    "warning_icon_inner_products"
+   ],
+   "shape": [
+    15,
+    63,
+    36
+   ]
+  },
+  {
+   "name": "warning_icon_correlation",
+   "op": "maxpool",
+   "inputs": [
+    "warning_icon_variants"
+   ],
+   "size": [
+    63,
+    1
+   ],
+   "stride": [
+    63,
+    1
+   ]
+  },
+  {
+   "name": "warning_icon_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "warning_icon_correlation"
+   ],
+   "shape": [
+    15,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "warning_icon_evidence",
+   "op": "conv",
+   "inputs": [
+    "warning_icon_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "circular_legend_rectify",
+   "op": "dense",
+   "inputs": [
+    "ink_limit"
+   ],
+   "out": 12996
+  },
+  {
+   "name": "circular_legend_images",
+   "op": "reshape",
+   "inputs": [
+    "circular_legend_rectify"
+   ],
+   "shape": [
+    36,
+    19,
+    19
+   ]
+  },
+  {
+   "name": "circular_legend_normalize",
+   "op": "norm",
+   "inputs": [
+    "circular_legend_images"
+   ]
+  },
+  {
+   "name": "circular_legend_columns",
+   "op": "reshape",
+   "inputs": [
+    "circular_legend_normalize"
+   ],
+   "shape": [
+    1,
+    36,
+    361
+   ]
+  },
+  {
+   "name": "circular_legend_tiles",
+   "op": "reshape",
+   "inputs": [
+    "circular_legend_columns"
+   ],
+   "shape": [
+    1,
+    684,
+    19
+   ]
+  },
+  {
+   "name": "circular_legend_inner_products",
+   "op": "conv",
+   "inputs": [
+    "circular_legend_tiles"
+   ],
+   "out": 1575,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 19,
+   "padding": 0
+  },
+  {
+   "name": "circular_legend_variants",
+   "op": "reshape",
+   "inputs": [
+    "circular_legend_inner_products"
+   ],
+   "shape": [
+    25,
+    63,
+    36
+   ]
+  },
+  {
+   "name": "circular_legend_correlation",
+   "op": "maxpool",
+   "inputs": [
+    "circular_legend_variants"
+   ],
+   "size": [
+    63,
+    1
+   ],
+   "stride": [
+    63,
+    1
+   ]
+  },
+  {
+   "name": "circular_legend_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "circular_legend_correlation"
+   ],
+   "shape": [
+    25,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "circular_legend_evidence",
+   "op": "conv",
+   "inputs": [
+    "circular_legend_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ink_slopes",
+   "op": "conv",
+   "inputs": [
+    "ink_limit"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "ink_slope_parts",
+   "op": "relu",
+   "inputs": [
+    "ink_slopes"
+   ]
+  },
+  {
+   "name": "ink_variation",
+   "op": "conv",
+   "inputs": [
+    "ink_slope_parts"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "coarse_variation",
+   "op": "avgpool",
+   "inputs": [
+    "ink_variation"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "variation_by_pose",
+   "op": "dense",
+   "inputs": [
+    "coarse_variation"
+   ],
+   "out": 36
+  },
+  {
+   "name": "inner_variation",
+   "op": "reshape",
+   "inputs": [
+    "variation_by_pose"
+   ],
+   "shape": [
+    1,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "face_regions",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 144
+  },
+  {
+   "name": "face_planes",
+   "op": "reshape",
+   "inputs": [
+    "face_regions"
+   ],
+   "shape": [
+    4,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "frame_planes",
+   "op": "reshape",
+   "inputs": [
+    "frame_evidence"
+   ],
+   "shape": [
+    8,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "frame_to_class",
+   "op": "conv",
+   "inputs": [
+    "frame_planes"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "blank_face_rule",
+   "op": "conv",
+   "inputs": [
+    "inner_variation"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "face_color_rules",
+   "op": "conv",
+   "inputs": [
+    "face_planes"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "arc_contrasts",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 288
+  },
+  {
+   "name": "rim_arcs",
+   "op": "reshape",
+   "inputs": [
+    "arc_contrasts"
+   ],
+   "shape": [
+    1,
+    8,
+    36
+   ]
+  },
+  {
+   "name": "incomplete_arcs",
+   "op": "conv",
+   "inputs": [
+    "rim_arcs"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "arc_deficit",
+   "op": "relu",
+   "inputs": [
+    "incomplete_arcs"
+   ]
+  },
+  {
+   "name": "arc_deficit_mean",
+   "op": "avgpool",
+   "inputs": [
+    "arc_deficit"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "rim_deficit",
+   "op": "reshape",
+   "inputs": [
+    "arc_deficit_mean"
+   ],
+   "shape": [
+    1,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "consistent_rim",
+   "op": "conv",
+   "inputs": [
+    "rim_deficit"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "light_and_yield_edges",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 108
+  },
+  {
+   "name": "color_geometry",
+   "op": "reshape",
+   "inputs": [
+    "light_and_yield_edges"
+   ],
+   "shape": [
+    3,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "layout_bounds",
+   "op": "conv",
+   "inputs": [
+    "color_geometry"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "layout_ramps",
+   "op": "relu",
+   "inputs": [
+    "layout_bounds"
+   ]
+  },
+  {
+   "name": "bounded_layout",
+   "op": "conv",
+   "inputs": [
+    "layout_ramps"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "place_color_geometry",
+   "op": "conv",
+   "inputs": [
+    "bounded_layout"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "diagonal_cancellation",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 72
+  },
+  {
+   "name": "outer_band_ends",
+   "op": "reshape",
+   "inputs": [
+    "diagonal_cancellation"
+   ],
+   "shape": [
+    2,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "stripe_min_parts",
+   "op": "conv",
+   "inputs": [
+    "outer_band_ends"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "stripe_rect",
+   "op": "relu",
+   "inputs": [
+    "stripe_min_parts"
+   ]
+  },
+  {
+   "name": "continuous_stripe",
+   "op": "conv",
+   "inputs": [
+    "stripe_rect"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cancellation_evidence",
+   "op": "conv",
+   "inputs": [
+    "continuous_stripe"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "triangle_side_contrasts",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 108
+  },
+  {
+   "name": "triangle_sides",
+   "op": "reshape",
+   "inputs": [
+    "triangle_side_contrasts"
+   ],
+   "shape": [
+    1,
+    3,
+    36
+   ]
+  },
+  {
+   "name": "bounded_side_votes_knees",
+   "op": "conv",
+   "inputs": [
+    "triangle_sides"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "bounded_side_votes_ramps",
+   "op": "relu",
+   "inputs": [
+    "bounded_side_votes_knees"
+   ]
+  },
+  {
+   "name": "bounded_side_votes",
+   "op": "conv",
+   "inputs": [
+    "bounded_side_votes_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "three_sides",
+   "op": "avgpool",
+   "inputs": [
+    "bounded_side_votes"
+   ],
+   "size": [
+    3,
+    1
+   ],
+   "stride": [
+    3,
+    1
+   ]
+  },
+  {
+   "name": "triangle_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "three_sides"
+   ],
+   "shape": [
+    1,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "closed_triangle",
+   "op": "conv",
+   "inputs": [
+    "triangle_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "full_sign_gray",
+   "op": "conv",
+   "inputs": [
+    "positive_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "whole_disc_extract",
+   "op": "dense",
+   "inputs": [
+    "full_sign_gray"
+   ],
+   "out": 10404
+  },
+  {
+   "name": "whole_disc_faces",
+   "op": "reshape",
+   "inputs": [
+    "whole_disc_extract"
+   ],
+   "shape": [
+    36,
+    17,
+    17
+   ]
+  },
+  {
+   "name": "whole_disc_contrast",
+   "op": "norm",
+   "inputs": [
+    "whole_disc_faces"
+   ]
+  },
+  {
+   "name": "whole_disc_tiles",
+   "op": "reshape",
+   "inputs": [
+    "whole_disc_contrast"
+   ],
+   "shape": [
+    1,
+    612,
+    17
+   ]
+  },
+  {
+   "name": "whole_disc_matched",
+   "op": "conv",
+   "inputs": [
+    "whole_disc_tiles"
+   ],
+   "out": 216,
+   "kernel": [
+    17,
+    17
+   ],
+   "stride": 17,
+   "padding": 0
+  },
+  {
+   "name": "whole_disc_styles",
+   "op": "reshape",
+   "inputs": [
+    "whole_disc_matched"
+   ],
+   "shape": [
+    27,
+    8,
+    36
+   ]
+  },
+  {
+   "name": "whole_disc_read",
+   "op": "maxpool",
+   "inputs": [
+    "whole_disc_styles"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "whole_disc_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "whole_disc_read"
+   ],
+   "shape": [
+    27,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "whole_disc_score",
+   "op": "conv",
+   "inputs": [
+    "whole_disc_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "whole_triangle_extract",
+   "op": "dense",
+   "inputs": [
+    "full_sign_gray"
+   ],
+   "out": 10404
+  },
+  {
+   "name": "whole_triangle_faces",
+   "op": "reshape",
+   "inputs": [
+    "whole_triangle_extract"
+   ],
+   "shape": [
+    36,
+    17,
+    17
+   ]
+  },
+  {
+   "name": "whole_triangle_contrast",
+   "op": "norm",
+   "inputs": [
+    "whole_triangle_faces"
+   ]
+  },
+  {
+   "name": "whole_triangle_tiles",
+   "op": "reshape",
+   "inputs": [
+    "whole_triangle_contrast"
+   ],
+   "shape": [
+    1,
+    612,
+    17
+   ]
+  },
+  {
+   "name": "whole_triangle_matched",
+   "op": "conv",
+   "inputs": [
+    "whole_triangle_tiles"
+   ],
+   "out": 120,
+   "kernel": [
+    17,
+    17
+   ],
+   "stride": 17,
+   "padding": 0
+  },
+  {
+   "name": "whole_triangle_styles",
+   "op": "reshape",
+   "inputs": [
+    "whole_triangle_matched"
+   ],
+   "shape": [
+    15,
+    8,
+    36
+   ]
+  },
+  {
+   "name": "whole_triangle_read",
+   "op": "maxpool",
+   "inputs": [
+    "whole_triangle_styles"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "whole_triangle_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "whole_triangle_read"
+   ],
+   "shape": [
+    15,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "whole_triangle_score",
+   "op": "conv",
+   "inputs": [
+    "whole_triangle_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "whole_yield_extract",
+   "op": "dense",
+   "inputs": [
+    "full_sign_gray"
+   ],
+   "out": 10404
+  },
+  {
+   "name": "whole_yield_faces",
+   "op": "reshape",
+   "inputs": [
+    "whole_yield_extract"
+   ],
+   "shape": [
+    36,
+    17,
+    17
+   ]
+  },
+  {
+   "name": "whole_yield_contrast",
+   "op": "norm",
+   "inputs": [
+    "whole_yield_faces"
+   ]
+  },
+  {
+   "name": "whole_yield_tiles",
+   "op": "reshape",
+   "inputs": [
+    "whole_yield_contrast"
+   ],
+   "shape": [
+    1,
+    612,
+    17
+   ]
+  },
+  {
+   "name": "whole_yield_matched",
+   "op": "conv",
+   "inputs": [
+    "whole_yield_tiles"
+   ],
+   "out": 8,
+   "kernel": [
+    17,
+    17
+   ],
+   "stride": 17,
+   "padding": 0
+  },
+  {
+   "name": "whole_yield_styles",
+   "op": "reshape",
+   "inputs": [
+    "whole_yield_matched"
+   ],
+   "shape": [
+    1,
+    8,
+    36
+   ]
+  },
+  {
+   "name": "whole_yield_read",
+   "op": "maxpool",
+   "inputs": [
+    "whole_yield_styles"
+   ],
+   "size": [
+    8,
+    1
+   ],
+   "stride": [
+    8,
+    1
+   ]
+  },
+  {
+   "name": "whole_yield_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "whole_yield_read"
+   ],
+   "shape": [
+    1,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "whole_yield_score",
+   "op": "conv",
+   "inputs": [
+    "whole_yield_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "plain_yield_match",
+   "op": "conv",
+   "inputs": [
+    "whole_yield_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "yield_empty_field",
+   "op": "add",
+   "inputs": [
+    "whole_yield_score",
+    "plain_yield_match"
+   ]
+  },
+  {
+   "name": "relative_border_color",
+   "op": "dense",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 1440
+  },
+  {
+   "name": "relative_color_fields",
+   "op": "reshape",
+   "inputs": [
+    "relative_border_color"
+   ],
+   "shape": [
+    8,
+    36,
+    5
+   ]
+  },
+  {
+   "name": "border_deformation",
+   "op": "maxpool",
+   "inputs": [
+    "relative_color_fields"
+   ],
+   "size": [
+    1,
+    5
+   ],
+   "stride": [
+    1,
+    5
+   ]
+  },
+  {
+   "name": "frame_and_field",
+   "op": "add",
+   "inputs": [
+    "frame_planes",
+    "border_deformation"
+   ]
+  },
+  {
+   "name": "any_frame_location",
+   "op": "maxpool",
+   "inputs": [
+    "frame_and_field"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "share_frame",
+   "op": "dense",
+   "inputs": [
+    "any_frame_location"
+   ],
+   "out": 288
+  },
+  {
+   "name": "frame_strength",
+   "op": "reshape",
+   "inputs": [
+    "share_frame"
+   ],
+   "shape": [
+    8,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "frame_global_local",
+   "op": "add",
+   "inputs": [
+    "frame_and_field",
+    "frame_strength"
+   ]
+  },
+  {
+   "name": "framing_evidence",
+   "op": "conv",
+   "inputs": [
+    "frame_global_local"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "ink_column_reader",
+   "op": "conv",
+   "inputs": [
+    "circular_legend_tiles"
+   ],
+   "out": 168,
+   "kernel": [
+    19,
+    19
+   ],
+   "stride": 19,
+   "padding": 0
+  },
+  {
+   "name": "ink_column_widths",
+   "op": "reshape",
+   "inputs": [
+    "ink_column_reader"
+   ],
+   "shape": [
+    8,
+    21,
+    36
+   ]
+  },
+  {
+   "name": "glyph_spacing",
+   "op": "maxpool",
+   "inputs": [
+    "ink_column_widths"
+   ],
+   "size": [
+    21,
+    1
+   ],
+   "stride": [
+    21,
+    1
+   ]
+  },
+  {
+   "name": "word_spacing_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "glyph_spacing"
+   ],
+   "shape": [
+    8,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "word_spacing_score",
+   "op": "conv",
+   "inputs": [
+    "word_spacing_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "yellow_field",
+   "op": "conv",
+   "inputs": [
+    "low_resolution_color"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "sample_lozenge",
+   "op": "dense",
+   "inputs": [
+    "yellow_field"
+   ],
+   "out": 10404
+  },
+  {
+   "name": "diamond_fields",
+   "op": "reshape",
+   "inputs": [
+    "sample_lozenge"
+   ],
+   "shape": [
+    36,
+    17,
+    17
+   ]
+  },
+  {
+   "name": "diamond_chroma",
+   "op": "norm",
+   "inputs": [
+    "diamond_fields"
+   ]
+  },
+  {
+   "name": "diamond_tiles",
+   "op": "reshape",
+   "inputs": [
+    "diamond_chroma"
+   ],
+   "shape": [
+    1,
+    612,
+    17
+   ]
+  },
+  {
+   "name": "white_boundaries",
+   "op": "conv",
+   "inputs": [
+    "diamond_tiles"
+   ],
+   "out": 9,
+   "kernel": [
+    17,
+    17
+   ],
+   "stride": 17,
+   "padding": 0
+  },
+  {
+   "name": "diamond_models",
+   "op": "reshape",
+   "inputs": [
+    "white_boundaries"
+   ],
+   "shape": [
+    1,
+    9,
+    36
+   ]
+  },
+  {
+   "name": "white_keyline",
+   "op": "maxpool",
+   "inputs": [
+    "diamond_models"
+   ],
+   "size": [
+    9,
+    1
+   ],
+   "stride": [
+    9,
+    1
+   ]
+  },
+  {
+   "name": "lozenge_by_pose",
+   "op": "reshape",
+   "inputs": [
+    "white_keyline"
+   ],
+   "shape": [
+    1,
+    36,
+    1
+   ]
+  },
+  {
+   "name": "priority_pattern",
+   "op": "conv",
+   "inputs": [
+    "lozenge_by_pose"
+   ],
+   "out": 43,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "score_by_pose",
+   "op": "add",
+   "inputs": [
+    "read_symbols",
+    "frame_to_class",
+    "blank_face_rule",
+    "face_color_rules",
+    "word_at_frame",
+    "consistent_rim",
+    "place_color_geometry",
+    "warning_icon_evidence",
+    "circular_legend_evidence",
+    "cancellation_evidence",
+    "closed_triangle",
+    "whole_disc_score",
+    "whole_triangle_score",
+    "yield_empty_field",
+    "framing_evidence",
+    "word_spacing_score",
+    "priority_pattern"
+   ]
+  },
+  {
+   "name": "most_consistent_pose",
+   "op": "maxpool",
+   "inputs": [
+    "score_by_pose"
+   ],
+   "size": [
+    36,
+    1
+   ],
+   "stride": [
+    36,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "most_consistent_pose"
+   ],
+   "shape": [
+    43
+   ]
+  }
+ ]
+}

@@ -1,0 +1,194 @@
+{
+  "layers": [
+    {
+      "name": "input_norm",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "smooth",
+      "op": "conv",
+      "inputs": [
+        "input_norm"
+      ],
+      "out": 1,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "smooth_norm",
+      "op": "norm",
+      "inputs": [
+        "smooth"
+      ]
+    },
+    {
+      "name": "grad",
+      "op": "conv",
+      "inputs": [
+        "smooth_norm"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grad_norm",
+      "op": "norm",
+      "inputs": [
+        "grad"
+      ]
+    },
+    {
+      "name": "grad_pos",
+      "op": "relu",
+      "inputs": [
+        "grad_norm"
+      ]
+    },
+    {
+      "name": "grad_negconv",
+      "op": "conv",
+      "inputs": [
+        "grad_norm"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "grad_neg",
+      "op": "relu",
+      "inputs": [
+        "grad_negconv"
+      ]
+    },
+    {
+      "name": "grad_abs",
+      "op": "add",
+      "inputs": [
+        "grad_pos",
+        "grad_neg"
+      ]
+    },
+    {
+      "name": "edge_pool",
+      "op": "avgpool",
+      "inputs": [
+        "grad_abs"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "edge_norm",
+      "op": "norm",
+      "inputs": [
+        "edge_pool"
+      ]
+    },
+    {
+      "name": "raw_pool",
+      "op": "avgpool",
+      "inputs": [
+        "smooth"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "raw_norm",
+      "op": "norm",
+      "inputs": [
+        "raw_pool"
+      ]
+    },
+    {
+      "name": "raw_score",
+      "op": "dense",
+      "inputs": [
+        "raw_norm"
+      ],
+      "out": 432
+    },
+    {
+      "name": "edge_score",
+      "op": "dense",
+      "inputs": [
+        "edge_norm"
+      ],
+      "out": 432
+    },
+    {
+      "name": "combined",
+      "op": "add",
+      "inputs": [
+        "raw_score",
+        "edge_score"
+      ]
+    },
+    {
+      "name": "variants",
+      "op": "reshape",
+      "inputs": [
+        "combined"
+      ],
+      "shape": [
+        24,
+        18,
+        1
+      ]
+    },
+    {
+      "name": "best",
+      "op": "maxpool",
+      "inputs": [
+        "variants"
+      ],
+      "size": [
+        18,
+        1
+      ],
+      "stride": [
+        18,
+        1
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

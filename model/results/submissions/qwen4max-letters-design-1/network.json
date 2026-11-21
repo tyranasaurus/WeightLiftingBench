@@ -1,0 +1,198 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "f1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 4,
+   "kernel": [
+    17,
+    17
+   ],
+   "stride": 1,
+   "padding": 8
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "f1"
+   ]
+  },
+  {
+   "name": "ms",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 2,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "me",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 2,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ns",
+   "op": "norm",
+   "inputs": [
+    "ms"
+   ]
+  },
+  {
+   "name": "ne",
+   "op": "norm",
+   "inputs": [
+    "me"
+   ]
+  },
+  {
+   "name": "ts",
+   "op": "conv",
+   "inputs": [
+    "ns"
+   ],
+   "out": 24000,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "te",
+   "op": "conv",
+   "inputs": [
+    "ne"
+   ],
+   "out": 24000,
+   "kernel": [
+    28,
+    28
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rs",
+   "op": "relu",
+   "inputs": [
+    "ts"
+   ]
+  },
+  {
+   "name": "re",
+   "op": "relu",
+   "inputs": [
+    "te"
+   ]
+  },
+  {
+   "name": "sc",
+   "op": "add",
+   "inputs": [
+    "rs",
+    "re"
+   ]
+  },
+  {
+   "name": "g1",
+   "op": "reshape",
+   "inputs": [
+    "sc"
+   ],
+   "shape": [
+    24,
+    1000,
+    1
+   ]
+  },
+  {
+   "name": "pmax",
+   "op": "maxpool",
+   "inputs": [
+    "g1"
+   ],
+   "size": [
+    1000,
+    1
+   ],
+   "stride": [
+    1000,
+    1
+   ]
+  },
+  {
+   "name": "pavg",
+   "op": "avgpool",
+   "inputs": [
+    "g1"
+   ],
+   "size": [
+    1000,
+    1
+   ],
+   "stride": [
+    1000,
+    1
+   ]
+  },
+  {
+   "name": "base",
+   "op": "conv",
+   "inputs": [
+    "pavg"
+   ],
+   "out": 24,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "fin",
+   "op": "add",
+   "inputs": [
+    "pmax",
+    "base"
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "fin"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

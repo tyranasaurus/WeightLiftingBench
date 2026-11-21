@@ -1,0 +1,559 @@
+{
+ "layers": [
+  {
+   "name": "bin_pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bin_relu",
+   "op": "relu",
+   "inputs": [
+    "bin_pre"
+   ]
+  },
+  {
+   "name": "B",
+   "op": "conv",
+   "inputs": [
+    "bin_relu"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "rowmax",
+   "op": "maxpool",
+   "inputs": [
+    "B"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "colmax",
+   "op": "maxpool",
+   "inputs": [
+    "B"
+   ],
+   "size": [
+    28,
+    1
+   ],
+   "stride": [
+    28,
+    1
+   ]
+  },
+  {
+   "name": "halves",
+   "op": "avgpool",
+   "inputs": [
+    "B"
+   ],
+   "size": [
+    14,
+    1
+   ],
+   "stride": [
+    14,
+    1
+   ]
+  },
+  {
+   "name": "gap_a",
+   "op": "conv",
+   "inputs": [
+    "halves"
+   ],
+   "out": 12,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "gap_a_relu",
+   "op": "relu",
+   "inputs": [
+    "gap_a"
+   ]
+  },
+  {
+   "name": "gap_b",
+   "op": "conv",
+   "inputs": [
+    "gap_a_relu"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "gap_relu",
+   "op": "relu",
+   "inputs": [
+    "gap_b"
+   ]
+  },
+  {
+   "name": "gap",
+   "op": "maxpool",
+   "inputs": [
+    "gap_relu"
+   ],
+   "size": [
+    1,
+    10
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "rowwidth",
+   "op": "avgpool",
+   "inputs": [
+    "B"
+   ],
+   "size": [
+    1,
+    28
+   ],
+   "stride": [
+    1,
+    28
+   ]
+  },
+  {
+   "name": "rw",
+   "op": "reshape",
+   "inputs": [
+    "rowwidth"
+   ],
+   "shape": [
+    1,
+    1,
+    28
+   ]
+  },
+  {
+   "name": "jump_pre",
+   "op": "conv",
+   "inputs": [
+    "rw"
+   ],
+   "out": 6,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "jump_relu",
+   "op": "relu",
+   "inputs": [
+    "jump_pre"
+   ]
+  },
+  {
+   "name": "jump_mix",
+   "op": "conv",
+   "inputs": [
+    "jump_relu"
+   ],
+   "out": 3,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "jump_mix_relu",
+   "op": "relu",
+   "inputs": [
+    "jump_mix"
+   ]
+  },
+  {
+   "name": "jump",
+   "op": "maxpool",
+   "inputs": [
+    "jump_mix_relu"
+   ],
+   "size": [
+    1,
+    22
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "B_pad",
+   "op": "conv",
+   "inputs": [
+    "B"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "dil",
+   "op": "maxpool",
+   "inputs": [
+    "B_pad"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "dil_inv_pad",
+   "op": "conv",
+   "inputs": [
+    "dil"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "ero_inv",
+   "op": "maxpool",
+   "inputs": [
+    "dil_inv_pad"
+   ],
+   "size": [
+    7,
+    7
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "B_pad1",
+   "op": "conv",
+   "inputs": [
+    "B"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "dil3",
+   "op": "maxpool",
+   "inputs": [
+    "B_pad1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "dil3_inv_pad",
+   "op": "conv",
+   "inputs": [
+    "dil3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "ero_inv3",
+   "op": "maxpool",
+   "inputs": [
+    "dil3_inv_pad"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "B_inv_pad2",
+   "op": "conv",
+   "inputs": [
+    "B"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "ero5_inv",
+   "op": "maxpool",
+   "inputs": [
+    "B_inv_pad2"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "edge_pre",
+   "op": "conv",
+   "inputs": [
+    "B"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "edges",
+   "op": "relu",
+   "inputs": [
+    "edge_pre"
+   ]
+  },
+  {
+   "name": "detail_pre",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 2,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "detail",
+   "op": "relu",
+   "inputs": [
+    "detail_pre"
+   ]
+  },
+  {
+   "name": "vline_pre",
+   "op": "conv",
+   "inputs": [
+    "detail"
+   ],
+   "out": 1,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "vline",
+   "op": "relu",
+   "inputs": [
+    "vline_pre"
+   ]
+  },
+  {
+   "name": "pred_B",
+   "op": "dense",
+   "inputs": [
+    "B"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_rowmax",
+   "op": "dense",
+   "inputs": [
+    "rowmax"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_colmax",
+   "op": "dense",
+   "inputs": [
+    "colmax"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_gap",
+   "op": "dense",
+   "inputs": [
+    "gap"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_jump",
+   "op": "dense",
+   "inputs": [
+    "jump"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_edges",
+   "op": "dense",
+   "inputs": [
+    "edges"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_vline",
+   "op": "dense",
+   "inputs": [
+    "vline"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_ero_inv",
+   "op": "dense",
+   "inputs": [
+    "ero_inv"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_ero_inv3",
+   "op": "dense",
+   "inputs": [
+    "ero_inv3"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_ero5_inv",
+   "op": "dense",
+   "inputs": [
+    "ero5_inv"
+   ],
+   "out": 48
+  },
+  {
+   "name": "pred_sum",
+   "op": "add",
+   "inputs": [
+    "pred_B",
+    "pred_rowmax",
+    "pred_colmax",
+    "pred_gap",
+    "pred_jump",
+    "pred_edges",
+    "pred_vline",
+    "pred_ero_inv",
+    "pred_ero_inv3",
+    "pred_ero5_inv"
+   ]
+  },
+  {
+   "name": "pred",
+   "op": "relu",
+   "inputs": [
+    "pred_sum"
+   ]
+  },
+  {
+   "name": "gate_pre",
+   "op": "dense",
+   "inputs": [
+    "pred"
+   ],
+   "out": 70
+  },
+  {
+   "name": "gate",
+   "op": "relu",
+   "inputs": [
+    "gate_pre"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "gate"
+   ],
+   "out": 10
+  }
+ ]
+}

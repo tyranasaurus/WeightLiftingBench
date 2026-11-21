@@ -1,0 +1,3 @@
+Each reference starts as a hand-written Bézier pen path. The data-free builder draws individual examples of those paths with a fixed seed, varying the slant, bowl proportions, pen width, and local curvature. No training image or font file is used, and there is no fitting or averaging of rendered examples.
+
+At prediction time the program removes slant and partially normalizes aspect ratio using only the current image. Ink density, pooled edge directions, and enclosed white regions identify candidate templates in each class. A second comparison checks local stroke orientation in both directions: it penalizes strokes in the image missing from a template, and strokes in the template missing from the image. The lowest combined distance determines the label.

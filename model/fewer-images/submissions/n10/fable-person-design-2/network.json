@@ -1,0 +1,330 @@
+{
+ "layers": [
+  {
+   "name": "viol",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "viol_r",
+   "op": "relu",
+   "inputs": [
+    "viol"
+   ]
+  },
+  {
+   "name": "skin",
+   "op": "conv",
+   "inputs": [
+    "viol_r"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "skin_r",
+   "op": "relu",
+   "inputs": [
+    "skin"
+   ]
+  },
+  {
+   "name": "s48",
+   "op": "avgpool",
+   "inputs": [
+    "skin_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "s24",
+   "op": "avgpool",
+   "inputs": [
+    "s48"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "s12",
+   "op": "avgpool",
+   "inputs": [
+    "s24"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "blob_s48",
+   "op": "conv",
+   "inputs": [
+    "s48"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "blobr_s48",
+   "op": "relu",
+   "inputs": [
+    "blob_s48"
+   ]
+  },
+  {
+   "name": "max_s48",
+   "op": "maxpool",
+   "inputs": [
+    "blobr_s48"
+   ],
+   "size": [
+    48,
+    48
+   ],
+   "stride": [
+    48,
+    48
+   ]
+  },
+  {
+   "name": "x_s48",
+   "op": "dense",
+   "inputs": [
+    "max_s48"
+   ],
+   "out": 2
+  },
+  {
+   "name": "xr_s48",
+   "op": "relu",
+   "inputs": [
+    "x_s48"
+   ]
+  },
+  {
+   "name": "t_s48",
+   "op": "dense",
+   "inputs": [
+    "xr_s48"
+   ],
+   "out": 2
+  },
+  {
+   "name": "tr_s48",
+   "op": "relu",
+   "inputs": [
+    "t_s48"
+   ]
+  },
+  {
+   "name": "v_s48",
+   "op": "dense",
+   "inputs": [
+    "tr_s48"
+   ],
+   "out": 2
+  },
+  {
+   "name": "blob_s24",
+   "op": "conv",
+   "inputs": [
+    "s24"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "blobr_s24",
+   "op": "relu",
+   "inputs": [
+    "blob_s24"
+   ]
+  },
+  {
+   "name": "max_s24",
+   "op": "maxpool",
+   "inputs": [
+    "blobr_s24"
+   ],
+   "size": [
+    24,
+    24
+   ],
+   "stride": [
+    24,
+    24
+   ]
+  },
+  {
+   "name": "x_s24",
+   "op": "dense",
+   "inputs": [
+    "max_s24"
+   ],
+   "out": 2
+  },
+  {
+   "name": "xr_s24",
+   "op": "relu",
+   "inputs": [
+    "x_s24"
+   ]
+  },
+  {
+   "name": "t_s24",
+   "op": "dense",
+   "inputs": [
+    "xr_s24"
+   ],
+   "out": 2
+  },
+  {
+   "name": "tr_s24",
+   "op": "relu",
+   "inputs": [
+    "t_s24"
+   ]
+  },
+  {
+   "name": "v_s24",
+   "op": "dense",
+   "inputs": [
+    "tr_s24"
+   ],
+   "out": 2
+  },
+  {
+   "name": "blob_s12",
+   "op": "conv",
+   "inputs": [
+    "s12"
+   ],
+   "out": 2,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "blobr_s12",
+   "op": "relu",
+   "inputs": [
+    "blob_s12"
+   ]
+  },
+  {
+   "name": "max_s12",
+   "op": "maxpool",
+   "inputs": [
+    "blobr_s12"
+   ],
+   "size": [
+    12,
+    12
+   ],
+   "stride": [
+    12,
+    12
+   ]
+  },
+  {
+   "name": "x_s12",
+   "op": "dense",
+   "inputs": [
+    "max_s12"
+   ],
+   "out": 2
+  },
+  {
+   "name": "xr_s12",
+   "op": "relu",
+   "inputs": [
+    "x_s12"
+   ]
+  },
+  {
+   "name": "t_s12",
+   "op": "dense",
+   "inputs": [
+    "xr_s12"
+   ],
+   "out": 2
+  },
+  {
+   "name": "tr_s12",
+   "op": "relu",
+   "inputs": [
+    "t_s12"
+   ]
+  },
+  {
+   "name": "v_s12",
+   "op": "dense",
+   "inputs": [
+    "tr_s12"
+   ],
+   "out": 2
+  },
+  {
+   "name": "votes",
+   "op": "add",
+   "inputs": [
+    "v_s48",
+    "v_s24",
+    "v_s12"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "dense",
+   "inputs": [
+    "votes"
+   ],
+   "out": 2
+  }
+ ]
+}

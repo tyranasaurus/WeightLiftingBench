@@ -1,0 +1,3 @@
+The network averages 2×2 pixels, then uses fixed luminance and red–blue projections with ReLU brightness bands to suppress sky and limit the influence of bright nuclei. Gaussian apertures, angular harmonics, and compensated logarithmic spiral filters measure concentration, elongation, asymmetry, and winding at several scales. A hand-written ReLU decision head combines these measurements into ten morphology scores.
+
+All weights come from formulas and hand-chosen constants in `build.py`; the builder reads no files. Training images were used for visual inspection and one labeled smoke check, not for fitting or weight selection. The check reached 31.5% on a fixed random sample of 200 training images, with loose spirals overpredicted. Held-out accuracy is unknown.

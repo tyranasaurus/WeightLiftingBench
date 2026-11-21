@@ -1,0 +1,260 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 16,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r3",
+   "op": "relu",
+   "inputs": [
+    "c3"
+   ]
+  },
+  {
+   "name": "c4",
+   "op": "conv",
+   "inputs": [
+    "r3"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m",
+   "op": "add",
+   "inputs": [
+    "r2",
+    "c4"
+   ]
+  },
+  {
+   "name": "pool",
+   "op": "avgpool",
+   "inputs": [
+    "m"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "pool"
+   ],
+   "shape": [
+    1,
+    88,
+    11
+   ]
+  },
+  {
+   "name": "nf",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "t",
+   "op": "dense",
+   "inputs": [
+    "nf"
+   ],
+   "out": 96000
+  },
+  {
+   "name": "tg",
+   "op": "reshape",
+   "inputs": [
+    "t"
+   ],
+   "shape": [
+    1,
+    12000,
+    8
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "maxpool",
+   "inputs": [
+    "tg"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "tz",
+   "op": "norm",
+   "inputs": [
+    "tm"
+   ]
+  },
+  {
+   "name": "v1c",
+   "op": "conv",
+   "inputs": [
+    "tz"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v1",
+   "op": "relu",
+   "inputs": [
+    "v1c"
+   ]
+  },
+  {
+   "name": "v2c",
+   "op": "conv",
+   "inputs": [
+    "v1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "v2",
+   "op": "relu",
+   "inputs": [
+    "v2c"
+   ]
+  },
+  {
+   "name": "vs",
+   "op": "add",
+   "inputs": [
+    "v1",
+    "v2",
+    "v2"
+   ]
+  },
+  {
+   "name": "vr",
+   "op": "reshape",
+   "inputs": [
+    "vs"
+   ],
+   "shape": [
+    24,
+    500,
+    1
+   ]
+  },
+  {
+   "name": "vp",
+   "op": "avgpool",
+   "inputs": [
+    "vr"
+   ],
+   "size": [
+    500,
+    1
+   ],
+   "stride": [
+    500,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "vp"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

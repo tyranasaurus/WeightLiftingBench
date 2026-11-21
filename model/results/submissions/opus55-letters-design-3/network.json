@@ -1,0 +1,179 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "g",
+   "op": "conv",
+   "inputs": [
+    "n0"
+   ],
+   "out": 12,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "g_r",
+   "op": "relu",
+   "inputs": [
+    "g"
+   ]
+  },
+  {
+   "name": "u",
+   "op": "conv",
+   "inputs": [
+    "g_r"
+   ],
+   "out": 12,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "u_r",
+   "op": "relu",
+   "inputs": [
+    "u"
+   ]
+  },
+  {
+   "name": "p",
+   "op": "conv",
+   "inputs": [
+    "u_r"
+   ],
+   "out": 6,
+   "kernel": [
+    4,
+    4
+   ],
+   "stride": 2,
+   "padding": 1
+  },
+  {
+   "name": "p_flat",
+   "op": "reshape",
+   "inputs": [
+    "p"
+   ],
+   "shape": [
+    1,
+    84,
+    14
+   ]
+  },
+  {
+   "name": "p_norm",
+   "op": "norm",
+   "inputs": [
+    "p_flat"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "reshape",
+   "inputs": [
+    "p_norm"
+   ],
+   "shape": [
+    6,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "tm",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 2160,
+   "kernel": [
+    14,
+    14
+   ],
+   "stride": 1,
+   "padding": 2
+  },
+  {
+   "name": "tm_max",
+   "op": "maxpool",
+   "inputs": [
+    "tm"
+   ],
+   "size": [
+    5,
+    5
+   ],
+   "stride": [
+    5,
+    5
+   ]
+  },
+  {
+   "name": "tm_grid",
+   "op": "reshape",
+   "inputs": [
+    "tm_max"
+   ],
+   "shape": [
+    1,
+    24,
+    90
+   ]
+  },
+  {
+   "name": "grp_max",
+   "op": "maxpool",
+   "inputs": [
+    "tm_grid"
+   ],
+   "size": [
+    1,
+    15
+   ],
+   "stride": [
+    1,
+    15
+   ]
+  },
+  {
+   "name": "cls_avg",
+   "op": "avgpool",
+   "inputs": [
+    "grp_max"
+   ],
+   "size": [
+    1,
+    6
+   ],
+   "stride": [
+    1,
+    6
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "cls_avg"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

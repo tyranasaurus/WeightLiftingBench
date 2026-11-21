@@ -1,0 +1,538 @@
+{
+ "openai/gpt-6.1-sol": {
+  "solved_rate_singles": 0.9941626415885305,
+  "solved_rate_pairs_box_line": 0.7268489904922543,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9996901851092218,
+  "cell_score_pairs_box_line": 0.8804605886268844,
+  "cell_score_search": 0.334624414768812,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "qwen/qwen4-max": {
+  "solved_rate_singles": 0.6530977503631772,
+  "solved_rate_pairs_box_line": 0.4321393933917652,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.6652636543806542,
+  "cell_score_pairs_box_line": 0.5233336190932834,
+  "cell_score_search": 0.21432831503418212,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "openai/gpt-6.1-terra": {
+  "solved_rate_singles": 0.8806338733959117,
+  "solved_rate_pairs_box_line": 0.5063297290242262,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9766706292651363,
+  "cell_score_pairs_box_line": 0.7259919260975582,
+  "cell_score_search": 0.3205597671439291,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "openai/gpt-6-luna": {
+  "solved_rate_singles": 0.2644041091573706,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.5138428020075562,
+  "cell_score_pairs_box_line": 0.1661221469093207,
+  "cell_score_search": 0.18906458752191294,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-opus-5.5": {
+  "solved_rate_singles": 0.9232105757555799,
+  "solved_rate_pairs_box_line": 0.5405650432215897,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9870241879225596,
+  "cell_score_pairs_box_line": 0.7563819008496923,
+  "cell_score_search": 0.3211861466421573,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "qwen/qwen3.8-max-0902": {
+  "solved_rate_singles": 0.1341705677504406,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.5560559759984233,
+  "cell_score_pairs_box_line": 0.2017033504960064,
+  "cell_score_search": 0.2300283929927082,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-sonnet-5.5": {
+  "solved_rate_singles": 0.523560563664155,
+  "solved_rate_pairs_box_line": 0.16350150095880644,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.869352545012506,
+  "cell_score_pairs_box_line": 0.4204730516114486,
+  "cell_score_search": 0.3000265066683552,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-haiku-5.5": {
+  "solved_rate_singles": 0.6506980685153358,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.8368616130353921,
+  "cell_score_pairs_box_line": 0.25025239673345545,
+  "cell_score_search": 0.28440439255745165,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-opus-4.7": {
+  "solved_rate_singles": 0.14864697272898006,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.493874908784197,
+  "cell_score_pairs_box_line": 0.1754499386377357,
+  "cell_score_search": 0.20403574134239308,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "moonshotai/kimi-k2": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.0057415404667488235,
+  "cell_score_pairs_box_line": 0.0038900951578115443,
+  "cell_score_search": 0.005032644916427568,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 1,
+  "runs_counted": 3
+ },
+ "openai/gpt-5.6-sol": {
+  "solved_rate_singles": 0.8921890343808725,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9757830425425701,
+  "cell_score_pairs_box_line": 0.2556796792111424,
+  "cell_score_search": 0.2917838778854595,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "deepseek/deepseek-v3.2": {
+  "solved_rate_singles": 0.06317077198574049,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.25179676210826746,
+  "cell_score_pairs_box_line": 0.08373301739755312,
+  "cell_score_search": 0.09606869456296324,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "anthropic/claude-fable-5.2": {
+  "solved_rate_singles": 1.0,
+  "solved_rate_pairs_box_line": 0.716512354045561,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 1.0,
+  "cell_score_pairs_box_line": 0.7958099070334644,
+  "cell_score_search": 0.3216410986930431,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "openai/gpt-5": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.0106691954383818,
+  "cell_score_pairs_box_line": 0.008606433122131387,
+  "cell_score_search": 0.00704992730313454,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "deepseek/deepseek-v4-pro": {
+  "solved_rate_singles": 0.005821006161335146,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.032926364634289294,
+  "cell_score_pairs_box_line": 0.01175569833759514,
+  "cell_score_search": 0.017423476017904425,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "google/gemini-2.5-pro": {
+  "solved_rate_singles": 0.010063149459961115,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.11173553543058805,
+  "cell_score_pairs_box_line": 0.06186310059370715,
+  "cell_score_search": 0.07407301007541607,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "google/gemini-3.1-pro-preview": {
+  "solved_rate_singles": 0.42059286917110006,
+  "solved_rate_pairs_box_line": 0.08027187936106342,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.8422082234627396,
+  "cell_score_pairs_box_line": 0.4563172027465909,
+  "cell_score_search": 0.3057130217368005,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-opus-4.5": {
+  "solved_rate_singles": 0.02012629891992223,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.07624367757219365,
+  "cell_score_pairs_box_line": 0.027010620596659585,
+  "cell_score_search": 0.03976679524388347,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "openai/gpt-6-astra": {
+  "solved_rate_singles": 0.9768776774292194,
+  "solved_rate_pairs_box_line": 0.7220933104424564,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9979891122627639,
+  "cell_score_pairs_box_line": 0.8829491814982843,
+  "cell_score_search": 0.33563425137408753,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "z-ai/glm-5.3": {
+  "solved_rate_singles": 0.31910366923800965,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.331616012709282,
+  "cell_score_pairs_box_line": 0.08539314439939107,
+  "cell_score_search": 0.09735236951598698,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 1,
+  "runs_counted": 3
+ },
+ "openai/gpt-5.2": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.16317154586623253,
+  "cell_score_pairs_box_line": 0.11536098771308423,
+  "cell_score_search": 0.1245795248342883,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "openai/gpt-5.5": {
+  "solved_rate_singles": 0.3099278297527394,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.76415506870999,
+  "cell_score_pairs_box_line": 0.2507048729737114,
+  "cell_score_search": 0.28626302134181975,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-fable-5.1": {
+  "solved_rate_singles": 0.9884724850191908,
+  "solved_rate_pairs_box_line": 0.6322944088029477,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.999353283178675,
+  "cell_score_pairs_box_line": 0.7841948013293099,
+  "cell_score_search": 0.3216410986930431,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "deepseek/deepseek-r1-0528": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.0,
+  "cell_score_pairs_box_line": 0.0,
+  "cell_score_search": 0.0,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "openai/gpt-5.4": {
+  "solved_rate_singles": 0.4119768839758689,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.8257627526275022,
+  "cell_score_pairs_box_line": 0.25207788333261827,
+  "cell_score_search": 0.2879575101534764,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "moonshotai/kimi-k2-thinking": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.0,
+  "cell_score_pairs_box_line": 0.0,
+  "cell_score_search": 0.0,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "moonshotai/kimi-k3.1-pro": {
+  "solved_rate_singles": 0.06004062118490277,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.49849377514839593,
+  "cell_score_pairs_box_line": 0.2106075347281912,
+  "cell_score_search": 0.24101437109787563,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "openai/gpt-5.1": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.042720324185085055,
+  "cell_score_pairs_box_line": 0.03391270876163584,
+  "cell_score_search": 0.03728130659658992,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "moonshotai/kimi-k3": {
+  "solved_rate_singles": 0.01244500218214282,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.2409343755145065,
+  "cell_score_pairs_box_line": 0.0939602901379058,
+  "cell_score_search": 0.11066247765561478,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "anthropic/claude-fable-5": {
+  "solved_rate_singles": 0.6924345432181956,
+  "solved_rate_pairs_box_line": 0.10050219370902481,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.9180645600398017,
+  "cell_score_pairs_box_line": 0.39575168729092275,
+  "cell_score_search": 0.30053517907250565,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "z-ai/glm-5": {
+  "solved_rate_singles": 0.33407424308549777,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.5412110239284371,
+  "cell_score_pairs_box_line": 0.1666382579935132,
+  "cell_score_search": 0.18983918649776488,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "anthropic/claude-opus-4.1": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.013463204517456855,
+  "cell_score_pairs_box_line": 0.0062026550837442,
+  "cell_score_search": 0.010189135541127263,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 2,
+  "runs_counted": 3
+ },
+ "openai/o3": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.01722462140024647,
+  "cell_score_pairs_box_line": 0.011670285473434633,
+  "cell_score_search": 0.015097934749282704,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "anthropic/claude-opus-4.8": {
+  "solved_rate_singles": 0.27258104374189396,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.7828407135686559,
+  "cell_score_pairs_box_line": 0.2505997660393348,
+  "cell_score_search": 0.28691956048770323,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 3,
+  "runs_counted": 3
+ },
+ "qwen/qwen3-235b-a22b-thinking-2507": {
+  "solved_rate_singles": 0.0,
+  "solved_rate_pairs_box_line": 0.0,
+  "solved_rate_search": 0.0,
+  "cell_score_singles": 0.0,
+  "cell_score_pairs_box_line": 0.0,
+  "cell_score_search": 0.0,
+  "share": {
+   "singles": 0.4,
+   "pairs_box_line": 0.17600000000000002,
+   "search": 0.42400000000000004
+  },
+  "runs_with_metrics": 1,
+  "runs_counted": 3
+ },
+ "openai/gpt-6.2-astra": {
+  "solved_rate_singles": 0.9206666666666665,
+  "cell_score_singles": 0.9896666666666666,
+  "solved_rate_pairs_box_line": 0.39633333333333337,
+  "cell_score_pairs_box_line": 0.6846666666666668,
+  "solved_rate_search": 0.081,
+  "cell_score_search": 0.41700000000000004,
+  "runs_with_metrics": 3,
+  "runs_counted": 3,
+  "note": "v1 runs 0a3104df 03d782f2 da6b57c6 (Nov 17); share field not recorded"
+ }
+}

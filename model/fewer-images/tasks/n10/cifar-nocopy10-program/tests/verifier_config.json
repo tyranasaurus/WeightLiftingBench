@@ -1,0 +1,23 @@
+{
+  "classes": 10,
+  "reward_reference": 1.0,
+  "reward_floor": 0.1,
+  "hidden_seed": 0,
+  "program": {
+    "solution_path": "/app/out/solution.py",
+    "constants_path": "/app/out/constants.npz",
+    "limits": {
+      "entry": "predict",
+      "constants_budget": 120000000,
+      "call_seconds": 600.0,
+      "cpu_seconds": 1800.0,
+      "reference_seconds": 60.0,
+      "max_lines": 1000000,
+      "max_source_bytes": 1000000,
+      "max_constants_bytes": 485000000,
+      "batch_rows": 10000,
+      "load_seconds": 120.0,
+      "memory_mb": 8192
+    }
+  }
+}

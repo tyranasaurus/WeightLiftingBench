@@ -1,0 +1,167 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 9,
+   "kernel": [
+    11,
+    11
+   ],
+   "stride": 1,
+   "padding": 5
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "maxpool",
+   "inputs": [
+    "r1"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "p1"
+   ],
+   "out": 9,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 2,
+   "padding": 2
+  },
+  {
+   "name": "flatA",
+   "op": "reshape",
+   "inputs": [
+    "c2"
+   ],
+   "shape": [
+    1,
+    1,
+    441
+   ]
+  },
+  {
+   "name": "nrmA",
+   "op": "norm",
+   "inputs": [
+    "flatA"
+   ]
+  },
+  {
+   "name": "dA",
+   "op": "dense",
+   "inputs": [
+    "nrmA"
+   ],
+   "out": 25000
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "p1"
+   ],
+   "out": 9,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "flatB",
+   "op": "reshape",
+   "inputs": [
+    "c3"
+   ],
+   "shape": [
+    1,
+    1,
+    1764
+   ]
+  },
+  {
+   "name": "nrmB",
+   "op": "norm",
+   "inputs": [
+    "flatB"
+   ]
+  },
+  {
+   "name": "dB",
+   "op": "dense",
+   "inputs": [
+    "nrmB"
+   ],
+   "out": 25000
+  },
+  {
+   "name": "sum",
+   "op": "add",
+   "inputs": [
+    "dA",
+    "dB"
+   ]
+  },
+  {
+   "name": "grp",
+   "op": "reshape",
+   "inputs": [
+    "sum"
+   ],
+   "shape": [
+    1,
+    10,
+    2500
+   ]
+  },
+  {
+   "name": "cls",
+   "op": "maxpool",
+   "inputs": [
+    "grp"
+   ],
+   "size": [
+    1,
+    2500
+   ],
+   "stride": [
+    1,
+    2500
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "cls"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

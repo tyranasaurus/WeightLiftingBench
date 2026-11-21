@@ -1,0 +1,522 @@
+{
+ "layers": [
+  {
+   "name": "c1",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "r1",
+   "op": "relu",
+   "inputs": [
+    "c1"
+   ]
+  },
+  {
+   "name": "c2",
+   "op": "conv",
+   "inputs": [
+    "r1"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r2",
+   "op": "relu",
+   "inputs": [
+    "c2"
+   ]
+  },
+  {
+   "name": "c3",
+   "op": "conv",
+   "inputs": [
+    "r2"
+   ],
+   "out": 8,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 4,
+   "padding": 4
+  },
+  {
+   "name": "c4",
+   "op": "conv",
+   "inputs": [
+    "c3"
+   ],
+   "out": 48,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "r4",
+   "op": "relu",
+   "inputs": [
+    "c4"
+   ]
+  },
+  {
+   "name": "c5",
+   "op": "conv",
+   "inputs": [
+    "r4"
+   ],
+   "out": 16,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "c5"
+   ],
+   "shape": [
+    1,
+    784,
+    1
+   ]
+  },
+  {
+   "name": "unit",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "feat",
+   "op": "reshape",
+   "inputs": [
+    "unit"
+   ],
+   "shape": [
+    16,
+    7,
+    7
+   ]
+  },
+  {
+   "name": "sel0",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 128,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m0",
+   "op": "dense",
+   "inputs": [
+    "sel0"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "sel1",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 128,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m1",
+   "op": "dense",
+   "inputs": [
+    "sel1"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "sel2",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 128,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m2",
+   "op": "dense",
+   "inputs": [
+    "sel2"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "sel3",
+   "op": "conv",
+   "inputs": [
+    "feat"
+   ],
+   "out": 128,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "m3",
+   "op": "dense",
+   "inputs": [
+    "sel3"
+   ],
+   "out": 150000
+  },
+  {
+   "name": "top",
+   "op": "add",
+   "inputs": [
+    "m0",
+    "m1"
+   ]
+  },
+  {
+   "name": "bottom",
+   "op": "add",
+   "inputs": [
+    "m2",
+    "m3"
+   ]
+  },
+  {
+   "name": "left",
+   "op": "add",
+   "inputs": [
+    "m0",
+    "m2"
+   ]
+  },
+  {
+   "name": "right",
+   "op": "add",
+   "inputs": [
+    "m1",
+    "m3"
+   ]
+  },
+  {
+   "name": "whole",
+   "op": "add",
+   "inputs": [
+    "top",
+    "bottom"
+   ]
+  },
+  {
+   "name": "whole_bank",
+   "op": "reshape",
+   "inputs": [
+    "whole"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "whole_best",
+   "op": "maxpool",
+   "inputs": [
+    "whole_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "top_bank",
+   "op": "reshape",
+   "inputs": [
+    "top"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "top_best",
+   "op": "maxpool",
+   "inputs": [
+    "top_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "bottom_bank",
+   "op": "reshape",
+   "inputs": [
+    "bottom"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "bottom_best",
+   "op": "maxpool",
+   "inputs": [
+    "bottom_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "left_bank",
+   "op": "reshape",
+   "inputs": [
+    "left"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "left_best",
+   "op": "maxpool",
+   "inputs": [
+    "left_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "right_bank",
+   "op": "reshape",
+   "inputs": [
+    "right"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "right_best",
+   "op": "maxpool",
+   "inputs": [
+    "right_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "m0_bank",
+   "op": "reshape",
+   "inputs": [
+    "m0"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "m0_best",
+   "op": "maxpool",
+   "inputs": [
+    "m0_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "m1_bank",
+   "op": "reshape",
+   "inputs": [
+    "m1"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "m1_best",
+   "op": "maxpool",
+   "inputs": [
+    "m1_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "m2_bank",
+   "op": "reshape",
+   "inputs": [
+    "m2"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "m2_best",
+   "op": "maxpool",
+   "inputs": [
+    "m2_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "m3_bank",
+   "op": "reshape",
+   "inputs": [
+    "m3"
+   ],
+   "shape": [
+    1,
+    10,
+    15000
+   ]
+  },
+  {
+   "name": "m3_best",
+   "op": "maxpool",
+   "inputs": [
+    "m3_bank"
+   ],
+   "size": [
+    1,
+    15000
+   ],
+   "stride": [
+    1,
+    15000
+   ]
+  },
+  {
+   "name": "total",
+   "op": "add",
+   "inputs": [
+    "whole_best",
+    "top_best",
+    "bottom_best",
+    "left_best",
+    "right_best",
+    "m0_best",
+    "m1_best",
+    "m2_best",
+    "m3_best"
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "total"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

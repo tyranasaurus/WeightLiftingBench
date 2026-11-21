@@ -1,0 +1,90 @@
+{
+ "layers": [
+  {
+   "name": "n0",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "p0",
+   "op": "avgpool",
+   "inputs": [
+    "n0"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "flat",
+   "op": "reshape",
+   "inputs": [
+    "p0"
+   ],
+   "shape": [
+    1,
+    196,
+    1
+   ]
+  },
+  {
+   "name": "n1",
+   "op": "norm",
+   "inputs": [
+    "flat"
+   ]
+  },
+  {
+   "name": "d",
+   "op": "dense",
+   "inputs": [
+    "n1"
+   ],
+   "out": 18000
+  },
+  {
+   "name": "v1",
+   "op": "reshape",
+   "inputs": [
+    "d"
+   ],
+   "shape": [
+    24,
+    750,
+    1
+   ]
+  },
+  {
+   "name": "p1",
+   "op": "maxpool",
+   "inputs": [
+    "v1"
+   ],
+   "size": [
+    750,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "out",
+   "op": "reshape",
+   "inputs": [
+    "p1"
+   ],
+   "shape": [
+    24
+   ]
+  }
+ ]
+}

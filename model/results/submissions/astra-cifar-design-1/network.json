@@ -1,0 +1,1338 @@
+{
+ "layers": [
+  {
+   "name": "luminance",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "luminance"
+   ]
+  },
+  {
+   "name": "light16",
+   "op": "avgpool",
+   "inputs": [
+    "contrast"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "derivatives",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "out": 8,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "edge_polarities",
+   "op": "relu",
+   "inputs": [
+    "derivatives"
+   ]
+  },
+  {
+   "name": "unsigned_edges",
+   "op": "conv",
+   "inputs": [
+    "edge_polarities"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "orientation_competition",
+   "op": "conv",
+   "inputs": [
+    "unsigned_edges"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "orientation_surplus",
+   "op": "relu",
+   "inputs": [
+    "orientation_competition"
+   ]
+  },
+  {
+   "name": "edge_smoothing",
+   "op": "conv",
+   "inputs": [
+    "orientation_surplus"
+   ],
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1,
+   "out": 4
+  },
+  {
+   "name": "orientation_cells",
+   "op": "avgpool",
+   "inputs": [
+    "edge_smoothing"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "orientation_norm",
+   "op": "norm",
+   "inputs": [
+    "orientation_cells"
+   ]
+  },
+  {
+   "name": "opponent_axes",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 2,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "color_constancy",
+   "op": "norm",
+   "inputs": [
+    "opponent_axes"
+   ]
+  },
+  {
+   "name": "pooled_opponents",
+   "op": "avgpool",
+   "inputs": [
+    "color_constancy"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "contour_matches",
+   "op": "dense",
+   "inputs": [
+    "orientation_norm"
+   ],
+   "out": 9600
+  },
+  {
+   "name": "tone_matches",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 9600
+  },
+  {
+   "name": "opponent_matches",
+   "op": "dense",
+   "inputs": [
+    "pooled_opponents"
+   ],
+   "out": 9600
+  },
+  {
+   "name": "joint_matches",
+   "op": "add",
+   "inputs": [
+    "contour_matches",
+    "tone_matches",
+    "opponent_matches"
+   ]
+  },
+  {
+   "name": "pose_scores",
+   "op": "reshape",
+   "inputs": [
+    "joint_matches"
+   ],
+   "shape": [
+    10,
+    1,
+    960
+   ]
+  },
+  {
+   "name": "best_drawing",
+   "op": "maxpool",
+   "inputs": [
+    "pose_scores"
+   ],
+   "size": [
+    1,
+    960
+   ],
+   "stride": [
+    1,
+    960
+   ]
+  },
+  {
+   "name": "pose_groups",
+   "op": "maxpool",
+   "inputs": [
+    "pose_scores"
+   ],
+   "size": [
+    1,
+    120
+   ],
+   "stride": [
+    1,
+    120
+   ]
+  },
+  {
+   "name": "pose_consensus",
+   "op": "avgpool",
+   "inputs": [
+    "pose_groups"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "strong_shape",
+   "op": "dense",
+   "inputs": [
+    "best_drawing"
+   ],
+   "out": 10
+  },
+  {
+   "name": "consistent_shape",
+   "op": "dense",
+   "inputs": [
+    "pose_consensus"
+   ],
+   "out": 10
+  },
+  {
+   "name": "shape_evidence",
+   "op": "add",
+   "inputs": [
+    "strong_shape",
+    "consistent_shape"
+   ]
+  },
+  {
+   "name": "color16",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "color_thresholds",
+   "op": "conv",
+   "inputs": [
+    "color16"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 43,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "color_ramps",
+   "op": "relu",
+   "inputs": [
+    "color_thresholds"
+   ]
+  },
+  {
+   "name": "color_intersections",
+   "op": "conv",
+   "inputs": [
+    "color_ramps"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 18,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "color_memberships",
+   "op": "relu",
+   "inputs": [
+    "color_intersections"
+   ]
+  },
+  {
+   "name": "color_cells",
+   "op": "avgpool",
+   "inputs": [
+    "color_memberships"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "edge_cap_offset",
+   "op": "conv",
+   "inputs": [
+    "unsigned_edges"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "over_edge_cap",
+   "op": "relu",
+   "inputs": [
+    "edge_cap_offset"
+   ]
+  },
+  {
+   "name": "subtract_excess",
+   "op": "conv",
+   "inputs": [
+    "over_edge_cap"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bounded_edges",
+   "op": "add",
+   "inputs": [
+    "unsigned_edges",
+    "subtract_excess"
+   ]
+  },
+  {
+   "name": "texture_cells",
+   "op": "avgpool",
+   "inputs": [
+    "bounded_edges"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "long_filters",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 8,
+   "kernel": [
+    9,
+    9
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "line_polarities",
+   "op": "relu",
+   "inputs": [
+    "long_filters"
+   ]
+  },
+  {
+   "name": "unsigned_long",
+   "op": "conv",
+   "inputs": [
+    "line_polarities"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "line_cap_offset",
+   "op": "conv",
+   "inputs": [
+    "unsigned_long"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "over_line_cap",
+   "op": "relu",
+   "inputs": [
+    "line_cap_offset"
+   ]
+  },
+  {
+   "name": "subtract_line_excess",
+   "op": "conv",
+   "inputs": [
+    "over_line_cap"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 4,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bounded_lines",
+   "op": "add",
+   "inputs": [
+    "unsigned_long",
+    "subtract_line_excess"
+   ]
+  },
+  {
+   "name": "line_cells",
+   "op": "avgpool",
+   "inputs": [
+    "bounded_lines"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "regional_light",
+   "op": "avgpool",
+   "inputs": [
+    "light16"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "mirror_pairs",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 90
+  },
+  {
+   "name": "abs_mirror",
+   "op": "relu",
+   "inputs": [
+    "mirror_pairs"
+   ]
+  },
+  {
+   "name": "two_tires",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 288
+  },
+  {
+   "name": "tire_poses",
+   "op": "reshape",
+   "inputs": [
+    "two_tires"
+   ],
+   "shape": [
+    1,
+    1,
+    288
+   ]
+  },
+  {
+   "name": "strong_tires",
+   "op": "maxpool",
+   "inputs": [
+    "tire_poses"
+   ],
+   "size": [
+    1,
+    288
+   ],
+   "stride": [
+    1,
+    288
+   ]
+  },
+  {
+   "name": "feline_spots",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 384
+  },
+  {
+   "name": "feline_triplets",
+   "op": "reshape",
+   "inputs": [
+    "feline_spots"
+   ],
+   "shape": [
+    1,
+    128,
+    3
+   ]
+  },
+  {
+   "name": "feline_flip",
+   "op": "conv",
+   "inputs": [
+    "feline_triplets"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "feline_weakest",
+   "op": "maxpool",
+   "inputs": [
+    "feline_flip"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "feline_part_min",
+   "op": "conv",
+   "inputs": [
+    "feline_weakest"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "feline_best_align",
+   "op": "maxpool",
+   "inputs": [
+    "feline_part_min"
+   ],
+   "size": [
+    128,
+    1
+   ],
+   "stride": [
+    128,
+    1
+   ]
+  },
+  {
+   "name": "canine_spots",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 384
+  },
+  {
+   "name": "canine_triplets",
+   "op": "reshape",
+   "inputs": [
+    "canine_spots"
+   ],
+   "shape": [
+    1,
+    128,
+    3
+   ]
+  },
+  {
+   "name": "canine_flip",
+   "op": "conv",
+   "inputs": [
+    "canine_triplets"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "canine_weakest",
+   "op": "maxpool",
+   "inputs": [
+    "canine_flip"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "canine_part_min",
+   "op": "conv",
+   "inputs": [
+    "canine_weakest"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 1,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "canine_best_align",
+   "op": "maxpool",
+   "inputs": [
+    "canine_part_min"
+   ],
+   "size": [
+    128,
+    1
+   ],
+   "stride": [
+    128,
+    1
+   ]
+  },
+  {
+   "name": "scene_rgb",
+   "op": "avgpool",
+   "inputs": [
+    "color16"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "compare_regions",
+   "op": "dense",
+   "inputs": [
+    "scene_rgb"
+   ],
+   "out": 300
+  },
+  {
+   "name": "scene_color_differences",
+   "op": "relu",
+   "inputs": [
+    "compare_regions"
+   ]
+  },
+  {
+   "name": "two_legs_and_torso",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 768
+  },
+  {
+   "name": "leg_poses",
+   "op": "reshape",
+   "inputs": [
+    "two_legs_and_torso"
+   ],
+   "shape": [
+    1,
+    1,
+    768
+   ]
+  },
+  {
+   "name": "best_leg_alignment",
+   "op": "maxpool",
+   "inputs": [
+    "leg_poses"
+   ],
+   "size": [
+    1,
+    768
+   ],
+   "stride": [
+    1,
+    768
+   ]
+  },
+  {
+   "name": "waterline_contrast",
+   "op": "dense",
+   "inputs": [
+    "light16"
+   ],
+   "out": 360
+  },
+  {
+   "name": "waterline_poses",
+   "op": "reshape",
+   "inputs": [
+    "waterline_contrast"
+   ],
+   "shape": [
+    1,
+    1,
+    360
+   ]
+  },
+  {
+   "name": "best_waterline",
+   "op": "maxpool",
+   "inputs": [
+    "waterline_poses"
+   ],
+   "size": [
+    1,
+    360
+   ],
+   "stride": [
+    1,
+    360
+   ]
+  },
+  {
+   "name": "material_filters",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 20,
+   "kernel": [
+    5,
+    5
+   ],
+   "stride": 2,
+   "padding": 0
+  },
+  {
+   "name": "material_magnitudes",
+   "op": "relu",
+   "inputs": [
+    "material_filters"
+   ]
+  },
+  {
+   "name": "material_cells",
+   "op": "avgpool",
+   "inputs": [
+    "material_magnitudes"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "compare_bar_neighbors",
+   "op": "conv",
+   "inputs": [
+    "material_magnitudes"
+   ],
+   "kernel": [
+    5,
+    5
+   ],
+   "out": 64,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "material_changes",
+   "op": "relu",
+   "inputs": [
+    "compare_bar_neighbors"
+   ]
+  },
+  {
+   "name": "neighbor_cells",
+   "op": "avgpool",
+   "inputs": [
+    "material_changes"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "palette_grid",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "palette_axis_offsets",
+   "op": "conv",
+   "inputs": [
+    "palette_grid"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 210,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "palette_axis_errors",
+   "op": "relu",
+   "inputs": [
+    "palette_axis_offsets"
+   ]
+  },
+  {
+   "name": "palette_distances",
+   "op": "conv",
+   "inputs": [
+    "palette_axis_errors"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 35,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "material_palettes",
+   "op": "conv",
+   "inputs": [
+    "palette_distances"
+   ],
+   "kernel": [
+    1,
+    1
+   ],
+   "out": 96,
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "color_choices",
+   "op": "reshape",
+   "inputs": [
+    "material_palettes"
+   ],
+   "shape": [
+    24,
+    4,
+    64
+   ]
+  },
+  {
+   "name": "closest_color",
+   "op": "maxpool",
+   "inputs": [
+    "color_choices"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "material_fit",
+   "op": "reshape",
+   "inputs": [
+    "closest_color"
+   ],
+   "shape": [
+    24,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "measure_color_cells",
+   "op": "dense",
+   "inputs": [
+    "color_cells"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_texture_cells",
+   "op": "dense",
+   "inputs": [
+    "texture_cells"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_line_cells",
+   "op": "dense",
+   "inputs": [
+    "line_cells"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_regional_light",
+   "op": "dense",
+   "inputs": [
+    "regional_light"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_abs_mirror",
+   "op": "dense",
+   "inputs": [
+    "abs_mirror"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_strong_tires",
+   "op": "dense",
+   "inputs": [
+    "strong_tires"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_feline_best_align",
+   "op": "dense",
+   "inputs": [
+    "feline_best_align"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_canine_best_align",
+   "op": "dense",
+   "inputs": [
+    "canine_best_align"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_scene_color_differences",
+   "op": "dense",
+   "inputs": [
+    "scene_color_differences"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_best_leg_alignment",
+   "op": "dense",
+   "inputs": [
+    "best_leg_alignment"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_best_waterline",
+   "op": "dense",
+   "inputs": [
+    "best_waterline"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_material_cells",
+   "op": "dense",
+   "inputs": [
+    "material_cells"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_neighbor_cells",
+   "op": "dense",
+   "inputs": [
+    "neighbor_cells"
+   ],
+   "out": 318
+  },
+  {
+   "name": "measure_material_fit",
+   "op": "dense",
+   "inputs": [
+    "material_fit"
+   ],
+   "out": 318
+  },
+  {
+   "name": "cue_vector",
+   "op": "add",
+   "inputs": [
+    "measure_color_cells",
+    "measure_texture_cells",
+    "measure_line_cells",
+    "measure_regional_light",
+    "measure_abs_mirror",
+    "measure_strong_tires",
+    "measure_feline_best_align",
+    "measure_canine_best_align",
+    "measure_scene_color_differences",
+    "measure_best_leg_alignment",
+    "measure_best_waterline",
+    "measure_material_cells",
+    "measure_neighbor_cells",
+    "measure_material_fit"
+   ]
+  },
+  {
+   "name": "soft_rule_tests",
+   "op": "dense",
+   "inputs": [
+    "cue_vector"
+   ],
+   "out": 128
+  },
+  {
+   "name": "firing_strengths",
+   "op": "relu",
+   "inputs": [
+    "soft_rule_tests"
+   ]
+  },
+  {
+   "name": "scene_and_part_votes",
+   "op": "dense",
+   "inputs": [
+    "firing_strengths"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scene_descriptions",
+   "op": "dense",
+   "inputs": [
+    "firing_strengths"
+   ],
+   "out": 60
+  },
+  {
+   "name": "scene_alternatives",
+   "op": "reshape",
+   "inputs": [
+    "scene_descriptions"
+   ],
+   "shape": [
+    10,
+    1,
+    6
+   ]
+  },
+  {
+   "name": "best_setting",
+   "op": "maxpool",
+   "inputs": [
+    "scene_alternatives"
+   ],
+   "size": [
+    1,
+    6
+   ],
+   "stride": [
+    1,
+    6
+   ]
+  },
+  {
+   "name": "other_settings",
+   "op": "avgpool",
+   "inputs": [
+    "scene_alternatives"
+   ],
+   "size": [
+    1,
+    6
+   ],
+   "stride": [
+    1,
+    6
+   ]
+  },
+  {
+   "name": "setting_score",
+   "op": "dense",
+   "inputs": [
+    "best_setting"
+   ],
+   "out": 10
+  },
+  {
+   "name": "setting_consistency",
+   "op": "dense",
+   "inputs": [
+    "other_settings"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scene_likelihood",
+   "op": "add",
+   "inputs": [
+    "setting_score",
+    "setting_consistency"
+   ]
+  },
+  {
+   "name": "zone_palettes",
+   "op": "dense",
+   "inputs": [
+    "cue_vector"
+   ],
+   "out": 80
+  },
+  {
+   "name": "color_hypotheses",
+   "op": "reshape",
+   "inputs": [
+    "zone_palettes"
+   ],
+   "shape": [
+    10,
+    1,
+    8
+   ]
+  },
+  {
+   "name": "plausible_palette",
+   "op": "maxpool",
+   "inputs": [
+    "color_hypotheses"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "typical_palette",
+   "op": "avgpool",
+   "inputs": [
+    "color_hypotheses"
+   ],
+   "size": [
+    1,
+    8
+   ],
+   "stride": [
+    1,
+    8
+   ]
+  },
+  {
+   "name": "palette_match",
+   "op": "dense",
+   "inputs": [
+    "plausible_palette"
+   ],
+   "out": 10
+  },
+  {
+   "name": "palette_support",
+   "op": "dense",
+   "inputs": [
+    "typical_palette"
+   ],
+   "out": 10
+  },
+  {
+   "name": "palette_evidence",
+   "op": "add",
+   "inputs": [
+    "palette_match",
+    "palette_support"
+   ]
+  },
+  {
+   "name": "texture_scales",
+   "op": "dense",
+   "inputs": [
+    "cue_vector"
+   ],
+   "out": 14
+  },
+  {
+   "name": "texture_rules",
+   "op": "relu",
+   "inputs": [
+    "texture_scales"
+   ]
+  },
+  {
+   "name": "texture_evidence",
+   "op": "dense",
+   "inputs": [
+    "texture_rules"
+   ],
+   "out": 10
+  },
+  {
+   "name": "class_scores",
+   "op": "add",
+   "inputs": [
+    "shape_evidence",
+    "scene_and_part_votes",
+    "scene_likelihood",
+    "palette_evidence",
+    "texture_evidence"
+   ]
+  }
+ ]
+}

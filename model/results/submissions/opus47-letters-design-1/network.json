@@ -1,0 +1,1 @@
+{"layers": [{"name": "norm_in", "op": "norm", "inputs": ["image"]}, {"name": "conv1", "op": "conv", "inputs": ["norm_in"], "out": 24, "kernel": [20, 20], "stride": 1, "padding": 0}, {"name": "pool1", "op": "maxpool", "inputs": ["conv1"], "size": [9, 9], "stride": [9, 9]}, {"name": "scores", "op": "reshape", "inputs": ["pool1"], "shape": [24]}]}

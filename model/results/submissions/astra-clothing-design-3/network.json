@@ -1,0 +1,1029 @@
+{
+ "layers": [
+  {
+   "name": "intensity_ramps",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 6,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "positive_ramps",
+   "op": "relu",
+   "inputs": [
+    "intensity_ramps"
+   ]
+  },
+  {
+   "name": "foreground",
+   "op": "conv",
+   "inputs": [
+    "positive_ramps"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 0,
+   "stride": 1
+  },
+  {
+   "name": "cell_coverage",
+   "op": "avgpool",
+   "inputs": [
+    "foreground"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "neighbour_coverage",
+   "op": "maxpool",
+   "inputs": [
+    "cell_coverage"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "pattern_overlap",
+   "op": "dense",
+   "inputs": [
+    "cell_coverage"
+   ],
+   "out": 30720
+  },
+  {
+   "name": "outer_contour_overlap",
+   "op": "dense",
+   "inputs": [
+    "neighbour_coverage"
+   ],
+   "out": 30720
+  },
+  {
+   "name": "shape_agreement",
+   "op": "add",
+   "inputs": [
+    "pattern_overlap",
+    "outer_contour_overlap"
+   ]
+  },
+  {
+   "name": "style_families",
+   "op": "reshape",
+   "inputs": [
+    "shape_agreement"
+   ],
+   "shape": [
+    10,
+    4,
+    768
+   ]
+  },
+  {
+   "name": "fitting_styles",
+   "op": "maxpool",
+   "inputs": [
+    "style_families"
+   ],
+   "size": [
+    1,
+    768
+   ],
+   "stride": [
+    1,
+    768
+   ]
+  },
+  {
+   "name": "consensus",
+   "op": "avgpool",
+   "inputs": [
+    "fitting_styles"
+   ],
+   "size": [
+    4,
+    1
+   ],
+   "stride": [
+    4,
+    1
+   ]
+  },
+  {
+   "name": "outline_scores",
+   "op": "reshape",
+   "inputs": [
+    "consensus"
+   ],
+   "shape": [
+    10
+   ]
+  },
+  {
+   "name": "contrast",
+   "op": "norm",
+   "inputs": [
+    "image"
+   ]
+  },
+  {
+   "name": "contrast_probes",
+   "op": "dense",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 404
+  },
+  {
+   "name": "arrange_probes",
+   "op": "dense",
+   "inputs": [
+    "contrast_probes"
+   ],
+   "out": 612
+  },
+  {
+   "name": "family_axis",
+   "op": "reshape",
+   "inputs": [
+    "arrange_probes"
+   ],
+   "shape": [
+    1,
+    17,
+    36
+   ]
+  },
+  {
+   "name": "strongest_detail",
+   "op": "maxpool",
+   "inputs": [
+    "family_axis"
+   ],
+   "size": [
+    1,
+    36
+   ],
+   "stride": [
+    1,
+    36
+   ]
+  },
+  {
+   "name": "derivatives",
+   "op": "conv",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 4,
+   "kernel": [
+    3,
+    3
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "oriented_energy",
+   "op": "relu",
+   "inputs": [
+    "derivatives"
+   ]
+  },
+  {
+   "name": "cloth_detail",
+   "op": "dense",
+   "inputs": [
+    "oriented_energy"
+   ],
+   "out": 6
+  },
+  {
+   "name": "shape_details",
+   "op": "dense",
+   "inputs": [
+    "strongest_detail"
+   ],
+   "out": 42
+  },
+  {
+   "name": "texture_details",
+   "op": "dense",
+   "inputs": [
+    "cloth_detail"
+   ],
+   "out": 42
+  },
+  {
+   "name": "combine_details",
+   "op": "add",
+   "inputs": [
+    "shape_details",
+    "texture_details"
+   ]
+  },
+  {
+   "name": "evidence_ramps",
+   "op": "relu",
+   "inputs": [
+    "combine_details"
+   ]
+  },
+  {
+   "name": "appearance_votes",
+   "op": "dense",
+   "inputs": [
+    "evidence_ramps"
+   ],
+   "out": 10
+  },
+  {
+   "name": "anatomical_regions",
+   "op": "dense",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 43
+  },
+  {
+   "name": "zero_border",
+   "op": "conv",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 14,
+   "stride": 1
+  },
+  {
+   "name": "overhead_occupancy",
+   "op": "maxpool",
+   "inputs": [
+    "zero_border"
+   ],
+   "size": [
+    15,
+    1
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "vertical_brackets",
+   "op": "dense",
+   "inputs": [
+    "overhead_occupancy"
+   ],
+   "out": 196
+  },
+  {
+   "name": "gap_centres",
+   "op": "dense",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 196
+  },
+  {
+   "name": "enclosed_darkness",
+   "op": "add",
+   "inputs": [
+    "vertical_brackets",
+    "gap_centres"
+   ]
+  },
+  {
+   "name": "strap_openings",
+   "op": "relu",
+   "inputs": [
+    "enclosed_darkness"
+   ]
+  },
+  {
+   "name": "darkness_border",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "padding": 1,
+   "stride": 1
+  },
+  {
+   "name": "hole_interior",
+   "op": "maxpool",
+   "inputs": [
+    "darkness_border"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "not_an_opening",
+   "op": "dense",
+   "inputs": [
+    "hole_interior"
+   ],
+   "out": 196
+  },
+  {
+   "name": "clear_opening",
+   "op": "add",
+   "inputs": [
+    "strap_openings",
+    "not_an_opening"
+   ]
+  },
+  {
+   "name": "open_area",
+   "op": "relu",
+   "inputs": [
+    "clear_opening"
+   ]
+  },
+  {
+   "name": "wide_spaces",
+   "op": "dense",
+   "inputs": [
+    "open_area"
+   ],
+   "out": 4
+  },
+  {
+   "name": "narrow_spaces",
+   "op": "dense",
+   "inputs": [
+    "strap_openings"
+   ],
+   "out": 4
+  },
+  {
+   "name": "spaces_between_parts",
+   "op": "add",
+   "inputs": [
+    "wide_spaces",
+    "narrow_spaces"
+   ]
+  },
+  {
+   "name": "gross_proportions",
+   "op": "dense",
+   "inputs": [
+    "anatomical_regions"
+   ],
+   "out": 54
+  },
+  {
+   "name": "negative_space_evidence",
+   "op": "dense",
+   "inputs": [
+    "spaces_between_parts"
+   ],
+   "out": 54
+  },
+  {
+   "name": "part_evidence",
+   "op": "add",
+   "inputs": [
+    "gross_proportions",
+    "negative_space_evidence"
+   ]
+  },
+  {
+   "name": "part_ramps",
+   "op": "relu",
+   "inputs": [
+    "part_evidence"
+   ]
+  },
+  {
+   "name": "gross_anatomy_votes",
+   "op": "dense",
+   "inputs": [
+    "part_ramps"
+   ],
+   "out": 10
+  },
+  {
+   "name": "anatomical_votes",
+   "op": "dense",
+   "inputs": [
+    "part_ramps"
+   ],
+   "out": 10
+  },
+  {
+   "name": "outline_and_parts",
+   "op": "add",
+   "inputs": [
+    "outline_scores",
+    "anatomical_votes"
+   ]
+  },
+  {
+   "name": "family_anatomy",
+   "op": "add",
+   "inputs": [
+    "outline_scores",
+    "gross_anatomy_votes"
+   ]
+  },
+  {
+   "name": "fine_class_evidence",
+   "op": "add",
+   "inputs": [
+    "outline_and_parts",
+    "appearance_votes"
+   ]
+  },
+  {
+   "name": "torso_shapes",
+   "op": "dense",
+   "inputs": [
+    "family_anatomy"
+   ],
+   "out": 4
+  },
+  {
+   "name": "shape_comparison",
+   "op": "reshape",
+   "inputs": [
+    "torso_shapes"
+   ],
+   "shape": [
+    1,
+    1,
+    4
+   ]
+  },
+  {
+   "name": "upper_garment",
+   "op": "maxpool",
+   "inputs": [
+    "shape_comparison"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "torso_styles",
+   "op": "dense",
+   "inputs": [
+    "fine_class_evidence"
+   ],
+   "out": 4
+  },
+  {
+   "name": "fine_comparison",
+   "op": "reshape",
+   "inputs": [
+    "torso_styles"
+   ],
+   "shape": [
+    1,
+    1,
+    4
+   ]
+  },
+  {
+   "name": "winning_style",
+   "op": "maxpool",
+   "inputs": [
+    "fine_comparison"
+   ],
+   "size": [
+    1,
+    4
+   ],
+   "stride": [
+    1,
+    4
+   ]
+  },
+  {
+   "name": "other_articles",
+   "op": "dense",
+   "inputs": [
+    "outline_and_parts"
+   ],
+   "out": 10
+  },
+  {
+   "name": "apparel_classes",
+   "op": "dense",
+   "inputs": [
+    "fine_class_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "family_likelihood",
+   "op": "dense",
+   "inputs": [
+    "upper_garment"
+   ],
+   "out": 10
+  },
+  {
+   "name": "subtract_peak",
+   "op": "dense",
+   "inputs": [
+    "winning_style"
+   ],
+   "out": 10
+  },
+  {
+   "name": "top_family_decisions",
+   "op": "add",
+   "inputs": [
+    "other_articles",
+    "apparel_classes",
+    "family_likelihood",
+    "subtract_peak"
+   ]
+  },
+  {
+   "name": "foot_contours",
+   "op": "dense",
+   "inputs": [
+    "outline_scores"
+   ],
+   "out": 3
+  },
+  {
+   "name": "foot_axis",
+   "op": "reshape",
+   "inputs": [
+    "foot_contours"
+   ],
+   "shape": [
+    1,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_family",
+   "op": "maxpool",
+   "inputs": [
+    "foot_axis"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_styles",
+   "op": "dense",
+   "inputs": [
+    "outline_and_parts"
+   ],
+   "out": 3
+  },
+  {
+   "name": "shoe_axis",
+   "op": "reshape",
+   "inputs": [
+    "foot_styles"
+   ],
+   "shape": [
+    1,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "shoe_winner",
+   "op": "maxpool",
+   "inputs": [
+    "shoe_axis"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "foot_support",
+   "op": "dense",
+   "inputs": [
+    "foot_family"
+   ],
+   "out": 10
+  },
+  {
+   "name": "cancel_shoe_peak",
+   "op": "dense",
+   "inputs": [
+    "shoe_winner"
+   ],
+   "out": 10
+  },
+  {
+   "name": "foot_family_decisions",
+   "op": "add",
+   "inputs": [
+    "top_family_decisions",
+    "foot_support",
+    "cancel_shoe_peak"
+   ]
+  },
+  {
+   "name": "shoe_profile",
+   "op": "dense",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 7
+  },
+  {
+   "name": "sole_front",
+   "op": "dense",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 72
+  },
+  {
+   "name": "sole_back",
+   "op": "dense",
+   "inputs": [
+    "contrast"
+   ],
+   "out": 72
+  },
+  {
+   "name": "minus_heel",
+   "op": "dense",
+   "inputs": [
+    "sole_back"
+   ],
+   "out": 72
+  },
+  {
+   "name": "sole_difference",
+   "op": "add",
+   "inputs": [
+    "sole_front",
+    "minus_heel"
+   ]
+  },
+  {
+   "name": "positive_difference",
+   "op": "relu",
+   "inputs": [
+    "sole_difference"
+   ]
+  },
+  {
+   "name": "subtract_difference",
+   "op": "dense",
+   "inputs": [
+    "positive_difference"
+   ],
+   "out": 72
+  },
+  {
+   "name": "continuous_sole",
+   "op": "add",
+   "inputs": [
+    "sole_front",
+    "subtract_difference"
+   ]
+  },
+  {
+   "name": "sole_candidates",
+   "op": "reshape",
+   "inputs": [
+    "continuous_sole"
+   ],
+   "shape": [
+    1,
+    1,
+    72
+   ]
+  },
+  {
+   "name": "strong_sole",
+   "op": "maxpool",
+   "inputs": [
+    "sole_candidates"
+   ],
+   "size": [
+    1,
+    72
+   ],
+   "stride": [
+    1,
+    72
+   ]
+  },
+  {
+   "name": "sole_geometry",
+   "op": "dense",
+   "inputs": [
+    "shoe_profile"
+   ],
+   "out": 12
+  },
+  {
+   "name": "sole_holes",
+   "op": "dense",
+   "inputs": [
+    "spaces_between_parts"
+   ],
+   "out": 12
+  },
+  {
+   "name": "sole_line",
+   "op": "dense",
+   "inputs": [
+    "strong_sole"
+   ],
+   "out": 12
+  },
+  {
+   "name": "foot_cues",
+   "op": "add",
+   "inputs": [
+    "sole_geometry",
+    "sole_holes",
+    "sole_line"
+   ]
+  },
+  {
+   "name": "foot_ramps",
+   "op": "relu",
+   "inputs": [
+    "foot_cues"
+   ]
+  },
+  {
+   "name": "shoe_expert",
+   "op": "dense",
+   "inputs": [
+    "foot_ramps"
+   ],
+   "out": 10
+  },
+  {
+   "name": "shoe_detail_scores",
+   "op": "add",
+   "inputs": [
+    "foot_family_decisions",
+    "shoe_expert"
+   ]
+  },
+  {
+   "name": "detail_shoes",
+   "op": "dense",
+   "inputs": [
+    "shoe_detail_scores"
+   ],
+   "out": 3
+  },
+  {
+   "name": "detail_axis",
+   "op": "reshape",
+   "inputs": [
+    "detail_shoes"
+   ],
+   "shape": [
+    1,
+    1,
+    3
+   ]
+  },
+  {
+   "name": "detail_peak",
+   "op": "maxpool",
+   "inputs": [
+    "detail_axis"
+   ],
+   "size": [
+    1,
+    3
+   ],
+   "stride": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "remove_foot_detail_peak",
+   "op": "dense",
+   "inputs": [
+    "detail_peak"
+   ],
+   "out": 10
+  },
+  {
+   "name": "refined_footwear",
+   "op": "add",
+   "inputs": [
+    "shoe_detail_scores",
+    "foot_support",
+    "remove_foot_detail_peak"
+   ]
+  },
+  {
+   "name": "pouch_regions",
+   "op": "dense",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 12
+  },
+  {
+   "name": "pouch_regions_axis",
+   "op": "reshape",
+   "inputs": [
+    "pouch_regions"
+   ],
+   "shape": [
+    1,
+    1,
+    12
+   ]
+  },
+  {
+   "name": "solid_pouch",
+   "op": "maxpool",
+   "inputs": [
+    "pouch_regions_axis"
+   ],
+   "size": [
+    1,
+    12
+   ],
+   "stride": [
+    1,
+    12
+   ]
+  },
+  {
+   "name": "article_width_sections",
+   "op": "dense",
+   "inputs": [
+    "foreground"
+   ],
+   "out": 4
+  },
+  {
+   "name": "side_heights",
+   "op": "dense",
+   "inputs": [
+    "article_width_sections"
+   ],
+   "out": 2
+  },
+  {
+   "name": "side_asymmetry",
+   "op": "relu",
+   "inputs": [
+    "side_heights"
+   ]
+  },
+  {
+   "name": "bag_outline",
+   "op": "dense",
+   "inputs": [
+    "article_width_sections"
+   ],
+   "out": 4
+  },
+  {
+   "name": "bag_pouch",
+   "op": "dense",
+   "inputs": [
+    "solid_pouch"
+   ],
+   "out": 4
+  },
+  {
+   "name": "bag_sides",
+   "op": "dense",
+   "inputs": [
+    "side_asymmetry"
+   ],
+   "out": 4
+  },
+  {
+   "name": "bag_handle",
+   "op": "dense",
+   "inputs": [
+    "spaces_between_parts"
+   ],
+   "out": 4
+  },
+  {
+   "name": "bag_part_agreement",
+   "op": "add",
+   "inputs": [
+    "bag_outline",
+    "bag_pouch",
+    "bag_sides",
+    "bag_handle"
+   ]
+  },
+  {
+   "name": "bag_ramps",
+   "op": "relu",
+   "inputs": [
+    "bag_part_agreement"
+   ]
+  },
+  {
+   "name": "pouch_evidence",
+   "op": "dense",
+   "inputs": [
+    "bag_ramps"
+   ],
+   "out": 10
+  },
+  {
+   "name": "negative_bag_evidence",
+   "op": "dense",
+   "inputs": [
+    "pouch_evidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "bag_veto_only",
+   "op": "relu",
+   "inputs": [
+    "negative_bag_evidence"
+   ]
+  },
+  {
+   "name": "bag_verification",
+   "op": "dense",
+   "inputs": [
+    "bag_veto_only"
+   ],
+   "out": 10
+  },
+  {
+   "name": "class_scores",
+   "op": "add",
+   "inputs": [
+    "refined_footwear",
+    "bag_verification"
+   ]
+  }
+ ]
+}

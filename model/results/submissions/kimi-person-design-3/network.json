@@ -1,0 +1,2605 @@
+{
+  "layers": [
+    {
+      "name": "gray",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "gray_n",
+      "op": "norm",
+      "inputs": [
+        "gray"
+      ]
+    },
+    {
+      "name": "small",
+      "op": "avgpool",
+      "inputs": [
+        "gray_n"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "skin_margins",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_bad",
+      "op": "conv",
+      "inputs": [
+        "skin_margins"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_bad_r",
+      "op": "relu",
+      "inputs": [
+        "skin_bad"
+      ]
+    },
+    {
+      "name": "skin_pre",
+      "op": "conv",
+      "inputs": [
+        "skin_bad_r"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin",
+      "op": "relu",
+      "inputs": [
+        "skin_pre"
+      ]
+    },
+    {
+      "name": "skin24",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "skin_broad_margins",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_broad_bad",
+      "op": "conv",
+      "inputs": [
+        "skin_broad_margins"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_broad_bad_r",
+      "op": "relu",
+      "inputs": [
+        "skin_broad_bad"
+      ]
+    },
+    {
+      "name": "skin_broad_pre",
+      "op": "conv",
+      "inputs": [
+        "skin_broad_bad_r"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_broad",
+      "op": "relu",
+      "inputs": [
+        "skin_broad_pre"
+      ]
+    },
+    {
+      "name": "skin_broad24",
+      "op": "avgpool",
+      "inputs": [
+        "skin_broad"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "skin12",
+      "op": "avgpool",
+      "inputs": [
+        "skin24"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "skin_broad12",
+      "op": "avgpool",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "tiny",
+      "op": "avgpool",
+      "inputs": [
+        "small"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "grad",
+      "op": "conv",
+      "inputs": [
+        "small"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grad_pos",
+      "op": "relu",
+      "inputs": [
+        "grad"
+      ]
+    },
+    {
+      "name": "grad_rev",
+      "op": "conv",
+      "inputs": [
+        "small"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grad_neg",
+      "op": "relu",
+      "inputs": [
+        "grad_rev"
+      ]
+    },
+    {
+      "name": "edge",
+      "op": "add",
+      "inputs": [
+        "grad_pos",
+        "grad_neg"
+      ]
+    },
+    {
+      "name": "grad12",
+      "op": "conv",
+      "inputs": [
+        "tiny"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grad12_pos",
+      "op": "relu",
+      "inputs": [
+        "grad12"
+      ]
+    },
+    {
+      "name": "grad12_rev",
+      "op": "conv",
+      "inputs": [
+        "tiny"
+      ],
+      "out": 4,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": 1,
+      "padding": 1
+    },
+    {
+      "name": "grad12_neg",
+      "op": "relu",
+      "inputs": [
+        "grad12_rev"
+      ]
+    },
+    {
+      "name": "edge12",
+      "op": "add",
+      "inputs": [
+        "grad12_pos",
+        "grad12_neg"
+      ]
+    },
+    {
+      "name": "edge_capped_over",
+      "op": "conv",
+      "inputs": [
+        "edge"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_capped_over_r",
+      "op": "relu",
+      "inputs": [
+        "edge_capped_over"
+      ]
+    },
+    {
+      "name": "edge_capped_subtract",
+      "op": "conv",
+      "inputs": [
+        "edge_capped_over_r"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge_capped",
+      "op": "add",
+      "inputs": [
+        "edge",
+        "edge_capped_subtract"
+      ]
+    },
+    {
+      "name": "edge12_capped_over",
+      "op": "conv",
+      "inputs": [
+        "edge12"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge12_capped_over_r",
+      "op": "relu",
+      "inputs": [
+        "edge12_capped_over"
+      ]
+    },
+    {
+      "name": "edge12_capped_subtract",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped_over_r"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "edge12_capped",
+      "op": "add",
+      "inputs": [
+        "edge12",
+        "edge12_capped_subtract"
+      ]
+    },
+    {
+      "name": "dark24_raw",
+      "op": "conv",
+      "inputs": [
+        "small"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark24_positive",
+      "op": "relu",
+      "inputs": [
+        "dark24_raw"
+      ]
+    },
+    {
+      "name": "dark24_over",
+      "op": "conv",
+      "inputs": [
+        "dark24_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark24_over_r",
+      "op": "relu",
+      "inputs": [
+        "dark24_over"
+      ]
+    },
+    {
+      "name": "dark24_subtract",
+      "op": "conv",
+      "inputs": [
+        "dark24_over_r"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark24",
+      "op": "add",
+      "inputs": [
+        "dark24_positive",
+        "dark24_subtract"
+      ]
+    },
+    {
+      "name": "dark12_raw",
+      "op": "conv",
+      "inputs": [
+        "tiny"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark12_positive",
+      "op": "relu",
+      "inputs": [
+        "dark12_raw"
+      ]
+    },
+    {
+      "name": "dark12_over",
+      "op": "conv",
+      "inputs": [
+        "dark12_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark12_over_r",
+      "op": "relu",
+      "inputs": [
+        "dark12_over"
+      ]
+    },
+    {
+      "name": "dark12_subtract",
+      "op": "conv",
+      "inputs": [
+        "dark12_over_r"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "dark12",
+      "op": "add",
+      "inputs": [
+        "dark12_positive",
+        "dark12_subtract"
+      ]
+    },
+    {
+      "name": "face0_se",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "face0_ss",
+      "op": "conv",
+      "inputs": [
+        "skin24"
+      ],
+      "out": 3,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "face0_sg",
+      "op": "conv",
+      "inputs": [
+        "dark24"
+      ],
+      "out": 3,
+      "kernel": [
+        5,
+        5
+      ],
+      "stride": 1,
+      "padding": 2
+    },
+    {
+      "name": "face0_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face0_se",
+        "face0_ss",
+        "face0_sg"
+      ]
+    },
+    {
+      "name": "face0_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face0_skin_sum"
+      ]
+    },
+    {
+      "name": "face0_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face0_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face0_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face0_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face0_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face1_se",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "face1_ss",
+      "op": "conv",
+      "inputs": [
+        "skin24"
+      ],
+      "out": 3,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "face1_sg",
+      "op": "conv",
+      "inputs": [
+        "dark24"
+      ],
+      "out": 3,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "face1_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face1_se",
+        "face1_ss",
+        "face1_sg"
+      ]
+    },
+    {
+      "name": "face1_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face1_skin_sum"
+      ]
+    },
+    {
+      "name": "face1_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face1_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face1_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face1_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face1_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face2_se",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face2_ss",
+      "op": "conv",
+      "inputs": [
+        "skin24"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face2_sg",
+      "op": "conv",
+      "inputs": [
+        "dark24"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face2_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face2_se",
+        "face2_ss",
+        "face2_sg"
+      ]
+    },
+    {
+      "name": "face2_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face2_skin_sum"
+      ]
+    },
+    {
+      "name": "face2_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face2_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face2_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face2_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face3_se",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face3_ss",
+      "op": "conv",
+      "inputs": [
+        "skin24"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face3_sg",
+      "op": "conv",
+      "inputs": [
+        "dark24"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face3_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face3_se",
+        "face3_ss",
+        "face3_sg"
+      ]
+    },
+    {
+      "name": "face3_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face3_skin_sum"
+      ]
+    },
+    {
+      "name": "face3_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face3_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face3_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face3_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face3_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face4_se",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face4_ss",
+      "op": "conv",
+      "inputs": [
+        "skin12"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face4_sg",
+      "op": "conv",
+      "inputs": [
+        "dark12"
+      ],
+      "out": 3,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "face4_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face4_se",
+        "face4_ss",
+        "face4_sg"
+      ]
+    },
+    {
+      "name": "face4_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face4_skin_sum"
+      ]
+    },
+    {
+      "name": "face4_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face4_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face4_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face4_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face5_se",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face5_ss",
+      "op": "conv",
+      "inputs": [
+        "skin12"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face5_sg",
+      "op": "conv",
+      "inputs": [
+        "dark12"
+      ],
+      "out": 3,
+      "kernel": [
+        19,
+        19
+      ],
+      "stride": 1,
+      "padding": 9
+    },
+    {
+      "name": "face5_skin_sum",
+      "op": "add",
+      "inputs": [
+        "face5_se",
+        "face5_ss",
+        "face5_sg"
+      ]
+    },
+    {
+      "name": "face5_skin_r",
+      "op": "relu",
+      "inputs": [
+        "face5_skin_sum"
+      ]
+    },
+    {
+      "name": "face5_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "face5_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face5_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "face5_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "face5_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_skin_templates"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "body0_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "body0_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body0_shape_pre"
+      ]
+    },
+    {
+      "name": "body0_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body0_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body0_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        9,
+        9
+      ],
+      "stride": 1,
+      "padding": 4
+    },
+    {
+      "name": "body0_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body0_skin_e",
+        "body0_skin_h"
+      ]
+    },
+    {
+      "name": "body0_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body0_skin_sum"
+      ]
+    },
+    {
+      "name": "body0_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body0_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body0_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body0_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body0_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body0_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body1_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "body1_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body1_shape_pre"
+      ]
+    },
+    {
+      "name": "body1_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body1_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body1_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "body1_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body1_skin_e",
+        "body1_skin_h"
+      ]
+    },
+    {
+      "name": "body1_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body1_skin_sum"
+      ]
+    },
+    {
+      "name": "body1_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body1_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body1_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body1_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body1_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body1_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body2_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 1,
+      "padding": 8
+    },
+    {
+      "name": "body2_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body2_shape_pre"
+      ]
+    },
+    {
+      "name": "body2_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body2_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body2_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 1,
+      "padding": 8
+    },
+    {
+      "name": "body2_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body2_skin_e",
+        "body2_skin_h"
+      ]
+    },
+    {
+      "name": "body2_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body2_skin_sum"
+      ]
+    },
+    {
+      "name": "body2_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body2_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body2_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body2_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body2_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body2_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body3_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body3_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body3_shape_pre"
+      ]
+    },
+    {
+      "name": "body3_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body3_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body3_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad12"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body3_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body3_skin_e",
+        "body3_skin_h"
+      ]
+    },
+    {
+      "name": "body3_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body3_skin_sum"
+      ]
+    },
+    {
+      "name": "body3_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body3_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body3_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body3_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body3_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body3_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body4_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "body4_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body4_shape_pre"
+      ]
+    },
+    {
+      "name": "body4_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body4_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body4_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad12"
+      ],
+      "out": 8,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "body4_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body4_skin_e",
+        "body4_skin_h"
+      ]
+    },
+    {
+      "name": "body4_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body4_skin_sum"
+      ]
+    },
+    {
+      "name": "body4_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body4_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body4_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body4_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body4_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body4_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body5_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "body5_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body5_shape_pre"
+      ]
+    },
+    {
+      "name": "body5_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body5_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body5_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "body5_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body5_skin_e",
+        "body5_skin_h"
+      ]
+    },
+    {
+      "name": "body5_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body5_skin_sum"
+      ]
+    },
+    {
+      "name": "body5_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body5_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body5_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body5_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body5_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body5_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body6_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body6_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body6_shape_pre"
+      ]
+    },
+    {
+      "name": "body6_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body6_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body6_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body6_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body6_skin_e",
+        "body6_skin_h"
+      ]
+    },
+    {
+      "name": "body6_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body6_skin_sum"
+      ]
+    },
+    {
+      "name": "body6_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body6_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body6_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body6_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body6_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body6_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body7_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 1,
+      "padding": 8
+    },
+    {
+      "name": "body7_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body7_shape_pre"
+      ]
+    },
+    {
+      "name": "body7_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body7_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body7_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad24"
+      ],
+      "out": 8,
+      "kernel": [
+        17,
+        17
+      ],
+      "stride": 1,
+      "padding": 8
+    },
+    {
+      "name": "body7_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body7_skin_e",
+        "body7_skin_h"
+      ]
+    },
+    {
+      "name": "body7_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body7_skin_sum"
+      ]
+    },
+    {
+      "name": "body7_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body7_skin_r"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        24,
+        24
+      ]
+    },
+    {
+      "name": "body7_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body7_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body7_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body7_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body8_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body8_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body8_shape_pre"
+      ]
+    },
+    {
+      "name": "body8_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body8_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body8_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad12"
+      ],
+      "out": 8,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "body8_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body8_skin_e",
+        "body8_skin_h"
+      ]
+    },
+    {
+      "name": "body8_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body8_skin_sum"
+      ]
+    },
+    {
+      "name": "body8_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body8_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body8_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body8_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body8_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body8_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body9_shape_pre",
+      "op": "conv",
+      "inputs": [
+        "edge12_capped"
+      ],
+      "out": 8,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "body9_shape_r",
+      "op": "relu",
+      "inputs": [
+        "body9_shape_pre"
+      ]
+    },
+    {
+      "name": "body9_skin_e",
+      "op": "conv",
+      "inputs": [
+        "body9_shape_r"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "body9_skin_h",
+      "op": "conv",
+      "inputs": [
+        "skin_broad12"
+      ],
+      "out": 8,
+      "kernel": [
+        15,
+        15
+      ],
+      "stride": 1,
+      "padding": 7
+    },
+    {
+      "name": "body9_skin_sum",
+      "op": "add",
+      "inputs": [
+        "body9_skin_e",
+        "body9_skin_h"
+      ]
+    },
+    {
+      "name": "body9_skin_r",
+      "op": "relu",
+      "inputs": [
+        "body9_skin_sum"
+      ]
+    },
+    {
+      "name": "body9_skin_positions",
+      "op": "maxpool",
+      "inputs": [
+        "body9_skin_r"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "body9_skin_templates",
+      "op": "reshape",
+      "inputs": [
+        "body9_skin_positions"
+      ],
+      "shape": [
+        1,
+        1,
+        8
+      ]
+    },
+    {
+      "name": "body9_skin_max",
+      "op": "maxpool",
+      "inputs": [
+        "body9_skin_templates"
+      ],
+      "size": [
+        1,
+        8
+      ],
+      "stride": [
+        1,
+        8
+      ]
+    },
+    {
+      "name": "face_skin_evidence_slot0",
+      "op": "dense",
+      "inputs": [
+        "face0_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_slot1",
+      "op": "dense",
+      "inputs": [
+        "face1_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_slot2",
+      "op": "dense",
+      "inputs": [
+        "face2_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_slot3",
+      "op": "dense",
+      "inputs": [
+        "face3_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_slot4",
+      "op": "dense",
+      "inputs": [
+        "face4_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_slot5",
+      "op": "dense",
+      "inputs": [
+        "face5_skin_max"
+      ],
+      "out": 6
+    },
+    {
+      "name": "face_skin_evidence_vector",
+      "op": "add",
+      "inputs": [
+        "face_skin_evidence_slot0",
+        "face_skin_evidence_slot1",
+        "face_skin_evidence_slot2",
+        "face_skin_evidence_slot3",
+        "face_skin_evidence_slot4",
+        "face_skin_evidence_slot5"
+      ]
+    },
+    {
+      "name": "face_skin_evidence_spatial",
+      "op": "reshape",
+      "inputs": [
+        "face_skin_evidence_vector"
+      ],
+      "shape": [
+        1,
+        1,
+        6
+      ]
+    },
+    {
+      "name": "face_skin_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "face_skin_evidence_spatial"
+      ],
+      "size": [
+        1,
+        6
+      ],
+      "stride": [
+        1,
+        6
+      ]
+    },
+    {
+      "name": "body_skin_evidence_slot0",
+      "op": "dense",
+      "inputs": [
+        "body0_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "body_skin_evidence_slot1",
+      "op": "dense",
+      "inputs": [
+        "body1_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "body_skin_evidence_slot2",
+      "op": "dense",
+      "inputs": [
+        "body2_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "body_skin_evidence_slot3",
+      "op": "dense",
+      "inputs": [
+        "body3_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "body_skin_evidence_slot4",
+      "op": "dense",
+      "inputs": [
+        "body4_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "body_skin_evidence_vector",
+      "op": "add",
+      "inputs": [
+        "body_skin_evidence_slot0",
+        "body_skin_evidence_slot1",
+        "body_skin_evidence_slot2",
+        "body_skin_evidence_slot3",
+        "body_skin_evidence_slot4"
+      ]
+    },
+    {
+      "name": "body_skin_evidence_spatial",
+      "op": "reshape",
+      "inputs": [
+        "body_skin_evidence_vector"
+      ],
+      "shape": [
+        1,
+        1,
+        5
+      ]
+    },
+    {
+      "name": "body_skin_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "body_skin_evidence_spatial"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "upper_skin_evidence_slot0",
+      "op": "dense",
+      "inputs": [
+        "body5_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "upper_skin_evidence_slot1",
+      "op": "dense",
+      "inputs": [
+        "body6_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "upper_skin_evidence_slot2",
+      "op": "dense",
+      "inputs": [
+        "body7_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "upper_skin_evidence_slot3",
+      "op": "dense",
+      "inputs": [
+        "body8_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "upper_skin_evidence_slot4",
+      "op": "dense",
+      "inputs": [
+        "body9_skin_max"
+      ],
+      "out": 5
+    },
+    {
+      "name": "upper_skin_evidence_vector",
+      "op": "add",
+      "inputs": [
+        "upper_skin_evidence_slot0",
+        "upper_skin_evidence_slot1",
+        "upper_skin_evidence_slot2",
+        "upper_skin_evidence_slot3",
+        "upper_skin_evidence_slot4"
+      ]
+    },
+    {
+      "name": "upper_skin_evidence_spatial",
+      "op": "reshape",
+      "inputs": [
+        "upper_skin_evidence_vector"
+      ],
+      "shape": [
+        1,
+        1,
+        5
+      ]
+    },
+    {
+      "name": "upper_skin_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "upper_skin_evidence_spatial"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "cap_face_skin_hinge",
+      "op": "dense",
+      "inputs": [
+        "face_skin_evidence"
+      ],
+      "out": 2
+    },
+    {
+      "name": "cap_face_skin_hinge_r",
+      "op": "relu",
+      "inputs": [
+        "cap_face_skin_hinge"
+      ]
+    },
+    {
+      "name": "cap_face_skin",
+      "op": "dense",
+      "inputs": [
+        "cap_face_skin_hinge_r"
+      ],
+      "out": 1
+    },
+    {
+      "name": "cap_body_skin_hinge",
+      "op": "dense",
+      "inputs": [
+        "body_skin_evidence"
+      ],
+      "out": 2
+    },
+    {
+      "name": "cap_body_skin_hinge_r",
+      "op": "relu",
+      "inputs": [
+        "cap_body_skin_hinge"
+      ]
+    },
+    {
+      "name": "cap_body_skin",
+      "op": "dense",
+      "inputs": [
+        "cap_body_skin_hinge_r"
+      ],
+      "out": 1
+    },
+    {
+      "name": "cap_upper_skin_hinge",
+      "op": "dense",
+      "inputs": [
+        "upper_skin_evidence"
+      ],
+      "out": 2
+    },
+    {
+      "name": "cap_upper_skin_hinge_r",
+      "op": "relu",
+      "inputs": [
+        "cap_upper_skin_hinge"
+      ]
+    },
+    {
+      "name": "cap_upper_skin",
+      "op": "dense",
+      "inputs": [
+        "cap_upper_skin_hinge_r"
+      ],
+      "out": 1
+    },
+    {
+      "name": "weighted0",
+      "op": "dense",
+      "inputs": [
+        "cap_face_skin"
+      ],
+      "out": 1
+    },
+    {
+      "name": "weighted1",
+      "op": "dense",
+      "inputs": [
+        "cap_body_skin"
+      ],
+      "out": 1
+    },
+    {
+      "name": "weighted2",
+      "op": "dense",
+      "inputs": [
+        "cap_upper_skin"
+      ],
+      "out": 1
+    },
+    {
+      "name": "best_evidence_slot0",
+      "op": "dense",
+      "inputs": [
+        "weighted0"
+      ],
+      "out": 3
+    },
+    {
+      "name": "best_evidence_slot1",
+      "op": "dense",
+      "inputs": [
+        "weighted1"
+      ],
+      "out": 3
+    },
+    {
+      "name": "best_evidence_slot2",
+      "op": "dense",
+      "inputs": [
+        "weighted2"
+      ],
+      "out": 3
+    },
+    {
+      "name": "best_evidence_vector",
+      "op": "add",
+      "inputs": [
+        "best_evidence_slot0",
+        "best_evidence_slot1",
+        "best_evidence_slot2"
+      ]
+    },
+    {
+      "name": "best_evidence_spatial",
+      "op": "reshape",
+      "inputs": [
+        "best_evidence_vector"
+      ],
+      "shape": [
+        1,
+        1,
+        3
+      ]
+    },
+    {
+      "name": "best_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "best_evidence_spatial"
+      ],
+      "size": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        3
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "dense",
+      "inputs": [
+        "best_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

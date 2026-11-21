@@ -1,0 +1,1643 @@
+{
+ "layers": [
+  {
+   "name": "inkTiles",
+   "op": "avgpool",
+   "inputs": [
+    "image"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "edges",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "padding": 3,
+   "stride": 1
+  },
+  {
+   "name": "edgesPositive",
+   "op": "relu",
+   "inputs": [
+    "edges"
+   ]
+  },
+  {
+   "name": "edgesTiles",
+   "op": "avgpool",
+   "inputs": [
+    "edgesPositive"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "ridges",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    7,
+    7
+   ],
+   "padding": 3,
+   "stride": 1
+  },
+  {
+   "name": "ridgesPositive",
+   "op": "relu",
+   "inputs": [
+    "ridges"
+   ]
+  },
+  {
+   "name": "ridgesTiles",
+   "op": "avgpool",
+   "inputs": [
+    "ridgesPositive"
+   ],
+   "size": [
+    4,
+    4
+   ],
+   "stride": [
+    4,
+    4
+   ]
+  },
+  {
+   "name": "inkPlane",
+   "op": "reshape",
+   "inputs": [
+    "inkTiles"
+   ],
+   "shape": [
+    1,
+    1,
+    196
+   ]
+  },
+  {
+   "name": "inkNorm",
+   "op": "norm",
+   "inputs": [
+    "inkPlane"
+   ]
+  },
+  {
+   "name": "inkMatch",
+   "op": "dense",
+   "inputs": [
+    "inkNorm"
+   ],
+   "out": 61440
+  },
+  {
+   "name": "contourPlane",
+   "op": "reshape",
+   "inputs": [
+    "edgesTiles"
+   ],
+   "shape": [
+    1,
+    1,
+    392
+   ]
+  },
+  {
+   "name": "contourNorm",
+   "op": "norm",
+   "inputs": [
+    "contourPlane"
+   ]
+  },
+  {
+   "name": "contourMatch",
+   "op": "dense",
+   "inputs": [
+    "contourNorm"
+   ],
+   "out": 61440
+  },
+  {
+   "name": "strokePlane",
+   "op": "reshape",
+   "inputs": [
+    "ridgesTiles"
+   ],
+   "shape": [
+    1,
+    1,
+    196
+   ]
+  },
+  {
+   "name": "strokeNorm",
+   "op": "norm",
+   "inputs": [
+    "strokePlane"
+   ]
+  },
+  {
+   "name": "strokeMatch",
+   "op": "dense",
+   "inputs": [
+    "strokeNorm"
+   ],
+   "out": 61440
+  },
+  {
+   "name": "correlation",
+   "op": "add",
+   "inputs": [
+    "inkMatch",
+    "contourMatch",
+    "strokeMatch"
+   ]
+  },
+  {
+   "name": "byClass",
+   "op": "reshape",
+   "inputs": [
+    "correlation"
+   ],
+   "shape": [
+    10,
+    1,
+    6144
+   ]
+  },
+  {
+   "name": "winners16",
+   "op": "maxpool",
+   "inputs": [
+    "byClass"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "winners256",
+   "op": "maxpool",
+   "inputs": [
+    "winners16"
+   ],
+   "size": [
+    1,
+    16
+   ],
+   "stride": [
+    1,
+    16
+   ]
+  },
+  {
+   "name": "nearMatches",
+   "op": "avgpool",
+   "inputs": [
+    "winners256"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "bestMatch",
+   "op": "maxpool",
+   "inputs": [
+    "winners256"
+   ],
+   "size": [
+    1,
+    24
+   ],
+   "stride": [
+    1,
+    24
+   ]
+  },
+  {
+   "name": "support",
+   "op": "dense",
+   "inputs": [
+    "nearMatches"
+   ],
+   "out": 10
+  },
+  {
+   "name": "peak",
+   "op": "dense",
+   "inputs": [
+    "bestMatch"
+   ],
+   "out": 10
+  },
+  {
+   "name": "paper",
+   "op": "conv",
+   "inputs": [
+    "inkTiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "unit",
+   "op": "conv",
+   "inputs": [
+    "inkTiles"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "frame",
+   "op": "conv",
+   "inputs": [
+    "unit"
+   ],
+   "out": 1,
+   "kernel": [
+    3,
+    3
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "halo0",
+   "op": "conv",
+   "inputs": [
+    "frame"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach0",
+   "op": "maxpool",
+   "inputs": [
+    "halo0"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach0",
+   "op": "conv",
+   "inputs": [
+    "reach0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff0",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach0"
+   ]
+  },
+  {
+   "name": "barrier0",
+   "op": "relu",
+   "inputs": [
+    "diff0"
+   ]
+  },
+  {
+   "name": "negBarrier0",
+   "op": "conv",
+   "inputs": [
+    "barrier0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external0",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier0"
+   ]
+  },
+  {
+   "name": "halo1",
+   "op": "conv",
+   "inputs": [
+    "external0"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach1",
+   "op": "maxpool",
+   "inputs": [
+    "halo1"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach1",
+   "op": "conv",
+   "inputs": [
+    "reach1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff1",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach1"
+   ]
+  },
+  {
+   "name": "barrier1",
+   "op": "relu",
+   "inputs": [
+    "diff1"
+   ]
+  },
+  {
+   "name": "negBarrier1",
+   "op": "conv",
+   "inputs": [
+    "barrier1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external1",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier1"
+   ]
+  },
+  {
+   "name": "halo2",
+   "op": "conv",
+   "inputs": [
+    "external1"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach2",
+   "op": "maxpool",
+   "inputs": [
+    "halo2"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach2",
+   "op": "conv",
+   "inputs": [
+    "reach2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff2",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach2"
+   ]
+  },
+  {
+   "name": "barrier2",
+   "op": "relu",
+   "inputs": [
+    "diff2"
+   ]
+  },
+  {
+   "name": "negBarrier2",
+   "op": "conv",
+   "inputs": [
+    "barrier2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external2",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier2"
+   ]
+  },
+  {
+   "name": "halo3",
+   "op": "conv",
+   "inputs": [
+    "external2"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach3",
+   "op": "maxpool",
+   "inputs": [
+    "halo3"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach3",
+   "op": "conv",
+   "inputs": [
+    "reach3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff3",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach3"
+   ]
+  },
+  {
+   "name": "barrier3",
+   "op": "relu",
+   "inputs": [
+    "diff3"
+   ]
+  },
+  {
+   "name": "negBarrier3",
+   "op": "conv",
+   "inputs": [
+    "barrier3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external3",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier3"
+   ]
+  },
+  {
+   "name": "halo4",
+   "op": "conv",
+   "inputs": [
+    "external3"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach4",
+   "op": "maxpool",
+   "inputs": [
+    "halo4"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach4",
+   "op": "conv",
+   "inputs": [
+    "reach4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff4",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach4"
+   ]
+  },
+  {
+   "name": "barrier4",
+   "op": "relu",
+   "inputs": [
+    "diff4"
+   ]
+  },
+  {
+   "name": "negBarrier4",
+   "op": "conv",
+   "inputs": [
+    "barrier4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external4",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier4"
+   ]
+  },
+  {
+   "name": "halo5",
+   "op": "conv",
+   "inputs": [
+    "external4"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach5",
+   "op": "maxpool",
+   "inputs": [
+    "halo5"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach5",
+   "op": "conv",
+   "inputs": [
+    "reach5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff5",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach5"
+   ]
+  },
+  {
+   "name": "barrier5",
+   "op": "relu",
+   "inputs": [
+    "diff5"
+   ]
+  },
+  {
+   "name": "negBarrier5",
+   "op": "conv",
+   "inputs": [
+    "barrier5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external5",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier5"
+   ]
+  },
+  {
+   "name": "halo6",
+   "op": "conv",
+   "inputs": [
+    "external5"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach6",
+   "op": "maxpool",
+   "inputs": [
+    "halo6"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach6",
+   "op": "conv",
+   "inputs": [
+    "reach6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff6",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach6"
+   ]
+  },
+  {
+   "name": "barrier6",
+   "op": "relu",
+   "inputs": [
+    "diff6"
+   ]
+  },
+  {
+   "name": "negBarrier6",
+   "op": "conv",
+   "inputs": [
+    "barrier6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external6",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier6"
+   ]
+  },
+  {
+   "name": "halo7",
+   "op": "conv",
+   "inputs": [
+    "external6"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach7",
+   "op": "maxpool",
+   "inputs": [
+    "halo7"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach7",
+   "op": "conv",
+   "inputs": [
+    "reach7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff7",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach7"
+   ]
+  },
+  {
+   "name": "barrier7",
+   "op": "relu",
+   "inputs": [
+    "diff7"
+   ]
+  },
+  {
+   "name": "negBarrier7",
+   "op": "conv",
+   "inputs": [
+    "barrier7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external7",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier7"
+   ]
+  },
+  {
+   "name": "halo8",
+   "op": "conv",
+   "inputs": [
+    "external7"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach8",
+   "op": "maxpool",
+   "inputs": [
+    "halo8"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach8",
+   "op": "conv",
+   "inputs": [
+    "reach8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff8",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach8"
+   ]
+  },
+  {
+   "name": "barrier8",
+   "op": "relu",
+   "inputs": [
+    "diff8"
+   ]
+  },
+  {
+   "name": "negBarrier8",
+   "op": "conv",
+   "inputs": [
+    "barrier8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external8",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier8"
+   ]
+  },
+  {
+   "name": "halo9",
+   "op": "conv",
+   "inputs": [
+    "external8"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach9",
+   "op": "maxpool",
+   "inputs": [
+    "halo9"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach9",
+   "op": "conv",
+   "inputs": [
+    "reach9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff9",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach9"
+   ]
+  },
+  {
+   "name": "barrier9",
+   "op": "relu",
+   "inputs": [
+    "diff9"
+   ]
+  },
+  {
+   "name": "negBarrier9",
+   "op": "conv",
+   "inputs": [
+    "barrier9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external9",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier9"
+   ]
+  },
+  {
+   "name": "halo10",
+   "op": "conv",
+   "inputs": [
+    "external9"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach10",
+   "op": "maxpool",
+   "inputs": [
+    "halo10"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach10",
+   "op": "conv",
+   "inputs": [
+    "reach10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff10",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach10"
+   ]
+  },
+  {
+   "name": "barrier10",
+   "op": "relu",
+   "inputs": [
+    "diff10"
+   ]
+  },
+  {
+   "name": "negBarrier10",
+   "op": "conv",
+   "inputs": [
+    "barrier10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external10",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier10"
+   ]
+  },
+  {
+   "name": "halo11",
+   "op": "conv",
+   "inputs": [
+    "external10"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach11",
+   "op": "maxpool",
+   "inputs": [
+    "halo11"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach11",
+   "op": "conv",
+   "inputs": [
+    "reach11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff11",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach11"
+   ]
+  },
+  {
+   "name": "barrier11",
+   "op": "relu",
+   "inputs": [
+    "diff11"
+   ]
+  },
+  {
+   "name": "negBarrier11",
+   "op": "conv",
+   "inputs": [
+    "barrier11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external11",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier11"
+   ]
+  },
+  {
+   "name": "halo12",
+   "op": "conv",
+   "inputs": [
+    "external11"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach12",
+   "op": "maxpool",
+   "inputs": [
+    "halo12"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach12",
+   "op": "conv",
+   "inputs": [
+    "reach12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff12",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach12"
+   ]
+  },
+  {
+   "name": "barrier12",
+   "op": "relu",
+   "inputs": [
+    "diff12"
+   ]
+  },
+  {
+   "name": "negBarrier12",
+   "op": "conv",
+   "inputs": [
+    "barrier12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "external12",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negBarrier12"
+   ]
+  },
+  {
+   "name": "halo13",
+   "op": "conv",
+   "inputs": [
+    "external12"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "reach13",
+   "op": "maxpool",
+   "inputs": [
+    "halo13"
+   ],
+   "size": [
+    3,
+    3
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "negReach13",
+   "op": "conv",
+   "inputs": [
+    "reach13"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "diff13",
+   "op": "add",
+   "inputs": [
+    "paper",
+    "negReach13"
+   ]
+  },
+  {
+   "name": "barrier13",
+   "op": "relu",
+   "inputs": [
+    "diff13"
+   ]
+  },
+  {
+   "name": "holeMargin",
+   "op": "conv",
+   "inputs": [
+    "barrier13"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "persistent",
+   "op": "relu",
+   "inputs": [
+    "holeMargin"
+   ]
+  },
+  {
+   "name": "holeMass",
+   "op": "avgpool",
+   "inputs": [
+    "persistent"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    1,
+    1
+   ]
+  },
+  {
+   "name": "anyHole",
+   "op": "maxpool",
+   "inputs": [
+    "holeMass"
+   ],
+   "size": [
+    13,
+    13
+   ],
+   "stride": [
+    13,
+    13
+   ]
+  },
+  {
+   "name": "whichHalf",
+   "op": "maxpool",
+   "inputs": [
+    "holeMass"
+   ],
+   "size": [
+    6,
+    13
+   ],
+   "stride": [
+    7,
+    13
+   ]
+  },
+  {
+   "name": "cavityEvidence",
+   "op": "dense",
+   "inputs": [
+    "anyHole"
+   ],
+   "out": 10
+  },
+  {
+   "name": "cavityPosition",
+   "op": "dense",
+   "inputs": [
+    "whichHalf"
+   ],
+   "out": 10
+  },
+  {
+   "name": "contrastRamps",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 4,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "contrastOn",
+   "op": "relu",
+   "inputs": [
+    "contrastRamps"
+   ]
+  },
+  {
+   "name": "softInk",
+   "op": "conv",
+   "inputs": [
+    "contrastOn"
+   ],
+   "out": 2,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "eulerPatterns",
+   "op": "conv",
+   "inputs": [
+    "softInk"
+   ],
+   "out": 20,
+   "kernel": [
+    2,
+    2
+   ],
+   "stride": 1,
+   "padding": 1
+  },
+  {
+   "name": "matchedPatterns",
+   "op": "relu",
+   "inputs": [
+    "eulerPatterns"
+   ]
+  },
+  {
+   "name": "patternFrequency",
+   "op": "avgpool",
+   "inputs": [
+    "matchedPatterns"
+   ],
+   "size": [
+    29,
+    29
+   ],
+   "stride": [
+    29,
+    29
+   ]
+  },
+  {
+   "name": "extraPocket",
+   "op": "dense",
+   "inputs": [
+    "patternFrequency"
+   ],
+   "out": 2
+  },
+  {
+   "name": "twoLoops",
+   "op": "relu",
+   "inputs": [
+    "extraPocket"
+   ]
+  },
+  {
+   "name": "twoLoopPlanes",
+   "op": "reshape",
+   "inputs": [
+    "twoLoops"
+   ],
+   "shape": [
+    1,
+    1,
+    2
+   ]
+  },
+  {
+   "name": "upperBound",
+   "op": "conv",
+   "inputs": [
+    "twoLoopPlanes"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "roomLeft",
+   "op": "relu",
+   "inputs": [
+    "upperBound"
+   ]
+  },
+  {
+   "name": "doubleEvidence",
+   "op": "conv",
+   "inputs": [
+    "roomLeft"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "doubleLoopVote",
+   "op": "dense",
+   "inputs": [
+    "doubleEvidence"
+   ],
+   "out": 10
+  },
+  {
+   "name": "scores",
+   "op": "add",
+   "inputs": [
+    "support",
+    "peak",
+    "cavityEvidence",
+    "cavityPosition",
+    "doubleLoopVote"
+   ]
+  }
+ ]
+}

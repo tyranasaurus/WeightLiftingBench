@@ -1,0 +1,291 @@
+{
+  "layers": [
+    {
+      "name": "tone_knots",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "tone_positive",
+      "op": "relu",
+      "inputs": [
+        "tone_knots"
+      ]
+    },
+    {
+      "name": "fabric",
+      "op": "conv",
+      "inputs": [
+        "tone_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "footprint",
+      "op": "avgpool",
+      "inputs": [
+        "fabric"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "standard_footprint",
+      "op": "norm",
+      "inputs": [
+        "footprint"
+      ]
+    },
+    {
+      "name": "drawing_correlations",
+      "op": "dense",
+      "inputs": [
+        "standard_footprint"
+      ],
+      "out": 30720
+    },
+    {
+      "name": "by_cut_and_class",
+      "op": "reshape",
+      "inputs": [
+        "drawing_correlations"
+      ],
+      "shape": [
+        10,
+        4,
+        768
+      ]
+    },
+    {
+      "name": "best_cut",
+      "op": "maxpool",
+      "inputs": [
+        "by_cut_and_class"
+      ],
+      "size": [
+        1,
+        768
+      ],
+      "stride": [
+        1,
+        768
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "best_cut"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "best_evidence",
+      "op": "reshape",
+      "inputs": [
+        "best_pose"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "consistent_pose",
+      "op": "avgpool",
+      "inputs": [
+        "best_cut"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "repeated_evidence",
+      "op": "reshape",
+      "inputs": [
+        "consistent_pose"
+      ],
+      "shape": [
+        10
+      ]
+    },
+    {
+      "name": "shape_max_weight",
+      "op": "dense",
+      "inputs": [
+        "best_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shape_consistency_weight",
+      "op": "dense",
+      "inputs": [
+        "repeated_evidence"
+      ],
+      "out": 10
+    },
+    {
+      "name": "shape_score",
+      "op": "add",
+      "inputs": [
+        "shape_max_weight",
+        "shape_consistency_weight"
+      ]
+    },
+    {
+      "name": "standard_light",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "cloth_filters",
+      "op": "conv",
+      "inputs": [
+        "standard_light"
+      ],
+      "out": 8,
+      "kernel": [
+        3,
+        3
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "cloth_halfwaves",
+      "op": "relu",
+      "inputs": [
+        "cloth_filters"
+      ]
+    },
+    {
+      "name": "cloth_edges",
+      "op": "conv",
+      "inputs": [
+        "cloth_halfwaves"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "measurements_from_0",
+      "op": "dense",
+      "inputs": [
+        "standard_light"
+      ],
+      "out": 387
+    },
+    {
+      "name": "measurements_from_1",
+      "op": "dense",
+      "inputs": [
+        "cloth_edges"
+      ],
+      "out": 387
+    },
+    {
+      "name": "measurements_from_2",
+      "op": "dense",
+      "inputs": [
+        "footprint"
+      ],
+      "out": 387
+    },
+    {
+      "name": "measurements",
+      "op": "add",
+      "inputs": [
+        "measurements_from_0",
+        "measurements_from_1",
+        "measurements_from_2"
+      ]
+    },
+    {
+      "name": "detail_tests",
+      "op": "dense",
+      "inputs": [
+        "measurements"
+      ],
+      "out": 886
+    },
+    {
+      "name": "detail_tests_positive",
+      "op": "relu",
+      "inputs": [
+        "detail_tests"
+      ]
+    },
+    {
+      "name": "part_combinations",
+      "op": "dense",
+      "inputs": [
+        "detail_tests_positive"
+      ],
+      "out": 28
+    },
+    {
+      "name": "part_combinations_positive",
+      "op": "relu",
+      "inputs": [
+        "part_combinations"
+      ]
+    },
+    {
+      "name": "construction_details",
+      "op": "dense",
+      "inputs": [
+        "part_combinations_positive"
+      ],
+      "out": 10
+    },
+    {
+      "name": "scores",
+      "op": "add",
+      "inputs": [
+        "shape_score",
+        "construction_details"
+      ]
+    }
+  ]
+}

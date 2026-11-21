@@ -1,0 +1,995 @@
+{
+  "layers": [
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "luminance16",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "rgb_joint",
+      "op": "reshape",
+      "inputs": [
+        "image"
+      ],
+      "shape": [
+        1,
+        96,
+        32
+      ]
+    },
+    {
+      "name": "global_light",
+      "op": "norm",
+      "inputs": [
+        "rgb_joint"
+      ]
+    },
+    {
+      "name": "rgb_normalized",
+      "op": "reshape",
+      "inputs": [
+        "global_light"
+      ],
+      "shape": [
+        3,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "opponents",
+      "op": "conv",
+      "inputs": [
+        "rgb_normalized"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "opponent_relu",
+      "op": "relu",
+      "inputs": [
+        "opponents"
+      ]
+    },
+    {
+      "name": "bounded_features",
+      "op": "conv",
+      "inputs": [
+        "opponent_relu"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour16",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_features"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "shape_correlations",
+      "op": "dense",
+      "inputs": [
+        "colour16"
+      ],
+      "out": 1512
+    },
+    {
+      "name": "shape_grid",
+      "op": "reshape",
+      "inputs": [
+        "shape_correlations"
+      ],
+      "shape": [
+        7,
+        216,
+        1
+      ]
+    },
+    {
+      "name": "global_gray_contrast",
+      "op": "norm",
+      "inputs": [
+        "luminance16"
+      ]
+    },
+    {
+      "name": "circle_sample",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 31104
+    },
+    {
+      "name": "circle_patches",
+      "op": "reshape",
+      "inputs": [
+        "circle_sample"
+      ],
+      "shape": [
+        216,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "circle_contrast",
+      "op": "norm",
+      "inputs": [
+        "circle_patches"
+      ]
+    },
+    {
+      "name": "circle_strip",
+      "op": "reshape",
+      "inputs": [
+        "circle_contrast"
+      ],
+      "shape": [
+        1,
+        2592,
+        12
+      ]
+    },
+    {
+      "name": "circle_clip_parts",
+      "op": "conv",
+      "inputs": [
+        "circle_strip"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_clip_relu",
+      "op": "relu",
+      "inputs": [
+        "circle_clip_parts"
+      ]
+    },
+    {
+      "name": "circle_clipped",
+      "op": "conv",
+      "inputs": [
+        "circle_clip_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_symbols",
+      "op": "conv",
+      "inputs": [
+        "circle_clipped"
+      ],
+      "out": 1152,
+      "kernel": [
+        12,
+        12
+      ],
+      "stride": 12,
+      "padding": 0
+    },
+    {
+      "name": "circle_family_comparison",
+      "op": "conv",
+      "inputs": [
+        "shape_grid"
+      ],
+      "out": 49,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_family_comparison_grid",
+      "op": "reshape",
+      "inputs": [
+        "circle_family_comparison"
+      ],
+      "shape": [
+        7,
+        7,
+        216
+      ]
+    },
+    {
+      "name": "circle_stronger_family",
+      "op": "maxpool",
+      "inputs": [
+        "circle_family_comparison_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "circle_family_difference",
+      "op": "reshape",
+      "inputs": [
+        "circle_stronger_family"
+      ],
+      "shape": [
+        7,
+        216,
+        1
+      ]
+    },
+    {
+      "name": "circle_polarity_penalty",
+      "op": "conv",
+      "inputs": [
+        "circle_family_difference"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_consistent_shape",
+      "op": "add",
+      "inputs": [
+        "shape_grid",
+        "circle_polarity_penalty"
+      ]
+    },
+    {
+      "name": "circle_family_deficit",
+      "op": "conv",
+      "inputs": [
+        "circle_consistent_shape"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_family_missing",
+      "op": "relu",
+      "inputs": [
+        "circle_family_deficit"
+      ]
+    },
+    {
+      "name": "circle_context",
+      "op": "conv",
+      "inputs": [
+        "circle_consistent_shape"
+      ],
+      "out": 1152,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_family_gate",
+      "op": "conv",
+      "inputs": [
+        "circle_family_missing"
+      ],
+      "out": 1152,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_family_evidence",
+      "op": "add",
+      "inputs": [
+        "circle_context",
+        "circle_family_gate"
+      ]
+    },
+    {
+      "name": "blank_samples",
+      "op": "dense",
+      "inputs": [
+        "global_gray_contrast"
+      ],
+      "out": 31104
+    },
+    {
+      "name": "blank_strip",
+      "op": "reshape",
+      "inputs": [
+        "blank_samples"
+      ],
+      "shape": [
+        1,
+        2592,
+        12
+      ]
+    },
+    {
+      "name": "interior_differences",
+      "op": "conv",
+      "inputs": [
+        "blank_strip"
+      ],
+      "out": 288,
+      "kernel": [
+        12,
+        12
+      ],
+      "stride": 12,
+      "padding": 0
+    },
+    {
+      "name": "interior_absolute",
+      "op": "relu",
+      "inputs": [
+        "interior_differences"
+      ]
+    },
+    {
+      "name": "blank_interior_test",
+      "op": "conv",
+      "inputs": [
+        "interior_absolute"
+      ],
+      "out": 1152,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "circle_joint",
+      "op": "add",
+      "inputs": [
+        "circle_symbols",
+        "circle_family_evidence",
+        "blank_interior_test"
+      ]
+    },
+    {
+      "name": "circle_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "circle_joint"
+      ],
+      "shape": [
+        12,
+        96,
+        216
+      ]
+    },
+    {
+      "name": "circle_best",
+      "op": "maxpool",
+      "inputs": [
+        "circle_alternatives"
+      ],
+      "size": [
+        96,
+        216
+      ],
+      "stride": [
+        96,
+        216
+      ]
+    },
+    {
+      "name": "circle_classes",
+      "op": "dense",
+      "inputs": [
+        "circle_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "triangle_sample",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 31104
+    },
+    {
+      "name": "triangle_patches",
+      "op": "reshape",
+      "inputs": [
+        "triangle_sample"
+      ],
+      "shape": [
+        216,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "triangle_contrast",
+      "op": "norm",
+      "inputs": [
+        "triangle_patches"
+      ]
+    },
+    {
+      "name": "triangle_strip",
+      "op": "reshape",
+      "inputs": [
+        "triangle_contrast"
+      ],
+      "shape": [
+        1,
+        2592,
+        12
+      ]
+    },
+    {
+      "name": "triangle_clip_parts",
+      "op": "conv",
+      "inputs": [
+        "triangle_strip"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_clip_relu",
+      "op": "relu",
+      "inputs": [
+        "triangle_clip_parts"
+      ]
+    },
+    {
+      "name": "triangle_clipped",
+      "op": "conv",
+      "inputs": [
+        "triangle_clip_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_symbols",
+      "op": "conv",
+      "inputs": [
+        "triangle_clipped"
+      ],
+      "out": 1440,
+      "kernel": [
+        12,
+        12
+      ],
+      "stride": 12,
+      "padding": 0
+    },
+    {
+      "name": "triangle_family_comparison",
+      "op": "conv",
+      "inputs": [
+        "shape_grid"
+      ],
+      "out": 49,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_family_comparison_grid",
+      "op": "reshape",
+      "inputs": [
+        "triangle_family_comparison"
+      ],
+      "shape": [
+        7,
+        7,
+        216
+      ]
+    },
+    {
+      "name": "triangle_stronger_family",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_family_comparison_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "triangle_family_difference",
+      "op": "reshape",
+      "inputs": [
+        "triangle_stronger_family"
+      ],
+      "shape": [
+        7,
+        216,
+        1
+      ]
+    },
+    {
+      "name": "triangle_polarity_penalty",
+      "op": "conv",
+      "inputs": [
+        "triangle_family_difference"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_consistent_shape",
+      "op": "add",
+      "inputs": [
+        "shape_grid",
+        "triangle_polarity_penalty"
+      ]
+    },
+    {
+      "name": "triangle_family_deficit",
+      "op": "conv",
+      "inputs": [
+        "triangle_consistent_shape"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_family_missing",
+      "op": "relu",
+      "inputs": [
+        "triangle_family_deficit"
+      ]
+    },
+    {
+      "name": "triangle_context",
+      "op": "conv",
+      "inputs": [
+        "triangle_consistent_shape"
+      ],
+      "out": 1440,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_family_gate",
+      "op": "conv",
+      "inputs": [
+        "triangle_family_missing"
+      ],
+      "out": 1440,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "triangle_family_evidence",
+      "op": "add",
+      "inputs": [
+        "triangle_context",
+        "triangle_family_gate"
+      ]
+    },
+    {
+      "name": "triangle_joint",
+      "op": "add",
+      "inputs": [
+        "triangle_symbols",
+        "triangle_family_evidence"
+      ]
+    },
+    {
+      "name": "triangle_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "triangle_joint"
+      ],
+      "shape": [
+        15,
+        96,
+        216
+      ]
+    },
+    {
+      "name": "triangle_best",
+      "op": "maxpool",
+      "inputs": [
+        "triangle_alternatives"
+      ],
+      "size": [
+        96,
+        216
+      ],
+      "stride": [
+        96,
+        216
+      ]
+    },
+    {
+      "name": "triangle_classes",
+      "op": "dense",
+      "inputs": [
+        "triangle_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "round_sample",
+      "op": "dense",
+      "inputs": [
+        "luminance"
+      ],
+      "out": 31104
+    },
+    {
+      "name": "round_patches",
+      "op": "reshape",
+      "inputs": [
+        "round_sample"
+      ],
+      "shape": [
+        216,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "round_contrast",
+      "op": "norm",
+      "inputs": [
+        "round_patches"
+      ]
+    },
+    {
+      "name": "round_strip",
+      "op": "reshape",
+      "inputs": [
+        "round_contrast"
+      ],
+      "shape": [
+        1,
+        2592,
+        12
+      ]
+    },
+    {
+      "name": "round_clip_parts",
+      "op": "conv",
+      "inputs": [
+        "round_strip"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_clip_relu",
+      "op": "relu",
+      "inputs": [
+        "round_clip_parts"
+      ]
+    },
+    {
+      "name": "round_clipped",
+      "op": "conv",
+      "inputs": [
+        "round_clip_relu"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_symbols",
+      "op": "conv",
+      "inputs": [
+        "round_clipped"
+      ],
+      "out": 1536,
+      "kernel": [
+        12,
+        12
+      ],
+      "stride": 12,
+      "padding": 0
+    },
+    {
+      "name": "round_family_comparison",
+      "op": "conv",
+      "inputs": [
+        "shape_grid"
+      ],
+      "out": 49,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_family_comparison_grid",
+      "op": "reshape",
+      "inputs": [
+        "round_family_comparison"
+      ],
+      "shape": [
+        7,
+        7,
+        216
+      ]
+    },
+    {
+      "name": "round_stronger_family",
+      "op": "maxpool",
+      "inputs": [
+        "round_family_comparison_grid"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "round_family_difference",
+      "op": "reshape",
+      "inputs": [
+        "round_stronger_family"
+      ],
+      "shape": [
+        7,
+        216,
+        1
+      ]
+    },
+    {
+      "name": "round_polarity_penalty",
+      "op": "conv",
+      "inputs": [
+        "round_family_difference"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_consistent_shape",
+      "op": "add",
+      "inputs": [
+        "shape_grid",
+        "round_polarity_penalty"
+      ]
+    },
+    {
+      "name": "round_family_deficit",
+      "op": "conv",
+      "inputs": [
+        "round_consistent_shape"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_family_missing",
+      "op": "relu",
+      "inputs": [
+        "round_family_deficit"
+      ]
+    },
+    {
+      "name": "round_context",
+      "op": "conv",
+      "inputs": [
+        "round_consistent_shape"
+      ],
+      "out": 1536,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_family_gate",
+      "op": "conv",
+      "inputs": [
+        "round_family_missing"
+      ],
+      "out": 1536,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "round_family_evidence",
+      "op": "add",
+      "inputs": [
+        "round_context",
+        "round_family_gate"
+      ]
+    },
+    {
+      "name": "round_joint",
+      "op": "add",
+      "inputs": [
+        "round_symbols",
+        "round_family_evidence"
+      ]
+    },
+    {
+      "name": "round_alternatives",
+      "op": "reshape",
+      "inputs": [
+        "round_joint"
+      ],
+      "shape": [
+        16,
+        96,
+        216
+      ]
+    },
+    {
+      "name": "round_best",
+      "op": "maxpool",
+      "inputs": [
+        "round_alternatives"
+      ],
+      "size": [
+        96,
+        216
+      ],
+      "stride": [
+        96,
+        216
+      ]
+    },
+    {
+      "name": "round_classes",
+      "op": "dense",
+      "inputs": [
+        "round_best"
+      ],
+      "out": 43
+    },
+    {
+      "name": "class_scores",
+      "op": "add",
+      "inputs": [
+        "circle_classes",
+        "triangle_classes",
+        "round_classes"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,342 @@
+{
+  "layers": [
+    {
+      "name": "replicate",
+      "op": "dense",
+      "inputs": [
+        "image"
+      ],
+      "out": 1024
+    },
+    {
+      "name": "padded",
+      "op": "reshape",
+      "inputs": [
+        "replicate"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "derivatives",
+      "op": "conv",
+      "inputs": [
+        "padded"
+      ],
+      "out": 16,
+      "kernel": [
+        5,
+        5
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "half_wave",
+      "op": "relu",
+      "inputs": [
+        "derivatives"
+      ]
+    },
+    {
+      "name": "unsigned",
+      "op": "conv",
+      "inputs": [
+        "half_wave"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "orientation_select",
+      "op": "conv",
+      "inputs": [
+        "unsigned"
+      ],
+      "out": 8,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "edges",
+      "op": "relu",
+      "inputs": [
+        "orientation_select"
+      ]
+    },
+    {
+      "name": "local_tolerance",
+      "op": "avgpool",
+      "inputs": [
+        "edges"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_edges",
+      "op": "norm",
+      "inputs": [
+        "local_tolerance"
+      ]
+    },
+    {
+      "name": "coarse_image",
+      "op": "avgpool",
+      "inputs": [
+        "image"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "normalized_intensity",
+      "op": "norm",
+      "inputs": [
+        "coarse_image"
+      ]
+    },
+    {
+      "name": "border_difference",
+      "op": "dense",
+      "inputs": [
+        "coarse_image"
+      ],
+      "out": 392
+    },
+    {
+      "name": "border_halves",
+      "op": "relu",
+      "inputs": [
+        "border_difference"
+      ]
+    },
+    {
+      "name": "border_channels",
+      "op": "reshape",
+      "inputs": [
+        "border_halves"
+      ],
+      "shape": [
+        2,
+        14,
+        14
+      ]
+    },
+    {
+      "name": "border_contrast",
+      "op": "conv",
+      "inputs": [
+        "border_channels"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "clip_excess",
+      "op": "conv",
+      "inputs": [
+        "border_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "positive_excess",
+      "op": "relu",
+      "inputs": [
+        "clip_excess"
+      ]
+    },
+    {
+      "name": "negative_excess",
+      "op": "conv",
+      "inputs": [
+        "positive_excess"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "foreground",
+      "op": "add",
+      "inputs": [
+        "border_contrast",
+        "negative_excess"
+      ]
+    },
+    {
+      "name": "normalized_foreground",
+      "op": "norm",
+      "inputs": [
+        "foreground"
+      ]
+    },
+    {
+      "name": "contour_match",
+      "op": "conv",
+      "inputs": [
+        "normalized_edges"
+      ],
+      "out": 10080,
+      "kernel": [
+        14,
+        14
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "occupancy_match",
+      "op": "conv",
+      "inputs": [
+        "normalized_intensity"
+      ],
+      "out": 20160,
+      "kernel": [
+        14,
+        14
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "polarity_axis",
+      "op": "reshape",
+      "inputs": [
+        "occupancy_match"
+      ],
+      "shape": [
+        10080,
+        2,
+        9
+      ]
+    },
+    {
+      "name": "choose_polarity",
+      "op": "maxpool",
+      "inputs": [
+        "polarity_axis"
+      ],
+      "size": [
+        2,
+        1
+      ],
+      "stride": [
+        2,
+        1
+      ]
+    },
+    {
+      "name": "occupancy_scores",
+      "op": "reshape",
+      "inputs": [
+        "choose_polarity"
+      ],
+      "shape": [
+        10080,
+        3,
+        3
+      ]
+    },
+    {
+      "name": "foreground_match",
+      "op": "conv",
+      "inputs": [
+        "normalized_foreground"
+      ],
+      "out": 10080,
+      "kernel": [
+        14,
+        14
+      ],
+      "padding": 1,
+      "stride": 1
+    },
+    {
+      "name": "joint_match",
+      "op": "add",
+      "inputs": [
+        "contour_match",
+        "occupancy_scores",
+        "foreground_match"
+      ]
+    },
+    {
+      "name": "class_hypotheses",
+      "op": "reshape",
+      "inputs": [
+        "joint_match"
+      ],
+      "shape": [
+        24,
+        420,
+        9
+      ]
+    },
+    {
+      "name": "best_explanation",
+      "op": "maxpool",
+      "inputs": [
+        "class_hypotheses"
+      ],
+      "size": [
+        420,
+        9
+      ],
+      "stride": [
+        420,
+        9
+      ]
+    },
+    {
+      "name": "scores",
+      "op": "reshape",
+      "inputs": [
+        "best_explanation"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

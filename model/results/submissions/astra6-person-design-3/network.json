@@ -1,0 +1,6210 @@
+{
+  "layers": [
+    {
+      "name": "colour_violations",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_penalties",
+      "op": "relu",
+      "inputs": [
+        "colour_violations"
+      ]
+    },
+    {
+      "name": "skin_raw",
+      "op": "conv",
+      "inputs": [
+        "colour_penalties"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin",
+      "op": "relu",
+      "inputs": [
+        "skin_raw"
+      ]
+    },
+    {
+      "name": "luminance",
+      "op": "conv",
+      "inputs": [
+        "image"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_total",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "stride": [
+        96,
+        96
+      ]
+    },
+    {
+      "name": "coverage_ramp",
+      "op": "conv",
+      "inputs": [
+        "skin_total"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coverage_hinges",
+      "op": "conv",
+      "inputs": [
+        "coverage_ramp"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "coverage_positive",
+      "op": "relu",
+      "inputs": [
+        "coverage_hinges"
+      ]
+    },
+    {
+      "name": "coverage",
+      "op": "conv",
+      "inputs": [
+        "coverage_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_mass",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        96,
+        96
+      ],
+      "stride": [
+        96,
+        96
+      ]
+    },
+    {
+      "name": "excess_skin_ramp",
+      "op": "conv",
+      "inputs": [
+        "skin_mass"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "excess_skin_hinges",
+      "op": "conv",
+      "inputs": [
+        "excess_skin_ramp"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "excess_skin_positive",
+      "op": "relu",
+      "inputs": [
+        "excess_skin_hinges"
+      ]
+    },
+    {
+      "name": "excess_skin",
+      "op": "conv",
+      "inputs": [
+        "excess_skin_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "skin_48",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "skin_patch2",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "skin_peak2_flat",
+      "op": "reshape",
+      "inputs": [
+        "skin_patch2"
+      ],
+      "shape": [
+        1,
+        1,
+        2209
+      ]
+    },
+    {
+      "name": "skin_peak2",
+      "op": "maxpool",
+      "inputs": [
+        "skin_peak2_flat"
+      ],
+      "size": [
+        1,
+        2209
+      ],
+      "stride": [
+        1,
+        2209
+      ]
+    },
+    {
+      "name": "skin_patch3",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "skin_peak3_flat",
+      "op": "reshape",
+      "inputs": [
+        "skin_patch3"
+      ],
+      "shape": [
+        1,
+        1,
+        2116
+      ]
+    },
+    {
+      "name": "skin_peak3",
+      "op": "maxpool",
+      "inputs": [
+        "skin_peak3_flat"
+      ],
+      "size": [
+        1,
+        2116
+      ],
+      "stride": [
+        1,
+        2116
+      ]
+    },
+    {
+      "name": "skin_patch5",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        5,
+        5
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "skin_peak5_flat",
+      "op": "reshape",
+      "inputs": [
+        "skin_patch5"
+      ],
+      "shape": [
+        1,
+        1,
+        1936
+      ]
+    },
+    {
+      "name": "skin_peak5",
+      "op": "maxpool",
+      "inputs": [
+        "skin_peak5_flat"
+      ],
+      "size": [
+        1,
+        1936
+      ],
+      "stride": [
+        1,
+        1936
+      ]
+    },
+    {
+      "name": "skin_patch8",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "skin_peak8_flat",
+      "op": "reshape",
+      "inputs": [
+        "skin_patch8"
+      ],
+      "shape": [
+        1,
+        1,
+        1681
+      ]
+    },
+    {
+      "name": "skin_peak8",
+      "op": "maxpool",
+      "inputs": [
+        "skin_peak8_flat"
+      ],
+      "size": [
+        1,
+        1681
+      ],
+      "stride": [
+        1,
+        1681
+      ]
+    },
+    {
+      "name": "skin_patch12",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "skin_peak12_flat",
+      "op": "reshape",
+      "inputs": [
+        "skin_patch12"
+      ],
+      "shape": [
+        1,
+        1,
+        1369
+      ]
+    },
+    {
+      "name": "skin_peak12",
+      "op": "maxpool",
+      "inputs": [
+        "skin_peak12_flat"
+      ],
+      "size": [
+        1,
+        1369
+      ],
+      "stride": [
+        1,
+        1369
+      ]
+    },
+    {
+      "name": "patch_peaks_part0",
+      "op": "conv",
+      "inputs": [
+        "skin_peak2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "patch_peaks_part1",
+      "op": "conv",
+      "inputs": [
+        "skin_peak3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "patch_peaks_part2",
+      "op": "conv",
+      "inputs": [
+        "skin_peak5"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "patch_peaks_part3",
+      "op": "conv",
+      "inputs": [
+        "skin_peak8"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "patch_peaks_part4",
+      "op": "conv",
+      "inputs": [
+        "skin_peak12"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "patch_peaks",
+      "op": "add",
+      "inputs": [
+        "patch_peaks_part0",
+        "patch_peaks_part1",
+        "patch_peaks_part2",
+        "patch_peaks_part3",
+        "patch_peaks_part4"
+      ]
+    },
+    {
+      "name": "multiscale_peak",
+      "op": "conv",
+      "inputs": [
+        "patch_peaks"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "mass_discount",
+      "op": "conv",
+      "inputs": [
+        "skin_mass"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "localized_skin",
+      "op": "add",
+      "inputs": [
+        "multiscale_peak",
+        "mass_discount"
+      ]
+    },
+    {
+      "name": "localization_ramp",
+      "op": "conv",
+      "inputs": [
+        "localized_skin"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "localization_hinges",
+      "op": "conv",
+      "inputs": [
+        "localization_ramp"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "localization_positive",
+      "op": "relu",
+      "inputs": [
+        "localization_hinges"
+      ]
+    },
+    {
+      "name": "localization",
+      "op": "conv",
+      "inputs": [
+        "localization_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_skin_fields",
+      "op": "avgpool",
+      "inputs": [
+        "skin_48"
+      ],
+      "size": [
+        24,
+        24
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "broad_skin_peak_flat",
+      "op": "reshape",
+      "inputs": [
+        "broad_skin_fields"
+      ],
+      "shape": [
+        1,
+        1,
+        16
+      ]
+    },
+    {
+      "name": "broad_skin_peak",
+      "op": "maxpool",
+      "inputs": [
+        "broad_skin_peak_flat"
+      ],
+      "size": [
+        1,
+        16
+      ],
+      "stride": [
+        1,
+        16
+      ]
+    },
+    {
+      "name": "broad_skin_ramp",
+      "op": "conv",
+      "inputs": [
+        "broad_skin_peak"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_skin_penalty_hinges",
+      "op": "conv",
+      "inputs": [
+        "broad_skin_ramp"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "broad_skin_penalty_positive",
+      "op": "relu",
+      "inputs": [
+        "broad_skin_penalty_hinges"
+      ]
+    },
+    {
+      "name": "broad_skin_penalty",
+      "op": "conv",
+      "inputs": [
+        "broad_skin_penalty_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_summary_part0",
+      "op": "conv",
+      "inputs": [
+        "coverage"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_summary_part1",
+      "op": "conv",
+      "inputs": [
+        "localization"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_summary_part2",
+      "op": "conv",
+      "inputs": [
+        "excess_skin"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_summary_part3",
+      "op": "conv",
+      "inputs": [
+        "broad_skin_penalty"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "colour_summary",
+      "op": "add",
+      "inputs": [
+        "colour_summary_part0",
+        "colour_summary_part1",
+        "colour_summary_part2",
+        "colour_summary_part3"
+      ]
+    },
+    {
+      "name": "colour_presence",
+      "op": "conv",
+      "inputs": [
+        "colour_summary"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact0_regions",
+      "op": "conv",
+      "inputs": [
+        "skin"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact0_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact0_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact0_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact0_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact0_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact0_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        9216
+      ]
+    },
+    {
+      "name": "compact0_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact0_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact0_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact0_all_sides_max"
+      ],
+      "shape": [
+        1,
+        96,
+        96
+      ]
+    },
+    {
+      "name": "compact0_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact0_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact0_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact0_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        9216
+      ]
+    },
+    {
+      "name": "compact0_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact0_best_flat"
+      ],
+      "size": [
+        1,
+        9216
+      ],
+      "stride": [
+        1,
+        9216
+      ]
+    },
+    {
+      "name": "compact1_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "compact1_regions",
+      "op": "conv",
+      "inputs": [
+        "compact1_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact1_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact1_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact1_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact1_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact1_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact1_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        2304
+      ]
+    },
+    {
+      "name": "compact1_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact1_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact1_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact1_all_sides_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "compact1_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact1_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact1_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact1_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        2304
+      ]
+    },
+    {
+      "name": "compact1_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact1_best_flat"
+      ],
+      "size": [
+        1,
+        2304
+      ],
+      "stride": [
+        1,
+        2304
+      ]
+    },
+    {
+      "name": "compact2_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "compact2_regions",
+      "op": "conv",
+      "inputs": [
+        "compact2_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact2_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact2_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact2_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact2_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact2_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact2_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        2304
+      ]
+    },
+    {
+      "name": "compact2_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact2_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact2_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact2_all_sides_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "compact2_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact2_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact2_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact2_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        2304
+      ]
+    },
+    {
+      "name": "compact2_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact2_best_flat"
+      ],
+      "size": [
+        1,
+        2304
+      ],
+      "stride": [
+        1,
+        2304
+      ]
+    },
+    {
+      "name": "compact3_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "compact3_regions",
+      "op": "conv",
+      "inputs": [
+        "compact3_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact3_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact3_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact3_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact3_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact3_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact3_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        1024
+      ]
+    },
+    {
+      "name": "compact3_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact3_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact3_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact3_all_sides_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "compact3_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact3_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact3_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact3_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "compact3_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact3_best_flat"
+      ],
+      "size": [
+        1,
+        1024
+      ],
+      "stride": [
+        1,
+        1024
+      ]
+    },
+    {
+      "name": "compact4_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "compact4_regions",
+      "op": "conv",
+      "inputs": [
+        "compact4_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact4_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact4_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact4_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact4_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact4_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact4_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        576
+      ]
+    },
+    {
+      "name": "compact4_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact4_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact4_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact4_all_sides_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "compact4_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact4_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact4_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact4_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        576
+      ]
+    },
+    {
+      "name": "compact4_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact4_best_flat"
+      ],
+      "size": [
+        1,
+        576
+      ],
+      "stride": [
+        1,
+        576
+      ]
+    },
+    {
+      "name": "compact5_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "compact5_regions",
+      "op": "conv",
+      "inputs": [
+        "compact5_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact5_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact5_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact5_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact5_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact5_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact5_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        256
+      ]
+    },
+    {
+      "name": "compact5_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact5_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact5_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact5_all_sides_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "compact5_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact5_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact5_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact5_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        256
+      ]
+    },
+    {
+      "name": "compact5_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact5_best_flat"
+      ],
+      "size": [
+        1,
+        256
+      ],
+      "stride": [
+        1,
+        256
+      ]
+    },
+    {
+      "name": "compact6_reduced",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "compact6_regions",
+      "op": "conv",
+      "inputs": [
+        "compact6_reduced"
+      ],
+      "out": 5,
+      "kernel": [
+        13,
+        13
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "compact6_isolation",
+      "op": "conv",
+      "inputs": [
+        "compact6_regions"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact6_all_sides_negative",
+      "op": "conv",
+      "inputs": [
+        "compact6_isolation"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact6_all_sides_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact6_all_sides_negative"
+      ],
+      "shape": [
+        1,
+        5,
+        144
+      ]
+    },
+    {
+      "name": "compact6_all_sides_max",
+      "op": "maxpool",
+      "inputs": [
+        "compact6_all_sides_flat"
+      ],
+      "size": [
+        5,
+        1
+      ],
+      "stride": [
+        5,
+        1
+      ]
+    },
+    {
+      "name": "compact6_all_sides_map",
+      "op": "reshape",
+      "inputs": [
+        "compact6_all_sides_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "compact6_all_sides",
+      "op": "conv",
+      "inputs": [
+        "compact6_all_sides_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact6_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact6_all_sides"
+      ],
+      "shape": [
+        1,
+        1,
+        144
+      ]
+    },
+    {
+      "name": "compact6_best",
+      "op": "maxpool",
+      "inputs": [
+        "compact6_best_flat"
+      ],
+      "size": [
+        1,
+        144
+      ],
+      "stride": [
+        1,
+        144
+      ]
+    },
+    {
+      "name": "compact_scales_part0",
+      "op": "conv",
+      "inputs": [
+        "compact0_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part1",
+      "op": "conv",
+      "inputs": [
+        "compact1_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part2",
+      "op": "conv",
+      "inputs": [
+        "compact2_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part3",
+      "op": "conv",
+      "inputs": [
+        "compact3_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part4",
+      "op": "conv",
+      "inputs": [
+        "compact4_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part5",
+      "op": "conv",
+      "inputs": [
+        "compact5_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales_part6",
+      "op": "conv",
+      "inputs": [
+        "compact6_best"
+      ],
+      "out": 7,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_scales",
+      "op": "add",
+      "inputs": [
+        "compact_scales_part0",
+        "compact_scales_part1",
+        "compact_scales_part2",
+        "compact_scales_part3",
+        "compact_scales_part4",
+        "compact_scales_part5",
+        "compact_scales_part6"
+      ]
+    },
+    {
+      "name": "compact_peak_flat",
+      "op": "reshape",
+      "inputs": [
+        "compact_scales"
+      ],
+      "shape": [
+        1,
+        7,
+        1
+      ]
+    },
+    {
+      "name": "compact_peak",
+      "op": "maxpool",
+      "inputs": [
+        "compact_peak_flat"
+      ],
+      "size": [
+        7,
+        1
+      ],
+      "stride": [
+        7,
+        1
+      ]
+    },
+    {
+      "name": "compact_support_hinges",
+      "op": "conv",
+      "inputs": [
+        "compact_peak"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "compact_support_positive",
+      "op": "relu",
+      "inputs": [
+        "compact_support_hinges"
+      ]
+    },
+    {
+      "name": "compact_support",
+      "op": "conv",
+      "inputs": [
+        "compact_support_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face0_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "face0_contrast",
+      "op": "norm",
+      "inputs": [
+        "face0_grey"
+      ]
+    },
+    {
+      "name": "face0_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face0_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face0_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face0_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face0_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face0_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face0_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face0_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face0_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face0_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_input",
+      "op": "add",
+      "inputs": [
+        "face0_input_part0",
+        "face0_input_part1",
+        "face0_input_part2"
+      ]
+    },
+    {
+      "name": "face0_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face0_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face0_conditions",
+      "op": "conv",
+      "inputs": [
+        "face0_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view0",
+      "op": "conv",
+      "inputs": [
+        "face0_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face0_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        2304
+      ]
+    },
+    {
+      "name": "face0_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face0_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face0_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view1",
+      "op": "conv",
+      "inputs": [
+        "face0_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face0_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        2304
+      ]
+    },
+    {
+      "name": "face0_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face0_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face0_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view2",
+      "op": "conv",
+      "inputs": [
+        "face0_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face0_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        2304
+      ]
+    },
+    {
+      "name": "face0_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face0_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face0_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view3",
+      "op": "conv",
+      "inputs": [
+        "face0_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face0_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        2304
+      ]
+    },
+    {
+      "name": "face0_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face0_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face0_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view4",
+      "op": "conv",
+      "inputs": [
+        "face0_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face0_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        2304
+      ]
+    },
+    {
+      "name": "face0_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face0_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face0_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face0_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        48,
+        48
+      ]
+    },
+    {
+      "name": "face0_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face0_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face0_view_scores",
+      "op": "add",
+      "inputs": [
+        "face0_view_scores_part0",
+        "face0_view_scores_part1",
+        "face0_view_scores_part2",
+        "face0_view_scores_part3",
+        "face0_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face0_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face0_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        2304
+      ]
+    },
+    {
+      "name": "face0_best",
+      "op": "maxpool",
+      "inputs": [
+        "face0_best_flat"
+      ],
+      "size": [
+        5,
+        2304
+      ],
+      "stride": [
+        5,
+        2304
+      ]
+    },
+    {
+      "name": "face1_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face1_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "face1_contrast",
+      "op": "norm",
+      "inputs": [
+        "face1_grey"
+      ]
+    },
+    {
+      "name": "face1_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face1_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face1_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face1_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face1_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face1_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face1_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face1_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face1_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face1_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_input",
+      "op": "add",
+      "inputs": [
+        "face1_input_part0",
+        "face1_input_part1",
+        "face1_input_part2"
+      ]
+    },
+    {
+      "name": "face1_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face1_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face1_conditions",
+      "op": "conv",
+      "inputs": [
+        "face1_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view0",
+      "op": "conv",
+      "inputs": [
+        "face1_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face1_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        1024
+      ]
+    },
+    {
+      "name": "face1_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face1_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "face1_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view1",
+      "op": "conv",
+      "inputs": [
+        "face1_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face1_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        1024
+      ]
+    },
+    {
+      "name": "face1_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face1_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "face1_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view2",
+      "op": "conv",
+      "inputs": [
+        "face1_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face1_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        1024
+      ]
+    },
+    {
+      "name": "face1_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face1_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "face1_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view3",
+      "op": "conv",
+      "inputs": [
+        "face1_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face1_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        1024
+      ]
+    },
+    {
+      "name": "face1_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face1_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "face1_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view4",
+      "op": "conv",
+      "inputs": [
+        "face1_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face1_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        1024
+      ]
+    },
+    {
+      "name": "face1_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face1_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face1_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face1_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        32,
+        32
+      ]
+    },
+    {
+      "name": "face1_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face1_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face1_view_scores",
+      "op": "add",
+      "inputs": [
+        "face1_view_scores_part0",
+        "face1_view_scores_part1",
+        "face1_view_scores_part2",
+        "face1_view_scores_part3",
+        "face1_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face1_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face1_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        1024
+      ]
+    },
+    {
+      "name": "face1_best",
+      "op": "maxpool",
+      "inputs": [
+        "face1_best_flat"
+      ],
+      "size": [
+        5,
+        1024
+      ],
+      "stride": [
+        5,
+        1024
+      ]
+    },
+    {
+      "name": "face2_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face2_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "face2_contrast",
+      "op": "norm",
+      "inputs": [
+        "face2_grey"
+      ]
+    },
+    {
+      "name": "face2_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face2_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face2_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face2_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face2_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face2_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face2_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face2_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face2_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face2_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_input",
+      "op": "add",
+      "inputs": [
+        "face2_input_part0",
+        "face2_input_part1",
+        "face2_input_part2"
+      ]
+    },
+    {
+      "name": "face2_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face2_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face2_conditions",
+      "op": "conv",
+      "inputs": [
+        "face2_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view0",
+      "op": "conv",
+      "inputs": [
+        "face2_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face2_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        576
+      ]
+    },
+    {
+      "name": "face2_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face2_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view1",
+      "op": "conv",
+      "inputs": [
+        "face2_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face2_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        576
+      ]
+    },
+    {
+      "name": "face2_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face2_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view2",
+      "op": "conv",
+      "inputs": [
+        "face2_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face2_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        576
+      ]
+    },
+    {
+      "name": "face2_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face2_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view3",
+      "op": "conv",
+      "inputs": [
+        "face2_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face2_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        576
+      ]
+    },
+    {
+      "name": "face2_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face2_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view4",
+      "op": "conv",
+      "inputs": [
+        "face2_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face2_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        576
+      ]
+    },
+    {
+      "name": "face2_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face2_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face2_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face2_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        24,
+        24
+      ]
+    },
+    {
+      "name": "face2_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face2_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face2_view_scores",
+      "op": "add",
+      "inputs": [
+        "face2_view_scores_part0",
+        "face2_view_scores_part1",
+        "face2_view_scores_part2",
+        "face2_view_scores_part3",
+        "face2_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face2_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face2_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        576
+      ]
+    },
+    {
+      "name": "face2_best",
+      "op": "maxpool",
+      "inputs": [
+        "face2_best_flat"
+      ],
+      "size": [
+        5,
+        576
+      ],
+      "stride": [
+        5,
+        576
+      ]
+    },
+    {
+      "name": "face3_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face3_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        6,
+        6
+      ],
+      "stride": [
+        6,
+        6
+      ]
+    },
+    {
+      "name": "face3_contrast",
+      "op": "norm",
+      "inputs": [
+        "face3_grey"
+      ]
+    },
+    {
+      "name": "face3_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face3_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face3_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face3_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face3_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face3_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face3_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face3_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face3_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face3_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_input",
+      "op": "add",
+      "inputs": [
+        "face3_input_part0",
+        "face3_input_part1",
+        "face3_input_part2"
+      ]
+    },
+    {
+      "name": "face3_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face3_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face3_conditions",
+      "op": "conv",
+      "inputs": [
+        "face3_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view0",
+      "op": "conv",
+      "inputs": [
+        "face3_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face3_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        256
+      ]
+    },
+    {
+      "name": "face3_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face3_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "face3_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view1",
+      "op": "conv",
+      "inputs": [
+        "face3_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face3_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        256
+      ]
+    },
+    {
+      "name": "face3_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face3_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "face3_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view2",
+      "op": "conv",
+      "inputs": [
+        "face3_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face3_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        256
+      ]
+    },
+    {
+      "name": "face3_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face3_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "face3_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view3",
+      "op": "conv",
+      "inputs": [
+        "face3_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face3_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        256
+      ]
+    },
+    {
+      "name": "face3_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face3_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "face3_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view4",
+      "op": "conv",
+      "inputs": [
+        "face3_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face3_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        256
+      ]
+    },
+    {
+      "name": "face3_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face3_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face3_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face3_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        16,
+        16
+      ]
+    },
+    {
+      "name": "face3_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face3_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face3_view_scores",
+      "op": "add",
+      "inputs": [
+        "face3_view_scores_part0",
+        "face3_view_scores_part1",
+        "face3_view_scores_part2",
+        "face3_view_scores_part3",
+        "face3_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face3_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face3_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        256
+      ]
+    },
+    {
+      "name": "face3_best",
+      "op": "maxpool",
+      "inputs": [
+        "face3_best_flat"
+      ],
+      "size": [
+        5,
+        256
+      ],
+      "stride": [
+        5,
+        256
+      ]
+    },
+    {
+      "name": "face4_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face4_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        8,
+        8
+      ],
+      "stride": [
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face4_contrast",
+      "op": "norm",
+      "inputs": [
+        "face4_grey"
+      ]
+    },
+    {
+      "name": "face4_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face4_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face4_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face4_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face4_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face4_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face4_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face4_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face4_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face4_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_input",
+      "op": "add",
+      "inputs": [
+        "face4_input_part0",
+        "face4_input_part1",
+        "face4_input_part2"
+      ]
+    },
+    {
+      "name": "face4_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face4_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face4_conditions",
+      "op": "conv",
+      "inputs": [
+        "face4_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view0",
+      "op": "conv",
+      "inputs": [
+        "face4_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face4_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        144
+      ]
+    },
+    {
+      "name": "face4_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face4_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view1",
+      "op": "conv",
+      "inputs": [
+        "face4_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face4_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        144
+      ]
+    },
+    {
+      "name": "face4_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face4_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view2",
+      "op": "conv",
+      "inputs": [
+        "face4_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face4_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        144
+      ]
+    },
+    {
+      "name": "face4_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face4_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view3",
+      "op": "conv",
+      "inputs": [
+        "face4_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face4_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        144
+      ]
+    },
+    {
+      "name": "face4_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face4_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view4",
+      "op": "conv",
+      "inputs": [
+        "face4_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face4_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        144
+      ]
+    },
+    {
+      "name": "face4_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face4_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face4_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face4_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face4_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face4_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face4_view_scores",
+      "op": "add",
+      "inputs": [
+        "face4_view_scores_part0",
+        "face4_view_scores_part1",
+        "face4_view_scores_part2",
+        "face4_view_scores_part3",
+        "face4_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face4_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face4_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        144
+      ]
+    },
+    {
+      "name": "face4_best",
+      "op": "maxpool",
+      "inputs": [
+        "face4_best_flat"
+      ],
+      "size": [
+        5,
+        144
+      ],
+      "stride": [
+        5,
+        144
+      ]
+    },
+    {
+      "name": "face5_skin",
+      "op": "avgpool",
+      "inputs": [
+        "skin"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face5_grey",
+      "op": "avgpool",
+      "inputs": [
+        "luminance"
+      ],
+      "size": [
+        12,
+        12
+      ],
+      "stride": [
+        12,
+        12
+      ]
+    },
+    {
+      "name": "face5_contrast",
+      "op": "norm",
+      "inputs": [
+        "face5_grey"
+      ]
+    },
+    {
+      "name": "face5_local_contrast",
+      "op": "conv",
+      "inputs": [
+        "face5_contrast"
+      ],
+      "out": 1,
+      "kernel": [
+        7,
+        7
+      ],
+      "stride": 1,
+      "padding": 3
+    },
+    {
+      "name": "face5_local_energy_signed",
+      "op": "conv",
+      "inputs": [
+        "face5_local_contrast"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_local_energy_rectified",
+      "op": "relu",
+      "inputs": [
+        "face5_local_energy_signed"
+      ]
+    },
+    {
+      "name": "face5_local_energy",
+      "op": "conv",
+      "inputs": [
+        "face5_local_energy_rectified"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_input_part0",
+      "op": "conv",
+      "inputs": [
+        "face5_skin"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_input_part1",
+      "op": "conv",
+      "inputs": [
+        "face5_contrast"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_input_part2",
+      "op": "conv",
+      "inputs": [
+        "face5_local_energy"
+      ],
+      "out": 3,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_input",
+      "op": "add",
+      "inputs": [
+        "face5_input_part0",
+        "face5_input_part1",
+        "face5_input_part2"
+      ]
+    },
+    {
+      "name": "face5_anatomy",
+      "op": "conv",
+      "inputs": [
+        "face5_input"
+      ],
+      "out": 60,
+      "kernel": [
+        11,
+        11
+      ],
+      "stride": 1,
+      "padding": 5
+    },
+    {
+      "name": "face5_conditions",
+      "op": "conv",
+      "inputs": [
+        "face5_anatomy"
+      ],
+      "out": 55,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view0",
+      "op": "conv",
+      "inputs": [
+        "face5_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction0_negative",
+      "op": "conv",
+      "inputs": [
+        "face5_view0"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction0_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction0_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        64
+      ]
+    },
+    {
+      "name": "face5_conjunction0_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_conjunction0_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face5_conjunction0_map",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction0_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face5_conjunction0",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction0_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view1",
+      "op": "conv",
+      "inputs": [
+        "face5_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction1_negative",
+      "op": "conv",
+      "inputs": [
+        "face5_view1"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction1_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction1_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        64
+      ]
+    },
+    {
+      "name": "face5_conjunction1_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_conjunction1_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face5_conjunction1_map",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction1_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face5_conjunction1",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction1_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view2",
+      "op": "conv",
+      "inputs": [
+        "face5_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction2_negative",
+      "op": "conv",
+      "inputs": [
+        "face5_view2"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction2_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction2_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        64
+      ]
+    },
+    {
+      "name": "face5_conjunction2_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_conjunction2_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face5_conjunction2_map",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction2_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face5_conjunction2",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction2_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view3",
+      "op": "conv",
+      "inputs": [
+        "face5_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction3_negative",
+      "op": "conv",
+      "inputs": [
+        "face5_view3"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction3_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction3_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        64
+      ]
+    },
+    {
+      "name": "face5_conjunction3_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_conjunction3_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face5_conjunction3_map",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction3_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face5_conjunction3",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction3_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view4",
+      "op": "conv",
+      "inputs": [
+        "face5_conditions"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction4_negative",
+      "op": "conv",
+      "inputs": [
+        "face5_view4"
+      ],
+      "out": 11,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_conjunction4_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction4_negative"
+      ],
+      "shape": [
+        1,
+        11,
+        64
+      ]
+    },
+    {
+      "name": "face5_conjunction4_max",
+      "op": "maxpool",
+      "inputs": [
+        "face5_conjunction4_flat"
+      ],
+      "size": [
+        11,
+        1
+      ],
+      "stride": [
+        11,
+        1
+      ]
+    },
+    {
+      "name": "face5_conjunction4_map",
+      "op": "reshape",
+      "inputs": [
+        "face5_conjunction4_max"
+      ],
+      "shape": [
+        1,
+        8,
+        8
+      ]
+    },
+    {
+      "name": "face5_conjunction4",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction4_map"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction0"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction1"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction2"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction3"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face5_conjunction4"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face5_view_scores",
+      "op": "add",
+      "inputs": [
+        "face5_view_scores_part0",
+        "face5_view_scores_part1",
+        "face5_view_scores_part2",
+        "face5_view_scores_part3",
+        "face5_view_scores_part4"
+      ]
+    },
+    {
+      "name": "face5_best_flat",
+      "op": "reshape",
+      "inputs": [
+        "face5_view_scores"
+      ],
+      "shape": [
+        1,
+        5,
+        64
+      ]
+    },
+    {
+      "name": "face5_best",
+      "op": "maxpool",
+      "inputs": [
+        "face5_best_flat"
+      ],
+      "size": [
+        5,
+        64
+      ],
+      "stride": [
+        5,
+        64
+      ]
+    },
+    {
+      "name": "detector_scores_part0",
+      "op": "conv",
+      "inputs": [
+        "face0_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores_part1",
+      "op": "conv",
+      "inputs": [
+        "face1_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores_part2",
+      "op": "conv",
+      "inputs": [
+        "face2_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores_part3",
+      "op": "conv",
+      "inputs": [
+        "face3_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores_part4",
+      "op": "conv",
+      "inputs": [
+        "face4_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores_part5",
+      "op": "conv",
+      "inputs": [
+        "face5_best"
+      ],
+      "out": 6,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "detector_scores",
+      "op": "add",
+      "inputs": [
+        "detector_scores_part0",
+        "detector_scores_part1",
+        "detector_scores_part2",
+        "detector_scores_part3",
+        "detector_scores_part4",
+        "detector_scores_part5"
+      ]
+    },
+    {
+      "name": "face_evidence_flat",
+      "op": "reshape",
+      "inputs": [
+        "detector_scores"
+      ],
+      "shape": [
+        1,
+        6,
+        1
+      ]
+    },
+    {
+      "name": "face_evidence",
+      "op": "maxpool",
+      "inputs": [
+        "face_evidence_flat"
+      ],
+      "size": [
+        6,
+        1
+      ],
+      "stride": [
+        6,
+        1
+      ]
+    },
+    {
+      "name": "face_ramp",
+      "op": "conv",
+      "inputs": [
+        "face_evidence"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_support_hinges",
+      "op": "conv",
+      "inputs": [
+        "face_ramp"
+      ],
+      "out": 2,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "face_support_positive",
+      "op": "relu",
+      "inputs": [
+        "face_support_hinges"
+      ]
+    },
+    {
+      "name": "face_support",
+      "op": "conv",
+      "inputs": [
+        "face_support_positive"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues_part0",
+      "op": "conv",
+      "inputs": [
+        "colour_presence"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues_part1",
+      "op": "conv",
+      "inputs": [
+        "compact_support"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues_part2",
+      "op": "conv",
+      "inputs": [
+        "face_support"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues_part3",
+      "op": "conv",
+      "inputs": [
+        "excess_skin"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues_part4",
+      "op": "conv",
+      "inputs": [
+        "broad_skin_penalty"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "final_cues",
+      "op": "add",
+      "inputs": [
+        "final_cues_part0",
+        "final_cues_part1",
+        "final_cues_part2",
+        "final_cues_part3",
+        "final_cues_part4"
+      ]
+    },
+    {
+      "name": "person_evidence",
+      "op": "conv",
+      "inputs": [
+        "final_cues"
+      ],
+      "out": 1,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": 1,
+      "padding": 0
+    },
+    {
+      "name": "class_scores",
+      "op": "dense",
+      "inputs": [
+        "person_evidence"
+      ],
+      "out": 2
+    }
+  ]
+}

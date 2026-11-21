@@ -1,0 +1,65 @@
+{
+  "layers": [
+    {
+      "name": "n1",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "tmatch",
+      "op": "conv",
+      "inputs": [
+        "n1"
+      ],
+      "out": 48,
+      "kernel": [
+        28,
+        28
+      ],
+      "stride": 1,
+      "padding": 6
+    },
+    {
+      "name": "r1",
+      "op": "relu",
+      "inputs": [
+        "tmatch"
+      ]
+    },
+    {
+      "name": "mp",
+      "op": "maxpool",
+      "inputs": [
+        "r1"
+      ],
+      "size": [
+        13,
+        13
+      ],
+      "stride": [
+        13,
+        13
+      ]
+    },
+    {
+      "name": "f",
+      "op": "reshape",
+      "inputs": [
+        "mp"
+      ],
+      "shape": [
+        48
+      ]
+    },
+    {
+      "name": "cls",
+      "op": "dense",
+      "inputs": [
+        "f"
+      ],
+      "out": 24
+    }
+  ]
+}

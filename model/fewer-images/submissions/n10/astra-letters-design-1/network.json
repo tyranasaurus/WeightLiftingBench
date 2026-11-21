@@ -1,0 +1,347 @@
+{
+  "layers": [
+    {
+      "name": "exposure",
+      "op": "norm",
+      "inputs": [
+        "image"
+      ]
+    },
+    {
+      "name": "differentials",
+      "op": "conv",
+      "inputs": [
+        "exposure"
+      ],
+      "out": 10,
+      "kernel": [
+        5,
+        5
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "half_waves",
+      "op": "relu",
+      "inputs": [
+        "differentials"
+      ]
+    },
+    {
+      "name": "angle_bins",
+      "op": "conv",
+      "inputs": [
+        "half_waves"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "oriented_votes",
+      "op": "relu",
+      "inputs": [
+        "angle_bins"
+      ]
+    },
+    {
+      "name": "headroom",
+      "op": "conv",
+      "inputs": [
+        "oriented_votes"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "bounded_headroom",
+      "op": "relu",
+      "inputs": [
+        "headroom"
+      ]
+    },
+    {
+      "name": "mean_headroom",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_headroom"
+      ],
+      "size": [
+        3,
+        3
+      ],
+      "stride": [
+        3,
+        3
+      ]
+    },
+    {
+      "name": "signed_cells",
+      "op": "conv",
+      "inputs": [
+        "mean_headroom"
+      ],
+      "out": 10,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "signed_norm",
+      "op": "norm",
+      "inputs": [
+        "signed_cells"
+      ]
+    },
+    {
+      "name": "both_polarities",
+      "op": "conv",
+      "inputs": [
+        "signed_cells"
+      ],
+      "out": 5,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "unsigned_norm",
+      "op": "norm",
+      "inputs": [
+        "both_polarities"
+      ]
+    },
+    {
+      "name": "tone_cells",
+      "op": "avgpool",
+      "inputs": [
+        "exposure"
+      ],
+      "size": [
+        4,
+        4
+      ],
+      "stride": [
+        4,
+        4
+      ]
+    },
+    {
+      "name": "tone_norm",
+      "op": "norm",
+      "inputs": [
+        "tone_cells"
+      ]
+    },
+    {
+      "name": "fine_headroom",
+      "op": "avgpool",
+      "inputs": [
+        "bounded_headroom"
+      ],
+      "size": [
+        2,
+        2
+      ],
+      "stride": [
+        2,
+        2
+      ]
+    },
+    {
+      "name": "fine_axes",
+      "op": "conv",
+      "inputs": [
+        "fine_headroom"
+      ],
+      "out": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "padding": 0,
+      "stride": 1
+    },
+    {
+      "name": "fine_norm",
+      "op": "norm",
+      "inputs": [
+        "fine_axes"
+      ]
+    },
+    {
+      "name": "match_signed",
+      "op": "dense",
+      "inputs": [
+        "signed_norm"
+      ],
+      "out": 99840
+    },
+    {
+      "name": "match_axis",
+      "op": "dense",
+      "inputs": [
+        "unsigned_norm"
+      ],
+      "out": 99840
+    },
+    {
+      "name": "match_tone",
+      "op": "dense",
+      "inputs": [
+        "tone_norm"
+      ],
+      "out": 99840
+    },
+    {
+      "name": "correlations",
+      "op": "add",
+      "inputs": [
+        "match_signed",
+        "match_axis",
+        "match_tone"
+      ]
+    },
+    {
+      "name": "pose_grid",
+      "op": "reshape",
+      "inputs": [
+        "correlations"
+      ],
+      "shape": [
+        24,
+        832,
+        5
+      ]
+    },
+    {
+      "name": "best_alignment",
+      "op": "maxpool",
+      "inputs": [
+        "pose_grid"
+      ],
+      "size": [
+        1,
+        5
+      ],
+      "stride": [
+        1,
+        5
+      ]
+    },
+    {
+      "name": "best_pose",
+      "op": "maxpool",
+      "inputs": [
+        "best_alignment"
+      ],
+      "size": [
+        208,
+        1
+      ],
+      "stride": [
+        208,
+        1
+      ]
+    },
+    {
+      "name": "vote",
+      "op": "avgpool",
+      "inputs": [
+        "best_pose"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "match_fine",
+      "op": "dense",
+      "inputs": [
+        "fine_norm"
+      ],
+      "out": 19968
+    },
+    {
+      "name": "fine_grid",
+      "op": "reshape",
+      "inputs": [
+        "match_fine"
+      ],
+      "shape": [
+        24,
+        832,
+        1
+      ]
+    },
+    {
+      "name": "fine_best",
+      "op": "maxpool",
+      "inputs": [
+        "fine_grid"
+      ],
+      "size": [
+        208,
+        1
+      ],
+      "stride": [
+        208,
+        1
+      ]
+    },
+    {
+      "name": "fine_vote",
+      "op": "avgpool",
+      "inputs": [
+        "fine_best"
+      ],
+      "size": [
+        4,
+        1
+      ],
+      "stride": [
+        4,
+        1
+      ]
+    },
+    {
+      "name": "combined",
+      "op": "add",
+      "inputs": [
+        "vote",
+        "fine_vote"
+      ]
+    },
+    {
+      "name": "letters",
+      "op": "reshape",
+      "inputs": [
+        "combined"
+      ],
+      "shape": [
+        24
+      ]
+    }
+  ]
+}

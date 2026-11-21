@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+runs/
+*.npz
+.env
+# data and verifier source that model/data/assemble_tasks.py copies into the task folders
+model/tasks/*/tests/wsp-src/
+model/tasks/*/environment/data/

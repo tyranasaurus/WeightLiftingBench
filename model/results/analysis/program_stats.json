@@ -1,0 +1,905 @@
+[
+ {
+  "run": "astra-digits-program-1",
+  "acc": 0.9651,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 194,
+  "build_lines": 508,
+  "sol_kb": 9.113,
+  "build_kb": 26.796,
+  "const_mb": 213.648352,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   6,
+   8
+  ],
+  "prior/likelihood": [
+   1,
+   1
+  ],
+  "sort/argpartition": [
+   2,
+   2
+  ],
+  "if-branches": [
+   3,
+   52
+  ],
+  "loops": [
+   13,
+   19
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-digits-program-2",
+  "acc": 0.9693,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 206,
+  "build_lines": 424,
+  "sol_kb": 8.618,
+  "build_kb": 22.457,
+  "const_mb": 116.189178,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   6
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   4,
+   4
+  ],
+  "if-branches": [
+   1,
+   3
+  ],
+  "loops": [
+   9,
+   17
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-digits-program-3",
+  "acc": 0.9598,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 141,
+  "build_lines": 355,
+  "sol_kb": 6.983,
+  "build_kb": 19.669,
+  "const_mb": 113.685714,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   2,
+   3
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   2,
+   2
+  ],
+  "if-branches": [
+   2,
+   35
+  ],
+  "loops": [
+   7,
+   11
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-clothing-program-1",
+  "acc": 0.7369,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 312,
+  "build_lines": 547,
+  "sol_kb": 18.722,
+  "build_kb": 33.038,
+  "const_mb": 22.26509,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   2,
+   2
+  ],
+  "prior/likelihood": [
+   1,
+   1
+  ],
+  "sort/argpartition": [
+   6,
+   7
+  ],
+  "if-branches": [
+   1,
+   53
+  ],
+  "loops": [
+   14,
+   19
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-clothing-program-2",
+  "acc": 0.7532,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 335,
+  "build_lines": 538,
+  "sol_kb": 21.2,
+  "build_kb": 32.045,
+  "const_mb": 12.35227,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   1,
+   1
+  ],
+  "prior/likelihood": [
+   4,
+   4
+  ],
+  "sort/argpartition": [
+   3,
+   3
+  ],
+  "if-branches": [
+   1,
+   29
+  ],
+  "loops": [
+   12,
+   17
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-clothing-program-3",
+  "acc": 0.7087,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 374,
+  "build_lines": 553,
+  "sol_kb": 21.831,
+  "build_kb": 30.792,
+  "const_mb": 14.33885,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   0
+  ],
+  "prior/likelihood": [
+   1,
+   1
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   1,
+   18
+  ],
+  "loops": [
+   19,
+   22
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-cifar-program-1",
+  "acc": 0.3264,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 318,
+  "build_lines": 516,
+  "sol_kb": 18.928,
+  "build_kb": 33.459,
+  "const_mb": 26.54284,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   4,
+   4
+  ],
+  "prior/likelihood": [
+   3,
+   3
+  ],
+  "sort/argpartition": [
+   1,
+   1
+  ],
+  "if-branches": [
+   0,
+   32
+  ],
+  "loops": [
+   13,
+   35
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-cifar-program-2",
+  "acc": 0.3293,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 308,
+  "build_lines": 671,
+  "sol_kb": 29.822,
+  "build_kb": 55.462,
+  "const_mb": 54.696894,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   5,
+   6
+  ],
+  "prior/likelihood": [
+   9,
+   9
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   2,
+   54
+  ],
+  "loops": [
+   22,
+   75
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-cifar-program-3",
+  "acc": 0.3289,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 351,
+  "build_lines": 710,
+  "sol_kb": 22.644,
+  "build_kb": 40.996,
+  "const_mb": 68.706324,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   11,
+   11
+  ],
+  "prior/likelihood": [
+   2,
+   2
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   2,
+   49
+  ],
+  "loops": [
+   15,
+   52
+  ],
+  "fft": [
+   3,
+   3
+  ]
+ },
+ {
+  "run": "astra-letters-program-1",
+  "acc": 0.4988845510317903,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 176,
+  "build_lines": 485,
+  "sol_kb": 8.84,
+  "build_kb": 27.303,
+  "const_mb": 323.205386,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   4,
+   4
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   0,
+   85
+  ],
+  "loops": [
+   6,
+   20
+  ],
+  "fft": [
+   1,
+   1
+  ]
+ },
+ {
+  "run": "astra-letters-program-2",
+  "acc": null,
+  "det": null,
+  "changed": null,
+  "sol_lines": 169,
+  "build_lines": 422,
+  "sol_kb": 9.521,
+  "build_kb": 24.667,
+  "const_mb": 49.447416,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   1
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   1,
+   1
+  ],
+  "if-branches": [
+   0,
+   79
+  ],
+  "loops": [
+   16,
+   28
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-letters-program-3",
+  "acc": 0.5832403792526492,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 137,
+  "build_lines": 423,
+  "sol_kb": 6.867,
+  "build_kb": 23.965,
+  "const_mb": 446.820522,
+  "rng": [
+   0,
+   2
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   2
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   1,
+   3
+  ],
+  "if-branches": [
+   1,
+   45
+  ],
+  "loops": [
+   10,
+   25
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-traffic-program-1",
+  "acc": 0.8741092636579573,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 266,
+  "build_lines": 735,
+  "sol_kb": 16.549,
+  "build_kb": 45.225,
+  "const_mb": 27.516596,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   1,
+   2
+  ],
+  "prior/likelihood": [
+   1,
+   1
+  ],
+  "sort/argpartition": [
+   9,
+   10
+  ],
+  "if-branches": [
+   26,
+   117
+  ],
+  "loops": [
+   13,
+   65
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-traffic-program-2",
+  "acc": 0.8516231195566113,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 197,
+  "build_lines": 527,
+  "sol_kb": 9.978,
+  "build_kb": 30.374,
+  "const_mb": 96.198264,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   1,
+   1
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   20,
+   90
+  ],
+  "loops": [
+   9,
+   40
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-traffic-program-3",
+  "acc": 0.8829770387965162,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 238,
+  "build_lines": 612,
+  "sol_kb": 14.506,
+  "build_kb": 34.974,
+  "const_mb": 86.519904,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   1,
+   5
+  ],
+  "prior/likelihood": [
+   4,
+   4
+  ],
+  "sort/argpartition": [
+   8,
+   8
+  ],
+  "if-branches": [
+   18,
+   89
+  ],
+  "loops": [
+   14,
+   59
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-galaxies-program-1",
+  "acc": 0.5346088913899831,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 577,
+  "build_lines": 584,
+  "sol_kb": 32.133,
+  "build_kb": 32.37,
+  "const_mb": 0.0,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   29,
+   29
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   2,
+   2
+  ],
+  "if-branches": [
+   13,
+   13
+  ],
+  "loops": [
+   14,
+   14
+  ],
+  "fft": [
+   13,
+   13
+  ]
+ },
+ {
+  "run": "astra-galaxies-program-2",
+  "acc": 0.5537422622397299,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 527,
+  "build_lines": 536,
+  "sol_kb": 27.489,
+  "build_kb": 27.684,
+  "const_mb": 0.0,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   21,
+   21
+  ],
+  "prior/likelihood": [
+   3,
+   3
+  ],
+  "sort/argpartition": [
+   0,
+   0
+  ],
+  "if-branches": [
+   15,
+   15
+  ],
+  "loops": [
+   14,
+   14
+  ],
+  "fft": [
+   9,
+   9
+  ]
+ },
+ {
+  "run": "astra-galaxies-program-3",
+  "acc": 0.6032639279684862,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 563,
+  "build_lines": 571,
+  "sol_kb": 29.143,
+  "build_kb": 29.405,
+  "const_mb": 0.0,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   22,
+   22
+  ],
+  "prior/likelihood": [
+   1,
+   1
+  ],
+  "sort/argpartition": [
+   1,
+   1
+  ],
+  "if-branches": [
+   12,
+   12
+  ],
+  "loops": [
+   10,
+   10
+  ],
+  "fft": [
+   15,
+   15
+  ]
+ },
+ {
+  "run": "astra-person-program-1",
+  "acc": 0.6566006751208832,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 635,
+  "build_lines": 643,
+  "sol_kb": 30.766,
+  "build_kb": 30.924,
+  "const_mb": 0.0,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   3,
+   3
+  ],
+  "prior/likelihood": [
+   13,
+   13
+  ],
+  "sort/argpartition": [
+   1,
+   1
+  ],
+  "if-branches": [
+   9,
+   9
+  ],
+  "loops": [
+   22,
+   22
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-person-program-2",
+  "acc": 0.0,
+  "det": null,
+  "changed": null,
+  "sol_lines": 408,
+  "build_lines": 417,
+  "sol_kb": 19.983,
+  "build_kb": 20.227,
+  "const_mb": 0.0,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   0
+  ],
+  "prior/likelihood": [
+   0,
+   0
+  ],
+  "sort/argpartition": [
+   2,
+   2
+  ],
+  "if-branches": [
+   11,
+   11
+  ],
+  "loops": [
+   11,
+   11
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ },
+ {
+  "run": "astra-person-program-3",
+  "acc": 0.595657330535535,
+  "det": "1.0",
+  "changed": "0.0",
+  "sol_lines": 438,
+  "build_lines": 502,
+  "sol_kb": 21.887,
+  "build_kb": 25.014,
+  "const_mb": 0.055804,
+  "rng": [
+   0,
+   0
+  ],
+  "softmax/logsumexp": [
+   0,
+   0
+  ],
+  "exp/log": [
+   0,
+   2
+  ],
+  "prior/likelihood": [
+   6,
+   6
+  ],
+  "sort/argpartition": [
+   1,
+   1
+  ],
+  "if-branches": [
+   4,
+   6
+  ],
+  "loops": [
+   6,
+   12
+  ],
+  "fft": [
+   0,
+   0
+  ]
+ }
+]

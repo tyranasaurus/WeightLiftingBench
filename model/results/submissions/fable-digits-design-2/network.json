@@ -1,0 +1,263 @@
+{
+ "layers": [
+  {
+   "name": "edge",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 8,
+   "kernel": [
+    7,
+    7
+   ],
+   "stride": 1,
+   "padding": 3
+  },
+  {
+   "name": "edge_r",
+   "op": "relu",
+   "inputs": [
+    "edge"
+   ]
+  },
+  {
+   "name": "dir",
+   "op": "conv",
+   "inputs": [
+    "edge_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "dir_r",
+   "op": "relu",
+   "inputs": [
+    "dir"
+   ]
+  },
+  {
+   "name": "pool",
+   "op": "conv",
+   "inputs": [
+    "dir_r"
+   ],
+   "out": 8,
+   "kernel": [
+    12,
+    12
+   ],
+   "stride": 4,
+   "padding": 4
+  },
+  {
+   "name": "bend",
+   "op": "conv",
+   "inputs": [
+    "pool"
+   ],
+   "out": 32,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bend_r",
+   "op": "relu",
+   "inputs": [
+    "bend"
+   ]
+  },
+  {
+   "name": "root",
+   "op": "conv",
+   "inputs": [
+    "bend_r"
+   ],
+   "out": 8,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "match_edge",
+   "op": "dense",
+   "inputs": [
+    "root"
+   ],
+   "out": 190000
+  },
+  {
+   "name": "solid",
+   "op": "conv",
+   "inputs": [
+    "image"
+   ],
+   "out": 1,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "solid_r",
+   "op": "relu",
+   "inputs": [
+    "solid"
+   ]
+  },
+  {
+   "name": "half",
+   "op": "avgpool",
+   "inputs": [
+    "solid_r"
+   ],
+   "size": [
+    2,
+    2
+   ],
+   "stride": [
+    2,
+    2
+   ]
+  },
+  {
+   "name": "rays",
+   "op": "conv",
+   "inputs": [
+    "half"
+   ],
+   "out": 5,
+   "kernel": [
+    27,
+    27
+   ],
+   "stride": 1,
+   "padding": 13
+  },
+  {
+   "name": "rays_r",
+   "op": "relu",
+   "inputs": [
+    "rays"
+   ]
+  },
+  {
+   "name": "bays",
+   "op": "conv",
+   "inputs": [
+    "rays_r"
+   ],
+   "out": 9,
+   "kernel": [
+    1,
+    1
+   ],
+   "stride": 1,
+   "padding": 0
+  },
+  {
+   "name": "bays_r",
+   "op": "relu",
+   "inputs": [
+    "bays"
+   ]
+  },
+  {
+   "name": "baypool",
+   "op": "conv",
+   "inputs": [
+    "bays_r"
+   ],
+   "out": 9,
+   "kernel": [
+    8,
+    8
+   ],
+   "stride": 3,
+   "padding": 3
+  },
+  {
+   "name": "match_bay",
+   "op": "dense",
+   "inputs": [
+    "baypool"
+   ],
+   "out": 190000
+  },
+  {
+   "name": "match",
+   "op": "add",
+   "inputs": [
+    "match_edge",
+    "match_bay"
+   ]
+  },
+  {
+   "name": "bank",
+   "op": "reshape",
+   "inputs": [
+    "match"
+   ],
+   "shape": [
+    10,
+    100,
+    190
+   ]
+  },
+  {
+   "name": "best_a",
+   "op": "maxpool",
+   "inputs": [
+    "bank"
+   ],
+   "size": [
+    1,
+    190
+   ],
+   "stride": [
+    1,
+    190
+   ]
+  },
+  {
+   "name": "best_b",
+   "op": "maxpool",
+   "inputs": [
+    "best_a"
+   ],
+   "size": [
+    100,
+    1
+   ],
+   "stride": [
+    100,
+    1
+   ]
+  },
+  {
+   "name": "scores",
+   "op": "reshape",
+   "inputs": [
+    "best_b"
+   ],
+   "shape": [
+    10
+   ]
+  }
+ ]
+}

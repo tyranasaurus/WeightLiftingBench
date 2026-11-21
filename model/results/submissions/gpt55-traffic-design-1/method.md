@@ -1,0 +1,5 @@
+# Method
+
+The submitted network is a deterministic hand-built template matcher.  The input first passes through per-channel spatial normalization, then a dense layer computes correlations with 1,161 analytic traffic-sign templates: 43 classes times a fixed bank of translations and scales.  Each template is generated in `build.py` from simple geometry (circles, rings, triangles, diamonds, arrows, seven-segment-style digits, cars/trucks, pedestrians, animals, cancellation stripes, and road-work symbols), not copied from any training image.
+
+The template responses are reshaped by class and max-pooled across the pose variants to obtain one score per class.  A small raw-colour branch adds hand-written family cues for red-ring signs, blue mandatory signs, dark cancellation signs, pale interiors, and filled red signs; its constants are simple geometric masks and colour contrasts.  I viewed montages and simple summaries of the training set to understand the sign appearances, and used the five allowed labeled checks to diagnose generic false matches, but did not fit, average, cluster, regress, or copy any training pixels into the weights.
