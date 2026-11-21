@@ -82,7 +82,7 @@ uv run wsc-bench list
 
 ## Thanks
 
-To [Valkyrie](https://docs.valkyrie.vals.ai), the Vals.ai evaluation platform, for running the benchmarks, to Modal for
+To [Valkyrie](https://docs.valkyrie.vals.ai), the [Vals.ai](https://www.vals.ai) evaluation platform, for running the benchmarks, to Modal for
 compute, and to OpenAI and Anthropic for credits to evaluate their models.
 
 ## License
